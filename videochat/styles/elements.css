@@ -1,0 +1,118 @@
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 10px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  top: 40px;
+  transform: translate(-50%);
+}
+
+#call-modal-icoming {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  visibility: hidden;
+  height: 100px;
+  width: 240px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  top: 40px;
+  transform: translate(-50%);
+}
+
+#call-modal-icoming .call-modal-header {
+  color: black;
+  font-size: 20px;
+  padding: 10px 0;
+}
+
+#call-modal-icoming .call-modal-footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#call-modal-icoming .call-modal-button {
+  height: 40px;
+  width: 100px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#call-modal-icoming #call-modal-reject {
+  background-color: red;
+}
+
+#call-modal-icoming #call-modal-accept {
+  background-color: green;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#call-modal-icoming.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s;
+  animation: fadein 0.5s, fadeout 0.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 40px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 40px;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeout {
+  from {
+    top: 40px;
+    opacity: 1;
+  }
+  to {
+    top: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    top: 40px;
+    opacity: 1;
+  }
+  to {
+    top: 0;
+    opacity: 0;
+  }
+}

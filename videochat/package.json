@@ -1,0 +1,32 @@
+{
+  "name": "videochat",
+  "version": "2.0.0",
+  "description": "WebRTC Video Chat Sample",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --env.production",
+    "watch": "webpack --env.development",
+    "start": "webpack-dev-server --env.development"
+  },
+  "keywords": [
+    "webrtc"
+  ],
+  "author": "ConnectyCube",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "connectycube": "^2.1.1",
+    "handlebars": "^4.7.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "babel-loader": "^8.0.6",
+    "clean-webpack-plugin": "^3.0.0",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
