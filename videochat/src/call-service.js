@@ -11,8 +11,8 @@ class CallService {
     ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
     ConnectyCube.videochat.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
 
-    document.getElementById("call-modal-reject").addEventListener("click", this.rejectCall);
-    document.getElementById("call-modal-accept").addEventListener("click", this.acceptCall);
+    document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
+    document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
   };
 
   $calling = document.getElementById("signal-in");
@@ -68,16 +68,16 @@ class CallService {
     this.$dialing.pause();
   };
 
-  onRejectCallListener = (session, userId, extension) => {
+  onRejectCallListener = (session, userId, extension = {}) => {
     const userName = this._getUserById(userId, "name");
     const infoText = extension.busy ? `${userName} is busy` : `${userName} rejected the call request`;
 
-    this.showSnackbar(infoText);
     this.stopCall(userId);
+    this.showSnackbar(infoText);
   };
 
   onStopCallListener = (session, userId, extension) => {
-    const isStoppedByInitiator = session.initiatorID === userId;
+    const isStoppedByInitiator = session?.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
 
@@ -119,12 +119,13 @@ class CallService {
     });
   };
 
-  rejectCall = () => {
-    const extension = {};
-
-    this.hideIncomingCallModal();
-    this._session.reject(extension);
-    this._session = null;
+  rejectCall = (session, extension = {}) => {
+    if (session) {
+      session.reject(extension);
+    } else {
+      this._session.reject(extension);
+      this.hideIncomingCallModal();
+    }
   };
 
   startCall = () => {
@@ -157,6 +158,9 @@ class CallService {
   };
 
   stopCall = userId => {
+    const $callScreen = document.getElementById("call");
+    const $videochatScreen = document.getElementById("videochat");
+    const $muteButton = document.getElementById("videochat-mute-unmute");
     const $videochatStreams = document.getElementById("videochat-streams");
 
     if (userId) {
@@ -183,8 +187,9 @@ class CallService {
       this.isAudioMuted = false;
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
-      document.getElementById("call").classList.remove("hidden");
-      document.getElementById("videochat").classList.add("hidden");
+      $callScreen.classList.remove("hidden");
+      $videochatScreen.classList.add("hidden");
+      $muteButton.classList.remove("muted");
     }
   };
 
@@ -239,11 +244,11 @@ class CallService {
     const $snackbar = document.getElementById("snackbar");
 
     $snackbar.innerHTML = infoText;
-    $snackbar.className = "show";
+    $snackbar.classList.add("show");
 
     setTimeout(function() {
       $snackbar.innerHTML = "";
-      $snackbar.className = $snackbar.className.replace("show", "");
+      $snackbar.classList.remove("show");
     }, 3000);
   };
 
@@ -260,11 +265,11 @@ class CallService {
     if (className === "hide") {
       this.$calling.pause();
       $initiator.innerHTML = "";
-      $modal.className = $modal.className.replace("show", "");
+      $modal.classList.remove("show");
     } else {
       this.$calling.play();
       $initiator.innerHTML = this._getUserById(this._session.initiatorID, "name");
-      $modal.className = "show";
+      $modal.classList.add("show");
     }
   };
 
