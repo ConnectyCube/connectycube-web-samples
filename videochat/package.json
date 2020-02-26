@@ -14,7 +14,7 @@
   "author": "ConnectyCube",
   "license": "Apache-2.0",
   "dependencies": {
-    "connectycube": "^2.1.5",
+    "connectycube": "^2.1.6",
     "handlebars": "^4.7.3"
   },
   "devDependencies": {
