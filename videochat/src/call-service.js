@@ -19,6 +19,8 @@ class CallService {
   $dialing = document.getElementById("signal-out");
   $endCall = document.getElementById("signal-end");
 
+  $modal = document.getElementById("call-modal-icoming");
+
   mediaParams = {
     audio: true,
     video: true,
@@ -51,6 +53,10 @@ class CallService {
   };
 
   onCallListener = (session, extension) => {
+    if (session.initiatorID === session.currentUserID) {
+      return false;
+    }
+
     if (this._session) {
       this.rejectCall(session, { busy: true });
       return false;
@@ -61,29 +67,56 @@ class CallService {
   };
 
   onAcceptCallListener = (session, userId, extension) => {
-    const userName = this._getUserById(userId, "name");
-    const infoText = `${userName} has accepted the call`;
+    if (userId === session.currentUserID) {
+      if (this.$modal.classList.contains("show")) {
+        this._session = null;
+        this.hideIncomingCallModal();
+        this.showSnackbar("You have accepted the call on other side");
+      }
 
-    this.showSnackbar(infoText);
-    this.$dialing.pause();
+      return false;
+    } else {
+      const userName = this._getUserById(userId, "name");
+      const infoText = `${userName} has accepted the call`;
+
+      this.showSnackbar(infoText);
+      this.$dialing.pause();
+    }
   };
 
   onRejectCallListener = (session, userId, extension = {}) => {
-    const userName = this._getUserById(userId, "name");
-    const infoText = extension.busy ? `${userName} is busy` : `${userName} rejected the call request`;
+    if (userId === session.currentUserID) {
+      if (this.$modal.classList.contains("show")) {
+        this._session = null;
+        this.hideIncomingCallModal();
+        this.showSnackbar("You have rejected the call on other side");
+      }
 
-    this.stopCall(userId);
-    this.showSnackbar(infoText);
+      return false;
+    } else {
+      const userName = this._getUserById(userId, "name");
+      const infoText = extension.busy ? `${userName} is busy` : `${userName} rejected the call request`;
+
+      this.stopCall(userId);
+      this.showSnackbar(infoText);
+    }
   };
 
   onStopCallListener = (session, userId, extension) => {
-    const isStoppedByInitiator = session?.initiatorID === userId;
+    if (!this._session) {
+      return false;
+    }
+
+    const isStoppedByInitiator = session.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
 
     this.showSnackbar(infoText);
 
     if (isStoppedByInitiator) {
+      if (this.$modal.classList.contains("show")) {
+        this.hideIncomingCallModal();
+      }
       this.stopCall();
     } else {
       this.stopCall(userId);
@@ -91,6 +124,10 @@ class CallService {
   };
 
   onUserNotAnswerListener = (session, userId) => {
+    if (!this._session) {
+      return false;
+    }
+
     const userName = this._getUserById(userId, "name");
     const infoText = `${userName} did not answer`;
 
@@ -99,6 +136,10 @@ class CallService {
   };
 
   onRemoteStreamListener = (session, userId, stream) => {
+    if (!this._session) {
+      return false;
+    }
+
     document.getElementById(`videochat-stream-loader-${userId}`).remove();
     this._session.attachMediaStream(`remoteStream-${userId}`, stream);
   };
@@ -124,6 +165,7 @@ class CallService {
       session.reject(extension);
     } else {
       this._session.reject(extension);
+      this._session = null;
       this.hideIncomingCallModal();
     }
   };
@@ -259,17 +301,16 @@ class CallService {
   hideIncomingCallModal = () => this._incomingCallModal("hide");
 
   _incomingCallModal = className => {
-    const $modal = document.getElementById("call-modal-icoming");
     const $initiator = document.getElementById("call-modal-initiator");
 
     if (className === "hide") {
-      this.$calling.pause();
       $initiator.innerHTML = "";
-      $modal.classList.remove("show");
+      this.$modal.classList.remove("show");
+      this.$calling.pause();
     } else {
-      this.$calling.play();
       $initiator.innerHTML = this._getUserById(this._session.initiatorID, "name");
-      $modal.classList.add("show");
+      this.$modal.classList.add("show");
+      this.$calling.play();
     }
   };
 
