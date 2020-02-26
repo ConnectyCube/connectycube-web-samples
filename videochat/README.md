@@ -21,7 +21,7 @@ ConnectyCube Video Chat API documentation - [https://developers.connectycube.com
 <img src="https://developers.connectycube.com/docs/_images/code_samples/js_codesample_videochat_demo.png" width="750" alt="Video Chat code sample demo image">
 </p> -->
 
-## Build your own Chat app
+## Build your own VideoChat app
 
 To make the sample works for your own app, please do the following:
 
