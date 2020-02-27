@@ -8,6 +8,7 @@ Project contains the following features implemented:
 - Video calls up to 4 users
 - Mute/unmute microphone
 - Change camera source
+- Snack bars to notify users about changes
 - Compatibility with the [React Native Video Chat code sample](https://github.com/ConnectyCube/connectycube-reactnative-samples/tree/master/RNVideoChat)
 
 ## Documentation
@@ -88,13 +89,8 @@ To make the sample works for your own app, please do the following:
            chat: ""
        },
        ...
-    ```
-
     };
-
     ```
-
-    ```
-
+    
 4.  Run `npm run build` to make `dist/main.js`, open `index.html` and enjoy!
 5.  Or run `npm start` to start application in developing mode on `https://localhost:3000`
