@@ -10,6 +10,7 @@ class CallService {
     ConnectyCube.videochat.onStopCallListener = this.onStopCallListener.bind(this);
     ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
     ConnectyCube.videochat.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
+    ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
@@ -20,6 +21,9 @@ class CallService {
   $endCall = document.getElementById("signal-end");
 
   $modal = document.getElementById("call-modal-icoming");
+
+  $muteUnmuteButton = document.getElementById("videochat-mute-unmute");
+  $switchCameraButton = document.getElementById("videochat-switch-camera");
 
   mediaParams = {
     audio: true,
@@ -142,6 +146,9 @@ class CallService {
 
     document.getElementById(`videochat-stream-loader-${userId}`).remove();
     this._session.attachMediaStream(`remoteStream-${userId}`, stream);
+
+    this.$muteUnmuteButton.disabled = false;
+    this.onDevicesChangeListener();
   };
 
   acceptCall = () => {
@@ -151,9 +158,7 @@ class CallService {
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
 
     this.addStreamElements(opponents);
-    this.setMediaDevices();
     this.hideIncomingCallModal();
-
     this._session.getUserMedia(this.mediaParams).then(stream => {
       this._session.accept(extension);
       this.setActiveDeviceId(stream);
@@ -191,7 +196,6 @@ class CallService {
     });
 
     this.addStreamElements(opponents);
-    this.setMediaDevices();
     this._session = ConnectyCube.videochat.createNewSession(opponentsIds, type, options);
     this._session.getUserMedia(this.mediaParams).then(stream => {
       this._session.call({});
@@ -223,6 +227,8 @@ class CallService {
       this.$dialing.pause();
       this.$calling.pause();
       this.$endCall.play();
+      this.$muteUnmuteButton.disabled = true;
+      this.$switchCameraButton.disabled = true;
       this._session = null;
       this.mediaDevicesIds = [];
       this.activeDeviceId = null;
@@ -235,21 +241,12 @@ class CallService {
     }
   };
 
-  setMediaDevices() {
+  onDevicesChangeListener = () => {
     ConnectyCube.videochat.getMediaDevices("videoinput").then(mediaDevices => {
       this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
-
-      if (mediaDevices.length < 2) {
-        const $switchCameraButton = document.getElementById("videochat-switch-camera");
-
-        if ($switchCameraButton) {
-          $switchCameraButton.style.opacity = 0.5;
-          $switchCameraButton.style.cursor = "not-allowed";
-          $switchCameraButton.disabled = true;
-        }
-      }
+      this.$switchCameraButton.disabled = this.mediaDevicesIds.length < 2;
     });
-  }
+  };
 
   setActiveDeviceId = stream => {
     if (stream) {
@@ -277,7 +274,13 @@ class CallService {
   switchCamera = () => {
     const mediaDevicesId = this.mediaDevicesIds.find(deviceId => deviceId !== this.activeDeviceId);
 
-    this._session.switchMediaTracks({ video: mediaDevicesId });
+    this._session.switchMediaTracks({ video: mediaDevicesId }).then(() => {
+      this.activeDeviceId = mediaDevicesId;
+
+      if (this.isAudioMuted) {
+        this._session.mute("audio");
+      }
+    });
   };
 
   /* SNACKBAR */
