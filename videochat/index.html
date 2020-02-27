@@ -87,9 +87,9 @@
       <section id="videochat" class="hidden">
         <div id="videochat-streams"></div>
         <div id="videochat-buttons-container">
-          <button id="videochat-mute-unmute" class="videochat-button"></button>
+          <button id="videochat-mute-unmute" class="videochat-button" disabled></button>
           <button id="videochat-stop-call" class="videochat-button"></button>
-          <button id="videochat-switch-camera" class="videochat-button"></button>
+          <button id="videochat-switch-camera" class="videochat-button" disabled></button>
         </div>
       </section>
 
@@ -160,18 +160,15 @@
 
       <!-- SOUNDS -->
       <audio id="signal-end" preload="auto">
-        <source src="audio/end_of_call.ogg" type="audio/ogg" />
-        <source src="audio/end_of_call.mp3" type="audio/mp3" />
+        <source src="audio/end_call.mp3" type="audio/mp3" />
       </audio>
 
       <audio id="signal-out" loop preload="auto">
-        <source src="audio/calling.ogg" type="audio/ogg" />
-        <source src="audio/calling.mp3" type="audio/mp3" />
+        <source src="audio/dialing.mp3" type="audio/mp3" />
       </audio>
 
       <audio id="signal-in" loop preload="auto">
-        <source src="audio/ringtone.ogg" type="audio/ogg" />
-        <source src="audio/ringtone.mp3" type="audio/mp3" />
+        <source src="audio/calling.mp3" type="audio/mp3" />
       </audio>
     </div>
   </body>

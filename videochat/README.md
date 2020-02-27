@@ -8,6 +8,8 @@ Project contains the following features implemented:
 - Video calls up to 4 users
 - Mute/unmute microphone
 - Change camera source
+- Snack bars to notify users about changes
+- Compatibility with the [React Native Video Chat code sample](https://github.com/ConnectyCube/connectycube-reactnative-samples/tree/master/RNVideoChat)
 
 ## Documentation
 
@@ -15,11 +17,19 @@ ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](h
 
 ConnectyCube Video Chat API documentation - [https://developers.connectycube.com/js/videocalling](https://developers.connectycube.com/js/videocalling)
 
-<!-- ## Screenshots
+## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/js_codesample_videochat_demo.png" width="750" alt="Video Chat code sample demo image">
-</p> -->
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_login.png" width="720" alt="Video Chat code sample demo image login screen">
+</p>
+
+<p align="center">
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_select_users.png" width="720" alt="Video Chat code sample demo image select users screen">
+</p>
+
+<p align="center">
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720" alt="Video Chat code sample demo image active call screen">
+</p>
 
 ## Build your own VideoChat app
 
@@ -79,13 +89,8 @@ To make the sample works for your own app, please do the following:
            chat: ""
        },
        ...
-    ```
-
     };
-
     ```
-
-    ```
-
+    
 4.  Run `npm run build` to make `dist/main.js`, open `index.html` and enjoy!
 5.  Or run `npm start` to start application in developing mode on `https://localhost:3000`
