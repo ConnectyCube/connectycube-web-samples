@@ -244,7 +244,16 @@ class CallService {
   onDevicesChangeListener = () => {
     ConnectyCube.videochat.getMediaDevices("videoinput").then(mediaDevices => {
       this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
-      this.$switchCameraButton.disabled = this.mediaDevicesIds.length < 2;
+
+      if (this.mediaDevicesIds.length < 2) {
+        this.$switchCameraButton.disabled = true;
+
+        if (this.mediaDevicesIds?.[0] !== this.activeDeviceId) {
+          this.switchCamera();
+        }
+      } else {
+        this.$switchCameraButton.disabled = false;
+      }
     });
   };
 
