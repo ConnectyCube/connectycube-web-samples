@@ -181,9 +181,6 @@ class CallService {
     const opponentsIds = [];
     const type = ConnectyCube.videochat.CallType.VIDEO; // AUDIO is also possible
 
-    this.$dialing.play();
-    document.getElementById("call").classList.add("hidden");
-    document.getElementById("videochat").classList.remove("hidden");
     document.querySelectorAll(".select-user-checkbox").forEach($checkbox => {
       if ($checkbox.checked) {
         const id = +$checkbox.dataset.id;
@@ -195,12 +192,19 @@ class CallService {
       }
     });
 
-    this.addStreamElements(opponents);
-    this._session = ConnectyCube.videochat.createNewSession(opponentsIds, type, options);
-    this._session.getUserMedia(this.mediaParams).then(stream => {
-      this._session.call({});
-      this.setActiveDeviceId(stream);
-    });
+    if (opponents.length > 0) {
+      document.getElementById("call").classList.add("hidden");
+      document.getElementById("videochat").classList.remove("hidden");
+      this.$dialing.play();
+      this.addStreamElements(opponents);
+      this._session = ConnectyCube.videochat.createNewSession(opponentsIds, type, options);
+      this._session.getUserMedia(this.mediaParams).then(stream => {
+        this._session.call({});
+        this.setActiveDeviceId(stream);
+      });
+    } else {
+      this.showSnackbar("Select at less one user to start Videocall");
+    }
   };
 
   stopCall = userId => {
