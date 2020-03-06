@@ -40,12 +40,17 @@
 #login-caption,
 #login-loader,
 .videochat-stream-loader {
-  height: 30px;
+  height: 32px;
   width: auto;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+#login-caption,
+#login-loader-text {
+  line-height: 30px;
 }
 
 #login-buttons-container {
@@ -135,6 +140,7 @@
   height: 100%;
   width: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 .videochat-stream-loader {
@@ -148,6 +154,7 @@
   height: 100%;
   width: 100%;
   object-fit: cover;
+  visibility: hidden;
 }
 
 #call-start {

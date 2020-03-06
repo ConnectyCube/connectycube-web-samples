@@ -93,5 +93,5 @@ To make the sample works for your own app, please do the following:
     ```
 
 4.  Install node modules - `npm install`
-5.  Run `npm run build` to make `dist/main.js` and open `index.html`
+5.  Run `npm run build` and open `dist/index.html`
 6.  Or run `npm start` to start application in developing mode on `https://localhost:3000`

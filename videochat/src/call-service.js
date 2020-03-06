@@ -2,6 +2,8 @@ import ConnectyCube from "connectycube";
 import Handlebars from "handlebars";
 import { users } from "./config";
 
+const iOS = window.device?.platform === "iOS";
+
 class CallService {
   init = () => {
     ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
@@ -37,7 +39,7 @@ class CallService {
 
   _session = null;
   mediaDevicesIds = [];
-  activeDeviceId = [];
+  activeDeviceId = null;
   isAudioMuted = false;
 
   addStreamElements = opponents => {
@@ -144,11 +146,14 @@ class CallService {
       return false;
     }
 
+    const remoteStreamSelector = `remoteStream-${userId}`;
+
     document.getElementById(`videochat-stream-loader-${userId}`).remove();
-    this._session.attachMediaStream(`remoteStream-${userId}`, stream);
+    this._session.attachMediaStream(remoteStreamSelector, stream);
 
     this.$muteUnmuteButton.disabled = false;
     this.onDevicesChangeListener();
+    this._prepareVideoElement(remoteStreamSelector);
   };
 
   acceptCall = () => {
@@ -162,6 +167,7 @@ class CallService {
     this._session.getUserMedia(this.mediaParams).then(stream => {
       this._session.accept(extension);
       this.setActiveDeviceId(stream);
+      this._prepareVideoElement("localStream");
     });
   };
 
@@ -201,6 +207,7 @@ class CallService {
       this._session.getUserMedia(this.mediaParams).then(stream => {
         this._session.call({});
         this.setActiveDeviceId(stream);
+        this._prepareVideoElement("localStream");
       });
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
@@ -242,10 +249,16 @@ class CallService {
       $callScreen.classList.remove("hidden");
       $videochatScreen.classList.add("hidden");
       $muteButton.classList.remove("muted");
+
+      if (iOS) {
+        $videochatScreen.style.background = "#000000";
+      }
     }
   };
 
   onDevicesChangeListener = () => {
+    if (iOS) return;
+
     ConnectyCube.videochat.getMediaDevices("videoinput").then(mediaDevices => {
       this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
 
@@ -262,11 +275,11 @@ class CallService {
   };
 
   setActiveDeviceId = stream => {
-    if (stream) {
-      const mediaStreamTrack = stream.getVideoTracks()[0];
-      const mediaTrackSettings = mediaStreamTrack.getSettings();
+    if (stream && !iOS) {
+      const videoTracks = stream.getVideoTracks();
+      const videoTrackSettings = videoTracks[0].getSettings();
 
-      this.activeDeviceId = mediaTrackSettings.deviceId;
+      this.activeDeviceId = videoTrackSettings.deviceId;
     }
   };
 
@@ -334,6 +347,18 @@ class CallService {
     const user = users.find(user => user.id == userId);
 
     return typeof key === "string" ? user[key] : user;
+  };
+
+  _prepareVideoElement = videoElement => {
+    const $video = document.getElementById(videoElement);
+
+    $video.style.visibility = "visible";
+
+    if (iOS) {
+      document.getElementById("videochat").style.background = "transparent";
+      $video.style.backgroundColor = "";
+      $video.style.zIndex = -1;
+    }
   };
 }
 
