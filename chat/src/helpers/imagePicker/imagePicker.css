@@ -1,0 +1,64 @@
+.image-picker{
+  display: flex;
+  width: 60px;
+  height: 60px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #27ae60;
+  border-radius: 50%;
+}
+
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.image-crop-picker-header {
+  height: 40px;
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+}
+
+.image-crop-picker-header > button{
+  border: none;
+  padding: 0 15px;
+  outline: none;
+  background-color: white;
+}
+
+.image-crop-picker-container{
+  background-color: #777777;
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.image-picker .custom-file-upload {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.image-picker > label > svg {
+  font-size: 30px;
+  color: #27ae60;
+}
+
+.image-picker input[type="file"]{
+  display: none;
+}
+
+
+
