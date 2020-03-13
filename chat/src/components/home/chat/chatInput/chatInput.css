@@ -1,0 +1,52 @@
+footer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+footer > form{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 850px;
+  height: 60px;
+  background-color: #e6eaea;
+}
+
+ footer > form > input{
+  width: 100%;
+  color: #32465a;
+  font-size: 1em;
+  font-weight: 300;
+  padding-left: 15px;
+  border: none;
+  outline: none;
+}
+
+ footer > form > .chat-attachment{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 70px;
+  height: 60px;
+}
+
+ footer > form > .chat-attachment > svg{
+  font-size: 18px;
+}
+ footer > form >  .chat-attachment > svg:hover{
+  color: #435f7a;
+}
+
+ footer > form > button {
+  width: 70px;
+  height: 60px;
+  border: none;
+  outline: none;
+  background-color: #32465a;
+}
+
+ footer > form > button:hover{
+  background-color: #435f7a;
+}
