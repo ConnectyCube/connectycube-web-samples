@@ -21,20 +21,14 @@ ConnectyCube Chat API documentation - [https://developers.connectycube.com/js/me
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_chat_auth.png" width="720" alt="Chat code sample demo image login screen">
-</p>
-
-<p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_chat_home.png" width="720" alt="Chat code sample demo image home page">
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_chat_chat-v2.png" width="720" alt="Chat code sample demo image login screen">
 </p>
 
 <p align="center">
 <img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_chat_chat.png" width="720" alt="Chat code sample demo image chat page">
 </p>
 
-<p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_chat_create_dialog.png" width="720" alt="Chat code sample demo image create dialog page">
-</p>
+
 
 ## Roadmap
 
