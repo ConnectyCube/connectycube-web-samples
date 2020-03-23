@@ -1,4 +1,3 @@
-import ConnectyCube from "connectycube";
 import Handlebars from "handlebars";
 import { users } from "./config";
 
