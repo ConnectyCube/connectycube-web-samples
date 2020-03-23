@@ -8,9 +8,11 @@ class CallService {
   static JANUS_ROOM_ID = '1667'
 
   currentUserID
+  participantIds = []
+  initiatorID
 
   init = () => {
-    // ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
+    ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
     // ConnectyCube.videochat.onAcceptCallListener = this.onAcceptCallListener.bind(this);
     // ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
     // ConnectyCube.videochat.onStopCallListener = this.onStopCallListener.bind(this);
@@ -21,6 +23,18 @@ class CallService {
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
   };
+
+  sendIncomingCallSystemMessage = (participantIds, janusRoomId) => {
+    const msg = {
+      extension: {
+        callStart: '1',
+        janusRoomId,
+        participantIds: participantIds.join(','),
+        initiatorID: this.currentUserID
+      }
+    }
+    return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
+  }
 
   $calling = document.getElementById("signal-in");
   $dialing = document.getElementById("signal-out");
@@ -35,10 +49,6 @@ class CallService {
     audio: true,
     video: true,
     elementId: "localStream",
-    options: {
-      muted: true,
-      mirror: true
-    }
   };
 
   _session = null;
@@ -62,19 +72,16 @@ class CallService {
     $videochatStreams.innerHTML = videochatStreamsTemplate({ opponents });
   };
 
-  onCallListener = (session, extension) => {
-    if (session.initiatorID === session.currentUserID) {
-      return false;
+  onSystemMessage = msg => {
+    const { extension } = msg
+    if (extension.callStart) {
+      const {initiatorID, participantIds} = extension
+      this.initiatorID = initiatorID
+      this.participantIds = participantIds.split(',').map(user_id => +user_id)
+      console.log(this.participantIds, msg)
+      this.showIncomingCallModal();
     }
-
-    if (this._session) {
-      this.rejectCall(session, { busy: true });
-      return false;
-    }
-
-    this._session = session;
-    this.showIncomingCallModal();
-  };
+  }
 
   onAcceptCallListener = (session, userId, extension) => {
     if (userId === session.currentUserID) {
@@ -161,18 +168,12 @@ class CallService {
   };
 
   acceptCall = () => {
-    const extension = {};
-    const { opponentsIDs, initiatorID, currentUserID } = this._session;
-    const opponentsIds = [initiatorID, ...opponentsIDs].filter(userId => currentUserID !== userId);
+    const opponentsIds = [this.initiatorID, ...this.participantIds].filter(userId => this.currentUserID !== userId);
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
 
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
-    this._session.getUserMedia(this.mediaParams).then(stream => {
-      this._session.accept(extension);
-      this.setActiveDeviceId(stream);
-      this._prepareVideoElement("localStream");
-    });
+    this.joinConf(CallService.JANUS_ROOM_ID)
   };
 
   rejectCall = (session, extension = {}) => {
@@ -186,10 +187,8 @@ class CallService {
   };
 
   startCall = () => {
-    const options = {};
     const opponents = [];
     const opponentsIds = [];
-    const type = ConnectyCube.videochat.CallType.VIDEO; // AUDIO is also possible
 
     document.querySelectorAll(".select-user-checkbox").forEach($checkbox => {
       if ($checkbox.checked) {
@@ -203,22 +202,27 @@ class CallService {
     });
 
     if (opponents.length > 0) {
+      this.sendIncomingCallSystemMessage(opponentsIds, CallService.JANUS_ROOM_ID)
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
       this.addStreamElements(opponents);
-      this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
-      this._session.getUserMedia(this.mediaParams).then(stream => {
-        this._session.join(CallService.JANUS_ROOM_ID, this.currentUserID)
-        .then(() => this._session.listOfOnlineParticipants())
-        .then(participants => console.warn('[List of ]', participants));
-        this.setActiveDeviceId(stream);
-        this._prepareVideoElement("localStream");
-      });
+      this.initiatorID = this.currentUserID
+      this.joinConf(CallService.JANUS_ROOM_ID)
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
     }
   };
+
+  joinConf = janusRoomId => {
+    this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
+    this._session.getUserMedia(this.mediaParams).then(stream => {
+      this.$muteUnmuteButton.disabled = false;
+      this.setActiveDeviceId(stream);
+      this._prepareVideoElement("localStream");
+      return this._session.join(janusRoomId, this.currentUserID)
+    });
+  }
 
   stopCall = userId => {
     const $callScreen = document.getElementById("call");
@@ -239,8 +243,8 @@ class CallService {
         $videochatStreams.classList.value = "grid-2-1";
       }
     } else if (this._session) {
-      this._session.stop({});
-      ConnectyCube.videochat.clearSession(this._session.ID);
+      this._session.leave({});
+      ConnectyCube.videochat.clearSession();
       this.$dialing.pause();
       this.$calling.pause();
       this.$endCall.play();
@@ -250,6 +254,8 @@ class CallService {
       this.mediaDevicesIds = [];
       this.activeDeviceId = null;
       this.isAudioMuted = false;
+      this.initiatorID = void 0
+      this.participantIds = void 0
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
       $callScreen.classList.remove("hidden");
@@ -293,11 +299,11 @@ class CallService {
     const $muteButton = document.getElementById("videochat-mute-unmute");
 
     if (this.isAudioMuted) {
-      this._session.unmute("audio");
+      this._session.unmute(ConnectyCube.videochatconference.CALL_TYPES.AUDIO);
       this.isAudioMuted = false;
       $muteButton.classList.remove("muted");
     } else {
-      this._session.mute("audio");
+      this._session.mute(ConnectyCube.videochatconference.CALL_TYPES.AUDIO);
       this.isAudioMuted = true;
       $muteButton.classList.add("muted");
     }
@@ -343,7 +349,7 @@ class CallService {
       this.$modal.classList.remove("show");
       this.$calling.pause();
     } else {
-      $initiator.innerHTML = this._getUserById(this._session.initiatorID, "name");
+      $initiator.innerHTML = this._getUserById(this.initiatorID, "name");
       this.$modal.classList.add("show");
       this.$calling.play();
     }
