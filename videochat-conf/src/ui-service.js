@@ -23,6 +23,7 @@ class UIService {
 
     AuthService.login(currentUser).then(() => {
       CallService.init();
+      CallService.currentUserID = +currentUserId
       this.renderSelectUsers(currentUserId);
       this.addEventListenersForCallButtons();
     });

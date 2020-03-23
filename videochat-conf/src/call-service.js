@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import { users } from "./config";
+import { users, janusConfig } from "./config";
 
 const iOS = window.device?.platform === "iOS";
 
@@ -7,13 +7,15 @@ class CallService {
 
   static JANUS_ROOM_ID = '1667'
 
+  currentUserID
+
   init = () => {
     // ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
     // ConnectyCube.videochat.onAcceptCallListener = this.onAcceptCallListener.bind(this);
     // ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
     // ConnectyCube.videochat.onStopCallListener = this.onStopCallListener.bind(this);
     // ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
-    ConnectyCube.videochat.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
+    ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
     // ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
@@ -205,9 +207,11 @@ class CallService {
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
       this.addStreamElements(opponents);
-      this._session = ConnectyCube.videochat.createNewSession(opponentsIds, type, options);
+      this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
       this._session.getUserMedia(this.mediaParams).then(stream => {
-        this._session.call({});
+        this._session.join(CallService.JANUS_ROOM_ID, this.currentUserID)
+        .then(() => this._session.listOfOnlineParticipants())
+        .then(participants => console.warn('[List of ]', participants));
         this.setActiveDeviceId(stream);
         this._prepareVideoElement("localStream");
       });

@@ -59,3 +59,8 @@ export const users = [
     color: "#056a96"
   }
 ];
+
+export const janusConfig = {
+  server: 'wss://janus.otuchat.com:8989'
+}
+
