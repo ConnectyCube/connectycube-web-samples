@@ -4,14 +4,17 @@ import { users } from "./config";
 const iOS = window.device?.platform === "iOS";
 
 class CallService {
+
+  static JANUS_ROOM_ID = '1667'
+
   init = () => {
-    ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
-    ConnectyCube.videochat.onAcceptCallListener = this.onAcceptCallListener.bind(this);
-    ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
-    ConnectyCube.videochat.onStopCallListener = this.onStopCallListener.bind(this);
-    ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
+    // ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
+    // ConnectyCube.videochat.onAcceptCallListener = this.onAcceptCallListener.bind(this);
+    // ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
+    // ConnectyCube.videochat.onStopCallListener = this.onStopCallListener.bind(this);
+    // ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
     ConnectyCube.videochat.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
-    ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
+    // ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
