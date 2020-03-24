@@ -272,7 +272,7 @@ class CallService {
       if (this._session) {
         this._session.leave({});
       }
-      ConnectyCube.videochat.clearSession();
+      ConnectyCube.videochatconference.clearSession();
       this.$dialing.pause();
       this.$calling.pause();
       this.$endCall.play();
