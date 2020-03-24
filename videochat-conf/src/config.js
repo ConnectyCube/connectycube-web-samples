@@ -64,3 +64,5 @@ export const janusConfig = {
   server: 'wss://janus.otuchat.com:8989'
 }
 
+export const NO_ASNWER_TIMER = 30000 // 30 sec
+

@@ -1,10 +1,11 @@
 import Handlebars from "handlebars";
-import { users, janusConfig } from "./config";
+import { users, janusConfig, NO_ASNWER_TIMER } from "./config";
 
 const iOS = window.device?.platform === "iOS";
 
 class CallService {
 
+  _answerUserTimers = {}
   currentUserID
   participantIds = []
   initiatorID
@@ -126,6 +127,7 @@ class CallService {
 
     this.showSnackbar(infoText);
     this.$dialing.pause();
+    this.clearNoAnswerTimers(userId)
   };
 
   onRejectCallListener = (session, userId, extension = {}) => {
@@ -163,7 +165,8 @@ class CallService {
     const infoText = `${userName} did not answer`;
 
     this.showSnackbar(infoText);
-    this.stopCall(userId);
+    this.sendEndCallMessage([userId], this.janusRoomId)
+    this.stopCall(userId)
   };
 
   onRemoteStreamListener = (session, userId, stream) => {
@@ -183,9 +186,9 @@ class CallService {
   acceptCall = () => {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
-
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
+    this.startNoAnswerTimers(this.participantIds)
     this.joinConf(this.janusRoomId)
   };
 
@@ -227,6 +230,7 @@ class CallService {
       this.$dialing.play();
       this.addStreamElements(opponents);
       this.initiatorID = this.currentUserID
+      this.startNoAnswerTimers(this.participantIds)
       this.joinConf(this.janusRoomId)
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
@@ -250,6 +254,7 @@ class CallService {
     const $videochatStreams = document.getElementById("videochat-streams");
 
     if (userId) {
+      this.clearNoAnswerTimers(userId)
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
       document.getElementById(`videochat-stream-container-${userId}`).remove();
 
@@ -275,6 +280,7 @@ class CallService {
       this.$switchCameraButton.disabled = true;
       this._session = null;
       this.mediaDevicesIds = [];
+      this.clearNoAnswerTimers()
       this.activeDeviceId = null;
       this.isAudioMuted = false;
       this.initiatorID = void 0
@@ -375,6 +381,21 @@ class CallService {
       $video.style.zIndex = -1;
     }
   };
+
+  startNoAnswerTimers(participantIds) {
+    participantIds.forEach(user_id => {
+      this._answerUserTimers[user_id] = setTimeout(() => this.onUserNotAnswerListener(this._session, user_id), NO_ASNWER_TIMER)
+    })
+  }
+
+  clearNoAnswerTimers(user_id) {
+    if (user_id) {
+      clearTimeout(this._answerUserTimers[user_id])
+      return delete this._answerUserTimers[user_id]
+    }
+    Object.values(this._answerUserTimers).forEach(timerId => clearTimeout(timerId))
+    this._answerUserTimers = {}
+  }
 }
 
 export default new CallService();
