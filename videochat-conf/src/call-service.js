@@ -5,18 +5,17 @@ const iOS = window.device?.platform === "iOS";
 
 class CallService {
 
-  static JANUS_ROOM_ID = '1667'
-
   currentUserID
   participantIds = []
   initiatorID
+  janusRoomId
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
-    // ConnectyCube.videochat.onAcceptCallListener = this.onAcceptCallListener.bind(this);
+    ConnectyCube.videochatconference.onParticipantJoinedListener = this.onAcceptCallListener.bind(this);
     // ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
-    // ConnectyCube.videochat.onStopCallListener = this.onStopCallListener.bind(this);
     // ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
+    ConnectyCube.videochatconference.onParticipantLeftListener = this.onStopCallListener.bind(this);
     ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
     // ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
 
@@ -24,13 +23,24 @@ class CallService {
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
   };
 
-  sendIncomingCallSystemMessage = (participantIds, janusRoomId) => {
+  sendIncomingCallSystemMessage = (participantIds) => {
     const msg = {
       extension: {
         callStart: '1',
-        janusRoomId,
+        janusRoomId: this.janusRoomId,
         participantIds: participantIds.join(','),
         initiatorID: this.currentUserID
+      }
+    }
+    return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
+  }
+
+  sendRejectCallMessage = (participantIds, janusRoomId, isBusy) => {
+    const msg = {
+      extension: {
+        callRejected: '1',
+        janusRoomId,
+        busy: !!isBusy
       }
     }
     return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
@@ -75,48 +85,42 @@ class CallService {
   onSystemMessage = msg => {
     const { extension } = msg
     if (extension.callStart) {
-      const {initiatorID, participantIds} = extension
+      const {initiatorID, participantIds, janusRoomId} = extension
+      const oponentIds = participantIds
+        .split(',')
+        .map(user_id => +user_id)
+        .filter(user_id => user_id != this.currentUserID)
+      if (this.janusRoomId) {
+        return this.sendRejectCallMessage([...oponentIds, initiatorID], janusRoomId, true)
+      }
+      this.janusRoomId = janusRoomId
       this.initiatorID = initiatorID
-      this.participantIds = participantIds.split(',').map(user_id => +user_id)
-      console.log(this.participantIds, msg)
+      this.participantIds = oponentIds
       this.showIncomingCallModal();
+    } else if (extension.callRejected) {
+      const {userId} = msg
+      const {janusRoomId} = extension
+      if (this.janusRoomId === janusRoomId) {
+        const {busy} = extension
+        this.onRejectCallListener(this._session, userId, {busy})
+      }
     }
   }
 
-  onAcceptCallListener = (session, userId, extension) => {
-    if (userId === session.currentUserID) {
-      if (this.$modal.classList.contains("show")) {
-        this._session = null;
-        this.hideIncomingCallModal();
-        this.showSnackbar("You have accepted the call on other side");
-      }
+  onAcceptCallListener = (session, userId) => {
+    const userName = this._getUserById(userId, "name");
+    const infoText = `${userName} has accepted the call`;
 
-      return false;
-    } else {
-      const userName = this._getUserById(userId, "name");
-      const infoText = `${userName} has accepted the call`;
-
-      this.showSnackbar(infoText);
-      this.$dialing.pause();
-    }
+    this.showSnackbar(infoText);
+    this.$dialing.pause();
   };
 
   onRejectCallListener = (session, userId, extension = {}) => {
-    if (userId === session.currentUserID) {
-      if (this.$modal.classList.contains("show")) {
-        this._session = null;
-        this.hideIncomingCallModal();
-        this.showSnackbar("You have rejected the call on other side");
-      }
+    const userName = this._getUserById(userId, "name");
+    const infoText = extension.busy ? `${userName} is busy` : `${userName} rejected the call request`;
 
-      return false;
-    } else {
-      const userName = this._getUserById(userId, "name");
-      const infoText = extension.busy ? `${userName} is busy` : `${userName} rejected the call request`;
-
-      this.stopCall(userId);
-      this.showSnackbar(infoText);
-    }
+    this.stopCall(userId);
+    this.showSnackbar(infoText);
   };
 
   onStopCallListener = (session, userId, extension) => {
@@ -124,7 +128,7 @@ class CallService {
       return false;
     }
 
-    const isStoppedByInitiator = session.initiatorID === userId;
+    const isStoppedByInitiator = this.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
 
@@ -168,22 +172,19 @@ class CallService {
   };
 
   acceptCall = () => {
-    const opponentsIds = [this.initiatorID, ...this.participantIds].filter(userId => this.currentUserID !== userId);
+    const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
 
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
-    this.joinConf(CallService.JANUS_ROOM_ID)
+    this.joinConf(this.janusRoomId)
   };
 
   rejectCall = (session, extension = {}) => {
-    if (session) {
-      session.reject(extension);
-    } else {
-      this._session.reject(extension);
-      this._session = null;
-      this.hideIncomingCallModal();
-    }
+    const participantIds = [this.initiatorID, ...this.participantIds]
+    this.sendRejectCallMessage(participantIds, this.janusRoomId, false)
+    this.hideIncomingCallModal();
+    this.stopCall()
   };
 
   startCall = () => {
@@ -202,13 +203,15 @@ class CallService {
     });
 
     if (opponents.length > 0) {
-      this.sendIncomingCallSystemMessage(opponentsIds, CallService.JANUS_ROOM_ID)
+      this.participantIds = opponentsIds
+      this.janusRoomId = ConnectyCube.chat.helpers.getBsonObjectId()
+      this.sendIncomingCallSystemMessage(opponentsIds, this.janusRoomId)
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
       this.addStreamElements(opponents);
       this.initiatorID = this.currentUserID
-      this.joinConf(CallService.JANUS_ROOM_ID)
+      this.joinConf(this.janusRoomId)
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
     }
@@ -231,6 +234,7 @@ class CallService {
     const $videochatStreams = document.getElementById("videochat-streams");
 
     if (userId) {
+      this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
       document.getElementById(`videochat-stream-container-${userId}`).remove();
 
       const $streamContainers = document.querySelectorAll(".videochat-stream-container");
@@ -242,8 +246,10 @@ class CallService {
       } else if ($streamContainers.length === 3) {
         $videochatStreams.classList.value = "grid-2-1";
       }
-    } else if (this._session) {
-      this._session.leave({});
+    } else {
+      if (this._session) {
+        this._session.leave({});
+      }
       ConnectyCube.videochat.clearSession();
       this.$dialing.pause();
       this.$calling.pause();
@@ -255,7 +261,8 @@ class CallService {
       this.activeDeviceId = null;
       this.isAudioMuted = false;
       this.initiatorID = void 0
-      this.participantIds = void 0
+      this.participantIds = []
+      this.janusRoomId = void 0
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
       $callScreen.classList.remove("hidden");
