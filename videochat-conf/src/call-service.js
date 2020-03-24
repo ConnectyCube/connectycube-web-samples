@@ -29,7 +29,6 @@ class CallService {
         callStart: '1',
         janusRoomId: this.janusRoomId,
         participantIds: participantIds.join(','),
-        initiatorID: this.currentUserID
       }
     }
     return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
@@ -41,6 +40,16 @@ class CallService {
         callRejected: '1',
         janusRoomId,
         busy: !!isBusy
+      }
+    }
+    return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
+  }
+
+  sendEndCallMessage = (participantIds, janusRoomId) => {
+    const msg = {
+      extension: {
+        callEnd: '1',
+        janusRoomId
       }
     }
     return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
@@ -83,26 +92,30 @@ class CallService {
   };
 
   onSystemMessage = msg => {
-    const { extension } = msg
+    const { extension, userId } = msg
     if (extension.callStart) {
-      const {initiatorID, participantIds, janusRoomId} = extension
+      const {participantIds, janusRoomId} = extension
       const oponentIds = participantIds
         .split(',')
         .map(user_id => +user_id)
         .filter(user_id => user_id != this.currentUserID)
       if (this.janusRoomId) {
-        return this.sendRejectCallMessage([...oponentIds, initiatorID], janusRoomId, true)
+        return this.sendRejectCallMessage([...oponentIds, userId], janusRoomId, true)
       }
       this.janusRoomId = janusRoomId
-      this.initiatorID = initiatorID
+      this.initiatorID = userId
       this.participantIds = oponentIds
       this.showIncomingCallModal();
     } else if (extension.callRejected) {
-      const {userId} = msg
       const {janusRoomId} = extension
       if (this.janusRoomId === janusRoomId) {
         const {busy} = extension
         this.onRejectCallListener(this._session, userId, {busy})
+      }
+    } else if (extension.callEnd) {
+      const {janusRoomId} = extension
+      if (this.janusRoomId === janusRoomId) {
+        this.onStopCallListener(this._session, userId)
       }
     }
   }
@@ -124,10 +137,7 @@ class CallService {
   };
 
   onStopCallListener = (session, userId, extension) => {
-    if (!this._session) {
-      return false;
-    }
-
+    console.warn(typeof this.initiatorID, typeof userId)
     const isStoppedByInitiator = this.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
@@ -167,7 +177,6 @@ class CallService {
     this._session.attachMediaStream(remoteStreamSelector, stream);
 
     this.$muteUnmuteButton.disabled = false;
-    this.onDevicesChangeListener();
     this._prepareVideoElement(remoteStreamSelector);
   };
 
@@ -206,6 +215,13 @@ class CallService {
       this.participantIds = opponentsIds
       this.janusRoomId = ConnectyCube.chat.helpers.getBsonObjectId()
       this.sendIncomingCallSystemMessage(opponentsIds, this.janusRoomId)
+
+      ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
+        .then(devices => {
+          this.mediaDevicesIds = devices.map(({deviceId}) => deviceId)
+          this.$switchCameraButton.disabled = this.mediaDevicesIds.length < 2;
+        })
+      
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
@@ -247,6 +263,7 @@ class CallService {
         $videochatStreams.classList.value = "grid-2-1";
       }
     } else {
+      this.sendEndCallMessage([...this.participantIds, this.initiatorID], this.janusRoomId)
       if (this._session) {
         this._session.leave({});
       }
@@ -268,36 +285,16 @@ class CallService {
       $callScreen.classList.remove("hidden");
       $videochatScreen.classList.add("hidden");
       $muteButton.classList.remove("muted");
-
       if (iOS) {
         $videochatScreen.style.background = "#000000";
       }
     }
   };
 
-  onDevicesChangeListener = () => {
-    if (iOS) return;
-
-    ConnectyCube.videochat.getMediaDevices("videoinput").then(mediaDevices => {
-      this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
-
-      if (this.mediaDevicesIds.length < 2) {
-        this.$switchCameraButton.disabled = true;
-
-        if (this.mediaDevicesIds?.[0] !== this.activeDeviceId) {
-          this.switchCamera();
-        }
-      } else {
-        this.$switchCameraButton.disabled = false;
-      }
-    });
-  };
-
   setActiveDeviceId = stream => {
     if (stream && !iOS) {
       const videoTracks = stream.getVideoTracks();
       const videoTrackSettings = videoTracks[0].getSettings();
-
       this.activeDeviceId = videoTrackSettings.deviceId;
     }
   };
@@ -318,14 +315,13 @@ class CallService {
 
   switchCamera = () => {
     const mediaDevicesId = this.mediaDevicesIds.find(deviceId => deviceId !== this.activeDeviceId);
-
+    console.log('[switchCamera]', this.activeDeviceId, this.mediaDevicesIds, mediaDevicesId)
     this._session.switchMediaTracks({ video: mediaDevicesId }).then(() => {
       this.activeDeviceId = mediaDevicesId;
-
       if (this.isAudioMuted) {
         this._session.mute("audio");
       }
-    });
+    })
   };
 
   /* SNACKBAR */
