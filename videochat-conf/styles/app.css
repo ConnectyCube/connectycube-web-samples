@@ -190,6 +190,15 @@
   background-color: #056a96;
 }
 
+#guest-room-join-btn {
+  background-color: #9e0f73;
+}
+
+.guest-title {
+  margin-top: 35px;
+  text-align: center;
+}
+
 #videochat-streams {
   height: 100%;
   width: 100%;

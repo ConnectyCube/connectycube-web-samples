@@ -16,7 +16,7 @@ class AuthService {
       ConnectyCube.createSession(user)
         .then(() => ConnectyCube.chat.connect({ userId: user.id, password: user.password }))
         .then(() => {
-          this.$loginScreen.classList.add("hidden");
+          this.hideLoginScreen()
           this.$callScreen.classList.remove("hidden");
           this.$loader.classList.add("hidden");
           this.$caption.classList.remove("hidden");
@@ -25,6 +25,10 @@ class AuthService {
         .catch(reject);
     });
   };
+
+  hideLoginScreen = () => {
+    this.$loginScreen.classList.add("hidden");
+  }
 
   logout = () => {
     ConnectyCube.chat.disconnect();

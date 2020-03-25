@@ -10,6 +10,8 @@ class CallService {
   participantIds = []
   initiatorID
   janusRoomId
+  isGuestMode
+  currentUserName
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -119,13 +121,26 @@ class CallService {
   }
 
   onAcceptCallListener = (session, userId) => {
-    const userName = this._getUserById(userId, "name");
+    const userName = this.isGuestMode ? userId : this._getUserById(userId, "name");
     const infoText = `${userName} has accepted the call`;
-
     this.showSnackbar(infoText);
+    if (this.isGuestMode) {
+      const users = this._getActiveCallUsers()
+      const userToAdd = {id: +userId, name: `${userId}`}
+      this.addStreamElements(users.concat(userToAdd))
+      this._session.attachMediaStream(this.mediaParams.elementId, this._session.localStream);
+      this._prepareVideoElement("localStream");
+      return 
+    }
     this.$dialing.pause();
     this.clearNoAnswerTimers(userId)
   };
+
+  _getActiveCallUsers() {
+    const $streamsContainers = document.querySelectorAll(".videochat-stream-container[data-id][data-name]");
+    const stream = Array.from($streamsContainers)
+    return stream.map(({dataset}) => ({id: +dataset.id, name: `${dataset.id}` }))
+  }
 
   onRejectCallListener = (session, userId, extension = {}) => {
     const userName = this._getUserById(userId, "name");
@@ -170,7 +185,6 @@ class CallService {
     if (!this._session) {
       return false;
     }
-
     const remoteStreamSelector = `remoteStream-${userId}`;
 
     document.getElementById(`videochat-stream-loader-${userId}`).remove();
@@ -214,7 +228,7 @@ class CallService {
 
     if (opponents.length > 0) {
       this.participantIds = opponentsIds
-      this.janusRoomId = ConnectyCube.chat.helpers.getBsonObjectId()
+      this.janusRoomId = this._getUniqueRoomId()
       this.sendIncomingCallSystemMessage(opponentsIds, this.janusRoomId)
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
@@ -228,6 +242,15 @@ class CallService {
       this.showSnackbar("Select at less one user to start Videocall");
     }
   };
+
+  _getUniqueRoomId() {
+    return ConnectyCube.chat.helpers.getBsonObjectId()
+  }
+
+  _getUniqueUserId() {
+    const randomValue = `${Math.random()}`.replace('0.', '')
+    return parseInt(randomValue.slice(0, 3) + randomValue.slice(-3), 10)
+  }
 
   initDeviceSwitch() {
     ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
@@ -268,7 +291,9 @@ class CallService {
         $videochatStreams.classList.value = "grid-2-1";
       }
     } else {
-      this.sendEndCallMessage([...this.participantIds, this.initiatorID], this.janusRoomId)
+      if (!this.isGuestMode) {
+        this.sendEndCallMessage([...this.participantIds, this.initiatorID], this.janusRoomId)
+      }
       if (this._session) {
         this._session.leave({});
       }
@@ -286,6 +311,7 @@ class CallService {
       this.initiatorID = void 0
       this.participantIds = []
       this.janusRoomId = void 0
+      this.isGuestMode = void 0
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
       $callScreen.classList.remove("hidden");
@@ -381,6 +407,20 @@ class CallService {
       $video.style.zIndex = -1;
     }
   };
+
+  initGuestRoom = (userName, janusRoomId) => {
+    this.currentUserName = userName
+    this.currentUserID = this._getUniqueUserId()
+    this.isGuestMode = true
+    if (janusRoomId) {
+      this.janusRoomId = janusRoomId
+    } else {
+      this.janusRoomId = this._getUniqueRoomId()
+      window.history.replaceState({}, 'Conference Guest Room', `/join/${this.janusRoomId}`)
+    }
+    this.addStreamElements([])
+    this.joinConf(this.janusRoomId)
+  }
 
   startNoAnswerTimers(participantIds) {
     participantIds.forEach(user_id => {

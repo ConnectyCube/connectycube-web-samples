@@ -5,9 +5,13 @@ import { users } from "./config";
 
 class UIService {
   init = () => {
-    this.renderLoginUsers();
     AuthService.init();
-    document.querySelectorAll(".login-button").forEach($element => $element.addEventListener("click", this.login));
+    if (this.checkJoinRoomUrl()) {
+      return
+    }
+    this.renderLoginUsers();
+    document.querySelectorAll(".login-button[data-id]").forEach($element => $element.addEventListener("click", this.login));
+    document.getElementById('guest-room-join-btn').addEventListener('click', () => this.createAndJoinGuestRoom())
   };
 
   addEventListenersForCallButtons = () => {
@@ -16,6 +20,24 @@ class UIService {
     document.getElementById("videochat-mute-unmute").addEventListener("click", () => CallService.setAudioMute());
     document.getElementById("videochat-switch-camera").addEventListener("click", () => CallService.switchCamera());
   };
+
+  checkJoinRoomUrl = () => {
+    const {pathname} = window.location
+    const [,joinPath, janusRoomId] = pathname.split('/')
+    if (joinPath === 'join' && janusRoomId) {
+      this.createAndJoinGuestRoom(janusRoomId)
+      return true
+    }
+    return false
+  }
+
+  createAndJoinGuestRoom = janusRoomId => {
+    CallService.init();
+    AuthService.hideLoginScreen()
+    const janusRoomUserName = 'Pimp'
+    CallService.initGuestRoom(janusRoomUserName, janusRoomId)
+    this.addEventListenersForCallButtons();
+  }
 
   login = ({ target }) => {
     const currentUserId = +target.dataset.id;
