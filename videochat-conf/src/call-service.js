@@ -14,11 +14,8 @@ class CallService {
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
     ConnectyCube.videochatconference.onParticipantJoinedListener = this.onAcceptCallListener.bind(this);
-    // ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
-    // ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
     ConnectyCube.videochatconference.onParticipantLeftListener = this.onStopCallListener.bind(this);
     ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
-    // ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
@@ -186,6 +183,7 @@ class CallService {
   acceptCall = () => {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
+    this.initDeviceSwitch()
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
     this.startNoAnswerTimers(this.participantIds)
@@ -218,13 +216,6 @@ class CallService {
       this.participantIds = opponentsIds
       this.janusRoomId = ConnectyCube.chat.helpers.getBsonObjectId()
       this.sendIncomingCallSystemMessage(opponentsIds, this.janusRoomId)
-
-      ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
-        .then(devices => {
-          this.mediaDevicesIds = devices.map(({deviceId}) => deviceId)
-          this.$switchCameraButton.disabled = this.mediaDevicesIds.length < 2;
-        })
-      
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
@@ -232,10 +223,19 @@ class CallService {
       this.initiatorID = this.currentUserID
       this.startNoAnswerTimers(this.participantIds)
       this.joinConf(this.janusRoomId)
+      this.initDeviceSwitch()
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
     }
   };
+
+  initDeviceSwitch() {
+    ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
+      .then(devices => {
+        this.mediaDevicesIds = devices.map(({deviceId}) => deviceId)
+        this.$switchCameraButton.disabled = this.mediaDevicesIds.length < 2;
+      })
+  }
 
   joinConf = janusRoomId => {
     this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
