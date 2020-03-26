@@ -118,10 +118,8 @@
       </script>
 
       <script type="text/x-handlebars-template" id="videochat-streams-template">
-        {{#each opponents}}
-        <div id="videochat-stream-container-{{this.id}}" data-id="{{this.id}}" data-name="{{this.name}}" class="videochat-stream-container">
-          <div id="videochat-stream-loader-{{this.id}}" class="videochat-stream-loader">
-            <div class="videochat-stream-loader-text">{{this.name }} </div>
+          <div class="videochat-stream-loader" data-id="{{id}}">
+            <div class="videochat-stream-loader-text">{{name}} </div>
             <div class="videochat-stream-loader-spinner">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -154,12 +152,7 @@
               </svg>
             </div>
           </div>
-          <video autoplay id="remoteStream-{{this.id}}" class="videochat-stream" data-id="{{this.id}}"></video>
-        </div>
-        {{/each}}
-        <div id="videochat-local-stream-container" class="videochat-stream-container">
-          <video autoplay id="localStream" class="videochat-stream"></video>
-        </div>
+          <video id="stream-{{id}}" class="videochat-stream"></video>
       </script>
 
       <!-- SOUNDS -->

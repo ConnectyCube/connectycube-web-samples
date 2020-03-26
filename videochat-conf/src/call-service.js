@@ -67,7 +67,6 @@ class CallService {
   mediaParams = {
     audio: true,
     video: true,
-    elementId: "localStream",
   };
 
   _session = null;
@@ -75,21 +74,47 @@ class CallService {
   activeDeviceId = null;
   isAudioMuted = false;
 
-  addStreamElements = opponents => {
+  addStreamElement = opponent => {
     const $videochatStreams = document.getElementById("videochat-streams");
     const $videochatStreamsTemplate = document.getElementById("videochat-streams-template");
     const videochatStreamsTemplate = Handlebars.compile($videochatStreamsTemplate.innerHTML);
 
-    if (opponents.length === 2) {
-      $videochatStreams.classList.value = "grid-2-1";
-    } else if (opponents.length === 3) {
-      $videochatStreams.classList.value = "grid-2-2";
-    }
-
     document.getElementById("call").classList.add("hidden");
     document.getElementById("videochat").classList.remove("hidden");
-    $videochatStreams.innerHTML = videochatStreamsTemplate({ opponents });
-  };
+
+    const streamBlock = document.createElement('div')
+    streamBlock.innerHTML = videochatStreamsTemplate(opponent)
+    streamBlock.classList.add("videochat-stream-container")
+    streamBlock.dataset.id = `${opponent.id}`
+    $videochatStreams.appendChild(streamBlock)
+
+    this.updateStreamGridStyles($videochatStreams)
+  }
+
+  updateStreamGridStyles($videochatStreams) {
+    $videochatStreams = $videochatStreams || document.getElementById("videochat-streams");
+    const activeCallUsersCout = this._getActiveCallUsers().length
+    let classGridName
+
+    switch(activeCallUsersCout) {
+      case 1:
+      case 2:
+        classGridName = ''
+        break
+      case 3:
+      case 4:
+        classGridName = 'grid-2'
+        break
+      case 5:
+      case 6:
+        classGridName = 'grid-3'
+        break
+      default:
+        classGridName = 'grid-4'
+    }
+
+    $videochatStreams.classList.value = classGridName
+  }
 
   onSystemMessage = msg => {
     const { extension, userId } = msg
@@ -125,11 +150,8 @@ class CallService {
     const infoText = `${userName} has accepted the call`;
     this.showSnackbar(infoText);
     if (this.isGuestMode) {
-      const users = this._getActiveCallUsers()
       const userToAdd = {id: +userId, name: `${userId}`}
-      this.addStreamElements(users.concat(userToAdd))
-      this._session.attachMediaStream(this.mediaParams.elementId, this._session.localStream);
-      this._prepareVideoElement("localStream");
+      this.addStreamElement(userToAdd)
       return 
     }
     this.$dialing.pause();
@@ -137,7 +159,7 @@ class CallService {
   };
 
   _getActiveCallUsers() {
-    const $streamsContainers = document.querySelectorAll(".videochat-stream-container[data-id][data-name]");
+    const $streamsContainers = document.querySelectorAll(".videochat-stream-container");
     const stream = Array.from($streamsContainers)
     return stream.map(({dataset}) => ({id: +dataset.id, name: `${dataset.id}` }))
   }
@@ -185,20 +207,18 @@ class CallService {
     if (!this._session) {
       return false;
     }
-    const remoteStreamSelector = `remoteStream-${userId}`;
 
-    document.getElementById(`videochat-stream-loader-${userId}`).remove();
-    this._session.attachMediaStream(remoteStreamSelector, stream);
-
+    this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
+    this.removeStreamLoaderByUserId(userId)
     this.$muteUnmuteButton.disabled = false;
-    this._prepareVideoElement(remoteStreamSelector);
+    this._prepareVideoElement(userId);
   };
 
   acceptCall = () => {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
     this.initDeviceSwitch()
-    this.addStreamElements(opponents);
+    this.addStreamElement(opponents);
     this.hideIncomingCallModal();
     this.startNoAnswerTimers(this.participantIds)
     this.joinConf(this.janusRoomId)
@@ -233,7 +253,7 @@ class CallService {
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
-      this.addStreamElements(opponents);
+      this.addStreamElement(opponents);
       this.initiatorID = this.currentUserID
       this.startNoAnswerTimers(this.participantIds)
       this.joinConf(this.janusRoomId)
@@ -265,7 +285,10 @@ class CallService {
     this._session.getUserMedia(this.mediaParams).then(stream => {
       this.$muteUnmuteButton.disabled = false;
       this.setActiveDeviceId(stream);
-      this._prepareVideoElement("localStream");
+      this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
+      this.removeStreamLoaderByUserId(this.currentUserID)
+      this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream);
+      this._prepareVideoElement(this.currentUserID);
       return this._session.join(janusRoomId, this.currentUserID)
     });
   }
@@ -279,16 +302,14 @@ class CallService {
     if (userId) {
       this.clearNoAnswerTimers(userId)
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
-      document.getElementById(`videochat-stream-container-${userId}`).remove();
+      this.removeStreamBlockByUserId(userId)
 
       const $streamContainers = document.querySelectorAll(".videochat-stream-container");
 
       if ($streamContainers.length < 2) {
         this.stopCall();
-      } else if ($streamContainers.length === 2) {
-        $videochatStreams.classList.value = "";
-      } else if ($streamContainers.length === 3) {
-        $videochatStreams.classList.value = "grid-2-1";
+      } else {
+        this.updateStreamGridStyles($videochatStreams)
       }
     } else {
       if (!this.isGuestMode) {
@@ -396,8 +417,22 @@ class CallService {
     return typeof key === "string" ? user[key] : user;
   };
 
-  _prepareVideoElement = videoElement => {
-    const $video = document.getElementById(videoElement);
+  getStreamIdByUserId(userId) {
+    return `stream-${userId}`
+  }
+
+  removeStreamLoaderByUserId(user_id) {
+    const $loader = document.querySelector(`.videochat-stream-loader[data-id="${user_id}"]`)
+    $loader.remove()
+  }
+
+  removeStreamBlockByUserId(user_id) {
+    const $streamBblock = document.querySelector(`.videochat-stream-container[data-id="${user_id}"]`)
+    $streamBblock.remove()
+  }
+
+  _prepareVideoElement = user_id => {
+    const $video = document.getElementById(this.getStreamIdByUserId(user_id))
 
     $video.style.visibility = "visible";
 
@@ -418,7 +453,6 @@ class CallService {
       this.janusRoomId = this._getUniqueRoomId()
       window.history.replaceState({}, 'Conference Guest Room', `/join/${this.janusRoomId}`)
     }
-    this.addStreamElements([])
     this.joinConf(this.janusRoomId)
   }
 

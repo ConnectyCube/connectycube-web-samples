@@ -208,11 +208,14 @@
   grid-auto-rows: 50%;
 }
 
-#videochat-streams.grid-2-1,
-#videochat-streams.grid-2-2 {
+#videochat-streams.grid-2 {
   grid-template-columns: 1fr 1fr;
-  grid-auto-rows: 50%;
 }
-#videochat-streams.grid-2-1 > #videochat-local-stream-container {
-  grid-column: span 2;
+
+#videochat-streams.grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+#videochat-streams.grid-4 {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
