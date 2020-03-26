@@ -82,7 +82,10 @@ class CallService {
       opponents = [opponents]
     }
 
-    const toAdppend = opponents.map(opponent => {
+    const curretActiveCallUsersCout = this._getActiveCallUsers().length
+    const documentFragment = document.createDocumentFragment()
+
+    opponents.forEach((opponent, index) => {
       const videochatStreamsTemplate = Handlebars.compile($videochatStreamsTemplate.innerHTML);
 
       document.getElementById("call").classList.add("hidden");
@@ -92,40 +95,13 @@ class CallService {
       streamBlock.innerHTML = videochatStreamsTemplate(opponent)
       streamBlock.classList.add("videochat-stream-container")
       streamBlock.dataset.id = `${opponent.id}`
-      return streamBlock
+      streamBlock.style.gridArea = `stream${index + curretActiveCallUsersCout}`
+      documentFragment.appendChild(streamBlock)
     })
 
-    const documentFragment = document.createDocumentFragment()
-    toAdppend.forEach(streamBlock => documentFragment.appendChild(streamBlock))
+    $videochatStreams.classList.value = `grid-${opponents.length + curretActiveCallUsersCout}`
 
     $videochatStreams.appendChild(documentFragment)
-
-    this.updateStreamGridStyles($videochatStreams)
-  }
-
-  updateStreamGridStyles($videochatStreams) {
-    $videochatStreams = $videochatStreams || document.getElementById("videochat-streams");
-    const activeCallUsersCout = this._getActiveCallUsers().length
-    let classGridName
-
-    switch(activeCallUsersCout) {
-      case 1:
-      case 2:
-        classGridName = ''
-        break
-      case 3:
-      case 4:
-        classGridName = 'grid-2'
-        break
-      case 5:
-      case 6:
-        classGridName = 'grid-3'
-        break
-      default:
-        classGridName = 'grid-4'
-    }
-
-    $videochatStreams.classList.value = classGridName
   }
 
   onSystemMessage = msg => {
@@ -304,6 +280,11 @@ class CallService {
     });
   }
 
+  updateStreamGridOnRemove($streams, $videochatStreams) {
+    $streams.forEach(($stream, index) => $stream.style.gridArea = `stream${index}`)
+    $videochatStreams.classList.value = `grid-${$streams.length}`
+  }
+
   stopCall = userId => {
     const $callScreen = document.getElementById("call");
     const $videochatScreen = document.getElementById("videochat");
@@ -315,12 +296,12 @@ class CallService {
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
       this.removeStreamBlockByUserId(userId)
 
-      const $streamContainers = document.querySelectorAll(".videochat-stream-container");
+      const $streams = Array.from(document.querySelectorAll(".videochat-stream-container"));
 
-      if ($streamContainers.length < 2) {
+      if ($streams.length < 2) {
         this.stopCall();
       } else {
-        this.updateStreamGridStyles($videochatStreams)
+        this.updateStreamGridOnRemove($streams, $videochatStreams)
       }
     } else {
       if (!this.isGuestMode) {
@@ -343,6 +324,11 @@ class CallService {
       this.initiatorID = void 0
       this.participantIds = []
       this.janusRoomId = void 0
+
+      if (this.isGuestMode) {
+        window.location.href = window.location.origin
+      }
+
       this.isGuestMode = void 0
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";

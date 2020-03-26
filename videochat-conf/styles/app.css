@@ -204,18 +204,4 @@
   width: 100%;
   max-width: 1024px;
   display: grid;
-  grid-template-columns: 1fr;
-  grid-auto-rows: 50%;
-}
-
-#videochat-streams.grid-2 {
-  grid-template-columns: 1fr 1fr;
-}
-
-#videochat-streams.grid-3 {
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-#videochat-streams.grid-4 {
-  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
