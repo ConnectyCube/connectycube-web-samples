@@ -74,19 +74,31 @@ class CallService {
   activeDeviceId = null;
   isAudioMuted = false;
 
-  addStreamElement = opponent => {
+  addStreamElement = opponents => {
     const $videochatStreams = document.getElementById("videochat-streams");
     const $videochatStreamsTemplate = document.getElementById("videochat-streams-template");
-    const videochatStreamsTemplate = Handlebars.compile($videochatStreamsTemplate.innerHTML);
+    
+    if (!Array.isArray(opponents)) {
+      opponents = [opponents]
+    }
 
-    document.getElementById("call").classList.add("hidden");
-    document.getElementById("videochat").classList.remove("hidden");
+    const toAdppend = opponents.map(opponent => {
+      const videochatStreamsTemplate = Handlebars.compile($videochatStreamsTemplate.innerHTML);
 
-    const streamBlock = document.createElement('div')
-    streamBlock.innerHTML = videochatStreamsTemplate(opponent)
-    streamBlock.classList.add("videochat-stream-container")
-    streamBlock.dataset.id = `${opponent.id}`
-    $videochatStreams.appendChild(streamBlock)
+      document.getElementById("call").classList.add("hidden");
+      document.getElementById("videochat").classList.remove("hidden");
+
+      const streamBlock = document.createElement('div')
+      streamBlock.innerHTML = videochatStreamsTemplate(opponent)
+      streamBlock.classList.add("videochat-stream-container")
+      streamBlock.dataset.id = `${opponent.id}`
+      return streamBlock
+    })
+
+    const documentFragment = document.createDocumentFragment()
+    toAdppend.forEach(streamBlock => documentFragment.appendChild(streamBlock))
+
+    $videochatStreams.appendChild(documentFragment)
 
     this.updateStreamGridStyles($videochatStreams)
   }
@@ -173,9 +185,8 @@ class CallService {
   };
 
   onStopCallListener = (session, userId, extension) => {
-    console.warn(typeof this.initiatorID, typeof userId)
     const isStoppedByInitiator = this.initiatorID === userId;
-    const userName = this._getUserById(userId, "name");
+    const userName = this.initGuestRoom ? userId : this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
 
     this.showSnackbar(infoText);
