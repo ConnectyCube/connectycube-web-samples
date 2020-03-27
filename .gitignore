@@ -20,7 +20,6 @@ npm-debug.log.*
 
 #dist
 dist/
-connectycube/
 
 # *Sublime
 *.sublime-*
