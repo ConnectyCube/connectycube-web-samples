@@ -28,7 +28,7 @@
       <section id="login">
         <div id="login-logo">
           <img id="login-image" src="/images/logo.png" alt="ConnectyCube" />
-          <div id="login-caption">Video Chat</div>
+          <div id="login-caption">Video Conference</div>
           <div id="login-loader" class="hidden">
             <div id="login-loader-text">Connecting...</div>
             <div id="login-loader-spinner">
@@ -98,12 +98,16 @@
 
       <!-- HANDLEBARS TEMPLATES -->
       <script type="text/x-handlebars-template" id="login-buttons-template">
-        {{#each users}}
-          <button class="login-button {{this.name}}-bg-color" data-id="{{this.id}}">Login as {{this.name}}</button>
-        {{/each}}
+        {{#if darwUsers}}
+          {{#each users}}
+            <button class="login-button {{this.name}}-bg-color" data-id="{{this.id}}">Login as {{this.name}}</button>
+          {{/each}}
+        {{/if}}
         <div>
-          <h2 class="guest-title">Or create and join</h2>
-          <button id="guest-room-join-btn" class="login-button">Guest Room</button>
+          {{#if darwUsers}}
+            <h2 class="guest-title">Or create and join</h2>
+          {{/if}}
+          <button id="guest-room-join-btn" class="login-button">{{guestButtonText}}</button>
         </div>
       </script>
 

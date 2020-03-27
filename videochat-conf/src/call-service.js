@@ -135,7 +135,7 @@ class CallService {
 
   onAcceptCallListener = (session, userId) => {
     const userName = this.isGuestMode ? userId : this._getUserById(userId, "name");
-    const infoText = `${userName} has accepted the call`;
+    const infoText = `${userName} has ${this.isGuestMode ? 'joined' : 'accepted'} the call`;
     this.showSnackbar(infoText);
     if (this.isGuestMode) {
       const userToAdd = {id: +userId, name: `${userId}`}
@@ -269,7 +269,7 @@ class CallService {
 
   joinConf = janusRoomId => {
     this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
-    this._session.getUserMedia(this.mediaParams).then(stream => {
+    return this._session.getUserMedia(this.mediaParams).then(stream => {
       this.$muteUnmuteButton.disabled = false;
       this.setActiveDeviceId(stream);
       this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
@@ -298,7 +298,7 @@ class CallService {
 
       const $streams = Array.from(document.querySelectorAll(".videochat-stream-container"));
 
-      if ($streams.length < 2) {
+      if ($streams.length < 2 && !this.isGuestMode) {
         this.stopCall();
       } else {
         this.updateStreamGridOnRemove($streams, $videochatStreams)
@@ -324,7 +324,7 @@ class CallService {
       this.initiatorID = void 0
       this.participantIds = []
       this.janusRoomId = void 0
-
+      this.currentUserName = void 0
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
@@ -440,9 +440,11 @@ class CallService {
     }
   };
 
-  initGuestRoom = (userName, janusRoomId) => {
-    this.currentUserName = userName
+  initGuestRoom = janusRoomId => {
     this.currentUserID = this._getUniqueUserId()
+    while(!this.currentUserName) {
+      this.currentUserName = prompt('Input user name', `User${this.currentUserID}`)
+    }
     this.isGuestMode = true
     if (janusRoomId) {
       this.janusRoomId = janusRoomId
@@ -451,6 +453,7 @@ class CallService {
       window.history.replaceState({}, 'Conference Guest Room', `/join/${this.janusRoomId}`)
     }
     this.joinConf(this.janusRoomId)
+      .then(() => this.showSnackbar('Share the above url with the users you want to have a call with'))
   }
 
   startNoAnswerTimers(participantIds) {

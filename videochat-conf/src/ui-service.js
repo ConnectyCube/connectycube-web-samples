@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import AuthService from "./auth-service";
 import CallService from "./call-service";
-import { users } from "./config";
+import { users, GUEST_ROOM_ONLY_MODE } from "./config";
 
 class UIService {
   init = () => {
@@ -34,8 +34,7 @@ class UIService {
   createAndJoinGuestRoom = janusRoomId => {
     CallService.init();
     AuthService.hideLoginScreen()
-    const janusRoomUserName = 'Pimp'
-    CallService.initGuestRoom(janusRoomUserName, janusRoomId)
+    CallService.initGuestRoom(janusRoomId)
     this.addEventListenersForCallButtons();
   }
 
@@ -56,7 +55,7 @@ class UIService {
     const $loginButtonsTemplate = document.getElementById("login-buttons-template");
     const loginButtonsTemplate = Handlebars.compile($loginButtonsTemplate.innerHTML);
 
-    $loginButtonsContainer.innerHTML = loginButtonsTemplate({ users });
+    $loginButtonsContainer.innerHTML = loginButtonsTemplate({ users, darwUsers: !GUEST_ROOM_ONLY_MODE, guestButtonText: GUEST_ROOM_ONLY_MODE ? 'Create and Join Guest Room' : 'Guest Room' });
   };
 
   renderSelectUsers = currentUserId => {

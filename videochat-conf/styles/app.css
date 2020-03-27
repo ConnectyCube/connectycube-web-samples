@@ -26,9 +26,10 @@
 
 #login-logo {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 #login-image {
@@ -58,12 +59,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  flex: 1;
+  justify-content: flex-start;
 }
 
 #login-buttons-container .login-button {
   height: 50px;
-  width: 270px;
+  min-width: 270px;
   max-height: 90%;
   margin: 5px 0;
   border-radius: 25px;
@@ -192,11 +194,14 @@
 
 #guest-room-join-btn {
   background-color: #9e0f73;
+  padding: 10px;
 }
 
 .guest-title {
   margin-top: 35px;
   text-align: center;
+  font-size: 20px;
+  margin-bottom: 8px;
 }
 
 #videochat-streams {
