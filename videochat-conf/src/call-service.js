@@ -104,6 +104,11 @@ class CallService {
     $videochatStreams.appendChild(documentFragment)
   }
 
+  muteLocalVideoView() {
+    const $localVideo = document.getElementById(`stream-${this.currentUserID}`)
+    $localVideo.muted = true;
+  }
+
   onSystemMessage = msg => {
     const { extension, userId } = msg
     if (extension.callStart) {
@@ -276,6 +281,7 @@ class CallService {
       this.removeStreamLoaderByUserId(this.currentUserID)
       this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream);
       this._prepareVideoElement(this.currentUserID);
+      this.muteLocalVideoView()
       return this._session.join(janusRoomId, this.currentUserID)
     });
   }
