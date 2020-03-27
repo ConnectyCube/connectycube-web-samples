@@ -20,7 +20,8 @@ module.exports = env => ({
       { from: "index.html", to: "index.html" },
       { from: "styles", to: "styles" },
       { from: "images", to: "images" },
-      { from: "audio", to: "audio" }
+      { from: "audio", to: "audio" },
+      { from: "connectycube-lib-dist", to: "connectycube-lib-dist" },
     ])
   ],
   watch: env.development,
