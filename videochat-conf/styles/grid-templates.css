@@ -1,0 +1,75 @@
+.grid-1 {
+  grid-template: "stream0";
+  grid-template-rows: 1fr;
+}
+
+.grid-2 {
+  grid-template: "stream0 stream1";
+  grid-template-rows: 1fr;
+}
+
+.grid-3 {
+  grid-template: "stream0 stream0 stream1 stream1"
+                 ". stream2 stream2 .";
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-4 {
+  grid-template: "stream0 stream0 stream1 stream1"
+                 "stream2 stream2 stream3 stream3";
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-5 {
+  grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
+                 ". stream3 stream3 stream4 stream4 .";
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-6 {
+  grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
+                 "stream3 stream3 stream4 stream4 stream5 stream5";
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-7 {
+  grid-template: "stream0 stream1 stream2"
+                 "stream3 stream4 stream5"
+                 ". stream6 .";
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.grid-8 {
+  grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
+                 "stream3 stream3 stream4 stream4 stream5 stream5"
+                 ". stream6 stream6 stream7 stream7 .";
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.grid-9 {
+  grid-template: "stream0 stream1 stream2"
+                 "stream3 stream4 stream5"
+                 "stream6 stream7 stream8";
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.grid-10 {
+  grid-template: "stream0 stream0 stream1 stream1 stream2 stream2 stream3 stream3"
+                 "stream4 stream4 stream5 stream5 stream6 stream6 stream7 stream7"
+                 ". stream8 stream8 . . stream9 stream9 .";
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.grid-11 {
+  grid-template: "stream0 stream0 stream1 stream1 stream2 stream2 stream3 stream3"
+                 "stream4 stream4 stream5 stream5 stream6 stream6 stream7 stream7"
+                 ". stream8 stream8 stream9 stream9 stream10 stream10 .";
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.grid-12 {
+  grid-template: "stream0 stream1 stream2 stream3"
+                 "stream4 stream5 stream6 stream7"
+                 "stream8 stream9 stream10 stream11";
+  grid-template-rows: 1fr 1fr 1fr;
+}
