@@ -365,8 +365,7 @@ class CallService {
 
   switchCamera = () => {
     const mediaDevicesId = this.mediaDevicesIds.find(deviceId => deviceId !== this.activeDeviceId);
-    this._session.switchMediaTracks({ video: mediaDevicesId }).then(newLocalStream => {
-      this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), newLocalStream, {muted: true, mirror: true});
+    this._session.switchMediaTracks({ video: mediaDevicesId }, this.getStreamIdByUserId(this.currentUserID)).then(newLocalStream => {
       this.activeDeviceId = mediaDevicesId;
       if (this.isAudioMuted) {
         this._session.mute("audio");
