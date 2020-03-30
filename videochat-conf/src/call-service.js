@@ -70,9 +70,7 @@ class CallService {
   };
 
   _session = null;
-  mediaDevicesIds = [];
-  activeDeviceId = null;
-  isAudioMuted = false;
+  videoDevicesIds = [];
 
   addStreamElement = opponents => {
     const $videochatStreams = document.getElementById("videochat-streams");
@@ -204,7 +202,6 @@ class CallService {
   acceptCall = () => {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
-    this.initDeviceSwitch()
     this.addStreamElement(opponents);
     this.hideIncomingCallModal();
     this.startNoAnswerTimers(this.participantIds)
@@ -244,7 +241,6 @@ class CallService {
       this.initiatorID = this.currentUserID
       this.startNoAnswerTimers(this.participantIds)
       this.joinConf(this.janusRoomId)
-      this.initDeviceSwitch()
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
     }
@@ -259,24 +255,22 @@ class CallService {
     return parseInt(randomValue.slice(0, 3) + randomValue.slice(-3), 10)
   }
 
-  initDeviceSwitch() {
+  setSwitchDevice() {
     ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
       .then(devices => {
-        this.mediaDevicesIds = devices.map(({deviceId}) => deviceId)
-        this.$switchCameraButton.disabled = this.mediaDevicesIds.length < 2;
+        this.videoDevicesIds = devices.map(({deviceId}) => deviceId)
+        this.$switchCameraButton.disabled = this.videoDevicesIds.length < 2;
       })
   }
 
   joinConf = janusRoomId => {
     this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
     return this._session.getUserMedia(this.mediaParams).then(stream => {
-      this.$muteUnmuteButton.disabled = false;
-      this.setActiveDeviceId(stream);
       this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
       this.removeStreamLoaderByUserId(this.currentUserID)
       this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true, mirror: true});
       this._prepareVideoElement(this.currentUserID);
-      return this._session.join(janusRoomId, this.currentUserID)
+      return this._session.join(janusRoomId, this.currentUserID).then(() => this.postJoinActions())
     });
   }
 
@@ -308,19 +302,17 @@ class CallService {
         this.sendEndCallMessage([...this.participantIds, this.initiatorID], this.janusRoomId)
       }
       if (this._session) {
-        this._session.leave({});
+        this._session.leave();
       }
-      ConnectyCube.videochatconference.clearSession();
+      ConnectyCube.videochatconference.clearSession(this._session.id);
       this.$dialing.pause();
       this.$calling.pause();
       this.$endCall.play();
       this.$muteUnmuteButton.disabled = true;
       this.$switchCameraButton.disabled = true;
       this._session = null;
-      this.mediaDevicesIds = [];
+      this.videoDevicesIds = [];
       this.clearNoAnswerTimers()
-      this.activeDeviceId = null;
-      this.isAudioMuted = false;
       this.initiatorID = void 0
       this.participantIds = []
       this.janusRoomId = void 0
@@ -341,36 +333,26 @@ class CallService {
     }
   };
 
-  setActiveDeviceId = stream => {
-    if (stream && !iOS) {
-      const videoTracks = stream.getVideoTracks();
-      const videoTrackSettings = videoTracks[0].getSettings();
-      this.activeDeviceId = videoTrackSettings.deviceId;
-    }
-  };
+  postJoinActions() {
+    this.$muteUnmuteButton.disabled = false
+    this.setSwitchDevice()
+  }
 
   setAudioMute = () => {
-    const $muteButton = document.getElementById("videochat-mute-unmute");
+    const $muteButton = document.getElementById("videochat-mute-unmute")
 
-    if (this.isAudioMuted) {
-      this._session.unmute(ConnectyCube.videochatconference.CALL_TYPES.AUDIO);
-      this.isAudioMuted = false;
-      $muteButton.classList.remove("muted");
+    if (this._session.isAudioMuted()) {
+      this._session.unmuteAudio()
+      $muteButton.classList.remove("muted")
     } else {
-      this._session.mute(ConnectyCube.videochatconference.CALL_TYPES.AUDIO);
-      this.isAudioMuted = true;
-      $muteButton.classList.add("muted");
+      this._session.muteAudio()
+      $muteButton.classList.add("muted")
     }
   };
 
   switchCamera = () => {
-    const mediaDevicesId = this.mediaDevicesIds.find(deviceId => deviceId !== this.activeDeviceId);
-    this._session.switchMediaTracks({ video: mediaDevicesId }, this.getStreamIdByUserId(this.currentUserID)).then(newLocalStream => {
-      this.activeDeviceId = mediaDevicesId;
-      if (this.isAudioMuted) {
-        this._session.mute("audio");
-      }
-    })
+    const mediaDevicesId = this.videoDevicesIds.find(deviceId => deviceId !== this._session.activeVideoDeviceId);
+    this._session.switchMediaTracks({ video: mediaDevicesId }, this.getStreamIdByUserId(this.currentUserID))
   };
 
   /* SNACKBAR */
