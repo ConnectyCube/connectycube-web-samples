@@ -14,7 +14,7 @@
   .grid-2 {
     grid-template: "stream0"
                    "stream1";
-    grid-template-rows: 50% 50%;
+    grid-template-rows: repeat(2, 50%);
   }
 }
 
@@ -22,7 +22,7 @@
   .grid-3 {
     grid-template: "stream0 stream0 stream1 stream1"
                    ". stream2 stream2 .";
-    grid-template-rows: 50% 50%;
+    grid-template-rows: repeat(2, 50%);
   }
 }
 
@@ -30,21 +30,21 @@
   .grid-3 {
     grid-template: "stream0 stream1"
                    "stream2 stream2";
-    grid-template-rows: 50% 50%;
+    grid-template-rows: repeat(2, 50%);
   }
 }
 
 .grid-4 {
   grid-template: "stream0 stream0 stream1 stream1"
                  "stream2 stream2 stream3 stream3";
-  grid-template-rows: 50% 50%;
+  grid-template-rows: repeat(2, 50%);
 }
 
 @media screen and (orientation:landscape) {
   .grid-5 {
     grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
                    ". stream3 stream3 stream4 stream4 .";
-    grid-template-rows: 50% 50%;
+    grid-template-rows: repeat(2, 50%);
   }
 }
 
@@ -53,7 +53,7 @@
     grid-template: "stream0 stream1"
                    "stream2 stream3"
                    "stream4 stream4";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -61,7 +61,7 @@
   .grid-6 {
     grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
                    "stream3 stream3 stream4 stream4 stream5 stream5";
-    grid-template-rows: 50% 50%;
+    grid-template-rows: repeat(2, 50%);
   }
 }
 
@@ -70,7 +70,7 @@
     grid-template: "stream0 stream1"
                    "stream2 stream3"
                    "stream4 stream5";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -79,7 +79,7 @@
     grid-template: "stream0 stream1 stream2"
                    "stream3 stream4 stream5"
                    ". stream6 .";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -89,7 +89,7 @@
                    "stream2 stream3"
                    "stream4 stream5"
                    "stream6 stream6";
-    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-rows: repeat(4, 25%);
   }
 }
 
@@ -98,7 +98,7 @@
     grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
                    "stream3 stream3 stream4 stream4 stream5 stream5"
                    ". stream6 stream6 stream7 stream7 .";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -108,7 +108,7 @@
                    "stream2 stream3"
                    "stream4 stream5"
                    "stream6 stream7";
-    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-rows: repeat(4, 25%);
   }
 }
 
@@ -116,7 +116,7 @@
   grid-template: "stream0 stream1 stream2"
                  "stream3 stream4 stream5"
                  "stream6 stream7 stream8";
-  grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+  grid-template-rows: repeat(3, calc(100%/3));
 }
 
 @media screen and (orientation:landscape) {
@@ -124,7 +124,7 @@
     grid-template: "stream0 stream0 stream1 stream1 stream2 stream2 stream3 stream3"
                    "stream4 stream4 stream5 stream5 stream6 stream6 stream7 stream7"
                    ". stream8 stream8 . . stream9 stream9 .";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -134,7 +134,7 @@
                   "stream3 stream3 stream3 stream4 stream4 stream4 stream5 stream5 stream5"
                   "stream6 stream6 stream6 stream7 stream7 stream7 stream8 stream8 stream8"
                   "stream9 stream6 stream6 stream6 stream6 stream6 stream6 stream6 stream6";
-    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-rows: repeat(4, 25%);
   }
 }
 
@@ -143,7 +143,7 @@
     grid-template: "stream0 stream0 stream1 stream1 stream2 stream2 stream3 stream3"
                    "stream4 stream4 stream5 stream5 stream6 stream6 stream7 stream7"
                    ". stream8 stream8 stream9 stream9 stream10 stream10 .";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -153,7 +153,7 @@
                    "stream3 stream3 stream4 stream4 stream5 stream5"
                    "stream6 stream6 stream7 stream7 stream8 stream8"
                    "stream9 stream9 stream9 stream10 stream10 stream10";
-    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-rows: repeat(4, 25%);
   }
 }
 
@@ -162,7 +162,7 @@
     grid-template: "stream0 stream1 stream2 stream3"
                    "stream4 stream5 stream6 stream7"
                    "stream8 stream9 stream10 stream11";
-    grid-template-rows: calc(100%/3) calc(100%/3) calc(100%/3);
+    grid-template-rows: repeat(3, calc(100%/3));
   }
 }
 
@@ -172,6 +172,6 @@
                    "stream3 stream4 stream5"
                    "stream6 stream7 stream8"
                    "stream9 stream10 stream11";
-    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-rows: repeat(4, 25%);
   }
 }
