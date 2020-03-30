@@ -213,6 +213,5 @@
   justify-content: stretch;
   align-items: stretch;
   justify-items: stretch;
-  grid-auto-rows: 1fr;
   grid-auto-columns: 1fr;
 }

@@ -3,33 +3,43 @@
   grid-template-rows: 1fr;
 }
 
-.grid-2 {
-  grid-template: "stream0 stream1";
-  grid-template-rows: 1fr;
+@media screen and (orientation:landscape) {
+  .grid-2 {
+    grid-template: "stream0 stream1";
+    grid-template-rows: 1fr;
+  }
+}
+
+@media screen and (orientation:portrait) {
+  .grid-2 {
+    grid-template: "stream0"
+                   "stream1";
+    grid-template-rows: 50% 50%;
+  }
 }
 
 .grid-3 {
   grid-template: "stream0 stream0 stream1 stream1"
                  ". stream2 stream2 .";
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 50% 50%;
 }
 
 .grid-4 {
   grid-template: "stream0 stream0 stream1 stream1"
                  "stream2 stream2 stream3 stream3";
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 50% 50%;
 }
 
 .grid-5 {
   grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
                  ". stream3 stream3 stream4 stream4 .";
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 50% 50%;
 }
 
 .grid-6 {
   grid-template: "stream0 stream0 stream1 stream1 stream2 stream2"
                  "stream3 stream3 stream4 stream4 stream5 stream5";
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 50% 50%;
 }
 
 .grid-7 {
