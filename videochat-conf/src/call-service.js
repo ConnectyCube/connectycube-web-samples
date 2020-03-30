@@ -425,6 +425,12 @@ class CallService {
     this.currentUserID = this._getUniqueUserId()
     while(!this.currentUserName) {
       this.currentUserName = prompt('Input user name', `User${this.currentUserID}`)
+      if (this.currentUserName === null) {
+        if (confirm('Do you shure to leave the call ?')) {
+          window.location.href = window.location.origin
+          return
+        }
+      }
     }
     this.isGuestMode = true
     if (janusRoomId) {
