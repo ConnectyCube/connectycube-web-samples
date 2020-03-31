@@ -192,7 +192,7 @@ class CallService {
     if (!this._session) {
       return false;
     }
-
+    console.log(stream.getTracks())
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId)
     this.$muteUnmuteButton.disabled = false;
@@ -263,15 +263,28 @@ class CallService {
       })
   }
 
+  checkDevices() {
+    return ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.AUDIO)
+      .then(devices => this.mediaParams.audio = devices.length > 0)
+      .then(() => ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO))
+      .then(devices => {
+        this.mediaParams.video = devices.length > 0
+        this.videoDevicesIds = devices.map(({deviceId}) => deviceId)
+        this.$switchCameraButton.disabled = this.videoDevicesIds.length < 2;
+      })
+  }
+
   joinConf = janusRoomId => {
     this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
-    return this._session.getUserMedia(this.mediaParams).then(stream => {
-      this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
-      this.removeStreamLoaderByUserId(this.currentUserID)
-      this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true, mirror: true});
-      this._prepareVideoElement(this.currentUserID);
-      return this._session.join(janusRoomId, this.currentUserID).then(() => this.postJoinActions())
-    });
+    return this.checkDevices()
+      .then(() => this._session.getUserMedia(this.mediaParams))
+      .then(stream => {
+        this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
+        this.removeStreamLoaderByUserId(this.currentUserID)
+        this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true, mirror: true});
+        this._prepareVideoElement(this.currentUserID);
+        return this._session.join(janusRoomId, this.currentUserID).then(() => this.postJoinActions())
+    }).catch(e => console.warn('[Err]', e));
   }
 
   updateStreamGridOnRemove($streams, $videochatStreams) {
