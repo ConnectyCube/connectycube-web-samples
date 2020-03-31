@@ -274,6 +274,7 @@ class CallService {
     }, error => {
       console.warn('[Get user media error]', error)
       if (!retry) {
+        this.mediaParams.video = false
         return this.joinConf(janusRoomId, true)
       }
     });
