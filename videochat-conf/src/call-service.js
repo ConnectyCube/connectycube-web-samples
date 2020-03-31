@@ -103,6 +103,15 @@ class CallService {
     $videochatStreams.appendChild(documentFragment)
   }
 
+  toggleUserPlaceholder(user_id, toShow) {
+    const $userPlaceHolder = document.querySelector(`.user-placeholder[data-id="${user_id}"]`)
+    if (toShow) {
+      $userPlaceHolder.classList.add('show')
+    } else {
+      $userPlaceHolder.classList.remove('show')
+    }
+  }
+
   onSystemMessage = msg => {
     const { extension, userId } = msg
     if (extension.callStart) {
@@ -196,7 +205,8 @@ class CallService {
 
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId)
-    this._prepareVideoElement(userId);
+    const isStremaWithVideo = stream.getVideoTracks().length > 0
+    this._prepareVideoElement(userId, isStremaWithVideo);
   };
 
   acceptCall = () => {
@@ -269,10 +279,10 @@ class CallService {
       this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
       this.removeStreamLoaderByUserId(this.currentUserID)
       this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true, mirror: true});
-      this._prepareVideoElement(this.currentUserID);
+      this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
       return this._session.join(janusRoomId, this.currentUserID).then(() => this.postJoinActions())
     }, error => {
-      console.warn('[Get user media error]', error)
+      console.warn('[Get user media error]', error, this.mediaParam)
       if (!retry) {
         this.mediaParams.video = false
         return this.joinConf(janusRoomId, true)
@@ -324,7 +334,7 @@ class CallService {
       this.participantIds = []
       this.janusRoomId = void 0
       this.currentUserName = void 0
-      this.mediaParams = {video: true, audio: false}
+      this.mediaParams = {video: true, audio: true}
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
@@ -366,9 +376,11 @@ class CallService {
     if (this._session.isVideoMuted()) {
       this._session.unmuteVideo()
       $muteVideoButton.classList.remove("muted")
+      this.toggleUserPlaceholder(this.currentUserID, false)
     } else {
       this._session.muteVideo()
       $muteVideoButton.classList.add("muted")
+      this.toggleUserPlaceholder(this.currentUserID, true)
     }
   };
 
@@ -431,7 +443,10 @@ class CallService {
     $streamBblock.remove()
   }
 
-  _prepareVideoElement = user_id => {
+  _prepareVideoElement = (user_id, isStremaWithVideo) => {
+    if (!isStremaWithVideo) {
+      return this.toggleUserPlaceholder(user_id, true)
+    }
     const $video = document.getElementById(this.getStreamIdByUserId(user_id))
 
     $video.style.visibility = "visible";

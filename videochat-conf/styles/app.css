@@ -158,6 +158,32 @@
   visibility: hidden;
 }
 
+.user-placeholder {
+  height: 100%;
+  width: 100%;
+  background: black;
+  display: none;
+}
+
+.user-image {
+  height: 45%;
+  width: 65%;
+  background: black url("../images/user_placeholder.svg") no-repeat center;
+}
+
+.user-name {
+  font-size: 3em;
+  font-weight: bold;
+  color: #fff;
+}
+
+.user-placeholder.show {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
 #call-start {
   background: forestgreen url("../images/call.svg") no-repeat center;
 }
