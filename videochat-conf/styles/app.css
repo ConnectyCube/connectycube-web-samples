@@ -170,6 +170,14 @@
   background: #0000ff url("../images/mic_off.svg") no-repeat center;
 }
 
+#videochat-mute-unmute-video {
+  background: green url("../images/video.svg") no-repeat center;
+}
+
+#videochat-mute-unmute-video.muted {
+  background: green url("../images/video_off.svg") no-repeat center;
+}
+
 #videochat-stop-call {
   background: #ff0000 url("../images/call_end.svg") no-repeat center;
 }

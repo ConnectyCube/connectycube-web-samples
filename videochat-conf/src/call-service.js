@@ -61,7 +61,8 @@ class CallService {
 
   $modal = document.getElementById("call-modal-icoming");
 
-  $muteUnmuteButton = document.getElementById("videochat-mute-unmute");
+  $muteUnmuteAudioButton = document.getElementById("videochat-mute-unmute");
+  $muteUnmuteVideoButton = document.getElementById("videochat-mute-unmute-video");
   $switchCameraButton = document.getElementById("videochat-switch-camera");
 
   mediaParams = {
@@ -195,7 +196,6 @@ class CallService {
 
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId)
-    this.$muteUnmuteButton.disabled = false;
     this._prepareVideoElement(userId);
   };
 
@@ -314,7 +314,8 @@ class CallService {
       this.$dialing.pause();
       this.$calling.pause();
       this.$endCall.play();
-      this.$muteUnmuteButton.disabled = true;
+      this.$muteUnmuteAudioButton.disabled = true;
+      this.$muteUnmuteVideoButton.disabled = true
       this.$switchCameraButton.disabled = true;
       this._session = null;
       this.videoDevicesIds = [];
@@ -323,10 +324,10 @@ class CallService {
       this.participantIds = []
       this.janusRoomId = void 0
       this.currentUserName = void 0
+      this.mediaParams = {video: true, audio: false}
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
-
       this.isGuestMode = void 0
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
@@ -340,19 +341,34 @@ class CallService {
   };
 
   postJoinActions() {
-    this.$muteUnmuteButton.disabled = false
-    this.setSwitchDevice()
+    this.$muteUnmuteAudioButton.disabled = false
+    if (this.mediaParams.video) {
+      this.$muteUnmuteVideoButton.disabled = false
+      this.setSwitchDevice()
+    }
   }
 
   setAudioMute = () => {
-    const $muteButton = document.getElementById("videochat-mute-unmute")
+    const $muteAudioButton = document.getElementById("videochat-mute-unmute")
 
     if (this._session.isAudioMuted()) {
       this._session.unmuteAudio()
-      $muteButton.classList.remove("muted")
+      $muteAudioButton.classList.remove("muted")
     } else {
       this._session.muteAudio()
-      $muteButton.classList.add("muted")
+      $muteAudioButton.classList.add("muted")
+    }
+  };
+
+  setVideoMute = () => {
+    const $muteVideoButton = document.getElementById("videochat-mute-unmute-video")
+
+    if (this._session.isVideoMuted()) {
+      this._session.unmuteVideo()
+      $muteVideoButton.classList.remove("muted")
+    } else {
+      this._session.muteVideo()
+      $muteVideoButton.classList.add("muted")
     }
   };
 

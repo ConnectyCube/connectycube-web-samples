@@ -18,6 +18,7 @@ class UIService {
     document.getElementById("call-start").addEventListener("click", () => CallService.startCall());
     document.getElementById("videochat-stop-call").addEventListener("click", () => CallService.stopCall());
     document.getElementById("videochat-mute-unmute").addEventListener("click", () => CallService.setAudioMute());
+    document.getElementById("videochat-mute-unmute-video").addEventListener("click", () => CallService.setVideoMute());
     document.getElementById("videochat-switch-camera").addEventListener("click", () => CallService.switchCamera());
   };
 
