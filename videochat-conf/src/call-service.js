@@ -18,6 +18,7 @@ class CallService {
     ConnectyCube.videochatconference.onParticipantJoinedListener = this.onAcceptCallListener.bind(this);
     ConnectyCube.videochatconference.onParticipantLeftListener = this.onStopCallListener.bind(this);
     ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
+    ConnectyCube.videochatconference.onSlowLinkListener = this.onSlowLinkListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
@@ -113,6 +114,7 @@ class CallService {
   }
 
   onSystemMessage = msg => {
+    console.warn('[onSystemMessage]', msg)
     const { extension, userId } = msg
     if (extension.callStart) {
       const {participantIds, janusRoomId} = extension
@@ -142,6 +144,7 @@ class CallService {
   }
 
   onAcceptCallListener = (session, userId) => {
+    console.warn('[onAcceptCallListener]', userId)
     const userName = this.isGuestMode ? userId : this._getUserById(userId, "name");
     const infoText = `${userName} has ${this.isGuestMode ? 'joined' : 'accepted'} the call`;
     this.showSnackbar(infoText);
@@ -169,6 +172,7 @@ class CallService {
   };
 
   onStopCallListener = (session, userId, extension) => {
+    console.warn('[onStopCallListener]', userId)
     const isStoppedByInitiator = this.initiatorID === userId;
     const userName = this.initGuestRoom ? userId : this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
@@ -186,6 +190,7 @@ class CallService {
   };
 
   onUserNotAnswerListener = (session, userId) => {
+    console.warn('[onUserNotAnswerListener]', userId)
     if (!this._session) {
       return false;
     }
@@ -199,6 +204,7 @@ class CallService {
   };
 
   onRemoteStreamListener = (session, userId, stream) => {
+    console.warn('[onRemoteStreamListener]', userId)
     if (!this._session) {
       return false;
     }
@@ -208,6 +214,10 @@ class CallService {
     const isStremaWithVideo = stream.getVideoTracks().length > 0
     this._prepareVideoElement(userId, isStremaWithVideo);
   };
+
+  onSlowLinkListener = (session, userId, uplink, nacks) => {
+    console.warn('[onSlowLinkListener]', userId, uplink, nacks)
+  }
 
   acceptCall = () => {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
