@@ -263,7 +263,7 @@ class CallService {
       })
   }
 
-  joinConf = janusRoomId => {
+  joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
     return this._session.getUserMedia(this.mediaParams).then(stream => {
       this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
@@ -271,6 +271,11 @@ class CallService {
       this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true, mirror: true});
       this._prepareVideoElement(this.currentUserID);
       return this._session.join(janusRoomId, this.currentUserID).then(() => this.postJoinActions())
+    }, error => {
+      console.warn('[Get user media error]', error)
+      if (!retry) {
+        return this.joinConf(janusRoomId, true)
+      }
     });
   }
 
