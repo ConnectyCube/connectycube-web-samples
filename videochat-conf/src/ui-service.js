@@ -45,6 +45,7 @@ class UIService {
 
     AuthService.login(currentUser).then(() => {
       CallService.init();
+      CallService.currentUserName = currentUser.name
       CallService.currentUserID = +currentUserId
       this.renderSelectUsers(currentUserId);
       this.addEventListenersForCallButtons();

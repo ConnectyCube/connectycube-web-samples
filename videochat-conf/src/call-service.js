@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import { users, janusConfig, NO_ASNWER_TIMER } from "./config";
+import { users, NO_ASNWER_TIMER, messages } from "./config";
 
 const iOS = window.device?.platform === "iOS";
 
@@ -143,13 +143,13 @@ class CallService {
     }
   }
 
-  onAcceptCallListener = (session, userId) => {
-    console.warn('[onAcceptCallListener]', userId)
-    const userName = this.isGuestMode ? userId : this._getUserById(userId, "name");
+  onAcceptCallListener = (session, userId, displayName) => {
+    console.warn('[onAcceptCallListener]', userId, displayName)
+    const userName = this.isGuestMode ? displayName : this._getUserById(userId, "name");
     const infoText = `${userName} has ${this.isGuestMode ? 'joined' : 'accepted'} the call`;
     this.showSnackbar(infoText);
     if (this.isGuestMode) {
-      const userToAdd = {id: +userId, name: `${userId}`}
+      const userToAdd = {id: +userId, name: `${displayName || userId}`}
       this.addStreamElement(userToAdd)
       return 
     }
@@ -171,7 +171,7 @@ class CallService {
     this.showSnackbar(infoText);
   };
 
-  onStopCallListener = (session, userId, extension) => {
+  onStopCallListener = (session, userId) => {
     console.warn('[onStopCallListener]', userId)
     const isStoppedByInitiator = this.initiatorID === userId;
     const userName = this.initGuestRoom ? userId : this._getUserById(userId, "name");
@@ -262,7 +262,7 @@ class CallService {
       this.startNoAnswerTimers(this.participantIds)
       this.joinConf(this.janusRoomId)
     } else {
-      this.showSnackbar("Select at less one user to start Videocall");
+      this.showSnackbar(messages.select_more_users);
     }
   };
 
@@ -284,13 +284,13 @@ class CallService {
   }
 
   joinConf = (janusRoomId, retry) => {
-    this._session = ConnectyCube.videochatconference.createNewSession(janusConfig)
+    this._session = ConnectyCube.videochatconference.createNewSession()
     return this._session.getUserMedia(this.mediaParams).then(stream => {
-      this.addStreamElement({id: this.currentUserID, name: this.currentUserID, local: true})
+      this.addStreamElement({id: this.currentUserID, name: this.currentUserName, local: true})
       this.removeStreamLoaderByUserId(this.currentUserID)
       this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true, mirror: true});
       this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
-      return this._session.join(janusRoomId, this.currentUserID).then(() => this.postJoinActions())
+      return this._session.join(janusRoomId, this.currentUserID, this.currentUserName).then(() => this.postJoinActions())
     }, error => {
       console.warn('[Get user media error]', error, this.mediaParam)
       if (!retry) {
@@ -471,9 +471,9 @@ class CallService {
   initGuestRoom = janusRoomId => {
     this.currentUserID = this._getUniqueUserId()
     while(!this.currentUserName) {
-      this.currentUserName = prompt('Input user name', `User${this.currentUserID}`)
+      this.currentUserName = prompt(messages.prompt_user_name, `User${this.currentUserID}`)
       if (this.currentUserName === null) {
-        if (confirm('Do you shure to leave the call ?')) {
+        if (confirm(messages.confirm_cancel)) {
           window.location.href = window.location.origin
           return
         }
@@ -487,7 +487,7 @@ class CallService {
       window.history.replaceState({}, 'Conference Guest Room', `/join/${this.janusRoomId}`)
     }
     this.joinConf(this.janusRoomId)
-      .then(() => this.showSnackbar('Share the above url with the users you want to have a call with'))
+      .then(() => this.showSnackbar(messages.share_call_link))
   }
 
   startNoAnswerTimers(participantIds) {
