@@ -33,10 +33,13 @@ class UIService {
   }
 
   createAndJoinGuestRoom = janusRoomId => {
-    CallService.init();
-    AuthService.hideLoginScreen()
-    CallService.initGuestRoom(janusRoomId)
-    this.addEventListenersForCallButtons();
+    AuthService.createSession()
+      .then(() => {
+        CallService.init();
+        AuthService.hideLoginScreen()
+        CallService.initGuestRoom(janusRoomId)
+        this.addEventListenersForCallButtons();
+      })
   }
 
   login = ({ target }) => {

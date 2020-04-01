@@ -8,12 +8,16 @@ class AuthService {
 
   init = () => ConnectyCube.init(credentials, appConfig);
 
+  createSession(user) {
+    return ConnectyCube.createSession(user)
+  }
+
   login = user => {
     return new Promise((resolve, reject) => {
       this.$loader.classList.remove("hidden");
       this.$caption.classList.add("hidden");
 
-      ConnectyCube.createSession(user)
+      this.createSession(user)
         .then(() => ConnectyCube.chat.connect({ userId: user.id, password: user.password }))
         .then(() => {
           this.hideLoginScreen()

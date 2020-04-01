@@ -19,6 +19,8 @@ class CallService {
     ConnectyCube.videochatconference.onParticipantLeftListener = this.onStopCallListener.bind(this);
     ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
     ConnectyCube.videochatconference.onSlowLinkListener = this.onSlowLinkListener.bind(this);
+    ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = this.onRemoteConnectionStateChangedListener.bind(this);
+    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = this.onSessionConnectionStateChangedListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
@@ -217,6 +219,14 @@ class CallService {
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn('[onSlowLinkListener]', userId, uplink, nacks)
+  }
+
+  onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
+    console.warn('[onRemoteConnectionStateChangedListener]', userId, iceState)
+  }
+
+  onSessionConnectionStateChangedListener = (session, iceState) => {
+    console.warn('[onSessionConnectionStateChangedListener]', iceState)
   }
 
   acceptCall = () => {
@@ -445,6 +455,9 @@ class CallService {
 
   removeStreamLoaderByUserId(user_id) {
     const $loader = document.querySelector(`.videochat-stream-loader[data-id="${user_id}"]`)
+    if (!$loader) {
+      return
+    }
     $loader.remove()
   }
 
