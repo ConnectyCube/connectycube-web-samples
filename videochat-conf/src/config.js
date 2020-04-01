@@ -10,7 +10,11 @@ export const messages = {
   title_callee: "Choose users to call:",
   calling: "Calling...",
   webrtc_not_avaible: "WebRTC is not available in your browser",
-  no_internet: "Please check your Internet connection and try again"
+  no_internet: "Please check your Internet connection and try again",
+  select_more_users: "Select at less one user to start Videocall",
+  share_call_link: "Share the above url with the users you want to have a call with",
+  prompt_user_name: "Input user name",
+  confirm_cancel: "Do you shure to leave the call ?"
 };
 
 export const credentials = {
@@ -21,12 +25,6 @@ export const credentials = {
 
 export const appConfig = {
   debug: { mode: 1 }
-  // videocalling: {
-  //   answerTimeInterval: 30,
-  //   dialingTimeInterval: 5,
-  //   disconnectTimeInterval: 35,
-  //   statsReportTimeInterval: 5
-  // }
 };
 
 export const users = [
@@ -59,10 +57,6 @@ export const users = [
     color: "#056a96"
   }
 ];
-
-export const janusConfig = {
-  server: 'wss://janus.connectycube.com:8989'
-}
 
 export const GUEST_ROOM_ONLY_MODE = false
 
