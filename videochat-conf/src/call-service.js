@@ -405,8 +405,9 @@ class CallService {
   };
 
   switchCamera = () => {
+    this.$switchCameraButton.disabled = true;
     const mediaDevicesId = this.videoDevicesIds.find(deviceId => deviceId !== this._session.activeVideoDeviceId);
-    this._session.switchMediaTracks({ video: mediaDevicesId }, this.getStreamIdByUserId(this.currentUserID))
+    this._session.switchMediaTracks({ video: mediaDevicesId }, this.getStreamIdByUserId(this.currentUserID)).finally(() => setTimeout(() => this.$switchCameraButton.disabled = false, 700))
   };
 
   /* SNACKBAR */
