@@ -21,7 +21,6 @@ module.exports = env => ({
       { from: "styles", to: "styles" },
       { from: "images", to: "images" },
       { from: "audio", to: "audio" },
-      { from: "connectycube-lib-dist", to: "connectycube-lib-dist" },
     ])
   ],
   watch: env.development,
@@ -32,7 +31,7 @@ module.exports = env => ({
     contentBase: [path.join(__dirname, "./"), path.join(__dirname, "./dist")],
     historyApiFallback: true,
     https: true,
-    // host: "192.168.0.107",
+    host: "192.168.0.104",
     port: 3000,
     hot: true
   },
