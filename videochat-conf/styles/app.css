@@ -110,6 +110,10 @@
   padding: 20px;
 }
 
+.mirror {
+  transform: scaleX(-1);
+}
+
 .select-user {
   width: 150px;
   height: 50px;
