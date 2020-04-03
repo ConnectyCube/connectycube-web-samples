@@ -18,8 +18,7 @@ ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](h
 
 This sample has two mods:
   - Calls up to 4 users (like web p2p sample)
-  - Guest Room. To create guest rom you can click on Guest Room button under title "Or create and join", than you can share url to other participants 
-  If you want to use Guset Room mode only you can set variable (`videochat-conf/src/config.js`) to true
+  - Guest Room. To create guest rom you can click on Guest Room button under title "Or create and join", than you can share url to other participants. If you want to use Guset Room mode only you can set variable (`videochat-conf/src/config.js`) to true
   ```javascript
     const GUEST_ROOM_ONLY_MODE = true
   ```
