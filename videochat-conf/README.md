@@ -1,54 +1,55 @@
 # Video Chat code sample for Browser for ConnectyCube platform
 
-This README introduces [ConnectyCube](https://connectycube.com) Video Chat code sample for Browser
+This README introduces [ConnectyCube](https://connectycube.com) Conference Call code sample for Browser
 
 Project contains the following features implemented:
 
 - User authorization
 - Video calls up to 4 users
 - Mute/unmute microphone
+- Mute/unmute video
 - Change camera source
 - Snack bars to notify users about changes
-- Compatibility with the [React Native Video Chat code sample](https://github.com/ConnectyCube/connectycube-reactnative-samples/tree/master/RNVideoChat)
+- Guest room mode up to 12 users
 
 ## Documentation
 
 ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
 
-ConnectyCube Video Chat API documentation - [https://developers.connectycube.com/js/videocalling](https://developers.connectycube.com/js/videocalling)
+This sample has two mods:
+  - Calls up to 4 users (like web p2p sample)
+  - Guest Room
+  To create guest rom you can click on Guest Room button under title "Or create and join", than you can share url to other participants
 
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_login.png" width="720" alt="Video Chat code sample demo image login screen">
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_conf_sample_login.png" width="720" alt="Conference Call code sample demo image login screen">
 </p>
 
-<p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_select_users.png" width="720" alt="Video Chat code sample demo image select users screen">
-</p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720" alt="Video Chat code sample demo image active call screen">
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720"   alt="Conference Call code sample demo image active call screen">
 </p>
 
 ## Build your own VideoChat app
 
 To make the sample works for your own app, please do the following:
 
-1.  Register new account and application at `https://admin.connectycube.com` and then put Application credentials from 'Overview' page into `videochat/src/config.js` file:
+1.  Register new account and application at `https://admin.connectycube.com` and then put Application credentials from 'Overview' page into `videochat-conf/src/config.js` file:
 
     ```javascript
-    export const credentials = {
+    const credentials = {
       appId: 0,
       authKey: "",
       authSecret: ""
     };
     ```
 
-2.  At `https://admin.connectycube.com`, create from 2 to 4 users in 'Users' module and put them into `videochat/src/config.js` file:
+2.  At `https://admin.connectycube.com`, create from 2 to 4 users in 'Users' module and put them into `videochat-conf/src/config.js` file:
 
     ```javascript
-    export const users = [
+    const users = [
       {
         id: 0,
         name: "User1",
