@@ -1,4 +1,4 @@
-# Video Chat code sample for Browser for ConnectyCube platform
+# Conference Call code sample for Browser for ConnectyCube platform
 
 This README introduces [ConnectyCube](https://connectycube.com) Conference Call code sample for Browser
 
