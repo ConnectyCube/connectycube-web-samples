@@ -24,7 +24,7 @@ export default class Message extends Component {
           <div className="chat-message-wrap chat-message-wrap-left">
             <div className="chat-message-avatar">
               {notRenderAvatar &&
-                <Avatar photo={participantInfo.avatar} name={participantInfo.name} size={30} />
+                <Avatar photo={participantInfo.avatar} name={participantInfo.name || participantInfo.full_name} size={30} />
               }
             </div>
             <div style={{ maxWidth: `${withMsg.otherSender}px` }} className="chat-message-container-position-left">
