@@ -11,6 +11,7 @@ export default class Auth extends Component {
   state = {
     isLogin: true,
     isLoader: false,
+    full_name: '',
     login: '',
     password: '',
     isAuthorization: false
@@ -22,16 +23,18 @@ export default class Auth extends Component {
     )
   }
 
+  changeName = (event) => (this.setState({ full_name: event.target.value }))
+
   changeLogin = (event) => (this.setState({ login: event.target.value }))
 
   changePassword = (event) => (this.setState({ password: event.target.value }))
 
   login = (e) => {
     e.preventDefault()
-    const { login, password, isLogin } = this.state
+    const { login, password, full_name, isLogin } = this.state
     const dataUser = { login, password }
 
-    if (!login.trim() || !password.trim()) {
+    if (!login.trim() || !password.trim() || !isLogin && !full_name.trim()) {
       const endMessage = isLogin ? 'login.' : 'sign up'
       swal('Warning', `Fill the fields to ${endMessage}`)
       return
@@ -49,6 +52,7 @@ export default class Auth extends Component {
           swal(`Error.\n\n${JSON.stringify(error)}`, "", "error")
         })
     } else {
+      dataUser.full_name = full_name
       AuthService.signUp(dataUser)
         .then(() => {
           this.setState({ isLoader: false, isAuthorization: true })
@@ -64,13 +68,13 @@ export default class Auth extends Component {
   }
 
   render() {
-    const { isLogin, login, password, isLoader, isAuthorization } = this.state
+    const { isLogin, login, password, isLoader, isAuthorization, full_name } = this.state
     const authText = isLogin ? "Don't have an account?" : 'Already have an account?'
     const authLink = isLogin ? 'Sign up' : 'Sign in'
 
     return (
       <div className="auth-main-сontainer" style={this.props.isSmallDevice && { backgroundColor: '#27ae60' }}>
-        <div className="auth-modal-container">
+        <div className="auth-modal-container" style={isLogin ? { height: '500px' } : { height: '570px' }}>
           {isLoader &&
             <div className="auth-wrapp-loader">
               <Loader />
@@ -83,6 +87,16 @@ export default class Auth extends Component {
             <img src={logo} alt="Logo" />
           </div>
           <form onSubmit={this.login} className="auth-form auth-wrapper">
+            {!isLogin &&
+              <input
+                type="text"
+                value={full_name}
+                onChange={this.changeName}
+                required
+                placeholder="Name"
+                name="Name"
+              />
+            }
             <input
               type="text"
               value={login}
