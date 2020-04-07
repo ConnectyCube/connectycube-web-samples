@@ -6,6 +6,8 @@ The following code samples are available:
 
 - [Video Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat)
 
+- [Conference Call code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf)
+
 - [Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat)
 
 ## Documentation
