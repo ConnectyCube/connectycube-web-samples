@@ -10,15 +10,30 @@ import {
   pushMessage,
   fetchMessages,
   lazyFetchMessages,
+  updateMessages,
 } from '../actions/messages'
+import { preparationAttachment } from '../helpers/file'
 import { selectedDialog } from '../actions/selectedDialog'
 import { fetchUsers } from '../actions/users'
 import store from '../store'
 import { Message, FakeMessage } from '../models/message'
 import UserModel from '../models/user'
 import { DIALOG_TYPE } from '../helpers/constants'
+import {
+  STATUS_DELIVERED,
+  STATUS_READ,
+  STATUS_SENT
+} from '../models/message'
 
 class ChatService {
+
+  setUpListeners() {
+    ConnectyCube.chat.onMessageListener = this.onMessageListener.bind(this)
+    ConnectyCube.chat.onSentMessageCallback = this.onSentMessageListener.bind(this)
+    ConnectyCube.chat.onDeliveredStatusListener = this.onDeliveredStatus.bind(this)
+    ConnectyCube.chat.onReadStatusListener = this.onReadStatus.bind(this)
+  }
+
   async fetchDialogsFromServer() {
     if (store.getState().dialogs.length !== 0) {
       return store.getState().dialogs
@@ -64,16 +79,14 @@ class ChatService {
       store.dispatch(fetchMessages(dialog.id, messages))
       amountMessages = messages.length
     } else {
-
       // If the second entry into the chat
-
-      // if (dialog.unread_messages_count > 0) {
-      //   const messages = this.getMessagesByDialogId(dialog.id)
-      //   const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
-      //   // this.readAllMessages(dialog.id)
-      //   // await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
-      //   this.updateDialogsUnreadMessagesCount(dialog)
-      // }
+      if (dialog.unread_messages_count > 0) {
+        const messages = this.getMessagesByDialogId(dialog.id)
+        const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
+        this.readAllMessages(dialog.id)
+        await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
+        this.updateDialogsUnreadMessagesCount(dialog)
+      }
       amountMessages = isAlredyUpdate.length
     }
     return amountMessages
@@ -100,7 +113,7 @@ class ChatService {
   }
 
 
-  async sendMessage(dialog, messageText, attachments = false) {
+  async sendMessage(dialog, messageText, attachments = false, scrollToBottom) {
     const user = this.currentUser
     const text = messageText.trim()
     const date = Math.floor(Date.now() / 1000)
@@ -116,14 +129,42 @@ class ChatService {
         sender_id: user.id,
         date_sent: date,
       },
-      markable: 1
+      // markable: 1
     }
 
     msg.id = this.messageUniqueId
+
+    // If send message as Attachment
+    if (attachments) {
+      return this.sendMessageAsAttachment(dialog, recipient_id, msg, attachments, scrollToBottom)
+    }
+
     const message = new FakeMessage(msg)
-    store.dispatch(pushMessage(message, dialog.id))
+
+    console.log('{chat-service} create-fake-msaage', message)
+
+    await store.dispatch(pushMessage(message, dialog.id))
+    scrollToBottom()
+    ConnectyCube.chat.send(recipient_id, msg)
+    store.dispatch(sortDialogs(message))
+  }
+
+  async sendMessageAsAttachment(dialog, recipient_id, msg, attachments, scrollToBottom) {
+    //create fake data for render img
+    const url = URL.createObjectURL(attachments.file)
+    msg.extension.attachments = [{ url }]
+    msg.body = 'Image attachment'
+    const message = new FakeMessage(msg)
+    await store.dispatch(pushMessage(message, dialog.id))
+    scrollToBottom()
+
+    // create real data for attachment
+    const response = await this.uploadPhoto(attachments)
+    const newObjAttach = preparationAttachment(response)
+    msg.extension.attachments = [newObjAttach]
     await ConnectyCube.chat.send(recipient_id, msg)
     store.dispatch(sortDialogs(message))
+    return
   }
 
   async createPrivateDialog(userId) {
@@ -192,6 +233,67 @@ class ChatService {
     return newDialog
   }
 
+  async readAllMessages(dialogId) {
+    return ConnectyCube.chat.message.update(null, {
+      chat_dialog_id: dialogId,
+      read: 1
+    })
+  }
+
+  async readMessage(messageId, dialogId) {
+    this.onReadStatus(messageId, dialogId)
+    return ConnectyCube.chat.message.update(null, {
+      chat_dialog_id: dialogId,
+      read: 1
+    })
+  }
+
+  onMessageListener(senderId, msg) {
+    console.warn('onMessageListener')
+    const message = new Message(msg)
+    const user = this.currentUser
+    const dialog = this.getSelectedDialog()?.id
+    if (senderId !== user.id) {
+      if (dialog === message.dialog_id) {
+        store.dispatch(sortDialogs(message))
+        this.readMessage(message.id, message.dialog_id)
+        this.sendReadStatus(msg.extension.message_id, msg.extension.sender_id, msg.dialog_id)
+      } else {
+        this.sendDeliveredStatus(msg.extension.message_id, msg.extension.sender_id, msg.dialog_id)
+        store.dispatch(sortDialogs(message, true))
+      }
+      store.dispatch(pushMessage(message, message.dialog_id))
+    }
+  }
+
+  // ConnectyCube listeners
+  onSentMessageListener(failedMessage, msg) {
+    console.warn('onSentMessageListener')
+    if (failedMessage) {
+      return
+    }
+    store.dispatch(updateMessages(msg.extension.dialog_id, msg.id, { send_state: STATUS_SENT }))
+  }
+
+  // ConnectyCube listeners
+  onReadStatus(messageId, dialogId, userId) {
+    console.warn('onReadStatus')
+    store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_READ }))
+  }
+
+  onDeliveredStatus(messageId, dialogId, userId) {
+    console.warn('onDeliveredStatus')
+    store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_DELIVERED }))
+  }
+
+  sendReadStatus(messageId, userId, dialogId) {
+    ConnectyCube.chat.sendReadStatus({ messageId, userId, dialogId })
+  }
+
+  sendDeliveredStatus(messageId, userId, dialogId) {
+    ConnectyCube.chat.sendDeliveredStatus({ messageId, userId, dialogId })
+  }
+
   async getUsersList(ids) {
     const usersList = await ConnectyCube.users.get({
       per_page: 100,
@@ -209,8 +311,12 @@ class ChatService {
     return ConnectyCube.users.get(id)
   }
 
-  selectDialog(dialog) {
+  setSelectDialog(dialog) {
     store.dispatch(selectedDialog(dialog))
+  }
+
+  getSelectedDialog() {
+    return store.getState().selectedDialog
   }
 
   getDialogById(dialogId) {

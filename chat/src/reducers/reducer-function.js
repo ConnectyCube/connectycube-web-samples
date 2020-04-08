@@ -38,6 +38,7 @@ const sortedDialog = (action, dialogs) => {
 }
 
 const updateStatusMessages = (action, message) => {
+  console.log('{redux-Action} - udate message send status', action)
   if (Object.keys(message).length === 0) {
     return message
   }

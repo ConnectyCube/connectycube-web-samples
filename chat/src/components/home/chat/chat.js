@@ -34,7 +34,7 @@ class Chat extends PureComponent {
     this.state = {
       isAlredy: true,
       dataProvider: new DataProvider((r1, r2) => {
-        return r1 !== r2;
+        return r1 !== r2 || r1.send_state !== r2.send_state
       }),
       layoutProvider: []
     }
@@ -88,11 +88,21 @@ class Chat extends PureComponent {
 
   componentDidUpdate(prewProps) {
     const dialog = ChatService.getDialogById(this.props.selectedDialog.id)
+
     if (prewProps.messages[dialog.id] &&
-      prewProps.messages[dialog.id].length !== this.props.messages[dialog.id].length) {
+      prewProps.messages[dialog.id] !== this.props.messages[dialog.id]
+    ) {
+      console.log('{chat} prew props', prewProps.messages[dialog.id])
+      console.log('{chat} this props', this.props.messages[dialog.id])
+
       this.setState({
         dataProvider: this.state.dataProvider.cloneWithRows(this.props.messages[dialog.id])
-      }, () => this.updateScrollPosition())
+      }, () => {
+        if (this.needToGetMoreMessage) {
+          this.updateScrollPosition()
+        }
+      }
+      )
     }
   }
 
@@ -127,15 +137,10 @@ class Chat extends PureComponent {
     }
   }
 
-  sendMessage = async (messageText) => {
+  sendMessageCallback = async (messageText, img) => {
     const dialog = ChatService.getDialogById(this.props.selectedDialog.id)
-    if (messageText.length <= 0) return
-    await ChatService.sendMessage(dialog, messageText)
-    this.scrollToBottom()
-  }
-
-  pickAttachment = () => {
-    alert('Attachment')
+    if (messageText.length <= 0 && !img) return
+    await ChatService.sendMessage(dialog, messageText, img, this.scrollToBottom)
   }
 
   goToSplashPage = () => {
@@ -217,15 +222,14 @@ class Chat extends PureComponent {
             </> : <Loader />
           }
         </div>
-        <ChatInput sendMessage={this.sendMessage} />
+        <ChatInput sendMessageCallback={this.sendMessageCallback} />
       </div>
     )
   }
 }
 
-const mapStateToProps = ({ selectedDialog, dialogs, messages, users }) => ({
+const mapStateToProps = ({ selectedDialog, messages, users }) => ({
   selectedDialog,
-  dialogs,
   messages,
   users
 })

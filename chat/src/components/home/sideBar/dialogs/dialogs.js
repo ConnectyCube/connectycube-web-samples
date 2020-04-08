@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
@@ -12,7 +12,7 @@ import Avatar from '../../../../helpers/avatar/avatar'
 import './dialogs.css'
 
 
-class Dialog extends PureComponent {
+class Dialog extends Component {
   scrollWidth = 0
   scrollHeight = 0
   listenerWindowSize = null
@@ -24,7 +24,7 @@ class Dialog extends PureComponent {
     this.state = {
       isAlredy: false,
       dataProvider: new DataProvider((r1, r2) => {
-        return r1 !== r2;
+        return r1 !== r2 || r1.unread_messages_count !== r2.unread_messages_count;
       }),
       layoutProvider: 0,
       count: 20,
@@ -51,7 +51,8 @@ class Dialog extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const { dialogs } = this.props
-    if (this.props.dialogs.length !== prevProps.dialogs.length) {
+    if (this.props.dialogs !== prevProps.dialogs
+    ) {
       this.allDialog = dialogs
       this.setState({
         layoutProvider: DialogLayoutUtil.getDialogLayoutProvider(this.scrollWidth),
@@ -97,7 +98,7 @@ class Dialog extends PureComponent {
 
   goToChat = (item) => {
     const { router } = this.props
-    ChatService.selectDialog(item)
+    ChatService.setSelectDialog(item)
     router('/home/chat')
   }
 

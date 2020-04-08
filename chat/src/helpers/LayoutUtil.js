@@ -31,23 +31,31 @@ export class ChatLayoutUtil {
         return arr;
       },
       (type, dim, index) => {
-        let maxWidthMsg
-        if (store.getState().messages[dialogId][index].sender_id === currentUserId) {
-          maxWidthMsg = maxWidth.currentSender
+        if (store.getState().messages[dialogId][index].attachment) {
+          // if send messages as attachment
+          dim.width = width
+          dim.height = 300
+          return
         } else {
-          maxWidthMsg = maxWidth.otherSender
+          // if send messages as string
+          let maxWidthMsg
+          if (store.getState().messages[dialogId][index].sender_id === currentUserId) {
+            maxWidthMsg = maxWidth.currentSender
+          } else {
+            maxWidthMsg = maxWidth.otherSender
+          }
+
+          var fakeElem = document.createElement("canvas")
+          var ctx = fakeElem.getContext("2d")
+          ctx.font = `${fontSize}px 'Open Sans', sans-serif`
+          var txt = store.getState().messages[dialogId][index].body
+
+          const calcWidth = ctx.measureText(txt).width
+          const lines = Math.ceil(calcWidth / (maxWidthMsg - delta))
+
+          dim.width = width
+          dim.height = lines * lineHeight * fontSize + margin + footer
         }
-
-        var fakeElem = document.createElement("canvas")
-        var ctx = fakeElem.getContext("2d")
-        ctx.font = `${fontSize}px 'Open Sans', sans-serif`
-        var txt = store.getState().messages[dialogId][index].body
-
-        const calcWidth = ctx.measureText(txt).width
-        const lines = Math.ceil(calcWidth / (maxWidthMsg - delta))
-
-        dim.width = width
-        dim.height = lines * lineHeight * fontSize + margin + footer
       }
     )
   }

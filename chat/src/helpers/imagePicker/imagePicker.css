@@ -56,7 +56,20 @@
   color: #27ae60;
 }
 
-.image-picker input[type="file"]{
+.custom-file-upload-attachment {
+  width: 60px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.custom-file-upload-attachment > svg {
+  font-size: 20px;
+}
+
+.image-picker input[type="file"], .image-picker-container input[type="file"]{
   display: none;
 }
 
