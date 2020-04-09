@@ -97,20 +97,18 @@ class Chat extends PureComponent {
 
       this.setState({
         dataProvider: this.state.dataProvider.cloneWithRows(this.props.messages[dialog.id])
-      }, () => {
-        if (this.needToGetMoreMessage) {
-          this.updateScrollPosition()
-        }
-      }
+      }, () => { this.updateScrollPosition() }
       )
     }
   }
 
   updateScrollPosition = () => {
-    const getElement = document.getElementById('chat-body').children[0].children[0].children[0].style.height
-    const fullScrollHeight = getElement.slice(0, getElement.length - 2)
-    const newOffset = this.recycler_Y + (fullScrollHeight - this.contentHeight)
-    this.messagesListRef.scrollToOffset(0, newOffset)
+    setTimeout(() => {
+      const getElement = document.getElementById('chat-body').children[0].children[0].children[0].style.height
+      const fullScrollHeight = getElement.slice(0, getElement.length - 2)
+      const newOffset = this.recycler_Y + (fullScrollHeight - this.contentHeight)
+      this.messagesListRef.scrollToOffset(0, newOffset)
+    }, 100)
   }
 
   componentWillUnmount() {
@@ -156,7 +154,7 @@ class Chat extends PureComponent {
     let notRenderAvatar = null
 
     if (type > 0 && whoIsSender !== 1 &&
-      this.state.dataProvider._data[type - 1].sender !== item.sender) {
+      +this.state.dataProvider._data[type - 1].sender_id !== +item.sender_id) {
       notRenderAvatar = true
     }
 
