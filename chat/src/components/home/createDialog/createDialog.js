@@ -64,6 +64,7 @@ export default class CreateDialog extends PureComponent {
       .then((newDialog) => {
         this.setState({ isLoader: false })
         ChatService.setSelectDialog(newDialog)
+        ChatService.sendGroupChatAlertOnCreate(newDialog)
         router('/home/chat')
       })
       .catch((error) => {

@@ -47,7 +47,12 @@ class UserProfile extends Component {
 
   render() {
     const { isModal } = this.state
-    const { user } = this.props.currentUser
+    const { currentUser } = this.props
+    if (!currentUser) {
+      return <></>
+    }
+
+    const { user } = currentUser
     return (
       <div className="user-rofile-container">
         <div className="user-profile-wrapper">
@@ -102,4 +107,3 @@ const mapStateToProps = ({ currentUser }) => ({
 })
 
 export default connect(mapStateToProps)(UserProfile)
-

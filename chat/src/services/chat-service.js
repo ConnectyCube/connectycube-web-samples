@@ -22,7 +22,8 @@ import { DIALOG_TYPE } from '../helpers/constants'
 import {
   STATUS_DELIVERED,
   STATUS_READ,
-  STATUS_SENT
+  STATUS_SENT,
+  GROUP_CHAT_ALERT_TYPE
 } from '../models/message'
 
 class ChatService {
@@ -61,7 +62,6 @@ class ChatService {
   }
 
   async getMessages(dialog) {
-    const user = this.currentUser
     const isAlredyUpdate = this.getMessagesByDialogId(dialog.id)
     let amountMessages = null
 
@@ -71,9 +71,14 @@ class ChatService {
         chat_dialog_id: dialog.id,
         sort_desc: 'date_sent'
       })
-      const messages = historyFromServer.items.map(elem => (
-        new Message(elem, user.id)
-      ))
+
+      const messages = []
+      historyFromServer.items.forEach(elem => {
+        if (!elem.group_chat_alert_type) {
+          messages.push(new Message(elem, this.currentUser.id))
+        }
+      })
+
       const newObj = Object.assign(dialog, { isAlreadyMessageFetch: true })
       this.updateDialogsUnreadMessagesCount(newObj)
       store.dispatch(fetchMessages(dialog.id, messages))
@@ -105,7 +110,13 @@ class ChatService {
     }
 
     const moreHistoryFromServer = await ConnectyCube.chat.message.list(filter)
-    const messages = moreHistoryFromServer.items.map(elem => new Message(elem))
+
+    const messages = []
+    moreHistoryFromServer.items.forEach(elem => {
+      if (!elem.group_chat_alert_type) {
+        messages.push(new Message(elem, this.currentUser.id))
+      }
+    })
 
     store.dispatch(updateDialog(updateObj))
     const amountMessages = store.dispatch(lazyFetchMessages(dialog.id, messages))
@@ -147,6 +158,31 @@ class ChatService {
     scrollToBottom()
     ConnectyCube.chat.send(recipient_id, msg)
     store.dispatch(sortDialogs(message))
+  }
+
+
+  sendGroupChatAlert = async (dialog, message, alertType) => {
+    const date = Math.floor(Date.now() / 1000)
+    const recipient_id = dialog.type === DIALOG_TYPE.PRIVATE ? dialog.occupants_ids.find(elem => elem != this.currentUser.id)
+      : dialog.xmpp_room_jid
+    const messageExtensions = {
+      date_sent: date,
+      save_to_history: 1,
+      dialog_id: dialog.id,
+      group_chat_alert_type: alertType,
+      sender_id: this.currentUser.id,
+    }
+    const msg = {
+      type: !dialog.xmpp_room_jid ? 'chat' : 'groupchat',
+      body: message,
+      extension: messageExtensions,
+    }
+    ConnectyCube.chat.send(recipient_id, msg)
+  }
+
+  sendGroupChatAlertOnCreate(dialog) {
+    const message = 'Group is created'
+    this.sendGroupChatAlert(dialog, message, GROUP_CHAT_ALERT_TYPE.CREATE)
   }
 
   async sendMessageAsAttachment(dialog, recipient_id, msg, attachments, scrollToBottom) {
@@ -248,8 +284,7 @@ class ChatService {
     })
   }
 
-  onMessageListener(senderId, msg) {
-    console.warn('onMessageListener')
+  async onMessageListener(senderId, msg) {
     const message = new Message(msg)
     const user = this.currentUser
     const dialog = this.getSelectedDialog()?.id
@@ -263,6 +298,13 @@ class ChatService {
         store.dispatch(sortDialogs(message, true))
       }
       store.dispatch(pushMessage(message, message.dialog_id))
+      if (msg.extension.group_chat_alert_type) {
+        const dialogsFromServer = await ConnectyCube.chat.dialog.list()
+        const dialogs = dialogsFromServer.items.map(elem => {
+          return new Dialog(elem)
+        })
+        store.dispatch(fetchDialogs(dialogs))
+      }
     }
   }
 
