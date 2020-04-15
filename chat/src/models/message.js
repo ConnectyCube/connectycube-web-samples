@@ -5,6 +5,10 @@ export const STATUS_SENT = 1
 export const STATUS_DELIVERED = 2
 export const STATUS_READ = 3
 
+export const GROUP_CHAT_ALERT_TYPE = {
+  CREATE: "create"
+}
+
 const defaultMessage = {
   id: '',
   body: '',
@@ -19,6 +23,7 @@ export class Message {
   constructor(msg = defaultMessage, currentUser) {
     this.id = msg.id || msg._id
     this.body = msg.body || msg.message
+    this.group_chat_alert_type = msg.group_chat_alert_type || null
     this.dialog_id = msg.chat_dialog_id || (msg.extension && msg.extension.dialog_id)
     this.date_sent = msg.date_sent || (msg.extension && msg.extension.date_sent) || Math.floor(Date.now() / 1000)
     this.send_state = Message.getSendState(msg, currentUser)

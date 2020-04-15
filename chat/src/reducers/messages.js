@@ -26,10 +26,10 @@ export default (messages = {}, action) => {
     }
 
     case PUSH_MESSAGE: {
-      const copyMessages = messages[action.dialogId] || []
+      console.log('{redux-action} push redux new message', action)
       return {
         ...messages,
-        [action.dialogId]: [...copyMessages, action.message]
+        [action.dialogId]: [...messages[action.dialogId] || [], action.message]
       }
     }
 

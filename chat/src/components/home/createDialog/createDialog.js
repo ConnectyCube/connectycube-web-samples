@@ -63,7 +63,8 @@ export default class CreateDialog extends PureComponent {
     ChatService.createPublicDialog(occupants_ids, str, this.image)
       .then((newDialog) => {
         this.setState({ isLoader: false })
-        ChatService.selectDialog(newDialog)
+        ChatService.setSelectDialog(newDialog)
+        ChatService.sendGroupChatAlertOnCreate(newDialog)
         router('/home/chat')
       })
       .catch((error) => {
@@ -105,7 +106,7 @@ export default class CreateDialog extends PureComponent {
     if (!this.state.dialogType) {
       return ChatService.createPrivateDialog(user.id)
         .then((newDialog) => {
-          ChatService.selectDialog(newDialog)
+          ChatService.setSelectDialog(newDialog)
           router('/home/chat')
         })
         .catch((error) => {

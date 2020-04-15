@@ -5,6 +5,7 @@ import {
   Route,
   Redirect
 } from "react-router-dom"
+import ChatService from '../services/chat-service'
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import store from '../store'
 import AuthService from '../services/auth-service'
@@ -25,6 +26,9 @@ export default class Main extends Component {
 
   initUser = async () => {
     const routLink = await AuthService.init()
+    if (routLink === 'home') {
+      ChatService.setUpListeners()
+    }
     this.setState({ routName: routLink, isLoader: false })
   }
 

@@ -6,3 +6,15 @@ export function getImageLinkFromUID(uid) {
   }
   return ConnectyCube.storage.privateUrl(uid)
 }
+
+
+export function preparationAttachment(file) {
+  return {
+    size: file.size,
+    uid: file.uid,
+    type: file.content_type,
+    name: file.name,
+    width: 400,
+    height: 400
+  }
+}

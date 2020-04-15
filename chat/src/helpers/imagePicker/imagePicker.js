@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCamera } from '@fortawesome/free-solid-svg-icons'
+import { faPaperclip } from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-modal'
 import Cropper from 'react-easy-crop'
 import getCroppedImg from './cropImage'
@@ -66,8 +67,7 @@ export default class ImagePicker extends Component {
     }
   }
 
-  render() {
-    const { isModal } = this.state
+  _renderAvatarPicker = () => {
     return (
       <>
         <div className="image-picker">
@@ -79,6 +79,30 @@ export default class ImagePicker extends Component {
           </label>
           <input id="file-upload" type="file" onChange={this.onImageChange} />
         </div>
+      </>
+    )
+  }
+
+  _renderAttachmentPicker = () => {
+    return (
+      <div className="image-picker-container">
+        <label htmlFor="file-upload" className="custom-file-upload-attachment" >
+          <FontAwesomeIcon icon={faPaperclip} color={'#9aa8b5'} />
+        </label>
+        <input id="file-upload" type="file" onChange={this.onImageChange} />
+      </div>
+    )
+  }
+
+  render() {
+    const { pickAsAttachment } = this.props
+    const { isModal } = this.state
+    return (
+      <>
+        {pickAsAttachment ?
+          this._renderAttachmentPicker() :
+          this._renderAvatarPicker()
+        }
         <Modal
           isOpen={isModal}
           onRequestClose={this.handleCloseModal}
