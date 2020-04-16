@@ -95,10 +95,12 @@ class Chat extends PureComponent {
       console.log('{chat} prew props', prewProps.messages[dialog.id])
       console.log('{chat} this props', this.props.messages[dialog.id])
 
-      this.setState({
-        dataProvider: this.state.dataProvider.cloneWithRows(this.props.messages[dialog.id])
-      }, () => { this.updateScrollPosition() }
-      )
+      if (this.props.messages[dialog.id].length) {
+        this.setState({
+          dataProvider: this.state.dataProvider.cloneWithRows(this.props.messages[dialog.id])
+        }, () => { this.updateScrollPosition() }
+        )
+      }
     }
   }
 

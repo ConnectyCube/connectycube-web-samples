@@ -161,7 +161,7 @@ class ChatService {
   }
 
 
-  sendGroupChatAlert = async (dialog, message, alertType) => {
+  sendMsgChatAlertOnCreate = async (dialog, message, alertType) => {
     const date = Math.floor(Date.now() / 1000)
     const recipient_id = dialog.type === DIALOG_TYPE.PRIVATE ? dialog.occupants_ids.find(elem => elem != this.currentUser.id)
       : dialog.xmpp_room_jid
@@ -180,9 +180,9 @@ class ChatService {
     ConnectyCube.chat.send(recipient_id, msg)
   }
 
-  sendGroupChatAlertOnCreate(dialog) {
+  sendChatAlertOnCreate(dialog) {
     const message = 'Group is created'
-    this.sendGroupChatAlert(dialog, message, GROUP_CHAT_ALERT_TYPE.CREATE)
+    this.sendMsgChatAlertOnCreate(dialog, message, GROUP_CHAT_ALERT_TYPE.CREATE)
   }
 
   async sendMessageAsAttachment(dialog, recipient_id, msg, attachments, scrollToBottom) {
@@ -288,6 +288,17 @@ class ChatService {
     const message = new Message(msg)
     const user = this.currentUser
     const dialog = this.getSelectedDialog()?.id
+
+    // If group chat alet
+    if (msg.extension.group_chat_alert_type) {
+      const dialogsFromServer = await ConnectyCube.chat.dialog.list()
+      const dialogs = dialogsFromServer.items.map(elem => {
+        return new Dialog(elem)
+      })
+      store.dispatch(fetchDialogs(dialogs))
+      return
+    }
+
     if (senderId !== user.id) {
       if (dialog === message.dialog_id) {
         store.dispatch(sortDialogs(message))
@@ -298,20 +309,13 @@ class ChatService {
         store.dispatch(sortDialogs(message, true))
       }
       store.dispatch(pushMessage(message, message.dialog_id))
-      if (msg.extension.group_chat_alert_type) {
-        const dialogsFromServer = await ConnectyCube.chat.dialog.list()
-        const dialogs = dialogsFromServer.items.map(elem => {
-          return new Dialog(elem)
-        })
-        store.dispatch(fetchDialogs(dialogs))
-      }
     }
   }
 
   // ConnectyCube listeners
   onSentMessageListener(failedMessage, msg) {
-    console.warn('onSentMessageListener')
-    if (failedMessage) {
+    console.warn('onSentMessageListener', msg)
+    if (failedMessage || msg.extension.group_chat_alert_type) {
       return
     }
     store.dispatch(updateMessages(msg.extension.dialog_id, msg.id, { send_state: STATUS_SENT }))
@@ -319,12 +323,12 @@ class ChatService {
 
   // ConnectyCube listeners
   onReadStatus(messageId, dialogId, userId) {
-    console.warn('onReadStatus')
+    console.warn('onReadStatus', messageId)
     store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_READ }))
   }
 
   onDeliveredStatus(messageId, dialogId, userId) {
-    console.warn('onDeliveredStatus')
+    console.warn('onDeliveredStatus', messageId)
     store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_DELIVERED }))
   }
 
