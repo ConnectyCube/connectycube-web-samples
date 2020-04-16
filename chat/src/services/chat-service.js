@@ -152,12 +152,12 @@ class ChatService {
 
     const message = new FakeMessage(msg)
 
-    console.log('{chat-service} create-fake-msaage', message)
+    const newObjFreez = Object.freeze(message)
 
-    await store.dispatch(pushMessage(message, dialog.id))
+    await store.dispatch(pushMessage(newObjFreez, dialog.id))
     scrollToBottom()
     ConnectyCube.chat.send(recipient_id, msg)
-    store.dispatch(sortDialogs(message))
+    store.dispatch(sortDialogs(newObjFreez))
   }
 
 
@@ -314,23 +314,24 @@ class ChatService {
 
   // ConnectyCube listeners
   onSentMessageListener(failedMessage, msg) {
-    console.warn('onSentMessageListener', msg)
+    console.warn('onSentMessageListener')
     if (failedMessage || msg.extension.group_chat_alert_type) {
       return
     }
     store.dispatch(updateMessages(msg.extension.dialog_id, msg.id, { send_state: STATUS_SENT }))
   }
 
-  // ConnectyCube listeners
+  onDeliveredStatus(messageId, dialogId, userId) {
+    console.warn('onDeliveredStatus', messageId)
+    store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_DELIVERED }))
+  }
+
   onReadStatus(messageId, dialogId, userId) {
     console.warn('onReadStatus', messageId)
     store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_READ }))
   }
 
-  onDeliveredStatus(messageId, dialogId, userId) {
-    console.warn('onDeliveredStatus', messageId)
-    store.dispatch(updateMessages(dialogId, messageId, { send_state: STATUS_DELIVERED }))
-  }
+
 
   sendReadStatus(messageId, userId, dialogId) {
     ConnectyCube.chat.sendReadStatus({ messageId, userId, dialogId })

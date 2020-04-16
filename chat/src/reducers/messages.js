@@ -26,7 +26,6 @@ export default (messages = {}, action) => {
     }
 
     case PUSH_MESSAGE: {
-      console.log('{redux-action} push redux new message', action)
       return {
         ...messages,
         [action.dialogId]: [...messages[action.dialogId] || [], action.message]

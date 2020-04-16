@@ -38,18 +38,15 @@ const sortedDialog = (action, dialogs) => {
 }
 
 const updateStatusMessages = (action, message) => {
-  console.log('{redux-Action} - udate message send status', action)
   if (Object.keys(message).length === 0) {
     return message
   }
 
-  let isBreak = true
   const newMessages = message[action.dialogId].map((elem, index) => {
     if (elem.id === action.msgId) {
-      isBreak = false
-      return Object.assign(elem, action.msg)
-    } else if (isBreak) {
-      return Object.assign(elem, action.msg)
+      const updateSendStatus = { ...elem }
+      updateSendStatus.send_state = action.msg.send_state
+      return { ...updateSendStatus }
     }
     return elem
   })
