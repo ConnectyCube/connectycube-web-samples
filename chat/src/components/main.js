@@ -26,9 +26,6 @@ export default class Main extends Component {
 
   initUser = async () => {
     const routLink = await AuthService.init()
-    if (routLink === 'home') {
-      ChatService.setUpListeners()
-    }
     this.setState({ routName: routLink, isLoader: false })
   }
 

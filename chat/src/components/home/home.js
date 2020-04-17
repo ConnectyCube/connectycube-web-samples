@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import { Route, Redirect, BrowserRouter as Router } from "react-router-dom"
+import ChatService from '../../services/chat-service'
 import SideBar from './sideBar/sideBar'
 import Chat from './chat/chat'
 import SplashPage from './splashPage/splashPage'
@@ -18,6 +19,10 @@ export default class Home extends Component {
     }
     props.history.replace("/home")
     this.windowWidth = window.innerWidth
+  }
+
+  componentDidMount() {
+    ChatService.setUpListeners()
   }
 
   changeRouter = (router) => {
