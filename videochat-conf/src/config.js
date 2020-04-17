@@ -24,7 +24,8 @@ export const credentials = {
 };
 
 export const appConfig = {
-  debug: { mode: 1 }
+  debug: { mode: 1 },
+  conference: { server: 'wss://janus.connectycube.com:8989' }
 };
 
 export const users = [
@@ -61,4 +62,3 @@ export const users = [
 export const GUEST_ROOM_ONLY_MODE = false
 
 export const NO_ASNWER_TIMER = 30000 // 30 sec
-
