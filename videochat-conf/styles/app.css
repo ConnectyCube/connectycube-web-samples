@@ -33,8 +33,13 @@
 
 #login-image {
   margin-top: 10px;
-  height: 200px;
-  width: 320px;
+  height: 110px;
+  width: 110px;
+}
+
+#login-caption {
+  margin-top: 20px;
+  font-size: 28px;
 }
 
 #login-caption,
