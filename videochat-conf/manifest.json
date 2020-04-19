@@ -1,0 +1,21 @@
+{
+  "name": "ConnectyCube VideoChat",
+  "short_name": "ConnectyCube VideoChat",
+  "description": "ConnectyCube Conference calling code samples",
+  "icons": [
+    {
+      "src": "/images/icons-connectycube-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/icons-connectycube-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "theme_color": "#4EA7AB"
+}

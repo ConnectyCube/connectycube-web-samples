@@ -31,7 +31,7 @@ module.exports = env => ({
     contentBase: [path.join(__dirname, "./"), path.join(__dirname, "./dist")],
     historyApiFallback: true,
     https: true,
-    host: "192.168.0.104",
+    host: "127.0.0.1",
     port: 3000,
     hot: true
   },
