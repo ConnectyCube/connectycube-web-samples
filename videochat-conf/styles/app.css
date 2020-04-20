@@ -94,8 +94,8 @@
 #videochat-buttons-container {
   width: 320px;
   height: 50px;
-  position: absolute;
-  bottom: 15px;
+  position: fixed;
+  bottom: 25px;
   display: flex;
   flex-direction: row;
   align-items: center;
