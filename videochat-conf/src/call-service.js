@@ -384,6 +384,16 @@ class CallService {
       this.$muteUnmuteVideoButton.disabled = false
       this.setSwitchDevice()
     }
+    this.addBodyOnClickListener()
+  }
+
+  addBodyOnClickListener = () => {
+    document.body.onclick = this.onClickBody
+  }
+
+  onClickBody = () => {
+    const callToolButtons = document.getElementById('videochat-buttons-container')
+    callToolButtons.classList.toggle('hidden')
   }
 
   setAudioMute = () => {
