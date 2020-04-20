@@ -303,7 +303,7 @@ class CallService {
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
     return this._session.getUserMedia(this.mediaParams).then(stream => {
-      this.addStreamElement({id: this.currentUserID, name: this.currentUserName, local: true})
+      this.addStreamElement({id: this.currentUserID, name: 'Me', local: true})
       this.removeStreamLoaderByUserId(this.currentUserID)
       this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, {muted: true});
       this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
