@@ -6,6 +6,9 @@ import { users, GUEST_ROOM_ONLY_MODE } from "./config";
 class UIService {
   init = () => {
     AuthService.init();
+    if (!CallService.isWebRTCSupported()) {
+      return alert('This browser does not support WebRTC')
+    }
     if (this.checkJoinRoomUrl()) {
       return
     }

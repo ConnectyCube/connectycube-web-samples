@@ -532,6 +532,11 @@ class CallService {
     Object.values(this._answerUserTimers).forEach(timerId => clearTimeout(timerId))
     this._answerUserTimers = {}
   }
+
+  isWebRTCSupported() {
+    return window.RTCPeerConnection !== undefined && window.RTCPeerConnection !== null &&
+		navigator.getUserMedia !== undefined && navigator.getUserMedia !== null;
+  }
 }
 
 export default new CallService();
