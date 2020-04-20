@@ -16,6 +16,6 @@
   ],
   "start_url": "/?source=pwa",
   "background_color": "#ffffff",
-  "display": "standalone",
+  "display": "browser",
   "theme_color": "#4EA7AB"
 }
