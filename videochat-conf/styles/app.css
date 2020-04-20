@@ -249,7 +249,7 @@
 #videochat-streams {
   height: 100%;
   width: 100%;
-  max-width: 1024px;
+  /* max-width: 1024px; */
   display: grid;
   grid-gap: 13px;
   /* justify-content: stretch;
@@ -268,4 +268,8 @@
   #videochat-streams {
     grid-gap: 7px;
   }
+}
+
+.black-bg {
+  background-color: black;
 }

@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400, 300, 600, 700, 800&subset=latin, latin-ext);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800&subset=latin,latin-ext);
 
 /** RESET */
 html,
@@ -95,10 +95,11 @@ html,
 body {
   height: 100%;
   width: 100%;
-  min-height: 640px;
-  min-width: 320px;
+  /* min-height: 640px;
+  min-width: 320px; */
   font: 400 15px/1 "Open Sans", sans-serif;
   color: #808080;
+  background-color: white;
 }
 
 button {

@@ -25,6 +25,7 @@ class CallService {
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
+    document.body.classList.add('black-bg')
   };
 
   sendIncomingCallSystemMessage = (participantIds) => {
