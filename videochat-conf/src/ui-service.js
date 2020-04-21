@@ -1,11 +1,14 @@
 import Handlebars from "handlebars";
 import AuthService from "./auth-service";
-import CallService from "./call-service";
+import CallService, { isWebRTCSupported, isiOS } from "./call-service";
 import { users, GUEST_ROOM_ONLY_MODE } from "./config";
 
 class UIService {
   init = () => {
     AuthService.init();
+    if (!isWebRTCSupported) {
+      return alert(isiOS ? 'Due to iOS restrictions, only Safari browser supports voice and video calling. Please switch to Safari to get a complete functionality of TeaTalk app' : 'This browser does not support WebRTC')
+    }
     if (this.checkJoinRoomUrl()) {
       return
     }
@@ -15,12 +18,19 @@ class UIService {
   };
 
   addEventListenersForCallButtons = () => {
-    document.getElementById("call-start").addEventListener("click", () => CallService.startCall());
-    document.getElementById("videochat-stop-call").addEventListener("click", () => CallService.stopCall());
-    document.getElementById("videochat-mute-unmute").addEventListener("click", () => CallService.setAudioMute());
-    document.getElementById("videochat-mute-unmute-video").addEventListener("click", () => CallService.setVideoMute());
-    document.getElementById("videochat-switch-camera").addEventListener("click", () => CallService.switchCamera());
+    document.getElementById("call-start").addEventListener("click", this.buttonOnClickListener(() => CallService.startCall()));
+    document.getElementById("videochat-stop-call").addEventListener("click", this.buttonOnClickListener(() => CallService.stopCall()));
+    document.getElementById("videochat-mute-unmute").addEventListener("click", this.buttonOnClickListener(() => CallService.setAudioMute()));
+    document.getElementById("videochat-mute-unmute-video").addEventListener("click", this.buttonOnClickListener(() => CallService.setVideoMute()));
+    document.getElementById("videochat-switch-camera").addEventListener("click", this.buttonOnClickListener(() => CallService.switchCamera()));
   };
+
+  buttonOnClickListener = callback => {
+    return event => {
+      event.stopPropagation()
+      callback()
+    }
+  }
 
   checkJoinRoomUrl = () => {
     const {pathname} = window.location

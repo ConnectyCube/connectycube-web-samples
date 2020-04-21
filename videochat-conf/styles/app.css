@@ -94,8 +94,8 @@
 #videochat-buttons-container {
   width: 320px;
   height: 50px;
-  position: absolute;
-  bottom: 15px;
+  position: fixed;
+  bottom: 25px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -181,7 +181,7 @@
 }
 
 .user-name {
-  font-size: 3em;
+  font-size: 3.5vw;
   font-weight: bold;
   color: #fff;
 }
@@ -249,7 +249,7 @@
 #videochat-streams {
   height: 100%;
   width: 100%;
-  max-width: 1024px;
+  /* max-width: 1024px; */
   display: grid;
   grid-gap: 13px;
   /* justify-content: stretch;
@@ -268,4 +268,8 @@
   #videochat-streams {
     grid-gap: 7px;
   }
+}
+
+.black-bg {
+  background-color: black;
 }
