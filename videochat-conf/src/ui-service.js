@@ -1,13 +1,13 @@
 import Handlebars from "handlebars";
 import AuthService from "./auth-service";
-import CallService from "./call-service";
+import CallService, { isWebRTCSupported, isiOS } from "./call-service";
 import { users, GUEST_ROOM_ONLY_MODE } from "./config";
 
 class UIService {
   init = () => {
     AuthService.init();
-    if (!CallService.isWebRTCSupported()) {
-      return alert('This browser does not support WebRTC')
+    if (!isWebRTCSupported) {
+      return alert(isiOS ? 'Due to iOS restrictions, only Safari browser supports voice and video calling. Please switch to Safari to get a complete functionality of TeaTalk app' : 'This browser does not support WebRTC')
     }
     if (this.checkJoinRoomUrl()) {
       return
