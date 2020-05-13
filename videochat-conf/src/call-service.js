@@ -72,8 +72,8 @@ class CallService {
   $switchCameraButton = document.getElementById("videochat-switch-camera");
 
   mediaParams = {
-    audio: true,
-    video: true,
+    video: { width: 1280, height: 720 },
+    audio: true
   };
 
   _session = null;
@@ -82,7 +82,7 @@ class CallService {
   addStreamElement = opponents => {
     const $videochatStreams = document.getElementById("videochat-streams");
     const $videochatStreamsTemplate = document.getElementById("videochat-streams-template");
-    
+
     if (!Array.isArray(opponents)) {
       opponents = [opponents]
     }
@@ -156,7 +156,7 @@ class CallService {
     if (this.isGuestMode) {
       const userToAdd = {id: +userId, name: `${displayName || userId}`}
       this.addStreamElement(userToAdd)
-      return 
+      return
     }
     this.$dialing.pause();
     this.clearNoAnswerTimers(userId)
@@ -363,7 +363,8 @@ class CallService {
       this.participantIds = []
       this.janusRoomId = void 0
       this.currentUserName = void 0
-      this.mediaParams = {video: true, audio: true}
+      // this.mediaParams = {video: true, audio: true}
+      this.mediaParams = {video: { width: 1280, height: 720 }, audio: true}
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
