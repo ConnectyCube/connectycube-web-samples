@@ -72,8 +72,8 @@ class CallService {
   $switchCameraButton = document.getElementById("videochat-switch-camera");
 
   mediaParams = {
-    audio: true,
-    video: true,
+    video: { width: 1280, height: 720 },
+    audio: true
   };
 
   _session = null;
