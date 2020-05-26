@@ -4,9 +4,9 @@ This project contains chat and video chat code samples for JavaScript Web enviro
 
 The following code samples are available:
 
-- [Video Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat)
+- [P2P Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat)
 
-- [Conference Call code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf)
+- [Conference Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf)
 
 - [Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat)
 
@@ -15,9 +15,11 @@ The following code samples are available:
 All the samples use ConnectyCube SDK. The following tech integration documentation is available:
 
 - [JS WEB SDK documentation](https://developers.connectycube.com/js)
-- [Chat API](https://developers.connectycube.com/js/messaging)
-- [Video Chat API](https://developers.connectycube.com/js/videocalling)
 - [Authentication and Users](https://developers.connectycube.com/js/authentication-and-users)
+- [Chat API](https://developers.connectycube.com/js/messaging)
+- [P2P Calling API](https://developers.connectycube.com/js/videocalling)
+- [Conference Calling API](https://developers.connectycube.com/js/videocalling-conference)
+- [Push Notifications API](https://developers.connectycube.com/js/push-notifications)
 
 ## Have an issue?
 
