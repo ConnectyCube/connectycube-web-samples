@@ -8,7 +8,7 @@ Project contains the following features implemented:
 - Video calls up to 4 users
 - Mute/unmute microphone
 - Mute/unmute video
-- Change camera source
+- Switch camera
 - Snack bars to notify users about changes
 - Guest room mode up to 12 users
 
