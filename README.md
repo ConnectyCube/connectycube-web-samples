@@ -1,4 +1,4 @@
-# Chat and Video Chat code samples for Web, based on ConnectyCube platform
+# ConnectyCube Chat and Video Chat code samples for Web
 
 This project contains chat and video chat code samples for JavaScript Web environments and based on [ConnectyCube](https://connectycube.com/) communication platform.
 
