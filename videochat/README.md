@@ -15,7 +15,7 @@ Project contains the following features implemented:
 
 ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
 
-ConnectyCube Video Chat API documentation - [https://developers.connectycube.com/js/videocalling](https://developers.connectycube.com/js/videocalling)
+ConnectyCube P2P Calling API documentation - [https://developers.connectycube.com/js/videocalling](https://developers.connectycube.com/js/videocalling)
 
 ## Screenshots
 
