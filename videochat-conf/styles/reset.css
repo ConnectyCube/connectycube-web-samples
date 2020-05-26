@@ -99,6 +99,9 @@ body {
   min-width: 320px; */
   font: 400 15px/1 "Open Sans", sans-serif;
   color: #808080;
+}
+
+body {
   background-color: white;
 }
 

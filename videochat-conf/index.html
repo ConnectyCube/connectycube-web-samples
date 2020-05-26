@@ -102,16 +102,16 @@
 
       <!-- HANDLEBARS TEMPLATES -->
       <script type="text/x-handlebars-template" id="login-buttons-template">
-        {{#if darwUsers}}
+        {{#if drawUsers}}
           {{#each users}}
             <button class="login-button {{this.name}}-bg-color" data-id="{{this.id}}">Login as {{this.name}}</button>
           {{/each}}
         {{/if}}
         <div>
-          {{#if darwUsers}}
+          {{#if drawJoinGuestRoomButton}}
             <h2 class="guest-title">Or create and join</h2>
+            <button id="guest-room-join-btn" class="login-button">{{guestButtonText}}</button>
           {{/if}}
-          <button id="guest-room-join-btn" class="login-button">{{guestButtonText}}</button>
         </div>
       </script>
 

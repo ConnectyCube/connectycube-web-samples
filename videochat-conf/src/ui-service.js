@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import AuthService from "./auth-service";
 import CallService, { isWebRTCSupported, isiOS } from "./call-service";
-import { users, GUEST_ROOM_ONLY_MODE } from "./config";
+import { users, GUEST_ROOM_ONLY_MODE, CALLING_ONLY_MODE } from "./config";
 
 class UIService {
   init = () => {
@@ -70,7 +70,9 @@ class UIService {
     const $loginButtonsTemplate = document.getElementById("login-buttons-template");
     const loginButtonsTemplate = Handlebars.compile($loginButtonsTemplate.innerHTML);
 
-    $loginButtonsContainer.innerHTML = loginButtonsTemplate({ users, darwUsers: !GUEST_ROOM_ONLY_MODE, guestButtonText: GUEST_ROOM_ONLY_MODE ? 'Create and Join Guest Room' : 'Guest Room' });
+    $loginButtonsContainer.innerHTML = loginButtonsTemplate({ users, drawUsers: !GUEST_ROOM_ONLY_MODE,
+                                                       drawJoinGuestRoomButton: !CALLING_ONLY_MODE || GUEST_ROOM_ONLY_MODE,
+                                                               guestButtonText: GUEST_ROOM_ONLY_MODE ? 'Create and Join Guest Room' : 'Guest Room' });
   };
 
   renderSelectUsers = currentUserId => {

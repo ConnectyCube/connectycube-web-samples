@@ -12,7 +12,7 @@ module.exports = env => ({
     libraryTarget: "umd"
   },
   optimization: {
-    minimize: true
+    minimize: !env.non_minimize
   },
   plugins: [
     new CleanWebpackPlugin(),

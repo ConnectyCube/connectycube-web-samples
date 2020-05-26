@@ -503,6 +503,7 @@ class CallService {
     $video.style.visibility = "visible";
 
     if (isiOS) {
+      document.body.style.background = "transparent";
       document.getElementById("videochat").style.background = "transparent";
       $video.style.backgroundColor = "";
       $video.style.zIndex = -1;

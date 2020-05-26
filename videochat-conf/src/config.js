@@ -59,6 +59,9 @@ export const users = [
   }
 ];
 
+const isCordovaEnv = !!window.cordova;
+
 export const GUEST_ROOM_ONLY_MODE = false
+export const CALLING_ONLY_MODE = isCordovaEnv;
 
 export const NO_ASNWER_TIMER = 30000 // 30 sec
