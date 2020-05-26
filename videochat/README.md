@@ -1,13 +1,13 @@
 # Video Chat code sample for Browser for ConnectyCube platform
 
-This README introduces [ConnectyCube](https://connectycube.com) Video Chat code sample for Browser
+This README introduces [ConnectyCube](https://connectycube.com) P2P Calling code sample for Web.
 
 Project contains the following features implemented:
 
 - User authorization
 - Video calls up to 4 users
 - Mute/unmute microphone
-- Change camera source
+- Switch camera 
 - Snack bars to notify users about changes
 - Compatibility with the [React Native Video Chat code sample](https://github.com/ConnectyCube/connectycube-reactnative-samples/tree/master/RNVideoChat)
 
