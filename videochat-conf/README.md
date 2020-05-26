@@ -1,6 +1,6 @@
 # Conference Call code sample for Browser for ConnectyCube platform
 
-This README introduces [ConnectyCube](https://connectycube.com) Conference Call code sample for Browser
+This README introduces [ConnectyCube](https://connectycube.com) Conference Calling code sample for Web
 
 Project contains the following features implemented:
 
@@ -12,18 +12,17 @@ Project contains the following features implemented:
 - Snack bars to notify users about changes
 - Guest room mode up to 12 users
 
+The sample provides 2 mods:
+  - Calling mode, with call/accept/reject signals
+  - Guest Room modde, where any user can join a call by link. To create a guest room you can click on a 'Guest Room' button and then share an url with other users. 
+  
+There is a live demo working in a 'Guest Room' mode available https://teatalk.connectycube.com
+
 ## Documentation
 
 ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
 
-ConnectyCube Conference API documentation - [https://developers.connectycube.com/js/videocalling-conference](https://developers.connectycube.com/js/videocalling-conference)
-
-This sample has two mods:
-  - Calls up to 4 users (like web p2p sample)
-  - Guest Room. To create guest rom you can click on Guest Room button under title "Or create and join", than you can share url to other participants. If you want to use Guset Room mode only you can set variable (`videochat-conf/src/config.js`) to true
-  ```javascript
-    const GUEST_ROOM_ONLY_MODE = true
-  ```
+ConnectyCube Conference Calling API documentation - [https://developers.connectycube.com/js/videocalling-conference](https://developers.connectycube.com/js/videocalling-conference)
 
 ## Screenshots
 
