@@ -18,8 +18,7 @@ npm-debug.log.*
 # packages from "npm pack"
 *.tgz
 
-#dist
-dist/
+build
 
 # *Sublime
 *.sublime-*
