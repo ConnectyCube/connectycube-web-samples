@@ -5,13 +5,21 @@ import { users, GUEST_ROOM_ONLY_MODE, CALLING_ONLY_MODE } from "./config";
 
 class UIService {
   init = () => {
-    AuthService.init();
     if (!isWebRTCSupported) {
       return alert(isiOS ? 'Due to iOS restrictions, only Safari browser supports voice and video calling. Please switch to Safari to get a complete functionality of TeaTalk app' : 'This browser does not support WebRTC')
     }
-    if (this.checkJoinRoomUrl()) {
-      return
+
+    const res = this.parseJoinRoomUrl()
+    if (res) {
+      console.log("[UIService][parseJoinRoomUrl] res", res)
+      const [janusRoomId, janusServerEndpoint] = res;
+      AuthService.init(janusServerEndpoint);
+      this.createAndJoinGuestRoom(janusRoomId)
+      return;
+    } else {
+      AuthService.init();
     }
+
     this.renderLoginUsers();
     document.querySelectorAll(".login-button[data-id]").forEach($element => $element.addEventListener("click", this.login));
     document.getElementById('guest-room-join-btn').addEventListener('click', () => this.createAndJoinGuestRoom())
@@ -32,14 +40,13 @@ class UIService {
     }
   }
 
-  checkJoinRoomUrl = () => {
+  parseJoinRoomUrl = () => {
     const {pathname} = window.location
-    const [,joinPath, janusRoomId] = pathname.split('/')
-    if (joinPath === 'join' && janusRoomId) {
-      this.createAndJoinGuestRoom(janusRoomId)
-      return true
+    const [,joinPath, roomInfo] = pathname.split('/')
+    if (joinPath === 'join' && roomInfo) {
+      return atob(roomInfo).split("##");
     }
-    return false
+    return null
   }
 
   createAndJoinGuestRoom = janusRoomId => {

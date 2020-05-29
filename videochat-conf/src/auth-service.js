@@ -6,7 +6,12 @@ class AuthService {
   $loader = document.getElementById("login-loader");
   $caption = document.getElementById("login-caption");
 
-  init = () => ConnectyCube.init(credentials, appConfig);
+  init = (janusServerEndpoint = null) => {
+    if (janusServerEndpoint) {
+      appConfig.conference.server = janusServerEndpoint
+    }
+    ConnectyCube.init(credentials, appConfig)
+  }
 
   createSession(user) {
     return ConnectyCube.createSession(user)
