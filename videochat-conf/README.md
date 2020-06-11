@@ -99,3 +99,7 @@ To make the sample works for your own app, please do the following:
 4.  Install node modules - `npm install`
 5.  Run `npm run build` and open `dist/index.html`
 6.  Or run `npm start` to start application in developing mode on `https://localhost:3000`
+
+## Can't build yourself?
+
+Got troubles with building React Native code sample? Just create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-web-samples/issues) - we will create the sample for you. For FREE!
