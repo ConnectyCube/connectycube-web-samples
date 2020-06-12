@@ -6,6 +6,7 @@ export const isMobile = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry
 export const isWebRTCSupported = window.RTCPeerConnection !== undefined && window.RTCPeerConnection !== null && navigator.getUserMedia !== undefined && navigator.getUserMedia !== null
 
 class CallService {
+  static USER_NAME_KEY = "ConnectyCubeVideoConf:UserNameKey";
 
   _answerUserTimers = {}
   currentUserID
@@ -519,8 +520,17 @@ class CallService {
 
   initGuestRoom = janusRoomId => {
     this.currentUserID = this._getUniqueUserId()
+<<<<<<< HEAD
     while (!this.currentUserName) {
       this.currentUserName = prompt(messages.prompt_user_name, `User${this.currentUserID}`)
+=======
+    const parseName = JSON.parse(localStorage.getItem(CallService.USER_NAME_KEY))
+    const userName = parseName ? parseName : this.getRandomName();
+
+    while (!this.currentUserName) {
+      this.currentUserName = prompt(messages.prompt_user_name, userName)
+      localStorage.setItem(CallService.USER_NAME_KEY, JSON.stringify(this.currentUserName))
+>>>>>>> conf-persist-username
       if (this.currentUserName === null) {
         if (confirm(messages.confirm_cancel)) {
           window.location.href = window.location.origin
@@ -538,6 +548,11 @@ class CallService {
     }
     this.joinConf(this.janusRoomId)
       .then(() => this.showSnackbar(messages.share_call_link))
+  }
+
+  getRandomName = () => {
+    const dogNames = require('dog-names');
+    return dogNames.allRandom();
   }
 
   startNoAnswerTimers(participantIds) {
