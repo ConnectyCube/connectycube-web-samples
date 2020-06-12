@@ -114,6 +114,7 @@ class CallService {
     const $avatar = document.querySelector(`.user-placeholder[data-id="${user_id}"] .user-image`);
     const rndNumber = Math.floor(Math.random() * 10)
     $avatar.style.background = `#ffffff url("../images/animals/${defaultAvatar[rndNumber]}") no-repeat center`
+    $avatar.style.backgroundSize = 'contain'
   }
 
   toggleUserPlaceholder(user_id, toShow) {
@@ -520,17 +521,12 @@ class CallService {
 
   initGuestRoom = janusRoomId => {
     this.currentUserID = this._getUniqueUserId()
-<<<<<<< HEAD
-    while (!this.currentUserName) {
-      this.currentUserName = prompt(messages.prompt_user_name, `User${this.currentUserID}`)
-=======
     const parseName = JSON.parse(localStorage.getItem(CallService.USER_NAME_KEY))
     const userName = parseName ? parseName : this.getRandomName();
 
     while (!this.currentUserName) {
       this.currentUserName = prompt(messages.prompt_user_name, userName)
       localStorage.setItem(CallService.USER_NAME_KEY, JSON.stringify(this.currentUserName))
->>>>>>> conf-persist-username
       if (this.currentUserName === null) {
         if (confirm(messages.confirm_cancel)) {
           window.location.href = window.location.origin
