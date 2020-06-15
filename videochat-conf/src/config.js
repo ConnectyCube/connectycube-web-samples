@@ -66,7 +66,7 @@ export const CALLING_ONLY_MODE = isCordovaEnv;
 
 export const NO_ASNWER_TIMER = 30000 // 30 sec
 
-export const defaultAvatar =
+export const defaultAvatarlist =
   [
     'animals_1.jpg',
     'animals_2.jpg',
