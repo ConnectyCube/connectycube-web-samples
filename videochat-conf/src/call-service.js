@@ -15,7 +15,7 @@ class CallService {
   janusRoomId
   isGuestMode
   currentUserName
-  avatarIndex = null
+  avatarIndex = {}
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -113,10 +113,10 @@ class CallService {
 
   setDefaultAvatar = (user_id) => {
     const $avatar = document.querySelector(`.user-placeholder[data-id="${user_id}"] .user-image`);
-    if (!this.avatarIndex) {
-      this.avatarIndex = Math.floor(Math.random() * 10)
+    if (!this.avatarIndex[user_id]) {
+      this.avatarIndex[user_id] = Math.floor(Math.random() * 10)
     }
-    $avatar.style.background = `#ffffff url("../images/animals/${defaultAvatarlist[this.avatarIndex]}") no-repeat center`
+    $avatar.style.background = `#ffffff url("../images/animals/${defaultAvatarlist[this.avatarIndex[user_id]]}") no-repeat center`
     $avatar.style.backgroundSize = 'contain'
   }
 
