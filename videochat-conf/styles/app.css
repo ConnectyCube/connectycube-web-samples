@@ -152,6 +152,7 @@
   width: 100%;
   position: relative;
   overflow: hidden;
+  border: 1px solid #bfbfbf;
 }
 
 .videochat-stream-loader {
@@ -184,8 +185,8 @@
 }
 
 .user-name {
-  font-size: 3.5vw;
-  font-weight: bold;
+  /* font-size: 3.5vw;
+  font-weight: bold; */
   color: #fff;
 }
 
@@ -196,7 +197,7 @@
   text-align: center;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  border: 2px solid #bfbfbf;
+  /* border: 2px solid #bfbfbf; */
 }
 
 .display-user-name > h2 {
