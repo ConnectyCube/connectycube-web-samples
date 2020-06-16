@@ -65,3 +65,17 @@ export const GUEST_ROOM_ONLY_MODE = false
 export const CALLING_ONLY_MODE = isCordovaEnv;
 
 export const NO_ASNWER_TIMER = 30000 // 30 sec
+
+export const defaultAvatarlist =
+  [
+    'animals_1.jpg',
+    'animals_2.jpg',
+    'animals_3.jpg',
+    'animals_4.jpg',
+    'animals_5.jpg',
+    'animals_6.jpg',
+    'animals_7.jpg',
+    'animals_8.jpg',
+    'animals_9.jpg',
+    'animals_10.jpg',
+  ]
