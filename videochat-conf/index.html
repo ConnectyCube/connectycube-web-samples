@@ -170,11 +170,18 @@
           </div>
           <div 
             data-id="{{id}}" 
-            class="display-signal-icon tooltip" 
-            title="This is my span's tooltip message!"
+            class="display-signal-icon tooltip-container"
+            data-tooltipster="" 
           >
             <i class="fa fa-signal" aria-hidden="true"></i>
-          </div>
+            <div class="tool-tip-content">
+              <ul>
+                <li>Connection: good/average/bad</li>
+                <li>Bitrate: xx Kbit/s</li>
+                <li>Mic level: xx</li>
+              </ul>
+            </div>
+          </div>   
           <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({{id}})">         
             <div class="user-image"></div>
           </div>

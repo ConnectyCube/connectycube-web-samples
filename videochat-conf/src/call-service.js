@@ -114,23 +114,33 @@ class CallService {
   }
 
   eventBirateModal = () => {
-    $(document).ready(function () {
-      console.warn('$(document).ready(function()')
-      $(".tooltip").tooltipster({
-        theme: "tooltipster-borderless",
+    $(".tooltip-container").tooltipster({
+      theme: "tooltipster-borderless",
+      interactive: true,
+      contentAsHTML: true,
+      delay: 200,
+      trigger: "custom",
+      triggerOpen: {
+        mouseenter: true
+      },
+      triggerClose: {
         interactive: true,
-        contentAsHTML: true,
-        delay: 200,
-        trigger: "custom",
-        triggerOpen: {
-          mouseenter: true
-        },
-        triggerClose: {
-          interactive: true,
-          mouseleave: true,
-          touchleave: true
+        mouseleave: true,
+        touchleave: true
+      },
+      functionInit: function (instance, helper) {
+        var $origin = $(helper.origin);
+        var content = $origin.find(".tool-tip-content").detach();
+        instance.content(content);
+
+        var data = $origin.attr("data-tooltipster");
+        if (data) {
+          data = JSON.parse(data);
+          $.each(data, function (name, option) {
+            instance.option(name, option);
+          });
         }
-      });
+      }
     });
   }
 
