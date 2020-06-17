@@ -109,6 +109,29 @@ class CallService {
     $videochatStreams.classList.value = `grid-${opponents.length + curretActiveCallUsersCout}`
 
     $videochatStreams.appendChild(documentFragment)
+
+    this.eventBirateModal()
+  }
+
+  eventBirateModal = () => {
+    $(document).ready(function () {
+      console.warn('$(document).ready(function()')
+      $(".tooltip").tooltipster({
+        theme: "tooltipster-borderless",
+        interactive: true,
+        contentAsHTML: true,
+        delay: 200,
+        trigger: "custom",
+        triggerOpen: {
+          mouseenter: true
+        },
+        triggerClose: {
+          interactive: true,
+          mouseleave: true,
+          touchleave: true
+        }
+      });
+    });
   }
 
   setDefaultAvatar = (user_id) => {
