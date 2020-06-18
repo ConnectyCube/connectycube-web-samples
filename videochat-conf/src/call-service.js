@@ -16,6 +16,7 @@ class CallService {
   isGuestMode
   currentUserName
   avatarIndex = {}
+  usersStatsList = {}
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -113,6 +114,19 @@ class CallService {
     this.eventBirateModal()
   }
 
+  monitoringUsersStats = () => {
+    const testArray = [444, 555, 666];
+    testArray.forEach(user_id => {
+      this.getUserStat(user_id)
+    });
+  }
+
+  getUserStat = (user_id) => {
+    this._session.get
+    const bitrate = 11;
+    const micLevel = 12;
+  }
+
   eventBirateModal = () => {
     $(".tooltip-container").tooltipster({
       theme: "tooltipster-borderless",
@@ -140,7 +154,14 @@ class CallService {
             instance.option(name, option);
           });
         }
+      },
+
+      functionBefore: function (instance) {
+        const user_id = window.ConnectyCubeActiveUserStatId;
+        const data = `<ul><li>Connection: good/average/bad</li><li>user-id: ${user_id}</li></ul>`;
+        instance.content(data);
       }
+
     });
   }
 
