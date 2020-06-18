@@ -1,7 +1,6 @@
+window.ConnectyCubeActiveUserStatId = null
 class uiUsersEvents {
-
   _renderSignalStat(userId) {
-    window.ConnectyCubeActiveUserStatId = null
     if (window.ConnectyCubeActiveUserStatId !== userId) {
       if (window.ConnectyCubeActiveUserStatId !== null) {
         this.toggleSelectedUserStatIcon(window.ConnectyCubeActiveUserStatId, false)
