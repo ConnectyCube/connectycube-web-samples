@@ -188,6 +188,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    z-index: 100;
 }
 
 .display-signal-icon {

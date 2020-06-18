@@ -24,7 +24,8 @@ class CallService {
   currentUserName
   avatarIndex = {}
   usersStatsList = {}
-  usersStatsTimers = null
+  updateStatsTimer = null
+  conectedParticipantIds = []
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -122,11 +123,25 @@ class CallService {
     this.eventBirateModal()
   }
 
-  monitoringUsersStats = () => {
-    const testArray = [72780, 72781];
-    this.usersStatsTimers = setInterval(() => {
-      console.warn('getUserStat')
-      testArray.forEach(user_id => {
+  monitoringUsersStats = (userId) => {
+
+    clearInterval(this.updateStatsTimer)
+
+    let updateConectedParticipantIds = [];
+    const isAlready = this.conectedParticipantIds.includes(userId);
+
+    if (isAlready) {
+      this.conectedParticipantIds.forEach(element => {
+        element !== userId && updateConectedParticipantIds.push(element);
+      });
+      this.conectedParticipantIds = updateConectedParticipantIds;
+    } else {
+      this.conectedParticipantIds.push(userId);
+    }
+
+    this.updateStatsTimer = setInterval(() => {
+      console.warn("UPDATE_STAT", this.conectedParticipantIds)
+      this.conectedParticipantIds.forEach(user_id => {
         this.getUserStat(user_id)
       });
     }, GET_USERS_STATS_TIME_INTERVAL)
@@ -173,6 +188,15 @@ class CallService {
 
       functionBefore: (instance) => {
         const user_id = window.ConnectyCubeActiveUserStatId;
+        if (this.currentUserID !== user_id && !this.usersStatsList[user_id].bitrate) {
+          instance.content(
+            `<ul>
+              <li>Connection: Sync</li>
+              <li>Bitrate: Sync</li>
+              <li>Mic level: Sync</li>
+            </ul>`
+          )
+        }
         if (this.currentUserID !== user_id) {
           instance.content(
             `<ul>
@@ -321,6 +345,11 @@ class CallService {
 
   onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
     console.warn('[onRemoteConnectionStateChangedListener]', userId, iceState)
+
+    if (iceState === 'connected') {
+      this.monitoringUsersStats(userId)
+    }
+
   }
 
   onSessionConnectionStateChangedListener = (session, iceState) => {
@@ -334,6 +363,7 @@ class CallService {
     this.hideIncomingCallModal();
     this.startNoAnswerTimers(this.participantIds)
     this.joinConf(this.janusRoomId)
+    this.monitoringUsersStats(this.currentUserID)
   };
 
   rejectCall = (session, extension = {}) => {
@@ -372,6 +402,7 @@ class CallService {
     } else {
       this.showSnackbar(messages.select_more_users);
     }
+    this.monitoringUsersStats(this.initiatorID)
   };
 
   _getUniqueRoomId() {
@@ -424,7 +455,9 @@ class CallService {
     const $videochatScreen = document.getElementById("videochat");
     const $muteButton = document.getElementById("videochat-mute-unmute");
     const $videochatStreams = document.getElementById("videochat-streams");
-    clearInterval(this.usersStatsTimers)
+
+    this.monitoringUsersStats(userId)
+
     if (userId) {
       this.clearNoAnswerTimers(userId)
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
@@ -454,6 +487,7 @@ class CallService {
       this._session = null;
       this.videoDevicesIds = [];
       this.clearNoAnswerTimers()
+      clearInterval(this.updateStatsTimer)
       this.initiatorID = void 0
       this.participantIds = []
       this.janusRoomId = void 0
