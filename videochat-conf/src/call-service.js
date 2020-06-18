@@ -128,9 +128,9 @@ class CallService {
     clearInterval(this.updateStatsTimer)
 
     let updateConectedParticipantIds = [];
-    const isAlready = this.conectedParticipantIds.includes(userId);
+    const isExisting = this.conectedParticipantIds.includes(userId);
 
-    if (isAlready) {
+    if (isExisting) {
       this.conectedParticipantIds.forEach(element => {
         element !== userId && updateConectedParticipantIds.push(element);
       });
@@ -151,7 +151,13 @@ class CallService {
     if (this.currentUserID !== user_id) {
       const stat = {
         micLevel: this._session.getRemoteUserVolume(user_id),
-        bitrate: this._session.getRemoteUserBitrate(user_id)
+        bitrate: this._session.getRemoteUserBitrate(user_id),
+        connection: 'good'
+      }
+      this.usersStatsList[user_id] = stat;
+    } else {
+      const stat = {
+        connection: 'good'
       }
       this.usersStatsList[user_id] = stat;
     }
@@ -172,6 +178,7 @@ class CallService {
         mouseleave: true,
         touchleave: true
       },
+
       functionInit: (instance, helper) => {
         const $origin = $(helper.origin);
         const content = $origin.find(".tool-tip-content").detach();
@@ -200,7 +207,7 @@ class CallService {
         if (this.currentUserID !== user_id) {
           instance.content(
             `<ul>
-              <li>Connection: good/average/bad</li>
+              <li>Connection: ${this.usersStatsList[user_id].connection}</li>
               <li>Bitrate: ${this.usersStatsList[user_id].bitrate}</li>
               <li>Mic level: ${this.usersStatsList[user_id].micLevel}</li>
             </ul>`
@@ -208,13 +215,11 @@ class CallService {
         } else {
           instance.content(
             `<ul>
-              <li>id: ${user_id}</li>
-              <li>Connection: good/average/bad</li>
+              <li>Connection: ${this.usersStatsList[user_id].connection}</li>
             </ul>`
           )
         }
       }
-
     });
   }
 
@@ -341,15 +346,17 @@ class CallService {
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn('[onSlowLinkListener]', userId, uplink, nacks)
+    const stat = {
+      connection: 'bad',
+    }
+    this.usersStatsList[userId] = stat;
   }
 
   onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
     console.warn('[onRemoteConnectionStateChangedListener]', userId, iceState)
-
     if (iceState === 'connected') {
       this.monitoringUsersStats(userId)
     }
-
   }
 
   onSessionConnectionStateChangedListener = (session, iceState) => {
@@ -487,13 +494,16 @@ class CallService {
       this._session = null;
       this.videoDevicesIds = [];
       this.clearNoAnswerTimers()
-      clearInterval(this.updateStatsTimer)
       this.initiatorID = void 0
       this.participantIds = []
       this.janusRoomId = void 0
       this.currentUserName = void 0
       // this.mediaParams = {video: true, audio: true}
       this.mediaParams = { video: { width: 1280, height: 720 }, audio: true }
+      this.usersStatsList = {}
+      this.updateStatsTimer = null
+      this.conectedParticipantIds = []
+      clearInterval(this.updateStatsTimer)
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
