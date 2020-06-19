@@ -5,7 +5,8 @@ import {
   messages,
   appConfig,
   defaultAvatarlist,
-  GET_USERS_STATS_TIME_INTERVAL
+  GET_USERS_STATS_TIME_INTERVAL,
+  MAX_MIC_LEVEL
 } from "./config";
 
 export const isiOS = window.device?.platform === "iOS" || !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);;
@@ -125,6 +126,10 @@ class CallService {
 
   monitoringUsersStats = (userId) => {
 
+    if (!userId) {
+      return
+    }
+
     clearInterval(this.updateStatsTimer)
 
     let updateConectedParticipantIds = [];
@@ -221,11 +226,12 @@ class CallService {
           )
         }
         if (this.currentUserID !== user_id) {
+          const volume = this.usersStatsList[user_id].micLevel / MAX_MIC_LEVEL * 100
           instance.content(
             `<ul>
               <li>Connection: ${this.usersStatsList[user_id].connection}</li>
               <li>Bitrate: ${this.usersStatsList[user_id].bitrate}</li>
-              <li>Mic level: ${this.usersStatsList[user_id].micLevel}</li>
+              <li>Mic level: ${volume.toFixed(2)}%</li>
             </ul>`
           )
         } else {

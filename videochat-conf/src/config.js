@@ -68,6 +68,8 @@ export const NO_ASNWER_TIMER = 30000 // 30 sec
 
 export const GET_USERS_STATS_TIME_INTERVAL = 3000
 
+export const MAX_MIC_LEVEL = 20000
+
 export const defaultAvatarlist =
   [
     'animals_1.jpg',
