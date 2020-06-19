@@ -184,11 +184,18 @@
     width: 30px;
     height: 30px;
     display: flex;
-    background-color: #68e143;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     z-index: 100;
+}
+
+.display-signal-icon {
+  background-color: #68e143;
+}
+
+.display-signal-icon.bad { 
+  background-color: #d60b06;
 }
 
 .display-signal-icon {

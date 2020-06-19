@@ -147,8 +147,21 @@ class CallService {
     }, GET_USERS_STATS_TIME_INTERVAL)
   }
 
+  goodSlowLinkIconColor = (userId) => {
+    const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
+    $selectedUserStat.classList.remove('bad')
+  }
+
+  badSlowLinkIconColor = (userId) => {
+    const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
+    $selectedUserStat.classList.add('bad')
+  }
+
   getUserStat = (user_id) => {
     if (this.currentUserID !== user_id) {
+      if (this.usersStatsList[user_id]?.connection === 'bad') {
+        this.goodSlowLinkIconColor(user_id)
+      }
       const stat = {
         micLevel: this._session.getRemoteUserVolume(user_id),
         bitrate: this._session.getRemoteUserBitrate(user_id),
@@ -156,6 +169,9 @@ class CallService {
       }
       this.usersStatsList[user_id] = stat;
     } else {
+      if (this.usersStatsList[user_id]?.connection === 'bad') {
+        this.goodSlowLinkIconColor(user_id)
+      }
       const stat = {
         connection: 'good'
       }
@@ -350,6 +366,8 @@ class CallService {
       connection: 'bad',
     }
     this.usersStatsList[userId] = stat;
+
+    this.badSlowLinkIconColor(userId)
   }
 
   onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
@@ -463,12 +481,11 @@ class CallService {
     const $muteButton = document.getElementById("videochat-mute-unmute");
     const $videochatStreams = document.getElementById("videochat-streams");
 
-    this.monitoringUsersStats(userId)
-
     if (userId) {
       this.clearNoAnswerTimers(userId)
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
       this.removeStreamBlockByUserId(userId)
+      this.monitoringUsersStats(userId)
 
       const $streams = Array.from(document.querySelectorAll(".videochat-stream-container"));
 
@@ -484,6 +501,7 @@ class CallService {
       if (this._session) {
         this._session.leave();
       }
+      clearInterval(this.updateStatsTimer)
       ConnectyCube.videochatconference.clearSession(this._session.id);
       this.$dialing.pause();
       this.$calling.pause();
@@ -503,7 +521,6 @@ class CallService {
       this.usersStatsList = {}
       this.updateStatsTimer = null
       this.conectedParticipantIds = []
-      clearInterval(this.updateStatsTimer)
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
