@@ -321,3 +321,10 @@
 .black-bg {
   background-color: black;
 }
+
+.tooltipster-sidetip.tooltipster-borderless.tooltipster-borderless-customized .tooltipster-box {
+	background: black;
+	border: 1px solid grey;
+  border-radius: 6px;
+  margin: 20px;
+}

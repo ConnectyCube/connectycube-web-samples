@@ -15,6 +15,7 @@ export const isWebRTCSupported = window.RTCPeerConnection !== undefined && windo
 
 class CallService {
   static USER_NAME_KEY = "ConnectyCubeVideoConf:UserNameKey";
+  static ACTIVE_BROWSER = null
 
   _answerUserTimers = {}
   currentUserID
@@ -40,6 +41,7 @@ class CallService {
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
     document.body.classList.add('black-bg')
+    this.detectBrowser()
   };
 
   sendIncomingCallSystemMessage = (participantIds) => {
@@ -121,10 +123,42 @@ class CallService {
 
     $videochatStreams.appendChild(documentFragment)
 
-    this.eventBirateModal()
+    this.initStatsTooltip()
   }
 
-  monitoringUsersStats = (userId) => {
+  detectBrowser = () => {
+    let sBrowser, sUsrAg = navigator.userAgent;
+
+    if (sUsrAg.indexOf("Firefox") > -1) {
+      sBrowser = "Firefox";
+      // "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"
+    } else if (sUsrAg.indexOf("SamsungBrowser") > -1) {
+      sBrowser = "SamsungInternet";
+      // "Mozilla/5.0 (Linux; Android 9; SAMSUNG SM-G955F Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/9.4 Chrome/67.0.3396.87 Mobile Safari/537.36
+    } else if (sUsrAg.indexOf("Opera") > -1 || sUsrAg.indexOf("OPR") > -1) {
+      sBrowser = "Opera";
+      // "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 OPR/57.0.3098.106"
+    } else if (sUsrAg.indexOf("Trident") > -1) {
+      sBrowser = "InternetExplorer";
+      // "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; Zoom 3.6.0; wbx 1.0.0; rv:11.0) like Gecko"
+    } else if (sUsrAg.indexOf("Edge") > -1) {
+      sBrowser = "Edge";
+      // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299"
+    } else if (sUsrAg.indexOf("Chrome") > -1) {
+      sBrowser = "Chrome"; //Chrome or Chromium
+      // "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/66.0.3359.181 Chrome/66.0.3359.181 Safari/537.36"
+    } else if (sUsrAg.indexOf("Safari") > -1) {
+      sBrowser = "Safari";
+      // "Mozilla/5.0 (iPhone; CPU iPhone OS 11_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Mobile/15E148 Safari/604.1 980x1306"
+    } else {
+      sBrowser = "unknown";
+    }
+
+    CallService.ACTIVE_BROWSER = sBrowser
+    console.warn('CallService.ACTIVE_BROWSER', CallService.ACTIVE_BROWSER)
+  }
+
+  startMonitoringUserStats = (userId) => {
 
     if (!userId) {
       return
@@ -145,7 +179,7 @@ class CallService {
     }
 
     this.updateStatsTimer = setInterval(() => {
-      console.warn("UPDATE_STAT", this.conectedParticipantIds)
+      // console.warn("UPDATE_STAT", this.conectedParticipantIds)
       this.conectedParticipantIds.forEach(user_id => {
         this.getUserStat(user_id)
       });
@@ -164,35 +198,53 @@ class CallService {
 
   getUserStat = (user_id) => {
     if (this.currentUserID !== user_id) {
-      if (this.usersStatsList[user_id]?.connection === 'bad') {
-        this.goodSlowLinkIconColor(user_id)
-      }
-      const stat = {
+      let stat = {
         micLevel: this._session.getRemoteUserVolume(user_id),
         bitrate: this._session.getRemoteUserBitrate(user_id),
         connection: 'good'
       }
+      if (this.usersStatsList[user_id]?.timeStampSlowLink) {
+        if (Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink < 10) {
+          stat.connection = 'bad';
+          stat.timeStampSlowLink = this.usersStatsList[user_id].timeStampSlowLink;
+        } else {
+          stat.timeStampSlowLink = null
+          this.goodSlowLinkIconColor(user_id)
+        }
+      }
+      if (CallService.ACTIVE_BROWSER === 'Safari') {
+        const newBitrate = stat.bitrate.split(' ')[0] / 1000
+        stat.bitrate = `${Math.round(newBitrate)} kbits/sec`
+      }
       this.usersStatsList[user_id] = stat;
     } else {
-      if (this.usersStatsList[user_id]?.connection === 'bad') {
-        this.goodSlowLinkIconColor(user_id)
-      }
       const stat = {
         connection: 'good'
+      }
+      if (this.usersStatsList[user_id]?.timeStampSlowLink) {
+        if (Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink < 10) {
+          stat.connection = 'bad';
+          stat.timeStampSlowLink = this.usersStatsList[user_id].timeStampSlowLink;
+        } else {
+          stat.timeStampSlowLink = null
+          this.goodSlowLinkIconColor(user_id)
+        }
       }
       this.usersStatsList[user_id] = stat;
     }
   }
 
-  eventBirateModal = () => {
+
+  initStatsTooltip = () => {
     $(".tooltip-container").tooltipster({
-      theme: "tooltipster-borderless",
+      theme: ["tooltipster-borderless", 'tooltipster-borderless-customized'],
       interactive: true,
       contentAsHTML: true,
       delay: 200,
       trigger: "custom",
       triggerOpen: {
-        mouseenter: true
+        mouseenter: true,
+        touchstart: true
       },
       triggerClose: {
         interactive: true,
@@ -219,9 +271,9 @@ class CallService {
         if (this.currentUserID !== user_id && !this.usersStatsList[user_id].bitrate) {
           instance.content(
             `<ul>
-              <li>Connection: Sync</li>
-              <li>Bitrate: Sync</li>
-              <li>Mic level: Sync</li>
+              <li>Connection: N/A</li>
+              <li>Bitrate: N/A</li>
+              <li>Mic level: N/A</li>
             </ul>`
           )
         }
@@ -368,18 +420,21 @@ class CallService {
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn('[onSlowLinkListener]', userId, uplink, nacks)
+
     const stat = {
       connection: 'bad',
+      timeStampSlowLink: Date.now() / 1000
     }
-    this.usersStatsList[userId] = stat;
-
+    const merge = { ...this.usersStatsList[userId], ...stat }
+    this.usersStatsList[userId] = merge;
     this.badSlowLinkIconColor(userId)
   }
+
 
   onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
     console.warn('[onRemoteConnectionStateChangedListener]', userId, iceState)
     if (iceState === 'connected') {
-      this.monitoringUsersStats(userId)
+      this.startMonitoringUserStats(userId)
     }
   }
 
@@ -394,7 +449,7 @@ class CallService {
     this.hideIncomingCallModal();
     this.startNoAnswerTimers(this.participantIds)
     this.joinConf(this.janusRoomId)
-    this.monitoringUsersStats(this.currentUserID)
+    this.startMonitoringUserStats(this.currentUserID)
   };
 
   rejectCall = (session, extension = {}) => {
@@ -433,7 +488,7 @@ class CallService {
     } else {
       this.showSnackbar(messages.select_more_users);
     }
-    this.monitoringUsersStats(this.initiatorID)
+    this.startMonitoringUserStats(this.initiatorID)
   };
 
   _getUniqueRoomId() {
@@ -491,7 +546,7 @@ class CallService {
       this.clearNoAnswerTimers(userId)
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
       this.removeStreamBlockByUserId(userId)
-      this.monitoringUsersStats(userId)
+      this.startMonitoringUserStats(userId)
 
       const $streams = Array.from(document.querySelectorAll(".videochat-stream-container"));
 
