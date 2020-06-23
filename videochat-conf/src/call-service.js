@@ -6,7 +6,8 @@ import {
   appConfig,
   defaultAvatarlist,
   GET_USERS_STATS_TIME_INTERVAL,
-  MAX_MIC_LEVEL
+  MAX_MIC_LEVEL,
+  CLEANING_SLOW_LINK_INTERVAL
 } from "./config";
 
 export const isiOS = window.device?.platform === "iOS" || !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);;
@@ -204,7 +205,7 @@ class CallService {
         connection: 'good'
       }
       if (this.usersStatsList[user_id]?.timeStampSlowLink) {
-        if (Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink < 10) {
+        if (Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink < CLEANING_SLOW_LINK_INTERVAL) {
           stat.connection = 'bad';
           stat.timeStampSlowLink = this.usersStatsList[user_id].timeStampSlowLink;
         } else {

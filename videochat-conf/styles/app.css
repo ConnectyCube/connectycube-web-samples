@@ -227,7 +227,7 @@
   text-align: center;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  /* border: 2px solid #bfbfbf; */
+  z-index: 1;
 }
 
 .display-user-name > h2 {
