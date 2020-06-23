@@ -12,6 +12,9 @@ class uiUsersEvents {
 
   toggleSelectedUserStatIcon(userId, toShow) {
     const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
+    if (!$selectedUserStat) {
+      return
+    }
     if (toShow) {
       $selectedUserStat.classList.add('show')
     } else {

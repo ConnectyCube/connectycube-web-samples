@@ -194,8 +194,8 @@
   background-color: #68e143;
 }
 
-.display-signal-icon.bad { 
-  background-color: #d60b06;
+.display-signal-icon.average { 
+  background-color: #ffc107;
 }
 
 .display-signal-icon {
