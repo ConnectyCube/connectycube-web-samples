@@ -21,7 +21,7 @@
 
 #call,
 #videochat {
-  background-color: #000000;
+  background-color: rgba(116, 121, 122, 0.6);
 }
 
 #login-logo {
@@ -153,6 +153,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid #bfbfbf;
+  box-sizing: border-box;
 }
 
 .videochat-stream-loader {
@@ -223,15 +224,14 @@
 .display-user-name {
   position: absolute;
   width: 100%;
-  padding: 7px 0;
   text-align: center;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1;
 }
 
-.display-user-name > h2 {
-  font-size: 20px;
+.display-user-name p {
+  padding: 7px 0;
 }
 
 .user-placeholder.show {
