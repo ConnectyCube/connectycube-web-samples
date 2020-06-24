@@ -323,6 +323,7 @@ class CallService {
     const userName = this.isGuestMode ? displayName : this._getUserById(userId, "name");
     const infoText = `${userName} has ${this.isGuestMode ? 'joined' : 'accepted'} the call`;
     this.showSnackbar(infoText);
+    this.startMonitoringUserStats(userId)
     if (this.isGuestMode) {
       const userToAdd = { id: +userId, name: `${displayName || userId}` }
       this.addStreamElement(userToAdd)
@@ -330,7 +331,6 @@ class CallService {
     }
     this.$dialing.pause();
     this.clearNoAnswerTimers(userId)
-    this.startMonitoringUserStats(userId)
   };
 
   _getActiveCallUsers() {
@@ -410,6 +410,9 @@ class CallService {
 
   onSessionConnectionStateChangedListener = (session, iceState) => {
     console.warn('[onSessionConnectionStateChangedListener]', iceState)
+    if (iceState === 'connected') {
+      this.startMonitoringUserStats(this.currentUserID)
+    }
   }
 
   acceptCall = () => {
