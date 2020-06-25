@@ -66,6 +66,12 @@ export const CALLING_ONLY_MODE = isCordovaEnv;
 
 export const NO_ASNWER_TIMER = 30000 // 30 sec
 
+export const GET_USERS_STATS_TIME_INTERVAL = 3000
+
+export const MAX_MIC_LEVEL = 20000
+
+export const CLEANING_SLOW_LINK_INTERVAL = 10 //sec
+
 export const defaultAvatarlist =
   [
     'animals_1.jpg',

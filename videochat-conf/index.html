@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" viewport-fit="cover" />
 
     <title>ConnectyCube Video Chat code sample</title>
-
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/images/icons-connectycube-touchicon-180.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-borderless.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/js/tooltipster.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/tooltipster.bundle.min.css">
+
 
     <link
       rel="icon"
@@ -28,7 +33,7 @@
   <body>
     <div id="main">
       <!-- LOGIN SCREEN -->
-      <section id="login">
+      <section id="login">       
         <div id="login-logo">
           <img id="login-image" src="/images/icons-connectycube-512.png" alt="ConnectyCube" />
           <div id="login-caption">Conference calling</div>
@@ -160,15 +165,28 @@
               </svg>
             </div>
           </div>
-          <div data-id="{{id}}" class="user-placeholder">
+          <div 
+            data-id="{{id}}" 
+            class="display-signal-icon tooltip-container"
+            data-tooltipster="" 
+          >
+            <i class="fa fa-signal" aria-hidden="true"></i>
+            <div class="tool-tip-content">
+              <ul>
+                <li>Connection: - </li>
+                <li>Bitrate: - </li>
+                <li>Mic level: - </li>
+              </ul>
+            </div>
+          </div>   
+          <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({{id}})">         
             <div class="user-image"></div>
           </div>
-          <video playsinline id="stream-{{id}}" class="videochat-stream"></video>
+          <video playsinline id="stream-{{id}}" class="videochat-stream" onmouseover="UIUsersEvents._renderSignalStat({{id}})"></video>
           <div data-id="{{id}}" class="display-user-name">
             <p class="user-name">{{name}}</p>
           </div>
       </script>
-
       <!-- SOUNDS -->
       <audio id="signal-end" preload="auto">
         <source src="/audio/end_call.mp3" type="audio/mp3" />
@@ -184,7 +202,8 @@
     </div>
   </body>
 
-  <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/connectycube@3.0.6/dist/connectycube.min.js"></script>
-  <script type="text/javascript" src="/main.js"></script>
+<script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/connectycube@3.3.0/dist/connectycube.min.js"></script>
+<script type="text/javascript" src="/main.js"></script>
+<script type="text/javascript" src="/events-service.js"></script>
 </html>
