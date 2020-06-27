@@ -1,5 +1,15 @@
 import Handlebars from "handlebars";
-import { users, NO_ASNWER_TIMER, messages, appConfig, defaultAvatarlist } from "./config";
+import {
+  users,
+  NO_ASNWER_TIMER,
+  messages,
+  appConfig,
+  defaultAvatarlist,
+  GET_USERS_STATS_TIME_INTERVAL,
+  MAX_MIC_LEVEL,
+  CLEANING_SLOW_LINK_INTERVAL
+} from "./config";
+import { detectBrowser } from './helpers'
 
 export const isiOS = window.device?.platform === "iOS" || !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);;
 export const isMobile = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test((navigator.userAgent || navigator.vendor || window.opera)) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test((navigator.userAgent || navigator.vendor || window.opera).substr(0, 4))
@@ -7,6 +17,7 @@ export const isWebRTCSupported = window.RTCPeerConnection !== undefined && windo
 
 class CallService {
   static USER_NAME_KEY = "ConnectyCubeVideoConf:UserNameKey";
+  static ACTIVE_BROWSER = null
 
   _answerUserTimers = {}
   currentUserID
@@ -16,6 +27,9 @@ class CallService {
   isGuestMode
   currentUserName
   avatarIndex = {}
+  usersStatsList = {}
+  updateStatsTimer = null
+  conectedParticipantIds = []
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -29,6 +43,7 @@ class CallService {
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
     document.body.classList.add('black-bg')
+    CallService.ACTIVE_BROWSER = detectBrowser()
   };
 
   sendIncomingCallSystemMessage = (participantIds) => {
@@ -109,6 +124,149 @@ class CallService {
     $videochatStreams.classList.value = `grid-${opponents.length + curretActiveCallUsersCout}`
 
     $videochatStreams.appendChild(documentFragment)
+
+    this.initStatsTooltip()
+  }
+
+
+
+  startMonitoringUserStats = (userId) => {
+    if (!userId) {
+      return
+    }
+
+    clearInterval(this.updateStatsTimer)
+
+    this.conectedParticipantIds.push(userId)
+
+    this.updateStatsTimer = setInterval(() => {
+      this.conectedParticipantIds.forEach(user_id => {
+        this.getUserStat(user_id)
+      });
+    }, GET_USERS_STATS_TIME_INTERVAL)
+  }
+
+  stopMonitoringUserStats = (userId) => {
+    if (userId) {
+      let updateConectedParticipantIds = []
+      this.conectedParticipantIds.forEach(element => {
+        element !== userId && updateConectedParticipantIds.push(element);
+      });
+      this.conectedParticipantIds = updateConectedParticipantIds
+    } else {
+      clearInterval(this.updateStatsTimer)
+    }
+  }
+
+  goodSlowLinkIconColor = (userId) => {
+    const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
+    $selectedUserStat.classList.remove('average')
+  }
+
+  averageSlowLinkIconColor = (userId) => {
+    const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
+    $selectedUserStat.classList.add('average')
+  }
+
+  checkTimeStampSlowLink = (user_id, stat) => {
+    if (Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink < CLEANING_SLOW_LINK_INTERVAL) {
+      stat.connection = 'average';
+      stat.timeStampSlowLink = this.usersStatsList[user_id].timeStampSlowLink;
+    } else {
+      stat.connection = 'good';
+      stat.timeStampSlowLink = null
+      this.goodSlowLinkIconColor(user_id)
+    }
+    return stat
+  }
+
+  getUserStat = (user_id) => {
+    if (this.currentUserID !== user_id) {
+      let stat = {
+        micLevel: this._session.getRemoteUserVolume(user_id),
+        bitrate: this._session.getRemoteUserBitrate(user_id),
+        connection: 'good'
+      }
+      if (this.usersStatsList[user_id]?.timeStampSlowLink) {
+        stat = this.checkTimeStampSlowLink(user_id, stat)
+      }
+      if (CallService.ACTIVE_BROWSER === 'Safari') {
+        const newBitrate = stat.bitrate.split(' ')[0] / 1000
+        stat.bitrate = `${Math.round(newBitrate)} kbits/sec`
+      }
+      this.usersStatsList[user_id] = stat;
+    } else {
+      let stat = {
+        connection: 'good'
+      }
+      if (this.usersStatsList[user_id]?.timeStampSlowLink) {
+        stat = this.checkTimeStampSlowLink(user_id, stat)
+      }
+      this.usersStatsList[user_id] = stat;
+    }
+  }
+
+
+  initStatsTooltip = () => {
+    $(".tooltip-container").tooltipster({
+      theme: ["tooltipster-borderless", 'tooltipster-borderless-customized'],
+      interactive: true,
+      contentAsHTML: true,
+      delay: 200,
+      trigger: "custom",
+      triggerOpen: {
+        mouseenter: true,
+        touchstart: true
+      },
+      triggerClose: {
+        interactive: true,
+        mouseleave: true,
+        touchleave: true
+      },
+
+      functionInit: (instance, helper) => {
+        const $origin = $(helper.origin);
+        const content = $origin.find(".tool-tip-content").detach();
+        instance.content(content);
+
+        const data = $origin.attr("data-tooltipster");
+        if (data) {
+          data = JSON.parse(data);
+          $.each(data, function (name, option) {
+            instance.option(name, option);
+          });
+        }
+      },
+
+      functionBefore: (instance) => {
+        const user_id = window.ConnectyCubeActiveUserStatId;
+        if (this.currentUserID !== user_id && !this.usersStatsList[user_id].bitrate) {
+          instance.content(
+            `<ul>
+              <li>Connection: N/A</li>
+              <li>Bitrate: N/A</li>
+              <li>Mic level: N/A</li>
+            </ul>`
+          )
+        }
+        if (this.currentUserID !== user_id) {
+          const volume = this.usersStatsList[user_id].micLevel / MAX_MIC_LEVEL * 100
+          instance.content(
+            `<ul>
+              <li>Connection: ${this.usersStatsList[user_id].connection}</li>
+              <li>Bitrate: ${this.usersStatsList[user_id].bitrate}</li>
+              <li>Mic level: ${volume.toFixed(2)}%</li>
+            </ul>`
+          )
+        } else {
+          instance.content(
+            `<ul>
+              <li>Connection: ${this.usersStatsList[user_id].connection}</li>
+            </ul>`
+          )
+        }
+      }
+    });
   }
 
   setDefaultAvatar = (user_id) => {
@@ -165,6 +323,7 @@ class CallService {
     const userName = this.isGuestMode ? displayName : this._getUserById(userId, "name");
     const infoText = `${userName} has ${this.isGuestMode ? 'joined' : 'accepted'} the call`;
     this.showSnackbar(infoText);
+    this.startMonitoringUserStats(userId)
     if (this.isGuestMode) {
       const userToAdd = { id: +userId, name: `${displayName || userId}` }
       this.addStreamElement(userToAdd)
@@ -234,7 +393,16 @@ class CallService {
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn('[onSlowLinkListener]', userId, uplink, nacks)
+
+    const stat = {
+      connection: 'average',
+      timeStampSlowLink: Date.now() / 1000
+    }
+    const merge = { ...this.usersStatsList[userId], ...stat }
+    this.usersStatsList[userId] = merge;
+    this.averageSlowLinkIconColor(userId)
   }
+
 
   onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
     console.warn('[onRemoteConnectionStateChangedListener]', userId, iceState)
@@ -242,6 +410,9 @@ class CallService {
 
   onSessionConnectionStateChangedListener = (session, iceState) => {
     console.warn('[onSessionConnectionStateChangedListener]', iceState)
+    if (iceState === 'connected') {
+      this.startMonitoringUserStats(this.currentUserID)
+    }
   }
 
   acceptCall = () => {
@@ -251,6 +422,7 @@ class CallService {
     this.hideIncomingCallModal();
     this.startNoAnswerTimers(this.participantIds)
     this.joinConf(this.janusRoomId)
+    this.startMonitoringUserStats(this.currentUserID)
   };
 
   rejectCall = (session, extension = {}) => {
@@ -289,6 +461,7 @@ class CallService {
     } else {
       this.showSnackbar(messages.select_more_users);
     }
+    this.startMonitoringUserStats(this.initiatorID)
   };
 
   _getUniqueRoomId() {
@@ -346,7 +519,7 @@ class CallService {
       this.clearNoAnswerTimers(userId)
       this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
       this.removeStreamBlockByUserId(userId)
-
+      this.stopMonitoringUserStats(userId)
       const $streams = Array.from(document.querySelectorAll(".videochat-stream-container"));
 
       if ($streams.length < 2 && !this.isGuestMode) {
@@ -377,6 +550,9 @@ class CallService {
       this.currentUserName = void 0
       // this.mediaParams = {video: true, audio: true}
       this.mediaParams = { video: { width: 1280, height: 720 }, audio: true }
+      this.usersStatsList = {}
+      this.conectedParticipantIds = []
+      this.stopMonitoringUserStats()
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
@@ -412,7 +588,6 @@ class CallService {
 
   setAudioMute = () => {
     const $muteAudioButton = document.getElementById("videochat-mute-unmute")
-
     if (this._session.isAudioMuted()) {
       this._session.unmuteAudio()
       $muteAudioButton.classList.remove("muted")

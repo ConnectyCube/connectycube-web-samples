@@ -21,7 +21,7 @@
 
 #call,
 #videochat {
-  background-color: #000000;
+  background-color: rgba(116, 121, 122, 0.6);
 }
 
 #login-logo {
@@ -153,6 +153,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid #bfbfbf;
+  box-sizing: border-box;
 }
 
 .videochat-stream-loader {
@@ -176,6 +177,36 @@
   display: none;
 }
 
+.display-signal-icon.show {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 100;
+}
+
+.display-signal-icon {
+  background-color: #68e143;
+}
+
+.display-signal-icon.average { 
+  background-color: #ffc107;
+}
+
+.display-signal-icon {
+  display: none;
+}
+
+.display-signal-icon i{
+  font-size: 13px;
+  color: #ffffff;
+}
 
 .user-image {
   width: 35%;
@@ -193,15 +224,14 @@
 .display-user-name {
   position: absolute;
   width: 100%;
-  padding: 7px 0;
   text-align: center;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  /* border: 2px solid #bfbfbf; */
+  z-index: 1;
 }
 
-.display-user-name > h2 {
-  font-size: 20px;
+.display-user-name p {
+  padding: 7px 0;
 }
 
 .user-placeholder.show {
@@ -290,4 +320,11 @@
 
 .black-bg {
   background-color: black;
+}
+
+.tooltipster-sidetip.tooltipster-borderless.tooltipster-borderless-customized .tooltipster-box {
+	background: black;
+	border: 1px solid grey;
+  border-radius: 6px;
+  margin: 20px;
 }

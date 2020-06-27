@@ -18,6 +18,7 @@ module.exports = env => ({
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
       { from: "index.html", to: "index.html" },
+      { from: "src/events-service.js", to: "events-service.js" },
       { from: "manifest.json", to: "manifest.json" },
       { from: "styles", to: "styles" },
       { from: "images", to: "images" },
