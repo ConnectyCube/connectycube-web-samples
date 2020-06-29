@@ -31,6 +31,7 @@ class UIService {
     document.getElementById("videochat-mute-unmute").addEventListener("click", this.buttonOnClickListener(() => CallService.setAudioMute()));
     document.getElementById("videochat-mute-unmute-video").addEventListener("click", this.buttonOnClickListener(() => CallService.setVideoMute()));
     document.getElementById("videochat-switch-camera").addEventListener("click", this.buttonOnClickListener(() => CallService.switchCamera()));
+    document.getElementById("videochat-sharing-screen").addEventListener("click", this.buttonOnClickListener(() => CallService.sharingScreen()));
   };
 
   buttonOnClickListener = callback => {
@@ -41,8 +42,8 @@ class UIService {
   }
 
   parseJoinRoomUrl = () => {
-    const {pathname} = window.location
-    const [,joinPath, roomInfo] = pathname.split('/')
+    const { pathname } = window.location
+    const [, joinPath, roomInfo] = pathname.split('/')
     if (joinPath === 'join' && roomInfo) {
       return atob(roomInfo).split("##");
     }
@@ -77,9 +78,11 @@ class UIService {
     const $loginButtonsTemplate = document.getElementById("login-buttons-template");
     const loginButtonsTemplate = Handlebars.compile($loginButtonsTemplate.innerHTML);
 
-    $loginButtonsContainer.innerHTML = loginButtonsTemplate({ users, drawUsers: !GUEST_ROOM_ONLY_MODE,
-                                                       drawJoinGuestRoomButton: !CALLING_ONLY_MODE || GUEST_ROOM_ONLY_MODE,
-                                                               guestButtonText: GUEST_ROOM_ONLY_MODE ? 'Create and Join Guest Room' : 'Guest Room' });
+    $loginButtonsContainer.innerHTML = loginButtonsTemplate({
+      users, drawUsers: !GUEST_ROOM_ONLY_MODE,
+      drawJoinGuestRoomButton: !CALLING_ONLY_MODE || GUEST_ROOM_ONLY_MODE,
+      guestButtonText: GUEST_ROOM_ONLY_MODE ? 'Create and Join Guest Room' : 'Guest Room'
+    });
   };
 
   renderSelectUsers = currentUserId => {

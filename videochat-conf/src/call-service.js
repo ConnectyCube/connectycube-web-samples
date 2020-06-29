@@ -624,6 +624,25 @@ class CallService {
       .finally(() => setTimeout(() => this.$switchCameraButton.disabled = false, 700))
   };
 
+  sharingScreen = () => {
+    console.warn('sharingScreen()', this._session)
+    return this._session.getDisplayMedia(this.mediaParams).then(stream => {
+      // this.addStreamElement({ id: this.currentUserID, name: 'Me', local: true })
+      // this.removeStreamLoaderByUserId(this.currentUserID)
+      this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, { muted: true });
+      this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
+      this.toggelStreamMirror(this.currentUserID)
+      this.postJoinActions()
+      // return this._session.join(janusRoomId, this.currentUserID, this.currentUserName).then(() => this.postJoinActions())
+    }, error => {
+      console.warn('[Get user media error]', error, this.mediaParam)
+      if (!retry) {
+        this.mediaParams.video = false
+        return this.joinConf(janusRoomId, true)
+      }
+    });
+  }
+
   /* SNACKBAR */
 
   showSnackbar = infoText => {

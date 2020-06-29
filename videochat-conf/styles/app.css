@@ -105,6 +105,9 @@
 
 #call-buttons-container .call-button,
 #videochat-buttons-container .videochat-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 50px;
   height: 50px;
   border-radius: 25px;
@@ -267,6 +270,15 @@
 
 #videochat-switch-camera {
   background: #ffa500 url("../images/switch_video.svg") no-repeat center;
+}
+
+#videochat-sharing-screen{
+  background-color:#ffffff;
+}
+
+#videochat-sharing-screen i {
+  font-size: 20px;
+  color:#474747;
 }
 
 .Alice-bg-color {
