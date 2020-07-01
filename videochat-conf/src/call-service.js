@@ -30,6 +30,8 @@ class CallService {
   usersStatsList = {}
   updateStatsTimer = null
   conectedParticipantIds = []
+  isSharingScreen = false
+  startEventSharinScreen = null
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -87,6 +89,7 @@ class CallService {
   $muteUnmuteAudioButton = document.getElementById("videochat-mute-unmute");
   $muteUnmuteVideoButton = document.getElementById("videochat-mute-unmute-video");
   $switchCameraButton = document.getElementById("videochat-switch-camera");
+  $switchSharingScreenButton = document.getElementById("videochat-sharing-screen");
 
   mediaParams = {
     video: { width: 1280, height: 720 },
@@ -488,6 +491,9 @@ class CallService {
 
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
+    if (!this._session.getUserMedia) {
+      this.$switchSharingScreenButton.disabled = true;
+    }
     return this._session.getUserMedia(this.mediaParams).then(stream => {
       this.addStreamElement({ id: this.currentUserID, name: 'Me', local: true })
       this.removeStreamLoaderByUserId(this.currentUserID)
@@ -553,6 +559,7 @@ class CallService {
       this.usersStatsList = {}
       this.conectedParticipantIds = []
       this.stopMonitoringUserStats()
+      this.startEventSharinScreen = null
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
@@ -623,6 +630,38 @@ class CallService {
       })
       .finally(() => setTimeout(() => this.$switchCameraButton.disabled = false, 700))
   };
+
+  sharingScreen = () => {
+    if (!this.isSharingScreen) {
+      return this._session.getDisplayMedia(this.mediaParams, true).then(stream => {
+        this.updateStream(stream)
+        this.isSharingScreen = true;
+        this.$muteUnmuteVideoButton.disabled = true;
+        this.startEventSharinScreen = stream.getVideoTracks()[0].addEventListener('ended', () => this.stopSharingScreen())
+      }, error => {
+        console.warn('[Get display media error]', error, this.mediaParam)
+        this.stopSharingScreen()
+      });
+    } else {
+      this.stopSharingScreen()
+    }
+  }
+
+  stopSharingScreen = () => {
+    return this._session.getUserMedia(this.mediaParams, true).then(stream => {
+      this.updateStream(stream)
+      this.$muteUnmuteVideoButton.disabled = false;
+      this.isSharingScreen = false;
+      this.startEventSharinScreen = null;
+    })
+  }
+
+  updateStream = (stream) => {
+    this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, { muted: true });
+    this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
+    this.toggelStreamMirror(this.currentUserID);
+    this.postJoinActions()
+  }
 
   /* SNACKBAR */
 
