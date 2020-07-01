@@ -491,6 +491,9 @@ class CallService {
 
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
+    if (!this._session.getUserMedia) {
+      this.$switchSharingScreenButton.disabled = true;
+    }
     return this._session.getUserMedia(this.mediaParams).then(stream => {
       this.addStreamElement({ id: this.currentUserID, name: 'Me', local: true })
       this.removeStreamLoaderByUserId(this.currentUserID)
