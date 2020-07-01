@@ -11,6 +11,7 @@ Project contains the following features implemented:
 - Switch camera
 - Snack bars to notify users about changes
 - Guest room mode up to 12 users
+- Share screen
 
 The sample provides 2 mods:
   - Calling mode, with call/accept/reject signals
