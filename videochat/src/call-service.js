@@ -1,4 +1,4 @@
-import ConnectyCube from "connectycube";
+// import ConnectyCube from "connectycube";
 import Handlebars from "handlebars";
 import { users } from "./config";
 
@@ -26,6 +26,7 @@ class CallService {
 
   $muteUnmuteButton = document.getElementById("videochat-mute-unmute");
   $switchCameraButton = document.getElementById("videochat-switch-camera");
+  $switchSharingScreenButton = document.getElementById("videochat-sharing-screen");
 
   mediaParams = {
     audio: true,
@@ -41,6 +42,8 @@ class CallService {
   mediaDevicesIds = [];
   activeDeviceId = null;
   isAudioMuted = false;
+  isSharingScreen = false
+  startEventSharinScreen = null
 
   addStreamElements = opponents => {
     const $videochatStreams = document.getElementById("videochat-streams");
@@ -308,6 +311,35 @@ class CallService {
       }
     });
   };
+
+  sharingScreen = () => {
+    if (!this.isSharingScreen) {
+      return this._session.getDisplayMedia(this.mediaParams, true).then(stream => {
+        this.updateStream(stream)
+        this.isSharingScreen = true;
+        this.startEventSharinScreen = stream.getVideoTracks()[0].addEventListener('ended', () => this.stopSharingScreen())
+      }, error => {
+        console.warn('[Get display media error]', error, this.mediaParam)
+        this.stopSharingScreen()
+      });
+    } else {
+      this.stopSharingScreen()
+    }
+  }
+
+  updateStream = (stream) => {
+    this._session.call({});
+    this.setActiveDeviceId(stream);
+    this._prepareVideoElement("localStream");
+  }
+
+  stopSharingScreen = () => {
+      return this._session.getUserMedia(this.mediaParams, true).then(stream => {
+      this.updateStream(stream)
+      this.isSharingScreen = false;
+      this.startEventSharinScreen = null;
+    })
+  }
 
   /* SNACKBAR */
 
