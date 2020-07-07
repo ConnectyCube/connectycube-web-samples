@@ -5407,57 +5407,112 @@ function () {
   }
 
   (0, _createClass2["default"])(WebRTCSession, [{
-    key: "getUserMedia",
-    value: function getUserMedia(params) {
+    key: "getDisplayMedia",
+    value: function getDisplayMedia(params) {
       var _this = this;
 
-      return new Promise(function (resolve, reject) {
-        MediaDevicesImpl.getUserMedia({
-          audio: params.audio || false,
-          video: params.video || false
-        }).then(function (stream) {
-          _this.localStream = stream;
-          _this.mediaParams = params;
+      var isUpdateCurrentStream = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-          if (params.elementId) {
-            _this.attachMediaStream(params.elementId, stream, params.options);
-          }
+      if (!MediaDevicesImpl.getDisplayMedia) {
+        throw new Error("Your browser/environment does not support 'getDisplayMedia' API");
+      }
+
+      if (isUpdateCurrentStream) {
+        this.stopLocalStreamTracks(true);
+      }
+
+      return new Promise(function (resolve, reject) {
+        MediaDevicesImpl.getDisplayMedia(params).then(function (stream) {
+          _this.updateStream(stream, params, isUpdateCurrentStream);
 
           resolve(stream);
         })["catch"](reject);
       });
     }
   }, {
-    key: "getDisplayMedia",
-    value: function getDisplayMedia(params) {
+    key: "getUserMedia",
+    value: function getUserMedia(params) {
       var _this2 = this;
 
-      if (!MediaDevicesImpl.getDisplayMedia) {
-        throw new Error("Your browser/environment does not support 'getDisplayMedia' API");
-      }
+      var isUpdateCurrentStream = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-      if (this.localStream) {
-        this.localStream.getTracks().forEach(function (track) {
-          track.stop();
-        });
+      if (isUpdateCurrentStream) {
+        this.stopLocalStreamTracks();
       }
 
       return new Promise(function (resolve, reject) {
-        MediaDevicesImpl.getDisplayMedia({
-          audio: params.audio || false,
-          video: params.video || false
-        }).then(function (stream) {
-          _this2.mediaParams = params;
-          _this2.localStream = stream;
-
-          _this2._replaceTracks(stream);
-
-          if (params.elementId) {
-            _this2.attachMediaStream(params.elementId, stream, params.options);
-          }
+        MediaDevicesImpl.getUserMedia(params).then(function (stream) {
+          _this2.updateStream(stream, params, isUpdateCurrentStream);
 
           resolve(stream);
         })["catch"](reject);
+      });
+    }
+  }, {
+    key: "updateStream",
+    value: function updateStream(stream, params, isUpdateCurrentStream) {
+      var _this3 = this;
+
+      this.mediaParams = params;
+      var newStreamTracks = stream.getTracks();
+
+      if (isUpdateCurrentStream) {
+        newStreamTracks.forEach(function (track) {
+          _this3.localStream.addTrack(track);
+        });
+
+        this._replaceTracks(stream);
+      } else {
+        this.localStream = stream;
+      }
+
+      if (params.elementId) {
+        this.attachMediaStream(params.elementId, stream, params.options);
+      }
+    }
+  }, {
+    key: "_replaceTracks",
+    value: function _replaceTracks(stream) {
+      var peers = this.peerConnections;
+      var elementId = this.mediaParams.elementId;
+      var ops = this.mediaParams.options;
+      var newStreamTracks = stream.getTracks();
+
+      if (!Utils.getEnv().reactnative) {
+        this.detachMediaStream(elementId);
+      }
+
+      if (!Utils.getEnv().reactnative) {
+        this.attachMediaStream(elementId, stream, ops);
+      }
+
+      if (!Utils.getEnv().reactnative) {
+        for (var userId in peers) {
+          var peer = peers[userId];
+          peer.getSenders().map(function (sender) {
+            var track = newStreamTracks.find(function (track) {
+              return track.kind === sender.track.kind;
+            });
+
+            if (!track) {
+              return;
+            }
+
+            sender.replaceTrack(track);
+          });
+        }
+      }
+    }
+  }, {
+    key: "stopLocalStreamTracks",
+    value: function stopLocalStreamTracks() {
+      var isIgnoreAudioTrack = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      this.localStream.getTracks().forEach(function (track) {
+        if (isIgnoreAudioTrack && track.kind === 'audio') {
+          return;
+        } else {
+          track.stop();
+        }
       });
     }
   }, {
@@ -5517,74 +5572,40 @@ function () {
   }, {
     key: "switchMediaTracks",
     value: function switchMediaTracks(deviceIds) {
-      var _this3 = this;
-      console.warn('switchMediaTracks')
+      var _this4 = this;
+
       return new Promise(function (resolve, reject) {
         if (deviceIds && deviceIds.audio) {
-          if (typeof _this3.mediaParams.audio === "boolean") {
-            _this3.mediaParams.audio = {};
+          if (typeof _this4.mediaParams.audio === "boolean") {
+            _this4.mediaParams.audio = {};
           }
 
-          _this3.mediaParams.audio.deviceId = deviceIds.audio;
+          _this4.mediaParams.audio.deviceId = deviceIds.audio;
         }
 
         if (deviceIds && deviceIds.video) {
-          if (typeof _this3.mediaParams.video === "boolean") {
-            _this3.mediaParams.video = {};
+          if (typeof _this4.mediaParams.video === "boolean") {
+            _this4.mediaParams.video = {};
           }
 
-          _this3.mediaParams.video.deviceId = deviceIds.video;
+          _this4.mediaParams.video.deviceId = deviceIds.video;
         }
 
-        _this3.localStream.getTracks().forEach(function (track) {
+        _this4.localStream.getTracks().forEach(function (track) {
           track.stop();
         });
 
         MediaDevicesImpl.getUserMedia({
-          audio: _this3.mediaParams.audio || false,
-          video: _this3.mediaParams.video || false
+          audio: _this4.mediaParams.audio || false,
+          video: _this4.mediaParams.video || false
         }).then(function (stream) {
-          _this3._replaceTracks(stream);
+          _this4._replaceTracks(stream);
 
           resolve(stream);
         })["catch"](function (error) {
           reject(error);
         });
       });
-    }
-  }, {
-    key: "_replaceTracks",
-    value: function _replaceTracks(stream) {
-      var _this4 = this;
-
-      console.warn('_replaceTrack', this.mediaParams);
-      var peers = this.peerConnections;
-      var elementId = this.mediaParams.elementId;
-      var ops = this.mediaParams.options;
-      var newStreamTracks = stream.getTracks();
-
-      if (!Utils.getEnv().reactnative) {
-        this.detachMediaStream(elementId);
-      }
-
-      newStreamTracks.forEach(function (track) {
-        _this4.localStream.addTrack(track);
-      });
-
-      if (!Utils.getEnv().reactnative) {
-        this.attachMediaStream(elementId, stream, ops);
-      }
-
-      if (!Utils.getEnv().reactnative) {
-        for (var userId in peers) {
-          var peer = peers[userId];
-          peer.getSenders().map(function (sender) {
-            sender.replaceTrack(newStreamTracks.find(function (track) {
-              return track.kind === sender.track.kind;
-            }));
-          });
-        }
-      }
     }
   }, {
     key: "call",
@@ -6076,6 +6097,7 @@ function () {
     value: function _startWaitingOfferOrAnswerTimer(time) {
       var _this16 = this;
 
+      console.warn('_startWaitingOfferOrAnswerTimer`');
       var timeout = config.videochat.answerTimeInterval - time < 0 ? 1 : config.videochat.answerTimeInterval - time;
 
       var waitingOfferOrAnswerTimeoutCallback = function waitingOfferOrAnswerTimeoutCallback() {

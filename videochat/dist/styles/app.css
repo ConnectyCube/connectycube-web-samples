@@ -24,6 +24,15 @@
   background-color: #000000;
 }
 
+#videochat-sharing-screen{
+  background-color:#ffffff;
+}
+
+#videochat-sharing-screen i {
+  font-size: 20px;
+  color:#474747;
+}
+
 #login-logo {
   display: flex;
   flex-direction: column;

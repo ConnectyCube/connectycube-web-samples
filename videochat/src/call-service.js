@@ -268,7 +268,7 @@ class CallService {
       if (this.mediaDevicesIds.length < 2) {
         this.$switchCameraButton.disabled = true;
 
-        if (this.mediaDevicesIds?.[0] !== this.activeDeviceId) {
+        if (this.mediaDevicesIds?.[0] !== this.activeDeviceId && !this.isSharingScreen) {
           this.switchCamera();
         }
       } else {
@@ -327,18 +327,17 @@ class CallService {
     }
   }
 
-  updateStream = (stream) => {
-    this._session.call({});
-    this.setActiveDeviceId(stream);
-    this._prepareVideoElement("localStream");
-  }
-
   stopSharingScreen = () => {
       return this._session.getUserMedia(this.mediaParams, true).then(stream => {
       this.updateStream(stream)
       this.isSharingScreen = false;
       this.startEventSharinScreen = null;
     })
+  }
+
+  updateStream = (stream) => {
+    this.setActiveDeviceId(stream);
+    this._prepareVideoElement("localStream");
   }
 
   /* SNACKBAR */
