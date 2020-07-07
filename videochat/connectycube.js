@@ -5466,7 +5466,7 @@ function () {
         this.localStream = stream;
       }
 
-      if (params.elementId) {
+      if (params.elementId && !isUpdateCurrentStream) {
         this.attachMediaStream(params.elementId, stream, params.options);
       }
     }
@@ -6097,7 +6097,6 @@ function () {
     value: function _startWaitingOfferOrAnswerTimer(time) {
       var _this16 = this;
 
-      console.warn('_startWaitingOfferOrAnswerTimer`');
       var timeout = config.videochat.answerTimeInterval - time < 0 ? 1 : config.videochat.answerTimeInterval - time;
 
       var waitingOfferOrAnswerTimeoutCallback = function waitingOfferOrAnswerTimeoutCallback() {
