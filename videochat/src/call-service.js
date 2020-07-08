@@ -46,7 +46,7 @@ class CallService {
     elementId: "localStream",
     options: {
       muted: true,
-      mirror: true
+      mirror: false
     }
   };
 
@@ -282,6 +282,11 @@ class CallService {
       $callScreen.classList.remove("hidden");
       $videochatScreen.classList.add("hidden");
       $muteButton.classList.remove("muted");
+
+      if(this.isSharingScreen){
+        this.isSharingScreen = false
+        this.updateSharingScreenBtn()
+      }
 
       if (iOS) {
         $videochatScreen.style.background = "#000000";

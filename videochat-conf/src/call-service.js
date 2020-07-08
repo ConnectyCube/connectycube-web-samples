@@ -572,6 +572,10 @@ class CallService {
       this.conectedParticipantIds = []
       this.stopMonitoringUserStats()
       this.startEventSharinScreen = null
+      if(this.isSharingScreen){
+        this.isSharingScreen = false
+        this.updateSharingScreenBtn()
+      }
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }

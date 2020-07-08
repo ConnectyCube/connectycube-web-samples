@@ -5479,7 +5479,7 @@ function () {
       var newStreamTracks = stream.getTracks();
 
       if (!Utils.getEnv().reactnative) {
-        this.detachMediaStream(elementId);
+        this.detachMediaStream(elementId, ops);
       }
 
       if (!Utils.getEnv().reactnative) {
@@ -5556,7 +5556,7 @@ function () {
     }
   }, {
     key: "detachMediaStream",
-    value: function detachMediaStream(id) {
+    value: function detachMediaStream(id, options) {
       var elem = document.getElementById(id);
 
       if (elem) {
@@ -5567,6 +5567,13 @@ function () {
         } else {
           elem.src = '';
         }
+
+        if (options && !options.mirror) {
+          elem.style.webkitTransform = '';
+          elem.style.transform = '';
+        }
+      } else {
+        throw new Error('Unable to attach media stream, element ' + id + ' is undefined');
       }
     }
   }, {
