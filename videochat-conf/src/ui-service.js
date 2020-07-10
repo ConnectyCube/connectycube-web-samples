@@ -30,7 +30,7 @@ class UIService {
     document.getElementById("videochat-stop-call").addEventListener("click", this.buttonOnClickListener(() => CallService.stopCall()));
     document.getElementById("videochat-mute-unmute").addEventListener("click", this.buttonOnClickListener(() => CallService.setAudioMute()));
     document.getElementById("videochat-mute-unmute-video").addEventListener("click", this.buttonOnClickListener(() => CallService.setVideoMute()));
-    document.getElementById("videochat-switch-camera").addEventListener("click", this.buttonOnClickListener(() => CallService.switchCamera()));
+    document.getElementById("videochat-switch-camera").addEventListener("click", this.buttonOnClickListener(() => {}));
     document.getElementById("videochat-sharing-screen").addEventListener("click", this.buttonOnClickListener(() => CallService.sharingScreen()));
   };
 

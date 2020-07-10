@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="/images/icons-connectycube-touchicon-180.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-borderless.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css">                                               
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/js/tooltipster.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/tooltipster.bundle.min.css">
@@ -98,11 +99,16 @@
           <button id="videochat-mute-unmute" class="videochat-button" disabled></button>
           <button id="videochat-mute-unmute-video" class="videochat-button" disabled></button>
           <button id="videochat-stop-call" class="videochat-button"></button>
-          <button id="videochat-switch-camera" class="videochat-button videochat-switch-camera-list" disabled>
-            <div class="videochat-button-mini">
-              <i id="videochat-sharing-screen-icon" class="fas fa-chevron-down"></i>
-            </div>
-          </button> 
+            <button 
+              id="videochat-switch-camera" 
+              class="videochat-button videochat-switch-camera-list tooltip-container-list-camera" 
+              disabled
+              data-tooltipster="" 
+            >
+              <div class="videochat-button-mini">
+                <i id="videochat-sharing-screen-icon" class="fas fa-chevron-down"></i>
+              </div>
+            </button> 
           <button id="videochat-sharing-screen" class="videochat-button">
             <i class="fas fa-tv"></i>
           </button>
