@@ -113,6 +113,28 @@
   border-radius: 25px;
 }
 
+.videochat-switch-camera-list{
+  position: relative;
+}
+
+.videochat-button-mini {
+  background-color: #ffffff;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  border-radius: 50%;
+  bottom: 0;
+  right: -5px;
+}
+
+.videochat-button-mini i {
+  color: #ffa500;
+  font-size: 10px;
+}
+
 #select-header {
   color: #1198d4;
   font-size: 20px;
@@ -279,6 +301,24 @@
 #videochat-sharing-screen i {
   font-size: 20px;
   color:#474747;
+}
+
+.switch-camera-item{
+  border: 1px solid #a7a7a7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  height: 40px;
+  margin: 2px;
+  width: 100%;
+}
+
+.switch-camera-block{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: auto;
 }
 
 .Alice-bg-color {
