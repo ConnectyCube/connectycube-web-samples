@@ -303,6 +303,13 @@
   color:#474747;
 }
 
+.videochat-sharing-screen-active{
+  background-color:#2d2b2b!important;
+}
+
+.videochat-sharing-screen-icon-active{
+  color:white!important
+}
 .switch-camera-item{
   border: 1px solid #a7a7a7;
   white-space: nowrap;

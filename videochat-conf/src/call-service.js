@@ -96,8 +96,19 @@ class CallService {
     audio: true
   };
 
+  sharingScreenMediaParams = { 
+    audio: true,
+    video: { frameRate: { ideal: 10, max: 15 } }
+  };
+
   _session = null;
   videoDevices = []
+
+  defaultSettings = () => {
+    if(isMobile){
+      this.$switchSharingScreenButton.disabled = true;
+    }
+  }
 
   addStreamElement = opponents => {
     const $videochatStreams = document.getElementById("videochat-streams");
@@ -565,6 +576,7 @@ class CallService {
 
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
+    this.defaultSettings()
     if (!this._session.getDisplayMedia) {
       this.$switchSharingScreenButton.disabled = true;
     }
@@ -634,6 +646,10 @@ class CallService {
       this.conectedParticipantIds = []
       this.stopMonitoringUserStats()
       this.startEventSharinScreen = null
+      if(this.isSharingScreen){
+        this.isSharingScreen = false
+        this.updateSharingScreenBtn()
+      }
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
@@ -694,9 +710,10 @@ class CallService {
 
   sharingScreen = () => {
     if (!this.isSharingScreen) {
-      return this._session.getDisplayMedia(this.mediaParams, true).then(stream => {
+      return this._session.getDisplayMedia(this.sharingScreenMediaParams, true).then(stream => {
         this.updateStream(stream)
         this.isSharingScreen = true;
+        this.updateSharingScreenBtn()
         this.$muteUnmuteVideoButton.disabled = true;
         this.startEventSharinScreen = stream.getVideoTracks()[0].addEventListener('ended', () => this.stopSharingScreen())
       }, error => {
@@ -713,6 +730,7 @@ class CallService {
       this.updateStream(stream)
       this.$muteUnmuteVideoButton.disabled = false;
       this.isSharingScreen = false;
+      this.updateSharingScreenBtn()
       this.startEventSharinScreen = null;
     })
   }
@@ -722,6 +740,19 @@ class CallService {
     this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
     this.toggelStreamMirror(this.currentUserID);
     this.postJoinActions()
+  }
+
+  updateSharingScreenBtn = () => {
+    const $videochatSharingScreen = document.getElementById('videochat-sharing-screen');
+    const $videochatSharingScreenIcon = document.getElementById('videochat-sharing-screen-icon');
+
+    if(this.isSharingScreen){
+      $videochatSharingScreen.classList.add('videochat-sharing-screen-active')
+      $videochatSharingScreenIcon.classList.add('videochat-sharing-screen-icon-active')
+    } else {
+      $videochatSharingScreen.classList.remove('videochat-sharing-screen-active')
+      $videochatSharingScreenIcon.classList.remove('videochat-sharing-screen-icon-active')
+    }
   }
 
   /* SNACKBAR */

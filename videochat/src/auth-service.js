@@ -1,4 +1,4 @@
-import ConnectyCube from "connectycube";
+// import ConnectyCube from "connectycube";
 import { credentials, appConfig } from "./config";
 
 class AuthService {
