@@ -308,7 +308,24 @@
 }
 
 .videochat-sharing-screen-icon-active{
-  color:white!important;
+  color:white!important
+}
+.switch-camera-item{
+  border: 1px solid #a7a7a7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  height: 40px;
+  margin: 2px;
+  width: 100%;
+}
+
+.switch-camera-block{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: auto;
 }
 
 .Alice-bg-color {
