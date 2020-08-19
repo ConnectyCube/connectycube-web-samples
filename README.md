@@ -6,7 +6,7 @@ The following code samples are available:
 
 - [P2P Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat) - [LIVE demo](https://connectycube.github.io/connectycube-web-samples/videochat/dist)
 
-- [Conference Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo - TeaTalk](http://teatalk.connectycube.com)
+- [Conference Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo - TeaTalk](https://teatalk.connectycube.com)
 
 - [Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat)
 
