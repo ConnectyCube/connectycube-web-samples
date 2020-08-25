@@ -177,25 +177,46 @@
                 </circle>
               </svg>
             </div>
-          </div>
+          </div>  
           <div 
             data-id="{{id}}" 
-            class="display-signal-icon tooltip-container"
+            class="display-popup" 
             data-tooltipster="" 
           >
-            <i class="fa fa-signal" aria-hidden="true"></i>
-            <div class="tool-tip-content">
-              <ul>
-                <li>Connection: - </li>
-                <li>Bitrate: - </li>
-                <li>Mic level: - </li>
-              </ul>
+            <div
+              data-id="{{id}}"  
+              class="display-signal-icon tooltip-container"
+              data-tooltipster=""
+            >
+              <i class="fa fa-signal" aria-hidden="true"></i>
+              <div class="tool-tip-content">
+                <ul>
+                  <li>Connection: - </li>
+                  <li>Bitrate: - </li>
+                  <li>Mic level: - </li>
+                </ul>
+              </div>
             </div>
-          </div>   
+            <div
+              class="display-full-screen-icon"
+              data-id="{{id}}"
+              onclick="UIUsersEvents.showFullscreen({{id}})"
+            >
+              <i class="fas fa-expand"></i>
+            </div>
+          </div>  
+
           <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({{id}})">         
             <div class="user-image"></div>
           </div>
-          <video playsinline id="stream-{{id}}" class="videochat-stream" onmouseover="UIUsersEvents._renderSignalStat({{id}})"></video>
+            <div class="container-full-screen stream-{{id}}" >
+              <video 
+                playsinline 
+                id="stream-{{id}}" 
+                class="videochat-stream" 
+                onmouseover="UIUsersEvents._renderSignalStat({{id}})">
+              </video>
+            </div>      
           <div data-id="{{id}}" class="display-user-name">
             <p class="user-name">{{name}}</p>
           </div>
