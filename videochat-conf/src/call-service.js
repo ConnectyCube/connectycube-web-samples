@@ -96,8 +96,19 @@ class CallService {
     audio: true
   };
 
+  sharingScreenMediaParams = { 
+    audio: true,
+    video: { frameRate: { ideal: 10, max: 15 } }
+  };
+
   _session = null;
-  videoDevicesIds = [];
+  videoDevices = []
+
+  defaultSettings = () => {
+    if(isMobile){
+      this.$switchSharingScreenButton.disabled = true;
+    }
+  }
 
   addStreamElement = opponents => {
     const $videochatStreams = document.getElementById("videochat-streams");
@@ -228,17 +239,7 @@ class CallService {
       },
 
       functionInit: (instance, helper) => {
-        const $origin = $(helper.origin);
-        const content = $origin.find(".tool-tip-content").detach();
-        instance.content(content);
-
-        const data = $origin.attr("data-tooltipster");
-        if (data) {
-          data = JSON.parse(data);
-          $.each(data, function (name, option) {
-            instance.option(name, option);
-          });
-        }
+        this.initToolTispterUI(instance, helper)
       },
 
       functionBefore: (instance) => {
@@ -479,10 +480,94 @@ class CallService {
   setSwitchDevice() {
     ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
       .then(devices => {
-        this.videoDevicesIds = devices.map(({ deviceId }) => deviceId)
-        this.$switchCameraButton.disabled = this.videoDevicesIds.length < 2;
+      this.$switchCameraButton.disabled = this.videoDevices.length < 1;
+      devices.forEach(elem => {
+        this.videoDevices.push({id:elem.deviceId, name:elem.label})
+      })
+        this.$switchCameraButton.disabled = false;
+        this._renderListCameraBlock()
       })
   }
+
+  _renderListCameraBlock = () => {
+    $(".tooltip-container-list-camera").tooltipster({
+      theme: ["tooltipster-light", 'tooltipster-borderless-customized'],
+      interactive: true,
+      contentAsHTML: true,
+      delay: 200,
+      trigger: "custom",
+      triggerOpen: {
+        click: true,
+        tap: true
+      },
+      triggerClose: {
+        click: true,
+        interactive: true,
+        originClick: true,
+        mouseleave: true,
+        touchleave: true
+      },
+
+      functionInit: (instance, helper) => {
+        this.initToolTispterUI(instance, helper)
+      },
+
+      functionBefore: (instance) => {
+        let htmlBlock = '';
+        this.listenersCameraList
+        
+        this.videoDevices.forEach(elem => {
+          if(this._session.activeVideoDeviceId !== elem.id){
+            htmlBlock = htmlBlock + `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}">${elem.name}</button>`
+          } else {
+            htmlBlock = htmlBlock + `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}" disabled>${elem.name}</button>`
+          }
+        })
+
+        instance.content(
+          `<div class="switch-camera-block">
+            ${htmlBlock}
+          </div>
+          `
+        )
+      },
+
+      functionReady: () => {
+        this.videoDevices.forEach(elem => {
+          document.getElementById(`${elem.id}`).addEventListener("click", (htmlProperty) => this.switchCamera(htmlProperty));
+        })  
+      }
+
+    });
+  }
+
+  initToolTispterUI = (instance, helper) => {
+    const $origin = $(helper.origin);
+        const content = $origin.find(".tool-tip-content").detach();
+        instance.content(content);
+
+        const data = $origin.attr("data-tooltipster");
+        if (data) {
+          data = JSON.parse(data);
+          $.each(data, function (name, option) {
+            instance.option(name, option);
+          });
+        }
+  }
+
+  switchCamera = (event) => {
+    event.stopPropagation()
+
+    this._session.switchMediaTracks({ video: event.toElement.value })
+      .then(newLocalStream => {
+        this.toggelStreamMirror(this.currentUserID)
+        if (isMobile) {
+          this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), newLocalStream, { muted: true });
+        }
+      })
+    
+    $('.tooltip-container-list-camera').tooltipster('close');
+  };
 
   toggelStreamMirror(user_id) {
     const $stream = document.getElementById(this.getStreamIdByUserId(user_id))
@@ -491,6 +576,7 @@ class CallService {
 
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
+    this.defaultSettings()
     if (!this._session.getDisplayMedia) {
       this.$switchSharingScreenButton.disabled = true;
     }
@@ -548,7 +634,7 @@ class CallService {
       this.$muteUnmuteVideoButton.disabled = true
       this.$switchCameraButton.disabled = true;
       this._session = null;
-      this.videoDevicesIds = [];
+      this.videoDevices = [];
       this.clearNoAnswerTimers()
       this.initiatorID = void 0
       this.participantIds = []
@@ -560,6 +646,10 @@ class CallService {
       this.conectedParticipantIds = []
       this.stopMonitoringUserStats()
       this.startEventSharinScreen = null
+      if(this.isSharingScreen){
+        this.isSharingScreen = false
+        this.updateSharingScreenBtn()
+      }
       if (this.isGuestMode) {
         window.location.href = window.location.origin
       }
@@ -618,24 +708,12 @@ class CallService {
     }
   };
 
-  switchCamera = () => {
-    this.$switchCameraButton.disabled = true;
-    const mediaDevicesId = this.videoDevicesIds.find(deviceId => deviceId !== this._session.activeVideoDeviceId);
-    this._session.switchMediaTracks({ video: mediaDevicesId })
-      .then(newLocalStream => {
-        this.toggelStreamMirror(this.currentUserID)
-        if (isMobile) {
-          this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), newLocalStream, { muted: true });
-        }
-      })
-      .finally(() => setTimeout(() => this.$switchCameraButton.disabled = false, 700))
-  };
-
   sharingScreen = () => {
     if (!this.isSharingScreen) {
-      return this._session.getDisplayMedia(this.mediaParams, true).then(stream => {
+      return this._session.getDisplayMedia(this.sharingScreenMediaParams, true).then(stream => {
         this.updateStream(stream)
         this.isSharingScreen = true;
+        this.updateSharingScreenBtn()
         this.$muteUnmuteVideoButton.disabled = true;
         this.startEventSharinScreen = stream.getVideoTracks()[0].addEventListener('ended', () => this.stopSharingScreen())
       }, error => {
@@ -652,6 +730,7 @@ class CallService {
       this.updateStream(stream)
       this.$muteUnmuteVideoButton.disabled = false;
       this.isSharingScreen = false;
+      this.updateSharingScreenBtn()
       this.startEventSharinScreen = null;
     })
   }
@@ -661,6 +740,19 @@ class CallService {
     this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
     this.toggelStreamMirror(this.currentUserID);
     this.postJoinActions()
+  }
+
+  updateSharingScreenBtn = () => {
+    const $videochatSharingScreen = document.getElementById('videochat-sharing-screen');
+    const $videochatSharingScreenIcon = document.getElementById('videochat-sharing-screen-icon');
+
+    if(this.isSharingScreen){
+      $videochatSharingScreen.classList.add('videochat-sharing-screen-active')
+      $videochatSharingScreenIcon.classList.add('videochat-sharing-screen-icon-active')
+    } else {
+      $videochatSharingScreen.classList.remove('videochat-sharing-screen-active')
+      $videochatSharingScreenIcon.classList.remove('videochat-sharing-screen-icon-active')
+    }
   }
 
   /* SNACKBAR */
