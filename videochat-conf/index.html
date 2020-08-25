@@ -199,12 +199,14 @@
           <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({{id}})">         
             <div class="user-image"></div>
           </div>
-            <video 
-              playsinline 
-              id="stream-{{id}}" 
-              class="videochat-stream" 
-              onmouseover="UIUsersEvents._renderSignalStat({{id}})">
-            </video>      
+            <div class="container-full-screen stream-{{id}}" >
+              <video 
+                playsinline 
+                id="stream-{{id}}" 
+                class="videochat-stream" 
+                onmouseover="UIUsersEvents._renderSignalStat({{id}})">
+              </video>
+            </div>      
           <div data-id="{{id}}" class="display-user-name">
             <p class="user-name">{{name}}</p>
           </div>
