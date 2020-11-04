@@ -1,6 +1,8 @@
 import { credentials, appConfig } from "./config";
 
 class AuthService {
+  static CURRENT_USER_SESSION = "ConnectyCubeVideoConf:CURRENT_USER_SESSION";
+
   $loginScreen = document.getElementById("login");
   $callScreen = document.getElementById("call");
   $loader = document.getElementById("login-loader");
@@ -15,6 +17,31 @@ class AuthService {
 
   createSession(user) {
     return ConnectyCube.createSession(user)
+  }
+
+  initCCuser = (userProfile, isSignUp) => {
+    if(isSignUp){
+      return this.signUp(userProfile)
+    } else {
+      return this.signIn(userProfile)
+    }
+  }
+  
+  signIn = (params) => {
+    return ConnectyCube.createSession(params)
+      .then((session) => {
+        localStorage.setItem(AuthService.CURRENT_USER_SESSION, JSON.stringify(session))
+      })
+  }
+
+  signUp(params) {
+    return ConnectyCube.createSession()
+      .then(() => {
+        return ConnectyCube.users.signup(params)
+      })
+      .then((response)=> {
+        return this.signIn(response.user)
+      })
   }
 
   login = user => {

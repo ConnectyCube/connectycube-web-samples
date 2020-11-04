@@ -18,9 +18,9 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: 3504,
+  authKey: "T59xXbpYXkAFP2q",
+  authSecret: "9JUKXmPkr83T3L4"
 };
 
 export const appConfig = {

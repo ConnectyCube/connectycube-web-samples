@@ -17,7 +17,8 @@ export const isWebRTCSupported = window.RTCPeerConnection !== undefined && windo
 
 class CallService {
   static USER_NAME_KEY = "ConnectyCubeVideoConf:UserNameKey";
-  static ACTIVE_BROWSER = null
+  static CURRENT_USER_SESSION = "ConnectyCubeVideoConf:CURRENT_USER_SESSION";
+  static ACTIVE_BROWSER = null;
 
   _answerUserTimers = {}
   currentUserID
@@ -828,22 +829,13 @@ class CallService {
     }
   };
 
-  initGuestRoom = janusRoomId => {
-    this.currentUserID = this._getUniqueUserId()
-    const parseName = JSON.parse(localStorage.getItem(CallService.USER_NAME_KEY))
-    const userName = parseName ? parseName : this.getRandomName();
+  initGuestRoom = (janusRoomId = null) => {
 
-    while (!this.currentUserName) {
-      this.currentUserName = prompt(messages.prompt_user_name, userName)
-      localStorage.setItem(CallService.USER_NAME_KEY, JSON.stringify(this.currentUserName))
-      if (this.currentUserName === null) {
-        if (confirm(messages.confirm_cancel)) {
-          window.location.href = window.location.origin
-          return
-        }
-      }
-    }
+    const currentUserSession = JSON.parse(localStorage.getItem(CallService.CURRENT_USER_SESSION))
+    this.currentUserID = currentUserSession.user.id;
+    this.currentUserName = currentUserSession.user.full_name;
     this.isGuestMode = true
+    console.warn('janusRoomId', janusRoomId)
     if (janusRoomId) {
       this.janusRoomId = janusRoomId
     } else {
@@ -852,7 +844,7 @@ class CallService {
       window.history.replaceState({}, 'Conference Guest Room', `/join/${roomInfo}`)
     }
     this.joinConf(this.janusRoomId)
-      .then(() => this.showSnackbar(messages.share_call_link))
+      .then(() => this.showSnackbar(messages.share_call_link));
   }
 
   getRandomName = () => {
