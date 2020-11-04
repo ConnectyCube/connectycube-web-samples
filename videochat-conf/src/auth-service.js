@@ -30,7 +30,7 @@ class AuthService {
   signIn = (params) => {
     return ConnectyCube.createSession(params)
       .then((session) => {
-        localStorage.setItem(AuthService.CURRENT_USER_SESSION, JSON.stringify(session))
+        localStorage.setItem(AuthService.CURRENT_USER_SESSION, JSON.stringify(session));
       })
   }
 
@@ -39,8 +39,8 @@ class AuthService {
       .then(() => {
         return ConnectyCube.users.signup(params)
       })
-      .then((response)=> {
-        return this.signIn(response.user)
+      .then(()=> {
+        return this.signIn(params)
       })
   }
 

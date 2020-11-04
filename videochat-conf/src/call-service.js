@@ -830,10 +830,11 @@ class CallService {
   };
 
   initGuestRoom = (janusRoomId = null) => {
-
     const currentUserSession = JSON.parse(localStorage.getItem(CallService.CURRENT_USER_SESSION))
+    
     this.currentUserID = currentUserSession.user.id;
     this.currentUserName = currentUserSession.user.full_name;
+
     this.isGuestMode = true
     console.warn('janusRoomId', janusRoomId)
     if (janusRoomId) {

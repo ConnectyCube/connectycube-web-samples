@@ -428,7 +428,8 @@
 
 
 .modal-form .modal-checkbox label{
-cursor: pointer;
+  cursor: pointer;
+  padding: 3px;
 }
 
 .modal-form > input[type=button]:hover{

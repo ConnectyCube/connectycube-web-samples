@@ -89,8 +89,8 @@ class UIService {
         this.hideModal()
         this.hideOrShowLoader(false)
       })
-      .catch(()=> {
-        alert('error {AuthService.initCCuser}');
+      .catch((error)=> {
+        console.warn('AuthService{initCCuser}', error)
         this.hideOrShowLoader(false)
       }) 
   }
