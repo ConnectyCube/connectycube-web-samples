@@ -72,6 +72,8 @@ class UIService {
       return alert('Пустая строка');
     }
 
+    this.hideOrShowLoader(true)
+
     const userProfile = {
       login,
       password,
@@ -85,10 +87,22 @@ class UIService {
         CallService.initGuestRoom(janusRoomId)
         this.addEventListenersForCallButtons();
         this.hideModal()
+        this.hideOrShowLoader(false)
       })
       .catch(()=> {
         alert('error {AuthService.initCCuser}');
+        this.hideOrShowLoader(false)
       }) 
+  }
+
+  hideOrShowLoader = (show) => {
+    if(show){
+      document.getElementById("loader").classList.remove("wrap-loader-unvisible");
+      document.getElementById("loader").classList.add("wrap-loader");
+    } else {
+      document.getElementById("loader").classList.remove("wrap-loader");
+      document.getElementById("loader").classList.add("wrap-loader-unvisible");
+    }
   }
 
   hideModal = () => {
