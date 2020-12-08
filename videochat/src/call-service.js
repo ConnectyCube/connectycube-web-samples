@@ -29,6 +29,7 @@ class CallService {
   $switchCameraButton = document.getElementById("videochat-switch-camera");
   $switchSharingScreenButton = document.getElementById("videochat-sharing-screen");
 
+  mediaInput = 0
 
   mediaParams = {
     audio: true,
@@ -40,7 +41,7 @@ class CallService {
     }
   };
 
-  sharingScreenMediaParams = { 
+  sharingScreenMediaParams = {
     audio: true,
     video: { frameRate: { ideal: 10, max: 15 } },
     elementId: "localStream",
@@ -187,7 +188,7 @@ class CallService {
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
     this._session.getUserMedia(this.mediaParams).then(stream => {
-      
+
       if (!this._session.getDisplayMedia) {
         this.$switchSharingScreenButton.disabled = true;
       }
@@ -208,23 +209,25 @@ class CallService {
     }
   };
 
-  startCall = () => {
+  startCall = (opponents) => {
     const options = {};
-    const opponents = [];
     const opponentsIds = [];
     const type = ConnectyCube.videochat.CallType.VIDEO; // AUDIO is also possible
     this.defaultSettings()
 
-    document.querySelectorAll(".select-user-checkbox").forEach($checkbox => {
-      if ($checkbox.checked) {
-        const id = +$checkbox.dataset.id;
-        const name = this._getUserById(id, "name");
+    if (!opponents) {
+      opponents = [];
+      document.querySelectorAll(".select-user-checkbox").forEach($checkbox => {
+        if ($checkbox.checked) {
+          const id = +$checkbox.dataset.id;
+          const name = this._getUserById(id, "name");
 
-        opponents.push({ id, name });
-        opponentsIds.push(id);
-        $checkbox.checked = false;
-      }
-    });
+          opponents.push({ id, name });
+          opponentsIds.push(id);
+          $checkbox.checked = false;
+        }
+      });
+    }
 
     if (opponents.length > 0) {
       document.getElementById("call").classList.add("hidden");
@@ -241,6 +244,27 @@ class CallService {
         this._session.call({});
         this.setActiveDeviceId(stream);
         this._prepareVideoElement("localStream");
+      }).catch(err => {
+        console.log("Error in getUserMedia");
+        if (err.message === "Could not start video source") {
+          navigator.mediaDevices.enumerateDevices().then((mediaSources) => {
+            let videoInputIndex = 0;
+            for (const mediaSource of mediaSources) {
+              if (mediaSource.kind === "videoinput") {
+                if (videoInputIndex > this.mediaInput) {
+                  this.mediaInput = videoInputIndex;
+                  this.mediaParams.video = { deviceId: mediaSource.deviceId };
+                  console.log("trying with " + mediaSource.label);
+                  setTimeout(this.startCall.bind(this, opponents), 0);
+                  return;
+                }
+                videoInputIndex++;
+              }
+            }
+            alert("Could not find a suitable camera device");
+          });
+        }
+        console.error(err);
       });
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
@@ -373,11 +397,11 @@ class CallService {
     } else {
       $videochatSharingScreen.classList.remove('videochat-sharing-screen-active')
       $videochatSharingScreenIcon.classList.remove('videochat-sharing-screen-icon-active')
-    } 
+    }
   }
 
   stopSharingScreen = () => {
-      return this._session.getUserMedia(this.mediaParams, true).then(stream => {
+    return this._session.getUserMedia(this.mediaParams, true).then(stream => {
       this.updateStream(stream)
       this.isSharingScreen = false;
       this.updateSharingScreenBtn()
