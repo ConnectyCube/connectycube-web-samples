@@ -7,6 +7,8 @@ const isMobile = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer
 
 class CallService {
   init = () => {
+    console.log("[CallService][init]");
+
     ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
     ConnectyCube.videochat.onAcceptCallListener = this.onAcceptCallListener.bind(this);
     ConnectyCube.videochat.onRejectCallListener = this.onRejectCallListener.bind(this);
@@ -14,6 +16,7 @@ class CallService {
     ConnectyCube.videochat.onUserNotAnswerListener = this.onUserNotAnswerListener.bind(this);
     ConnectyCube.videochat.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
     ConnectyCube.videochat.onDevicesChangeListener = this.onDevicesChangeListener.bind(this);
+    ConnectyCube.videochat.onSessionConnectionStateChangedListener = this.onSessionConnectionStateChangedListener.bind(this);
 
     document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
     document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
@@ -311,6 +314,10 @@ class CallService {
       }
     });
   };
+      
+  onSessionConnectionStateChangedListener = (session, userID, connectionState) => {
+    console.log("[onSessionConnectionStateChangedListener]", userID, connectionState);
+  }
 
   setActiveDeviceId = stream => {
     if (stream && !iOS) {
