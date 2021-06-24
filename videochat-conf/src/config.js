@@ -17,6 +17,8 @@ export const messages = {
   confirm_cancel: "Do you shure to leave the call ?"
 };
 
+export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state'
+
 export const credentials = {
   appId: 385,
   authKey: "DFBMs5-dKBBCXcd",
