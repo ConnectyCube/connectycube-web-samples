@@ -7,7 +7,8 @@ import {
   defaultAvatarlist,
   GET_USERS_STATS_TIME_INTERVAL,
   MAX_MIC_LEVEL,
-  CLEANING_SLOW_LINK_INTERVAL
+  CLEANING_SLOW_LINK_INTERVAL,
+  E2E_STATE_ELEMENT_ID
 } from "./config";
 import { detectBrowser } from './helpers'
 
@@ -414,6 +415,7 @@ class CallService {
 
   onSessionConnectionStateChangedListener = (session, iceState) => {
     console.warn('[onSessionConnectionStateChangedListener]', iceState)
+    document.getElementById(E2E_STATE_ELEMENT_ID).setAttribute('ice-state', `${iceState}`)
     if (iceState === 'connected') {
       this.startMonitoringUserStats(this.currentUserID)
     }
@@ -666,6 +668,8 @@ class CallService {
   };
 
   postJoinActions() {
+    console.warn('[joined to room]')
+    document.getElementById(E2E_STATE_ELEMENT_ID).setAttribute('join-state', `joined`)
     this.$muteUnmuteAudioButton.disabled = false
     if (this.mediaParams.video) {
       this.$muteUnmuteVideoButton.disabled = false
