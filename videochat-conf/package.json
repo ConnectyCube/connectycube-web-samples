@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "dog-names": "^2.0.0",
-    "handlebars": "^4.7.3"
+    "handlebars": "^4.7.7"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
