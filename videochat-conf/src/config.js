@@ -20,14 +20,18 @@ export const messages = {
 export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state'
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: 3504,
+  authKey: "T59xXbpYXkAFP2q",
+  authSecret: "9JUKXmPkr83T3L4"
 };
 
 export const appConfig = {
   debug: { mode: 1 },
-  conference: { server: 'wss://janus.connectycube.com:8989' }
+  conference: { server: 'wss://janus.com:8989' },
+  endpoints : {
+    api : "api.com" ,
+    chat : "chat.com"
+  },
 };
 
 export const users = [

@@ -14,9 +14,9 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: 18,
+  authKey: "ZEfT9RczU8SK4nF",
+  authSecret: "nsa826r2qYRzg6Z"
 };
 
 export const appConfig = {
@@ -31,28 +31,28 @@ export const appConfig = {
 
 export const users = [
   {
-    id: 72780,
+    id: 2226677,
     name: "Alice",
     login: "videouser1",
     password: "videouser1",
     color: "#34ad86"
   },
   {
-    id: 72781,
+    id: 2226678,
     name: "Bob",
     login: "videouser2",
     password: "videouser2",
     color: "#077988"
   },
   {
-    id: 590565,
+    id: 2226681,
     name: "Ciri",
     login: "videouser3",
     password: "videouser3",
     color: "#13aaae"
   },
   {
-    id: 590583,
+    id: 2226683,
     name: "Dexter",
     login: "videouser4",
     password: "videouser4",

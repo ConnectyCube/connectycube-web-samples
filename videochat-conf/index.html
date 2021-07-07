@@ -75,6 +75,27 @@
         </div>
         <div id="login-buttons-container"></div>
       </section>
+      <div class='wrap-loader-unvisible' id="loader">
+        <div class='loader'></div>
+      </div>
+      <section id='modal' class="modal-unvisible"> 
+        <form class="modal-form">
+          <div>
+            <span>Login:</span>
+            <input type="text" id="login_user">
+          </div>
+          <div>
+            <span>Password:</span>
+            <input type="password" id="password_user">
+          </div>
+          <div class="modal-checkbox">
+            <input type="checkbox" id="is_sign_up" name="scales">
+            <label for="is_sign_up">Sign up</label>
+          </div>
+          <input type="button" value="Log In" id="sign-up">
+          <input type="button" value="Cancel" id="hide-modal">
+        </form>
+      </section>
 
       <!-- START VIDEOCHAT SCREEN -->
       <section id="call" class="hidden">

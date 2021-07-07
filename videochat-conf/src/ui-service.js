@@ -51,13 +51,63 @@ class UIService {
   }
 
   createAndJoinGuestRoom = janusRoomId => {
-    AuthService.createSession()
+    this.showLoginModal(janusRoomId)
+  }
+
+  showLoginModal = (janusRoomId=null) => {
+    document.getElementById("modal").classList.remove("modal-unvisible");
+    document.getElementById("modal").classList.add("modal");
+    const cancel = document.getElementById('hide-modal')
+    const signUp = document.getElementById('sign-up')
+    cancel.addEventListener('click', this.hideModal, true);
+    signUp.addEventListener('click', () => this.authUser(janusRoomId), true)
+  }
+
+  authUser = (janusRoomId) => {
+    const login = document.getElementById('login_user').value;
+    const password = document.getElementById('password_user').value;
+    const isSignUp = document.getElementById('is_sign_up').checked;
+
+    if(!login && !password){
+      return alert('Пустая строка');
+    }
+
+    this.hideOrShowLoader(true)
+
+    const userProfile = {
+      login,
+      password,
+      full_name: login,
+    };
+
+    AuthService.initCCuser(userProfile, isSignUp)
       .then(() => {
         CallService.init();
         AuthService.hideLoginScreen()
         CallService.initGuestRoom(janusRoomId)
         this.addEventListenersForCallButtons();
+        this.hideModal()
+        this.hideOrShowLoader(false)
       })
+      .catch((error)=> {
+        console.warn('AuthService{initCCuser}', error)
+        this.hideOrShowLoader(false)
+      }) 
+  }
+
+  hideOrShowLoader = (show) => {
+    if(show){
+      document.getElementById("loader").classList.remove("wrap-loader-unvisible");
+      document.getElementById("loader").classList.add("wrap-loader");
+    } else {
+      document.getElementById("loader").classList.remove("wrap-loader");
+      document.getElementById("loader").classList.add("wrap-loader-unvisible");
+    }
+  }
+
+  hideModal = () => {
+    document.getElementById("modal").classList.remove("modal");
+    document.getElementById("modal").classList.add("modal-unvisible");
   }
 
   login = ({ target }) => {
