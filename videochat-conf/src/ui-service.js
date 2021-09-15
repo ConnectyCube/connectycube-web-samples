@@ -32,6 +32,7 @@ class UIService {
     document.getElementById("videochat-mute-unmute-video").addEventListener("click", this.buttonOnClickListener(() => CallService.setVideoMute()));
     document.getElementById("videochat-switch-camera").addEventListener("click", this.buttonOnClickListener(() => {}));
     document.getElementById("videochat-sharing-screen").addEventListener("click", this.buttonOnClickListener(() => CallService.sharingScreen()));
+    document.getElementById("videochat-record-call").addEventListener("click", this.buttonOnClickListener(() => { CallService.toggleMeetingRecod() }));
   };
 
   buttonOnClickListener = callback => {
@@ -65,11 +66,11 @@ class UIService {
 
   authUser = (janusRoomId) => {
     const login = document.getElementById('login_user').value;
-    const password = document.getElementById('password_user').value;
+    const password = `${Math.random()}`.slice(2, 14);
     const isSignUp = document.getElementById('is_sign_up').checked;
 
     if(!login && !password){
-      return alert('Пустая строка');
+      return alert('Empty string');
     }
 
     this.hideOrShowLoader(true)

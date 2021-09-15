@@ -33,6 +33,7 @@ class CallService {
   conectedParticipantIds = []
   isSharingScreen = false
   startEventSharinScreen = null
+  meeting = null
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -479,7 +480,7 @@ class CallService {
   }
 
   setSwitchDevice() {
-    ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
+    ConnectyCube.videochatconference.getMediaDevices('videoinput')
       .then(devices => {
       this.$switchCameraButton.disabled = this.videoDevices.length < 1;
       devices.forEach(elem => {
@@ -836,16 +837,27 @@ class CallService {
     this.currentUserName = currentUserSession.user.full_name;
 
     this.isGuestMode = true
-    console.warn('janusRoomId', janusRoomId)
-    if (janusRoomId) {
-      this.janusRoomId = janusRoomId
-    } else {
-      this.janusRoomId = this._getUniqueRoomId()
-      const roomInfo = btoa(`${this.janusRoomId}##${appConfig.conference.server}`)
-      window.history.replaceState({}, 'Conference Guest Room', `/join/${roomInfo}`)
-    }
-    this.joinConf(this.janusRoomId)
-      .then(() => this.showSnackbar(messages.share_call_link));
+    console.warn('janusRoomId', janusRoomId, ConnectyCube.videochatconference)
+
+    const meetingPromise = janusRoomId ? this.getMeeting(janusRoomId) : this.createMeeting()
+    return meetingPromise
+      .then(meeting => {
+        this.meeting = meeting
+        this.janusRoomId = this.meeting['_id']
+        const roomInfo = btoa(`${this.janusRoomId}##${appConfig.conference.server}`)
+        window.history.replaceState({}, 'Conference Guest Room', `/join/${roomInfo}`)
+      })
+      .then(() => this.joinConf(this.janusRoomId))
+      .then(() => this.showSnackbar(messages.share_call_link))
+      .then(() => {
+        const recordButtonElm = document.getElementById('videochat-record-call')
+        if (this.meeting['host_id'] !== this.currentUserID) {
+          recordButtonElm.classList.add('hidden')
+        } else {
+          console.warn('[Showw]')
+          recordButtonElm.classList.remove('hidden')
+        }
+      });
   }
 
   getRandomName = () => {
@@ -866,6 +878,26 @@ class CallService {
     }
     Object.values(this._answerUserTimers).forEach(timerId => clearTimeout(timerId))
     this._answerUserTimers = {}
+  }
+
+  createMeeting() {
+    const params = { name: `${Math.random()}` }
+    return ConnectyCube.meeting.create(params)
+  }
+
+  getMeeting(_id) {
+    const params = { _id }
+    return ConnectyCube.meeting.get(params)
+  }
+
+  toggleMeetingRecod() {
+    const params = { record: !this.meeting['record'] }
+    return ConnectyCube.meeting.update(this.meeting['_id'], params)
+      .then(meeting => {
+        this.meeting = meeting
+        const recordButtonElm = document.getElementById('videochat-record-call')
+        recordButtonElm.classList.toggle('on')
+      })
   }
 }
 

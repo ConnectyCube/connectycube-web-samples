@@ -278,6 +278,14 @@
   background: #0000ff url("../images/mic_off.svg") no-repeat center;
 }
 
+#videochat-record {
+  background: #fdf902 url("../images/mic_off.svg") no-repeat center;
+}
+
+#videochat-record.on {
+  background: #fdf902 url("../images/mic.svg") no-repeat center;
+}
+
 #videochat-mute-unmute-video {
   background: green url("../images/video.svg") no-repeat center;
 }

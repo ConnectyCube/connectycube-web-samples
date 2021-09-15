@@ -18,18 +18,14 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: 3504,
-  authKey: "T59xXbpYXkAFP2q",
-  authSecret: "9JUKXmPkr83T3L4"
+  appId: 385,
+  authKey: "DFBMs5-dKBBCXcd",
+  authSecret: "SkCW-ThdnmRg9Za"
 };
 
 export const appConfig = {
   debug: { mode: 1 },
-  conference: { server: 'wss://janus.com:8989' },
-  endpoints : {
-    api : "api.com" ,
-    chat : "chat.com"
-  },
+  conference: { server: 'wss://janus2.connectycube.com:8989' }
 };
 
 export const users = [
