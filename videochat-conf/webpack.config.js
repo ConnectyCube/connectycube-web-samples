@@ -28,7 +28,11 @@ module.exports = env => ({
     new webpack.DefinePlugin({
       API_SERVER: JSON.stringify(process.env.API_SERVER),
       CHAT_SERVER: JSON.stringify(process.env.CHAT_SERVER),
-      JANUS_SERVER: JSON.stringify(process.env.JANUS_SERVER)
+      JANUS_SERVER: JSON.stringify(process.env.JANUS_SERVER),
+
+      APP_ID: JSON.stringify(process.env.APP_ID),
+      APP_KEY: JSON.stringify(process.env.APP_KEY),
+      APP_SECRET: JSON.stringify(process.env.APP_SECRET)
     })
   ],
   watch: env.development,
