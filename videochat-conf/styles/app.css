@@ -326,11 +326,11 @@
 }
 
 #videochat-record-call {
-  background: #fdf902 url("../images/recording_off.svg") no-repeat center;
+  background: #ffffff url("../images/recording_off.svg") no-repeat center;
 }
 
 #videochat-record-call.on {
-  background: #fdf902 url("../images/recording_on.svg") no-repeat center;
+  background: #ffffff url("../images/recording_on.svg") no-repeat center;
 }
 
 #videochat-mute-unmute-video {
