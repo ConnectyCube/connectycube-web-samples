@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack')
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
@@ -23,7 +24,12 @@ module.exports = env => ({
       { from: "styles", to: "styles" },
       { from: "images", to: "images" },
       { from: "audio", to: "audio" },
-    ])
+    ]),
+    new webpack.DefinePlugin({
+      API_SERVER: JSON.stringify(process.env.API_SERVER),
+      CHAT_SERVER: JSON.stringify(process.env.CHAT_SERVER),
+      JANUS_SERVER: JSON.stringify(process.env.JANUS_SERVER)
+    })
   ],
   watch: env.development,
   devtool: env.production ? false : "source-map",
