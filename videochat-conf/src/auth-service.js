@@ -1,7 +1,7 @@
 import { credentials, appConfig } from "./config";
 
 class AuthService {
-  static CURRENT_USER_SESSION = "ConnectyCubeVideoConf:CURRENT_USER_SESSION";
+  static CURRENT_USER_SESSION = "ConnectyCubeVideoConf:CURRENT_USER_SESSION:STORE";
 
   $loginScreen = document.getElementById("login");
   $callScreen = document.getElementById("call");
@@ -30,18 +30,21 @@ class AuthService {
   signIn = (params) => {
     return ConnectyCube.createSession(params)
       .then((session) => {
+        session.user.password = params.password
         localStorage.setItem(AuthService.CURRENT_USER_SESSION, JSON.stringify(session));
+        return session
       })
+  }
+
+  connectChat(user) {
+    return ConnectyCube.chat.connect({ userId: user.id, password: user.password })
   }
 
   signUp(params) {
     return ConnectyCube.createSession()
-      .then(() => {
-        return ConnectyCube.users.signup(params)
-      })
-      .then(()=> {
-        return this.signIn(params)
-      })
+      .then(() => ConnectyCube.users.signup(params))
+      .then(()=> this.signIn(params))
+      .then(session => this.connectChat(Object.assign(session.user, params)))
   }
 
   login = user => {

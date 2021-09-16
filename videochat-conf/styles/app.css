@@ -19,6 +19,37 @@
   justify-content: space-between;
 }
 
+#recording-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 100;
+  padding: 5px;
+  background-color: #272727d0;
+  border-radius: 10px;
+}
+
+#recording-overlay p {
+  color: white;
+  font-weight: 700;
+}
+
+.record-circle {
+  background: rgb(255, 0, 0);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+}
+
+.recording-text {
+  overflow: visible;
+}
+
 #call,
 #videochat {
   background-color: rgba(116, 121, 122, 0.6);
@@ -278,12 +309,12 @@
   background: #0000ff url("../images/mic_off.svg") no-repeat center;
 }
 
-#videochat-record {
-  background: #fdf902 url("../images/mic_off.svg") no-repeat center;
+#videochat-record-call {
+  background: #fdf902 url("../images/recording_off.svg") no-repeat center;
 }
 
-#videochat-record.on {
-  background: #fdf902 url("../images/mic.svg") no-repeat center;
+#videochat-record-call.on {
+  background: #fdf902 url("../images/recording_on.svg") no-repeat center;
 }
 
 #videochat-mute-unmute-video {
@@ -413,7 +444,7 @@
 
 .modal-form {
   width: 300px;
-  height: 270px;
+  height: 160px;
   background-color: white;
   padding: 15px;
   border-radius: 5px;

@@ -32,7 +32,7 @@ class UIService {
     document.getElementById("videochat-mute-unmute-video").addEventListener("click", this.buttonOnClickListener(() => CallService.setVideoMute()));
     document.getElementById("videochat-switch-camera").addEventListener("click", this.buttonOnClickListener(() => {}));
     document.getElementById("videochat-sharing-screen").addEventListener("click", this.buttonOnClickListener(() => CallService.sharingScreen()));
-    document.getElementById("videochat-record-call").addEventListener("click", this.buttonOnClickListener(() => { CallService.toggleMeetingRecod() }));
+    document.getElementById("videochat-record-call").addEventListener("click", this.buttonOnClickListener(() => CallService.toggleMeetingRecod()));
   };
 
   buttonOnClickListener = callback => {
@@ -52,7 +52,13 @@ class UIService {
   }
 
   createAndJoinGuestRoom = janusRoomId => {
-    this.showLoginModal(janusRoomId)
+    let storedUserSession = localStorage.getItem(AuthService.constructor.CURRENT_USER_SESSION);
+    if (storedUserSession) {
+      storedUserSession = JSON.parse(storedUserSession)
+      this.authUser(janusRoomId, storedUserSession.user)
+    } else {
+      this.showLoginModal(janusRoomId)
+    }
   }
 
   showLoginModal = (janusRoomId=null) => {
@@ -64,24 +70,26 @@ class UIService {
     signUp.addEventListener('click', () => this.authUser(janusRoomId), true)
   }
 
-  authUser = (janusRoomId) => {
-    const login = document.getElementById('login_user').value;
-    const password = `${Math.random()}`.slice(2, 14);
-    const isSignUp = document.getElementById('is_sign_up').checked;
+  authUser = (janusRoomId, user) => {
+    let userProfile = user;
+    if (!user) {
+      const login = document.getElementById('login_user').value;
+      const password = `${Math.random()}`.slice(2, 14);
 
-    if(!login && !password){
-      return alert('Empty string');
+      if(!login){
+        return alert('Empty string');
+      }
+
+      this.hideOrShowLoader(true)
+
+      userProfile = {
+        login,
+        password,
+        full_name: login,
+      };
     }
 
-    this.hideOrShowLoader(true)
-
-    const userProfile = {
-      login,
-      password,
-      full_name: login,
-    };
-
-    AuthService.initCCuser(userProfile, isSignUp)
+    AuthService.initCCuser(userProfile, !user)
       .then(() => {
         CallService.init();
         AuthService.hideLoginScreen()
