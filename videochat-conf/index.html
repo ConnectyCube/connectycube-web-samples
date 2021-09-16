@@ -81,10 +81,10 @@
       <section id='modal' class="modal-unvisible"> 
         <form class="modal-form">
           <div>
-            <span>Login:</span>
+            <span>Username:</span>
             <input type="text" id="login_user">
           </div>
-          <input type="button" value="Log In" id="sign-up">
+          <input type="button" value="Join" id="sign-up">
           <input type="button" value="Cancel" id="hide-modal">
         </form>
       </section>
@@ -145,7 +145,6 @@
         {{/if}}
         <div>
           {{#if drawJoinGuestRoomButton}}
-            <h2 class="guest-title">Or create and join</h2>
             <button id="guest-room-join-btn" class="login-button">{{guestButtonText}}</button>
           {{/if}}
         </div>
