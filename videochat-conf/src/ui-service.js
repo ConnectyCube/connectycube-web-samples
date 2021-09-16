@@ -100,6 +100,9 @@ class UIService {
       })
       .catch((error)=> {
         console.warn('AuthService{initCCuser}', error)
+        if(error.code === 422) {
+          alert(error.info.errors.base[0])
+        }
         this.hideOrShowLoader(false)
       }) 
   }
