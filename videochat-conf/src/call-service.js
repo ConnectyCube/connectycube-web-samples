@@ -500,7 +500,7 @@ class CallService {
   }
 
   setSwitchDevice() {
-    ConnectyCube.videochatconference.getMediaDevices('videoinput')
+    ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
       .then(devices => {
       this.$switchCameraButton.disabled = this.videoDevices.length < 1;
       devices.forEach(elem => {
