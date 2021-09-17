@@ -34,6 +34,7 @@ class AuthService {
         localStorage.setItem(AuthService.CURRENT_USER_SESSION, JSON.stringify(session));
         return session
       })
+      .then(session => this.connectChat(session.user))
   }
 
   connectChat(user) {
@@ -44,7 +45,6 @@ class AuthService {
     return ConnectyCube.createSession()
       .then(() => ConnectyCube.users.signup(params))
       .then(()=> this.signIn(params))
-      .then(session => this.connectChat(Object.assign(session.user, params)))
   }
 
   login = user => {
