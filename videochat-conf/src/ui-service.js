@@ -4,6 +4,13 @@ import CallService, { isWebRTCSupported, isiOS } from "./call-service";
 import { users, GUEST_ROOM_ONLY_MODE, CALLING_ONLY_MODE } from "./config";
 
 class UIService {
+
+  constructor() {
+    this.janusRoomId = void 0
+    this.retryUserLoginPostfix = 2021
+    this.userProfile = {}
+  }
+
   init = () => {
     if (!isWebRTCSupported) {
       return alert(isiOS ? 'Due to iOS restrictions, only Safari browser supports voice and video calling. Please switch to Safari to get a complete functionality of TeaTalk app' : 'This browser does not support WebRTC')
@@ -14,7 +21,8 @@ class UIService {
       console.log("[UIService][parseJoinRoomUrl] res", res)
       const [janusRoomId, janusServerEndpoint] = res;
       AuthService.init(janusServerEndpoint);
-      this.createAndJoinGuestRoom(janusRoomId)
+      this.janusRoomId = janusRoomId
+      this.tryAuthStoredUser()
       return;
     } else {
       AuthService.init();
@@ -22,7 +30,7 @@ class UIService {
 
     this.renderLoginUsers();
     document.querySelectorAll(".login-button[data-id]").forEach($element => $element.addEventListener("click", this.login));
-    document.getElementById('guest-room-join-btn').addEventListener('click', () => this.createAndJoinGuestRoom())
+    document.getElementById('guest-room-join-btn').addEventListener('click', () => this.tryAuthStoredUser())
   };
 
   addEventListenersForCallButtons = () => {
@@ -51,28 +59,28 @@ class UIService {
     return null
   }
 
-  createAndJoinGuestRoom = janusRoomId => {
+  tryAuthStoredUser = () => {
     let storedUserSession = localStorage.getItem(AuthService.constructor.CURRENT_USER_SESSION);
     if (storedUserSession) {
       storedUserSession = JSON.parse(storedUserSession)
-      this.authUser(janusRoomId, storedUserSession.user)
+      this.authUser(storedUserSession.user)
     } else {
-      this.showLoginModal(janusRoomId)
+      this.showLoginModal()
     }
   }
 
-  showLoginModal = (janusRoomId=null) => {
+  showLoginModal = () => {
     document.getElementById("modal").classList.remove("modal-unvisible");
     document.getElementById("modal").classList.add("modal");
     const cancel = document.getElementById('hide-modal')
     const signUp = document.getElementById('sign-up')
     cancel.addEventListener('click', this.hideModal, true);
-    signUp.addEventListener('click', () => this.authUser(janusRoomId), true)
+    signUp.addEventListener('click', () => this.authUser(), true)
   }
 
-  authUser = (janusRoomId, user) => {
-    let userProfile = user;
-    if (!user) {
+  authUser = storedUser => {
+    this.userProfile = storedUser;
+    if (!storedUser) {
       const login = document.getElementById('login_user').value;
       const password = `${Math.random()}`.slice(2, 14);
 
@@ -82,29 +90,42 @@ class UIService {
 
       this.hideOrShowLoader(true)
 
-      userProfile = {
+      this.userProfile = {
         login,
         password,
         full_name: login,
       };
     }
 
-    AuthService.initCCuser(userProfile, !user)
+    this.authAndJoinRoom(this.userProfile, !storedUser)
       .then(() => {
         CallService.init();
         AuthService.hideLoginScreen()
-        CallService.initGuestRoom(janusRoomId)
+        CallService.initGuestRoom(this.janusRoomId)
         this.addEventListenersForCallButtons();
         this.hideModal()
         this.hideOrShowLoader(false)
       })
-      .catch((error)=> {
-        console.warn('AuthService{initCCuser}', error)
-        if(error.code === 422) {
-          alert(error.info.errors.base[0])
-        }
+      .catch(error => {
+        console.warn('[AuthService][initCCuser]', error)
         this.hideOrShowLoader(false)
-      }) 
+        alert(error)
+      })
+      
+  }
+
+  authAndJoinRoom(userProfile, isSignUp) {
+    return AuthService.initCCuser(userProfile, isSignUp)
+      .catch((error)=> {
+        const errorMsg = error.info?.errors?.base?.[0]
+        if(error.code === 422 || errorMsg === 'login must be unique') {
+          const userProfileCopy = Object.assign({}, this.userProfile)
+          userProfileCopy.login = `${this.userProfile.login}${this.retryUserLoginPostfix++}`
+          return this.authAndJoinRoom(userProfileCopy, isSignUp)
+        } else {
+          throw error
+        }
+      })
   }
 
   hideOrShowLoader = (show) => {
@@ -159,7 +180,5 @@ class UIService {
 
 // create instance
 const UI = new UIService();
-// lock instance
-Object.freeze(UI);
 
 export default UI;
