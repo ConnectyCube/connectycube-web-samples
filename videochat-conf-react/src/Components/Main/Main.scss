@@ -8,11 +8,20 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+
+	& .img__container{
+		max-width: 320px;
+		max-height: 200px;
+		& img{
+			width: 100%;
+			object-fit: cover;
+		}
+	}
 }
 .join {
 	color: white;
 	background-color: #9e0f73;
-	padding: 15px 10px;
+	padding: 15px 0px;
 	border-radius: 25px;
 	min-width: 270px;
 	text-decoration: none;
@@ -23,6 +32,7 @@
 	cursor: pointer;
 	border: 0;
 	outline: none;
+	width: 100%;
 
 	&:hover {
 		opacity: 85%;

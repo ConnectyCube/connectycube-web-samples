@@ -1,11 +1,20 @@
 import CryptoJS from 'crypto-js';
 import ConnectyCube from 'connectycube';
 class AuthService {
-	// $generateLogin = () => {
 
-	// 	return new_username;
-	// }
-	$enterName = () => {
+	constructor() {
+		this.init();
+	}
+
+
+	logout = () =>{
+		ConnectyCube.chat.disconnect();
+		ConnectyCube.destroySession();
+		this.callScreen.classList.add("hidden");
+		this.loginScreen.classList.remove("hidden");
+	};
+
+	init = () =>{
 		const credentials = {
 			appId: 5497,
 			authKey: "BxHxMLzGJjQsLAL",
@@ -17,14 +26,10 @@ class AuthService {
 			},
 		}
 		ConnectyCube.init(credentials, appConfig)
-
+	}
+	login = (userName) => {
 		ConnectyCube.createSession()
-			.then((session) => {})
-			.catch((error) => {});
-
-
-		setTimeout(() => {
-			let userName = prompt("Input user name", "Vasek")
+			.then((session) => {
 			// let userName="Vasek"
 			if (!userName) {
 				ConnectyCube.destroySession().catch((error) => {});
@@ -46,7 +51,6 @@ class AuthService {
 						password: CryptoJS.MD5(new_username).toString(),
 						full_name: userName
 					}
-					console.log(userProfile.password)
 					ConnectyCube.users
 						.signup(userProfile)
 						.then((user) => {
@@ -66,7 +70,13 @@ class AuthService {
 						});
 				}
 			}
-		}, 800);
+			})
+			.catch((error) => {});
+
+
+		
+			
+	
 	}
 
 
