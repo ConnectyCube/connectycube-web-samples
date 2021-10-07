@@ -1,6 +1,7 @@
 
 import { Route } from 'react-router';
 import './App.scss';
+import Conference from './Components/Conference/Conference';
 import EnterName from './Components/EnterName/EnterName';
 import Main from './Components/Main/Main';
 
@@ -13,9 +14,12 @@ function App(props) {
 			</header>
 			<main className="main">
 				<div className="page__main">
-					<Route path="/" ><Main users={props.users} /></Route>
+					<Route exact path="/" ><Main users={props.users} /></Route>
 					<Route path="/enter">
-						<EnterName />
+						<EnterName/>
+					</Route>
+					<Route path="/conference">
+						<Conference/>
 					</Route>
 				</div>
 			</main>

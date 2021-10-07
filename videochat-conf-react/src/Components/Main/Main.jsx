@@ -1,5 +1,6 @@
 import './Main.scss';
 import AuthService from '../../services/auth-service';
+import { NavLink } from 'react-router-dom';
 
 
 const Main = (props) => {
@@ -24,7 +25,7 @@ const Main = (props) => {
 				{usersArr}
 			</div>
 
-			<button href="#s" className='join' onClick={onLogin}>Join room as guest</button>
+			<NavLink to="/conference" className='join' onClick={onLogin}>Join room as guest</NavLink>
 
 		</div>
 	)

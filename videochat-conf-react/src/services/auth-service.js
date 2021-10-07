@@ -8,10 +8,8 @@ class AuthService {
 
 
 	logout = () =>{
-		ConnectyCube.chat.disconnect();
 		ConnectyCube.destroySession();
-		this.callScreen.classList.add("hidden");
-		this.loginScreen.classList.remove("hidden");
+		
 	};
 
 	init = () =>{
