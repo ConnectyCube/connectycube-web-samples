@@ -1,28 +1,28 @@
-.conference{
+@import "./ConferenceFlex.scss";
+.conference {
 	width: 100vw;
 	height: 100vh;
-	
 
-	& .users__cams{
+	& .users__cams {
 		display: flex;
 		width: 100%;
 		height: 92%;
-		flex-wrap: wrap;
-
-
+		justify-content: center;
+		flex-wrap: wrap;		
+		
 		
 	}
-	& .user__buttons{
+
+	& .user__buttons {
 		position: absolute;
 		width: 320px;
-		left:50%;
+		left: 50%;
 		transform: translateX(-50%);
 		bottom: 20px;
 		display: flex;
 		justify-content: space-around;
-		
 	}
-	& .call__btn{
+	& .call__btn {
 		position: relative;
 		width: 50px;
 		height: 50px;
@@ -30,45 +30,43 @@
 
 		border-radius: 50%;
 		border: 0;
-		transition: .2s;
+		transition: 0.2s;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		align-content: center;
-		& img{
+		& img {
 			width: 32px;
 			height: 32px;
 		}
-		&:hover{
+		&:hover {
 			opacity: 90%;
 		}
-		&.mute{
-			
-			&::after{
+		&.mute {
+			&::after {
 				content: "";
 				position: absolute;
 				height: 90%;
 				width: 3px;
 				background-color: white;
-				left:50%;
+				left: 50%;
 				z-index: 20;
 				transform: rotateZ(-45deg);
 			}
 		}
 	}
-	& .micro__btn{
+	& .micro__btn {
 		background-color: rgb(112, 112, 252);
-		
-		
 	}
 
-	& .video__btn{
+	& .video__btn {
 		background-color: rgb(77, 139, 77);
 	}
-	& .end__btn{
-		background-color:rgb(231, 80, 80);
+	& .end__btn {
+		background-color: rgb(231, 80, 80);
 	}
-	& .switch__btn{
-		background-color:#ffa500 ;
+	& .switch__btn {
+		background-color: #ffa500;
 	}
 }
+

@@ -11,10 +11,15 @@ const Conference = (props) => {
 		debugger
 		btn.classList.toggle("mute")
 	}
+	
+	let allCam=[]
+	for (let i=0; i<props.participants;i++){
+		allCam.push(<UserCam key={i}/>)
+	}
 	return (
 		<div className='conference'>
-			<div className="users__cams">
-				<UserCam/>
+			<div className={`users__cams flex-${props.participants}`}>
+				{allCam}
 				
 			</div>
 			<div className="user__buttons">

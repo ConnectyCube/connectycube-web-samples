@@ -2,9 +2,6 @@
 	box-sizing: border-box;
 	background-color: green;
 	border: 3px solid white;
+	
 	flex:1 1 50%;
-	justify-content: center;
-	&.alone{
-		width: 100%;
-	}
 }

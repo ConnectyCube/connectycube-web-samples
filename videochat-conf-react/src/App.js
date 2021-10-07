@@ -14,12 +14,12 @@ function App(props) {
 			</header>
 			<main className="main">
 				<div className="page__main">
-					<Route exact path="/" ><Main users={props.users} /></Route>
+					<Route exact path="/" ><Main/></Route>
 					<Route path="/enter">
 						<EnterName/>
 					</Route>
 					<Route path="/conference">
-						<Conference/>
+						<Conference participants={props.participants}/>
 					</Route>
 				</div>
 			</main>

@@ -29,3 +29,4 @@ export const users = [
 	  color: "#056a96"
 	}
  ];
+ export let participants =10;
