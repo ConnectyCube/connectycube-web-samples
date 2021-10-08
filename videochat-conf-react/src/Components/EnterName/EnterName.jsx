@@ -1,15 +1,8 @@
-import './EnterName.scss';
+import "./EnterName.scss";
+import React from "react";
 
-
-const EnterName = (props) => {
-	
-	return (
-		<div className='enter__name'>
-			
-
-
-		</div>
-	)
-}
+const EnterName = () => (
+  <div className="enter__name" />
+);
 
 export default EnterName;

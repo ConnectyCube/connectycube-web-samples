@@ -1,25 +1,26 @@
-import './Main.scss';
-import AuthService from '../../services/auth-service';
-import { NavLink } from 'react-router-dom';
 
+import "./Main.scss";
+import React from "react";
 
-const Main = (props) => {
-	const onLogin = () =>{
-		let userName = prompt("Enter ur name", "Vasek")
-		AuthService.login(userName)
-	}
-	return (
-		<div className='container'>
-			<div className="img__container">
-				<img src="./img/logo.png" alt="" />
+import { NavLink } from "react-router-dom";
+import AuthService from "../../services/auth-service";
 
-			</div>
-			
+const Main = () => {
+  const onLogin = () => {
+    const userName = prompt("Enter ur name", "Vasek");
+    AuthService.login(userName);
+  };
+  return (
+    <div className="container">
+      <div className="img__container">
+        <img src="./img/logo.png" alt="" />
 
-			<NavLink to="/conference" className='join' onClick={onLogin}>Join room as guest</NavLink>
+      </div>
 
-		</div>
-	)
-}
+      <NavLink to="/conference" className="join" onClick={onLogin}>Join room as guest</NavLink>
+
+    </div>
+  );
+};
 
 export default Main;

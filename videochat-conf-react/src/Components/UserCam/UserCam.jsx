@@ -1,21 +1,12 @@
-import './UserCam.scss';
+import "./UserCam.scss";
+import React from "react";
 
+const UserCam = () => (
 
-const UserCam = (props) => {
+  <video id="user__cam" className="user__cam">
+    
+  </video>
 
-	return (
-
-
-		<div className="user__cam">
-
-		</div>
-
-
-
-
-
-
-	)
-}
+);
 
 export default UserCam;
