@@ -9,9 +9,9 @@ class AuthService {
 
   logout = () => {
     ConnectyCube.destroySession();
-  }
+  };
 
-  init=()=> {
+  init = () => {
     const credentials = {
       appId: 5497,
       authKey: "BxHxMLzGJjQsLAL",
@@ -26,13 +26,13 @@ class AuthService {
       },
     };
     ConnectyCube.init(credentials, appConfig);
-  }
+  };
 
   login(userName) {
     ConnectyCube.createSession()
       .then((session) => {
         if (!userName) {
-          ConnectyCube.destroySession().catch((error) => { });
+          ConnectyCube.destroySession().catch((error) => {});
         } else if (localStorage.getItem("userName") === userName) {
           const userCredentials = {
             login: localStorage.getItem("userLogin"),
@@ -42,7 +42,9 @@ class AuthService {
             .then((user) => {
               CallService.createAndJoinMeeting(user);
             })
-            .catch((error) => { console.log(error); });
+            .catch((error) => {
+              console.log(error);
+            });
         } else {
           const rug = require("random-username-generator");
           const new_username = rug.generate();
@@ -65,12 +67,12 @@ class AuthService {
                 .then((user) => {
                   CallService.createAndJoinMeeting(user);
                 })
-                .catch((error) => { });
+                .catch((error) => {});
             })
-            .catch((error) => { });
+            .catch((error) => {});
         }
       })
-      .catch((error) => { });
+      .catch((error) => {});
   }
 }
 const Auth = new AuthService();
