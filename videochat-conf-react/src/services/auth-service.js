@@ -1,9 +1,11 @@
 import CryptoJS from "crypto-js";
 import ConnectyCube from "connectycube";
 import CallService from "./call-service";
+import { roomId } from "../redux/state";
 
 class AuthService {
   constructor() {
+    console.log("AuthService init");
     this.init();
   }
 
@@ -27,52 +29,67 @@ class AuthService {
     };
     ConnectyCube.init(credentials, appConfig);
   };
+  //   parseJoinRoomUrl = () =>{
+  // 	  const {pathname} = window.location;
+  // 	  const [, joinPath, roomInfo] = pathname.split('/')
+  // 	  if (joinPath === 'join' && roomInfo) {
+  // 		  alert(console.log(atob(roomInfo).split("##")))
+  // 		 return atob(roomInfo).split("##");
+  // 	  }
+  // 	  return null
+  //   }
 
-  login(userName) {
-    ConnectyCube.createSession()
-      .then((session) => {
-        if (!userName) {
-          ConnectyCube.destroySession().catch((error) => {});
-        } else if (localStorage.getItem("userName") === userName) {
-          const userCredentials = {
-            login: localStorage.getItem("userLogin"),
-            password: localStorage.getItem("userPass"),
-          };
-          ConnectyCube.login(userCredentials)
-            .then((user) => {
-              CallService.createAndJoinMeeting(user);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        } else {
-          const rug = require("random-username-generator");
-          const new_username = rug.generate();
-          const userProfile = {
-            login: new_username,
-            password: CryptoJS.MD5(new_username).toString(),
-            full_name: userName,
-          };
-          ConnectyCube.users
-            .signup(userProfile)
-            .then((user) => {
-              localStorage.setItem("userName", userName);
-              localStorage.setItem("userPass", userProfile.password);
-              localStorage.setItem("userLogin", userProfile.login);
-              const userCredentials = {
-                login: localStorage.getItem("userLogin"),
-                password: localStorage.getItem("userPass"),
-              };
-              ConnectyCube.login(userCredentials)
-                .then((user) => {
-                  CallService.createAndJoinMeeting(user);
-                })
-                .catch((error) => {});
-            })
-            .catch((error) => {});
-        }
-      })
-      .catch((error) => {});
+  login(userName, roomID) {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.createSession()
+        .then((session) => {
+          if (!userName) {
+            ConnectyCube.destroySession().catch((error) => {});
+          } else if (localStorage.getItem("userName") === userName) {
+            const userCredentials = {
+              login: localStorage.getItem("userLogin"),
+              password: localStorage.getItem("userPass"),
+            };
+            ConnectyCube.login(userCredentials)
+              .then((user) => {
+                resolve(user);
+                //CallService.createAndJoinMeeting(user)
+              })
+              .catch((error) => {
+                console.log(error);
+                reject();
+              });
+          } else {
+            const rug = require("random-username-generator");
+            const new_username = rug.generate();
+            const userProfile = {
+              login: new_username,
+              password: CryptoJS.MD5(new_username).toString(),
+              full_name: userName,
+            };
+            ConnectyCube.users
+              .signup(userProfile)
+              .then((user) => {
+                localStorage.setItem("userName", userName);
+                localStorage.setItem("userPass", userProfile.password);
+                localStorage.setItem("userLogin", userProfile.login);
+                const userCredentials = {
+                  login: localStorage.getItem("userLogin"),
+                  password: localStorage.getItem("userPass"),
+                };
+                ConnectyCube.login(userCredentials)
+                  .then((user) => {
+                    resolve(user);
+                  })
+                  .catch((error) => {});
+              })
+              .catch((error) => {});
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
   }
 }
 const Auth = new AuthService();

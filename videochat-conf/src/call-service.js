@@ -8,78 +8,106 @@ import {
   GET_USERS_STATS_TIME_INTERVAL,
   MAX_MIC_LEVEL,
   CLEANING_SLOW_LINK_INTERVAL,
-  E2E_STATE_ELEMENT_ID
+  E2E_STATE_ELEMENT_ID,
 } from "./config";
-import { detectBrowser } from './helpers'
+import { detectBrowser } from "./helpers";
 
-export const isiOS = window.device?.platform === "iOS" || !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);;
-export const isMobile = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test((navigator.userAgent || navigator.vendor || window.opera)) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test((navigator.userAgent || navigator.vendor || window.opera).substr(0, 4))
-export const isWebRTCSupported = window.RTCPeerConnection !== undefined && window.RTCPeerConnection !== null && navigator.getUserMedia !== undefined && navigator.getUserMedia !== null
+export const isiOS =
+  window.device?.platform === "iOS" ||
+  (!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform));
+export const isMobile =
+  /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
+    navigator.userAgent || navigator.vendor || window.opera
+  ) ||
+  /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
+    (navigator.userAgent || navigator.vendor || window.opera).substr(0, 4)
+  );
+export const isWebRTCSupported =
+  window.RTCPeerConnection !== undefined &&
+  window.RTCPeerConnection !== null &&
+  navigator.getUserMedia !== undefined &&
+  navigator.getUserMedia !== null;
 
 class CallService {
   static USER_NAME_KEY = "ConnectyCubeVideoConf:UserNameKey";
-  static ACTIVE_BROWSER = null
+  static ACTIVE_BROWSER = null;
 
-  _answerUserTimers = {}
-  currentUserID
-  participantIds = []
-  initiatorID
-  janusRoomId
-  isGuestMode
-  currentUserName
-  avatarIndex = {}
-  usersStatsList = {}
-  updateStatsTimer = null
-  conectedParticipantIds = []
-  isSharingScreen = false
-  startEventSharinScreen = null
+  _answerUserTimers = {};
+  currentUserID;
+  participantIds = [];
+  initiatorID;
+  janusRoomId;
+  isGuestMode;
+  currentUserName;
+  avatarIndex = {};
+  usersStatsList = {};
+  updateStatsTimer = null;
+  conectedParticipantIds = [];
+  isSharingScreen = false;
+  startEventSharinScreen = null;
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
-    ConnectyCube.videochatconference.onParticipantJoinedListener = this.onAcceptCallListener.bind(this);
-    ConnectyCube.videochatconference.onParticipantLeftListener = this.onStopCallListener.bind(this);
-    ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
-    ConnectyCube.videochatconference.onSlowLinkListener = this.onSlowLinkListener.bind(this);
-    ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = this.onRemoteConnectionStateChangedListener.bind(this);
-    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = this.onSessionConnectionStateChangedListener.bind(this);
+    ConnectyCube.videochatconference.onParticipantJoinedListener =
+      this.onAcceptCallListener.bind(this);
+    ConnectyCube.videochatconference.onParticipantLeftListener =
+      this.onStopCallListener.bind(this);
+    ConnectyCube.videochatconference.onRemoteStreamListener =
+      this.onRemoteStreamListener.bind(this);
+    ConnectyCube.videochatconference.onSlowLinkListener =
+      this.onSlowLinkListener.bind(this);
+    ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener =
+      this.onRemoteConnectionStateChangedListener.bind(this);
+    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener =
+      this.onSessionConnectionStateChangedListener.bind(this);
 
-    document.getElementById("call-modal-reject").addEventListener("click", () => this.rejectCall());
-    document.getElementById("call-modal-accept").addEventListener("click", () => this.acceptCall());
-    document.body.classList.add('black-bg')
-    CallService.ACTIVE_BROWSER = detectBrowser()
+    document
+      .getElementById("call-modal-reject")
+      .addEventListener("click", () => this.rejectCall());
+    document
+      .getElementById("call-modal-accept")
+      .addEventListener("click", () => this.acceptCall());
+    document.body.classList.add("black-bg");
+    CallService.ACTIVE_BROWSER = detectBrowser();
   };
 
   sendIncomingCallSystemMessage = (participantIds) => {
     const msg = {
       extension: {
-        callStart: '1',
+        callStart: "1",
         janusRoomId: this.janusRoomId,
-        participantIds: participantIds.join(','),
-      }
-    }
-    return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
-  }
+        participantIds: participantIds.join(","),
+      },
+    };
+    return participantIds.map((user_id) =>
+      ConnectyCube.chat.sendSystemMessage(user_id, msg)
+    );
+  };
 
   sendRejectCallMessage = (participantIds, janusRoomId, isBusy) => {
     const msg = {
       extension: {
-        callRejected: '1',
+        callRejected: "1",
         janusRoomId,
-        busy: !!isBusy
-      }
-    }
-    return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
-  }
+        busy: !!isBusy,
+      },
+    };
+    return participantIds.map((user_id) =>
+      ConnectyCube.chat.sendSystemMessage(user_id, msg)
+    );
+  };
 
   sendEndCallMessage = (participantIds, janusRoomId) => {
     const msg = {
       extension: {
-        callEnd: '1',
-        janusRoomId
-      }
-    }
-    return participantIds.map(user_id => ConnectyCube.chat.sendSystemMessage(user_id, msg))
-  }
+        callEnd: "1",
+        janusRoomId,
+      },
+    };
+    return participantIds.map((user_id) =>
+      ConnectyCube.chat.sendSystemMessage(user_id, msg)
+    );
+  };
 
   $calling = document.getElementById("signal-in");
   $dialing = document.getElementById("signal-out");
@@ -88,275 +116,318 @@ class CallService {
   $modal = document.getElementById("call-modal-icoming");
 
   $muteUnmuteAudioButton = document.getElementById("videochat-mute-unmute");
-  $muteUnmuteVideoButton = document.getElementById("videochat-mute-unmute-video");
+  $muteUnmuteVideoButton = document.getElementById(
+    "videochat-mute-unmute-video"
+  );
   $switchCameraButton = document.getElementById("videochat-switch-camera");
-  $switchSharingScreenButton = document.getElementById("videochat-sharing-screen");
+  $switchSharingScreenButton = document.getElementById(
+    "videochat-sharing-screen"
+  );
 
   mediaParams = {
     video: { width: 1280, height: 720 },
-    audio: true
+    audio: true,
   };
 
-  sharingScreenMediaParams = { 
+  sharingScreenMediaParams = {
     audio: true,
-    video: { frameRate: { ideal: 10, max: 15 } }
+    video: { frameRate: { ideal: 10, max: 15 } },
   };
 
   _session = null;
-  videoDevices = []
+  videoDevices = [];
 
   defaultSettings = () => {
-    if(isMobile){
+    if (isMobile) {
       this.$switchSharingScreenButton.disabled = true;
     }
-  }
+  };
 
-  addStreamElement = opponents => {
+  addStreamElement = (opponents) => {
     const $videochatStreams = document.getElementById("videochat-streams");
-    const $videochatStreamsTemplate = document.getElementById("videochat-streams-template");
+    const $videochatStreamsTemplate = document.getElementById(
+      "videochat-streams-template"
+    );
 
     if (!Array.isArray(opponents)) {
-      opponents = [opponents]
+      opponents = [opponents];
     }
 
-    const curretActiveCallUsersCout = this._getActiveCallUsers().length
-    const documentFragment = document.createDocumentFragment()
+    const curretActiveCallUsersCout = this._getActiveCallUsers().length;
+    const documentFragment = document.createDocumentFragment();
 
     opponents.forEach((opponent, index) => {
-      const videochatStreamsTemplate = Handlebars.compile($videochatStreamsTemplate.innerHTML);
+      const videochatStreamsTemplate = Handlebars.compile(
+        $videochatStreamsTemplate.innerHTML
+      );
 
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
 
-      const streamBlock = document.createElement('div')
-      streamBlock.innerHTML = videochatStreamsTemplate(opponent)
-      streamBlock.classList.add("videochat-stream-container")
-      streamBlock.dataset.id = `${opponent.id}`
-      streamBlock.style.gridArea = `stream${index + curretActiveCallUsersCout}`
-      documentFragment.appendChild(streamBlock)
-    })
+      const streamBlock = document.createElement("div");
+      streamBlock.innerHTML = videochatStreamsTemplate(opponent);
+      streamBlock.classList.add("videochat-stream-container");
+      streamBlock.dataset.id = `${opponent.id}`;
+      streamBlock.style.gridArea = `stream${index + curretActiveCallUsersCout}`;
+      documentFragment.appendChild(streamBlock);
+    });
 
-    $videochatStreams.classList.value = `grid-${opponents.length + curretActiveCallUsersCout}`
+    $videochatStreams.classList.value = `grid-${
+      opponents.length + curretActiveCallUsersCout
+    }`;
 
-    $videochatStreams.appendChild(documentFragment)
+    $videochatStreams.appendChild(documentFragment);
 
-    this.initStatsTooltip()
-  }
-
-
+    this.initStatsTooltip();
+  };
 
   startMonitoringUserStats = (userId) => {
     if (!userId) {
-      return
+      return;
     }
 
-    clearInterval(this.updateStatsTimer)
+    clearInterval(this.updateStatsTimer);
 
-    this.conectedParticipantIds.push(userId)
+    this.conectedParticipantIds.push(userId);
 
     this.updateStatsTimer = setInterval(() => {
-      this.conectedParticipantIds.forEach(user_id => {
-        this.getUserStat(user_id)
+      this.conectedParticipantIds.forEach((user_id) => {
+        this.getUserStat(user_id);
       });
-    }, GET_USERS_STATS_TIME_INTERVAL)
-  }
+    }, GET_USERS_STATS_TIME_INTERVAL);
+  };
 
   stopMonitoringUserStats = (userId) => {
     if (userId) {
-      let updateConectedParticipantIds = []
-      this.conectedParticipantIds.forEach(element => {
+      let updateConectedParticipantIds = [];
+      this.conectedParticipantIds.forEach((element) => {
         element !== userId && updateConectedParticipantIds.push(element);
       });
-      this.conectedParticipantIds = updateConectedParticipantIds
+      this.conectedParticipantIds = updateConectedParticipantIds;
     } else {
-      clearInterval(this.updateStatsTimer)
+      clearInterval(this.updateStatsTimer);
     }
-  }
+  };
 
   goodSlowLinkIconColor = (userId) => {
-    const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
-    $selectedUserStat.classList.remove('average')
-  }
+    const $selectedUserStat = document.querySelector(
+      `.display-signal-icon[data-id="${userId}"]`
+    );
+    $selectedUserStat.classList.remove("average");
+  };
 
   averageSlowLinkIconColor = (userId) => {
-    const $selectedUserStat = document.querySelector(`.display-signal-icon[data-id="${userId}"]`)
-    $selectedUserStat.classList.add('average')
-  }
+    const $selectedUserStat = document.querySelector(
+      `.display-signal-icon[data-id="${userId}"]`
+    );
+    $selectedUserStat.classList.add("average");
+  };
 
   checkTimeStampSlowLink = (user_id, stat) => {
-    if (Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink < CLEANING_SLOW_LINK_INTERVAL) {
-      stat.connection = 'average';
+    if (
+      Date.now() / 1000 - this.usersStatsList[user_id].timeStampSlowLink <
+      CLEANING_SLOW_LINK_INTERVAL
+    ) {
+      stat.connection = "average";
       stat.timeStampSlowLink = this.usersStatsList[user_id].timeStampSlowLink;
     } else {
-      stat.connection = 'good';
-      stat.timeStampSlowLink = null
-      this.goodSlowLinkIconColor(user_id)
+      stat.connection = "good";
+      stat.timeStampSlowLink = null;
+      this.goodSlowLinkIconColor(user_id);
     }
-    return stat
-  }
+    return stat;
+  };
 
   getUserStat = (user_id) => {
     if (this.currentUserID !== user_id) {
       let stat = {
         micLevel: this._session.getRemoteUserVolume(user_id),
         bitrate: this._session.getRemoteUserBitrate(user_id),
-        connection: 'good'
-      }
+        connection: "good",
+      };
       if (this.usersStatsList[user_id]?.timeStampSlowLink) {
-        stat = this.checkTimeStampSlowLink(user_id, stat)
+        stat = this.checkTimeStampSlowLink(user_id, stat);
       }
-      if (CallService.ACTIVE_BROWSER === 'Safari') {
-        const newBitrate = stat.bitrate.split(' ')[0] / 1000
-        stat.bitrate = `${Math.round(newBitrate)} kbits/sec`
+      if (CallService.ACTIVE_BROWSER === "Safari") {
+        const newBitrate = stat.bitrate.split(" ")[0] / 1000;
+        stat.bitrate = `${Math.round(newBitrate)} kbits/sec`;
       }
       this.usersStatsList[user_id] = stat;
     } else {
       let stat = {
-        connection: 'good'
-      }
+        connection: "good",
+      };
       if (this.usersStatsList[user_id]?.timeStampSlowLink) {
-        stat = this.checkTimeStampSlowLink(user_id, stat)
+        stat = this.checkTimeStampSlowLink(user_id, stat);
       }
       this.usersStatsList[user_id] = stat;
     }
-  }
-
+  };
 
   initStatsTooltip = () => {
     $(".tooltip-container").tooltipster({
-      theme: ["tooltipster-borderless", 'tooltipster-borderless-customized'],
+      theme: ["tooltipster-borderless", "tooltipster-borderless-customized"],
       interactive: true,
       contentAsHTML: true,
       delay: 200,
       trigger: "custom",
       triggerOpen: {
         mouseenter: true,
-        touchstart: true
+        touchstart: true,
       },
       triggerClose: {
         interactive: true,
         mouseleave: true,
-        touchleave: true
+        touchleave: true,
       },
 
       functionInit: (instance, helper) => {
-        this.initToolTispterUI(instance, helper)
+        this.initToolTispterUI(instance, helper);
       },
 
       functionBefore: (instance) => {
         const user_id = window.ConnectyCubeActiveUserStatId;
-        if (this.currentUserID !== user_id && !this.usersStatsList[user_id].bitrate) {
+        if (
+          this.currentUserID !== user_id &&
+          !this.usersStatsList[user_id].bitrate
+        ) {
           instance.content(
             `<ul>
               <li>Connection: N/A</li>
               <li>Bitrate: N/A</li>
               <li>Mic level: N/A</li>
             </ul>`
-          )
+          );
         }
         if (this.currentUserID !== user_id) {
-          const volume = this.usersStatsList[user_id].micLevel / MAX_MIC_LEVEL * 100
+          const volume =
+            (this.usersStatsList[user_id].micLevel / MAX_MIC_LEVEL) * 100;
           instance.content(
             `<ul>
               <li>Connection: ${this.usersStatsList[user_id].connection}</li>
               <li>Bitrate: ${this.usersStatsList[user_id].bitrate}</li>
               <li>Mic level: ${volume.toFixed(2)}%</li>
             </ul>`
-          )
+          );
         } else {
           instance.content(
             `<ul>
               <li>Connection: ${this.usersStatsList[user_id].connection}</li>
             </ul>`
-          )
+          );
         }
-      }
+      },
     });
-  }
+  };
 
   setDefaultAvatar = (user_id) => {
-    const $avatar = document.querySelector(`.user-placeholder[data-id="${user_id}"] .user-image`);
+    const $avatar = document.querySelector(
+      `.user-placeholder[data-id="${user_id}"] .user-image`
+    );
     if (!this.avatarIndex[user_id]) {
-      this.avatarIndex[user_id] = Math.floor(Math.random() * 10)
+      this.avatarIndex[user_id] = Math.floor(Math.random() * 10);
     }
-    $avatar.style.background = `#ffffff url("../images/animals/${defaultAvatarlist[this.avatarIndex[user_id]]}") no-repeat center`
-    $avatar.style.backgroundSize = 'contain'
-  }
+    $avatar.style.background = `#ffffff url("../images/animals/${
+      defaultAvatarlist[this.avatarIndex[user_id]]
+    }") no-repeat center`;
+    $avatar.style.backgroundSize = "contain";
+  };
 
   toggleUserPlaceholder(user_id, toShow) {
-    const $userPlaceHolder = document.querySelector(`.user-placeholder[data-id="${user_id}"]`)
+    const $userPlaceHolder = document.querySelector(
+      `.user-placeholder[data-id="${user_id}"]`
+    );
     this.setDefaultAvatar(user_id);
     if (toShow) {
-      $userPlaceHolder.classList.add('show')
+      $userPlaceHolder.classList.add("show");
     } else {
-      $userPlaceHolder.classList.remove('show')
+      $userPlaceHolder.classList.remove("show");
     }
   }
 
-  onSystemMessage = msg => {
-    console.warn('[onSystemMessage]', msg)
-    const { extension, userId } = msg
+  onSystemMessage = (msg) => {
+    console.warn("[onSystemMessage]", msg);
+    const { extension, userId } = msg;
     if (extension.callStart) {
-      const { participantIds, janusRoomId } = extension
+      const { participantIds, janusRoomId } = extension;
       const oponentIds = participantIds
-        .split(',')
-        .map(user_id => +user_id)
-        .filter(user_id => user_id != this.currentUserID)
+        .split(",")
+        .map((user_id) => +user_id)
+        .filter((user_id) => user_id != this.currentUserID);
       if (this.janusRoomId) {
-        return this.sendRejectCallMessage([...oponentIds, userId], janusRoomId, true)
+        return this.sendRejectCallMessage(
+          [...oponentIds, userId],
+          janusRoomId,
+          true
+        );
       }
-      this.janusRoomId = janusRoomId
-      this.initiatorID = userId
-      this.participantIds = oponentIds
+      this.janusRoomId = janusRoomId;
+      this.initiatorID = userId;
+      this.participantIds = oponentIds;
       this.showIncomingCallModal();
     } else if (extension.callRejected) {
-      const { janusRoomId } = extension
+      const { janusRoomId } = extension;
       if (this.janusRoomId === janusRoomId) {
-        const { busy } = extension
-        this.onRejectCallListener(this._session, userId, { busy })
+        const { busy } = extension;
+        this.onRejectCallListener(this._session, userId, { busy });
       }
     } else if (extension.callEnd) {
-      const { janusRoomId } = extension
+      const { janusRoomId } = extension;
       if (this.janusRoomId === janusRoomId) {
-        this.onStopCallListener(this._session, userId)
+        this.onStopCallListener(this._session, userId);
       }
     }
-  }
+  };
 
   onAcceptCallListener = (session, userId, displayName) => {
-    console.warn('[onAcceptCallListener]', userId, displayName)
-    const userName = this.isGuestMode ? displayName : this._getUserById(userId, "name");
-    const infoText = `${userName} has ${this.isGuestMode ? 'joined' : 'accepted'} the call`;
+    console.warn("[onAcceptCallListener]", userId, displayName);
+    const userName = this.isGuestMode
+      ? displayName
+      : this._getUserById(userId, "name");
+    const infoText = `${userName} has ${
+      this.isGuestMode ? "joined" : "accepted"
+    } the call`;
     this.showSnackbar(infoText);
-    this.startMonitoringUserStats(userId)
+    this.startMonitoringUserStats(userId);
     if (this.isGuestMode) {
-      const userToAdd = { id: +userId, name: `${displayName || userId}` }
-      this.addStreamElement(userToAdd)
-      return
+      const userToAdd = { id: +userId, name: `${displayName || userId}` };
+      this.addStreamElement(userToAdd);
+      return;
     }
     this.$dialing.pause();
-    this.clearNoAnswerTimers(userId)
+    this.clearNoAnswerTimers(userId);
   };
 
   _getActiveCallUsers() {
-    const $streamsContainers = document.querySelectorAll(".videochat-stream-container");
-    const stream = Array.from($streamsContainers)
-    return stream.map(({ dataset }) => ({ id: +dataset.id, name: `${dataset.id}` }))
+    const $streamsContainers = document.querySelectorAll(
+      ".videochat-stream-container"
+    );
+    const stream = Array.from($streamsContainers);
+    return stream.map(({ dataset }) => ({
+      id: +dataset.id,
+      name: `${dataset.id}`,
+    }));
   }
 
   onRejectCallListener = (session, userId, extension = {}) => {
     const userName = this._getUserById(userId, "name");
-    const infoText = extension.busy ? `${userName} is busy` : `${userName} rejected the call request`;
+    const infoText = extension.busy
+      ? `${userName} is busy`
+      : `${userName} rejected the call request`;
 
     this.stopCall(userId);
     this.showSnackbar(infoText);
   };
 
   onStopCallListener = (session, userId) => {
-    console.warn('[onStopCallListener]', userId)
+    console.warn("[onStopCallListener]", userId);
     const isStoppedByInitiator = this.initiatorID === userId;
-    const userName = this.initGuestRoom ? userId : this._getUserById(userId, "name");
-    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
+    const userName = this.initGuestRoom
+      ? userId
+      : this._getUserById(userId, "name");
+    const infoText = `${userName} has ${
+      isStoppedByInitiator ? "stopped" : "left"
+    } the call`;
 
     this.showSnackbar(infoText);
 
@@ -371,7 +442,7 @@ class CallService {
   };
 
   onUserNotAnswerListener = (session, userId) => {
-    console.warn('[onUserNotAnswerListener]', userId)
+    console.warn("[onUserNotAnswerListener]", userId);
     if (!this._session) {
       return false;
     }
@@ -380,69 +451,73 @@ class CallService {
     const infoText = `${userName} did not answer`;
 
     this.showSnackbar(infoText);
-    this.sendEndCallMessage([userId], this.janusRoomId)
-    this.stopCall(userId)
+    this.sendEndCallMessage([userId], this.janusRoomId);
+    this.stopCall(userId);
   };
 
   onRemoteStreamListener = (session, userId, stream) => {
-    console.warn('[onRemoteStreamListener]', userId)
+    console.warn("[onRemoteStreamListener]", userId);
     if (!this._session) {
       return false;
     }
 
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
-    this.removeStreamLoaderByUserId(userId)
-    const isStremaWithVideo = stream.getVideoTracks().length > 0
+    this.removeStreamLoaderByUserId(userId);
+    const isStremaWithVideo = stream.getVideoTracks().length > 0;
     this._prepareVideoElement(userId, isStremaWithVideo);
   };
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
-    console.warn('[onSlowLinkListener]', userId, uplink, nacks)
+    console.warn("[onSlowLinkListener]", userId, uplink, nacks);
 
     const stat = {
-      connection: 'average',
-      timeStampSlowLink: Date.now() / 1000
-    }
-    const merge = { ...this.usersStatsList[userId], ...stat }
+      connection: "average",
+      timeStampSlowLink: Date.now() / 1000,
+    };
+    const merge = { ...this.usersStatsList[userId], ...stat };
     this.usersStatsList[userId] = merge;
-    this.averageSlowLinkIconColor(userId)
-  }
-
+    this.averageSlowLinkIconColor(userId);
+  };
 
   onRemoteConnectionStateChangedListener = (session, userId, iceState) => {
-    console.warn('[onRemoteConnectionStateChangedListener]', userId, iceState)
-  }
+    console.warn("[onRemoteConnectionStateChangedListener]", userId, iceState);
+  };
 
   onSessionConnectionStateChangedListener = (session, iceState) => {
-    console.warn('[onSessionConnectionStateChangedListener]', iceState)
-    document.getElementById(E2E_STATE_ELEMENT_ID).setAttribute('ice-state', `${iceState}`)
-    if (iceState === 'connected') {
-      this.startMonitoringUserStats(this.currentUserID)
+    console.warn("[onSessionConnectionStateChangedListener]", iceState);
+    document
+      .getElementById(E2E_STATE_ELEMENT_ID)
+      .setAttribute("ice-state", `${iceState}`);
+    if (iceState === "connected") {
+      this.startMonitoringUserStats(this.currentUserID);
     }
-  }
+  };
 
   acceptCall = () => {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
-    const opponents = opponentsIds.map(id => ({ id, name: this._getUserById(id, "name") }));
+    const opponents = opponentsIds.map((id) => ({
+      id,
+      name: this._getUserById(id, "name"),
+    }));
     this.addStreamElement(opponents);
     this.hideIncomingCallModal();
-    this.startNoAnswerTimers(this.participantIds)
-    this.joinConf(this.janusRoomId)
-    this.startMonitoringUserStats(this.currentUserID)
+    this.startNoAnswerTimers(this.participantIds);
+    this.joinConf(this.janusRoomId);
+    this.startMonitoringUserStats(this.currentUserID);
   };
 
   rejectCall = (session, extension = {}) => {
-    const participantIds = [this.initiatorID, ...this.participantIds]
-    this.sendRejectCallMessage(participantIds, this.janusRoomId, false)
+    const participantIds = [this.initiatorID, ...this.participantIds];
+    this.sendRejectCallMessage(participantIds, this.janusRoomId, false);
     this.hideIncomingCallModal();
-    this.stopCall()
+    this.stopCall();
   };
 
   startCall = () => {
     const opponents = [];
     const opponentsIds = [];
 
-    document.querySelectorAll(".select-user-checkbox").forEach($checkbox => {
+    document.querySelectorAll(".select-user-checkbox").forEach(($checkbox) => {
       if ($checkbox.checked) {
         const id = +$checkbox.dataset.id;
         const name = this._getUserById(id, "name");
@@ -454,176 +529,213 @@ class CallService {
     });
 
     if (opponents.length > 0) {
-      this.participantIds = opponentsIds
-      this.janusRoomId = this._getUniqueRoomId()
-      this.sendIncomingCallSystemMessage(opponentsIds, this.janusRoomId)
+      this.participantIds = opponentsIds;
+      this.janusRoomId = this._getUniqueRoomId();
+      this.sendIncomingCallSystemMessage(opponentsIds, this.janusRoomId);
       document.getElementById("call").classList.add("hidden");
       document.getElementById("videochat").classList.remove("hidden");
       this.$dialing.play();
       this.addStreamElement(opponents);
-      this.initiatorID = this.currentUserID
-      this.startNoAnswerTimers(this.participantIds)
-      this.joinConf(this.janusRoomId)
+      this.initiatorID = this.currentUserID;
+      this.startNoAnswerTimers(this.participantIds);
+      this.joinConf(this.janusRoomId);
     } else {
       this.showSnackbar(messages.select_more_users);
     }
-    this.startMonitoringUserStats(this.initiatorID)
+    this.startMonitoringUserStats(this.initiatorID);
   };
 
   _getUniqueRoomId() {
-    return ConnectyCube.chat.helpers.getBsonObjectId()
+    return ConnectyCube.chat.helpers.getBsonObjectId();
   }
 
   _getUniqueUserId() {
-    const randomValue = `${Math.random()}`.replace('0.', '')
-    return parseInt(randomValue.slice(0, 3) + randomValue.slice(-3), 10)
+    const randomValue = `${Math.random()}`.replace("0.", "");
+    return parseInt(randomValue.slice(0, 3) + randomValue.slice(-3), 10);
   }
 
   setSwitchDevice() {
-    ConnectyCube.videochatconference.getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
-      .then(devices => {
-      this.$switchCameraButton.disabled = this.videoDevices.length < 1;
-      devices.forEach(elem => {
-        this.videoDevices.push({id:elem.deviceId, name:elem.label})
-      })
+    ConnectyCube.videochatconference
+      .getMediaDevices(
+        ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+      )
+      .then((devices) => {
+        this.$switchCameraButton.disabled = this.videoDevices.length < 1;
+        devices.forEach((elem) => {
+          this.videoDevices.push({ id: elem.deviceId, name: elem.label });
+        });
         this.$switchCameraButton.disabled = false;
-        this._renderListCameraBlock()
-      })
+        this._renderListCameraBlock();
+      });
   }
 
   _renderListCameraBlock = () => {
     $(".tooltip-container-list-camera").tooltipster({
-      theme: ["tooltipster-light", 'tooltipster-borderless-customized'],
+      theme: ["tooltipster-light", "tooltipster-borderless-customized"],
       interactive: true,
       contentAsHTML: true,
       delay: 200,
       trigger: "custom",
       triggerOpen: {
         click: true,
-        tap: true
+        tap: true,
       },
       triggerClose: {
         click: true,
         interactive: true,
         originClick: true,
         mouseleave: true,
-        touchleave: true
+        touchleave: true,
       },
 
       functionInit: (instance, helper) => {
-        this.initToolTispterUI(instance, helper)
+        this.initToolTispterUI(instance, helper);
       },
 
       functionBefore: (instance) => {
-        let htmlBlock = '';
-        this.listenersCameraList
-        
-        this.videoDevices.forEach(elem => {
-          if(this._session.activeVideoDeviceId !== elem.id){
-            htmlBlock = htmlBlock + `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}">${elem.name}</button>`
+        let htmlBlock = "";
+        this.listenersCameraList;
+
+        this.videoDevices.forEach((elem) => {
+          if (this._session.activeVideoDeviceId !== elem.id) {
+            htmlBlock =
+              htmlBlock +
+              `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}">${elem.name}</button>`;
           } else {
-            htmlBlock = htmlBlock + `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}" disabled>${elem.name}</button>`
+            htmlBlock =
+              htmlBlock +
+              `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}" disabled>${elem.name}</button>`;
           }
-        })
+        });
 
         instance.content(
           `<div class="switch-camera-block">
             ${htmlBlock}
           </div>
           `
-        )
+        );
       },
 
       functionReady: () => {
-        this.videoDevices.forEach(elem => {
-          document.getElementById(`${elem.id}`).addEventListener("click", (htmlProperty) => this.switchCamera(htmlProperty));
-        })  
-      }
-
+        this.videoDevices.forEach((elem) => {
+          document
+            .getElementById(`${elem.id}`)
+            .addEventListener("click", (htmlProperty) =>
+              this.switchCamera(htmlProperty)
+            );
+        });
+      },
     });
-  }
+  };
 
   initToolTispterUI = (instance, helper) => {
     const $origin = $(helper.origin);
-        const content = $origin.find(".tool-tip-content").detach();
-        instance.content(content);
+    const content = $origin.find(".tool-tip-content").detach();
+    instance.content(content);
 
-        const data = $origin.attr("data-tooltipster");
-        if (data) {
-          data = JSON.parse(data);
-          $.each(data, function (name, option) {
-            instance.option(name, option);
-          });
-        }
-  }
+    const data = $origin.attr("data-tooltipster");
+    if (data) {
+      data = JSON.parse(data);
+      $.each(data, function (name, option) {
+        instance.option(name, option);
+      });
+    }
+  };
 
   switchCamera = (event) => {
-    event.stopPropagation()
+    event.stopPropagation();
 
-    this._session.switchMediaTracks({ video: event.toElement.value })
-      .then(newLocalStream => {
-        this.toggelStreamMirror(this.currentUserID)
+    this._session
+      .switchMediaTracks({ video: event.toElement.value })
+      .then((newLocalStream) => {
+        this.toggelStreamMirror(this.currentUserID);
         if (isMobile) {
-          this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), newLocalStream, { muted: true });
+          this._session.attachMediaStream(
+            this.getStreamIdByUserId(this.currentUserID),
+            newLocalStream,
+            { muted: true }
+          );
         }
-      })
-    
-    $('.tooltip-container-list-camera').tooltipster('close');
+      });
+
+    $(".tooltip-container-list-camera").tooltipster("close");
   };
 
   toggelStreamMirror(user_id) {
-    const $stream = document.getElementById(this.getStreamIdByUserId(user_id))
-    $stream.classList.toggle('mirror')
+    const $stream = document.getElementById(this.getStreamIdByUserId(user_id));
+    $stream.classList.toggle("mirror");
   }
 
   joinConf = (janusRoomId, retry) => {
-    this._session = ConnectyCube.videochatconference.createNewSession()
-    this.defaultSettings()
+    this._session = ConnectyCube.videochatconference.createNewSession();
+    this.defaultSettings();
     if (!this._session.getDisplayMedia) {
       this.$switchSharingScreenButton.disabled = true;
     }
-    return this._session.getUserMedia(this.mediaParams).then(stream => {
-      this.addStreamElement({ id: this.currentUserID, name: 'Me', local: true })
-      this.removeStreamLoaderByUserId(this.currentUserID)
-      this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, { muted: true });
-      this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
-      this.toggelStreamMirror(this.currentUserID)
-      return this._session.join(janusRoomId, this.currentUserID, this.currentUserName).then(() => this.postJoinActions())
-    }, error => {
-      console.warn('[Get user media error]', error, this.mediaParam)
-      if (!retry) {
-        this.mediaParams.video = false
-        return this.joinConf(janusRoomId, true)
+    return this._session.getUserMedia(this.mediaParams).then(
+      (stream) => {
+        this.addStreamElement({
+          id: this.currentUserID,
+          name: "Me",
+          local: true,
+        });
+        this.removeStreamLoaderByUserId(this.currentUserID);
+        this._session.attachMediaStream(
+          this.getStreamIdByUserId(this.currentUserID),
+          stream,
+          { muted: true }
+        );
+        this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
+        this.toggelStreamMirror(this.currentUserID);
+        return this._session
+          .join(janusRoomId, this.currentUserID, this.currentUserName)
+          .then(() => this.postJoinActions());
+      },
+      (error) => {
+        console.warn("[Get user media error]", error, this.mediaParam);
+        if (!retry) {
+          this.mediaParams.video = false;
+          return this.joinConf(janusRoomId, true);
+        }
       }
-    });
-  }
+    );
+  };
 
   updateStreamGridOnRemove($streams, $videochatStreams) {
-    $streams.forEach(($stream, index) => $stream.style.gridArea = `stream${index}`)
-    $videochatStreams.classList.value = `grid-${$streams.length}`
+    $streams.forEach(
+      ($stream, index) => ($stream.style.gridArea = `stream${index}`)
+    );
+    $videochatStreams.classList.value = `grid-${$streams.length}`;
   }
 
-  stopCall = userId => {
+  stopCall = (userId) => {
     const $callScreen = document.getElementById("call");
     const $videochatScreen = document.getElementById("videochat");
     const $muteButton = document.getElementById("videochat-mute-unmute");
     const $videochatStreams = document.getElementById("videochat-streams");
 
     if (userId) {
-      this.clearNoAnswerTimers(userId)
-      this.participantIds = this.participantIds.filter(participant_id => participant_id != userId)
-      this.removeStreamBlockByUserId(userId)
-      this.stopMonitoringUserStats(userId)
-      const $streams = Array.from(document.querySelectorAll(".videochat-stream-container"));
+      this.clearNoAnswerTimers(userId);
+      this.participantIds = this.participantIds.filter(
+        (participant_id) => participant_id != userId
+      );
+      this.removeStreamBlockByUserId(userId);
+      this.stopMonitoringUserStats(userId);
+      const $streams = Array.from(
+        document.querySelectorAll(".videochat-stream-container")
+      );
 
       if ($streams.length < 2 && !this.isGuestMode) {
         this.stopCall();
       } else {
-        this.updateStreamGridOnRemove($streams, $videochatStreams)
+        this.updateStreamGridOnRemove($streams, $videochatStreams);
       }
     } else {
       if (!this.isGuestMode) {
-        this.sendEndCallMessage([...this.participantIds, this.initiatorID], this.janusRoomId)
+        this.sendEndCallMessage(
+          [...this.participantIds, this.initiatorID],
+          this.janusRoomId
+        );
       }
       if (this._session) {
         this._session.leave();
@@ -633,29 +745,29 @@ class CallService {
       this.$calling.pause();
       this.$endCall.play();
       this.$muteUnmuteAudioButton.disabled = true;
-      this.$muteUnmuteVideoButton.disabled = true
+      this.$muteUnmuteVideoButton.disabled = true;
       this.$switchCameraButton.disabled = true;
       this._session = null;
       this.videoDevices = [];
-      this.clearNoAnswerTimers()
-      this.initiatorID = void 0
-      this.participantIds = []
-      this.janusRoomId = void 0
-      this.currentUserName = void 0
+      this.clearNoAnswerTimers();
+      this.initiatorID = void 0;
+      this.participantIds = [];
+      this.janusRoomId = void 0;
+      this.currentUserName = void 0;
       // this.mediaParams = {video: true, audio: true}
-      this.mediaParams = { video: { width: 1280, height: 720 }, audio: true }
-      this.usersStatsList = {}
-      this.conectedParticipantIds = []
-      this.stopMonitoringUserStats()
-      this.startEventSharinScreen = null
-      if(this.isSharingScreen){
-        this.isSharingScreen = false
-        this.updateSharingScreenBtn()
+      this.mediaParams = { video: { width: 1280, height: 720 }, audio: true };
+      this.usersStatsList = {};
+      this.conectedParticipantIds = [];
+      this.stopMonitoringUserStats();
+      this.startEventSharinScreen = null;
+      if (this.isSharingScreen) {
+        this.isSharingScreen = false;
+        this.updateSharingScreenBtn();
       }
       if (this.isGuestMode) {
-        window.location.href = window.location.origin
+        window.location.href = window.location.origin;
       }
-      this.isGuestMode = void 0
+      this.isGuestMode = void 0;
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
       $callScreen.classList.remove("hidden");
@@ -668,100 +780,127 @@ class CallService {
   };
 
   postJoinActions() {
-    console.warn('[joined to room]')
-    document.getElementById(E2E_STATE_ELEMENT_ID).setAttribute('join-state', `joined`)
-    this.$muteUnmuteAudioButton.disabled = false
+    console.warn("[joined to room]");
+    document
+      .getElementById(E2E_STATE_ELEMENT_ID)
+      .setAttribute("join-state", `joined`);
+    this.$muteUnmuteAudioButton.disabled = false;
     if (this.mediaParams.video) {
-      this.$muteUnmuteVideoButton.disabled = false
-      this.setSwitchDevice()
+      this.$muteUnmuteVideoButton.disabled = false;
+      this.setSwitchDevice();
     }
-    this.addBodyOnClickListener()
+    this.addBodyOnClickListener();
   }
 
   addBodyOnClickListener = () => {
-    document.body.onclick = this.onClickBody
-  }
+    document.body.onclick = this.onClickBody;
+  };
 
   onClickBody = () => {
-    const callToolButtons = document.getElementById('videochat-buttons-container')
-    callToolButtons.classList.toggle('hidden')
-  }
+    const callToolButtons = document.getElementById(
+      "videochat-buttons-container"
+    );
+    callToolButtons.classList.toggle("hidden");
+  };
 
   setAudioMute = () => {
-    const $muteAudioButton = document.getElementById("videochat-mute-unmute")
+    const $muteAudioButton = document.getElementById("videochat-mute-unmute");
     if (this._session.isAudioMuted()) {
-      this._session.unmuteAudio()
-      $muteAudioButton.classList.remove("muted")
+      this._session.unmuteAudio();
+      $muteAudioButton.classList.remove("muted");
     } else {
-      this._session.muteAudio()
-      $muteAudioButton.classList.add("muted")
+      this._session.muteAudio();
+      $muteAudioButton.classList.add("muted");
     }
   };
 
   setVideoMute = () => {
-    const $muteVideoButton = document.getElementById("videochat-mute-unmute-video")
+    const $muteVideoButton = document.getElementById(
+      "videochat-mute-unmute-video"
+    );
 
     if (this._session.isVideoMuted()) {
-      this._session.unmuteVideo()
-      $muteVideoButton.classList.remove("muted")
-      this.toggleUserPlaceholder(this.currentUserID, false)
+      this._session.unmuteVideo();
+      $muteVideoButton.classList.remove("muted");
+      this.toggleUserPlaceholder(this.currentUserID, false);
     } else {
-      this._session.muteVideo()
-      $muteVideoButton.classList.add("muted")
-      this.toggleUserPlaceholder(this.currentUserID, true)
+      this._session.muteVideo();
+      $muteVideoButton.classList.add("muted");
+      this.toggleUserPlaceholder(this.currentUserID, true);
     }
   };
 
   sharingScreen = () => {
     if (!this.isSharingScreen) {
-      return this._session.getDisplayMedia(this.sharingScreenMediaParams, true).then(stream => {
-        this.updateStream(stream)
-        this.isSharingScreen = true;
-        this.updateSharingScreenBtn()
-        this.$muteUnmuteVideoButton.disabled = true;
-        this.startEventSharinScreen = stream.getVideoTracks()[0].addEventListener('ended', () => this.stopSharingScreen())
-      }, error => {
-        console.warn('[Get display media error]', error, this.mediaParam)
-        this.stopSharingScreen()
-      });
+      return this._session
+        .getDisplayMedia(this.sharingScreenMediaParams, true)
+        .then(
+          (stream) => {
+            this.updateStream(stream);
+            this.isSharingScreen = true;
+            this.updateSharingScreenBtn();
+            this.$muteUnmuteVideoButton.disabled = true;
+            this.startEventSharinScreen = stream
+              .getVideoTracks()[0]
+              .addEventListener("ended", () => this.stopSharingScreen());
+          },
+          (error) => {
+            console.warn("[Get display media error]", error, this.mediaParam);
+            this.stopSharingScreen();
+          }
+        );
     } else {
-      this.stopSharingScreen()
+      this.stopSharingScreen();
     }
-  }
+  };
 
   stopSharingScreen = () => {
-    return this._session.getUserMedia(this.mediaParams, true).then(stream => {
-      this.updateStream(stream)
+    return this._session.getUserMedia(this.mediaParams, true).then((stream) => {
+      this.updateStream(stream);
       this.$muteUnmuteVideoButton.disabled = false;
       this.isSharingScreen = false;
-      this.updateSharingScreenBtn()
+      this.updateSharingScreenBtn();
       this.startEventSharinScreen = null;
-    })
-  }
+    });
+  };
 
   updateStream = (stream) => {
-    this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, { muted: true });
+    this._session.attachMediaStream(
+      this.getStreamIdByUserId(this.currentUserID),
+      stream,
+      { muted: true }
+    );
     this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
     this.toggelStreamMirror(this.currentUserID);
-    this.postJoinActions()
-  }
+    this.postJoinActions();
+  };
 
   updateSharingScreenBtn = () => {
-    const $videochatSharingScreen = document.getElementById('videochat-sharing-screen');
-    const $videochatSharingScreenIcon = document.getElementById('videochat-sharing-screen-icon');
+    const $videochatSharingScreen = document.getElementById(
+      "videochat-sharing-screen"
+    );
+    const $videochatSharingScreenIcon = document.getElementById(
+      "videochat-sharing-screen-icon"
+    );
 
-    if(this.isSharingScreen){
-      $videochatSharingScreen.classList.add('videochat-sharing-screen-active')
-      $videochatSharingScreenIcon.classList.add('videochat-sharing-screen-icon-active')
+    if (this.isSharingScreen) {
+      $videochatSharingScreen.classList.add("videochat-sharing-screen-active");
+      $videochatSharingScreenIcon.classList.add(
+        "videochat-sharing-screen-icon-active"
+      );
     } else {
-      $videochatSharingScreen.classList.remove('videochat-sharing-screen-active')
-      $videochatSharingScreenIcon.classList.remove('videochat-sharing-screen-icon-active')
+      $videochatSharingScreen.classList.remove(
+        "videochat-sharing-screen-active"
+      );
+      $videochatSharingScreenIcon.classList.remove(
+        "videochat-sharing-screen-icon-active"
+      );
     }
-  }
+  };
 
   /* SNACKBAR */
 
-  showSnackbar = infoText => {
+  showSnackbar = (infoText) => {
     const $snackbar = document.getElementById("snackbar");
 
     $snackbar.innerHTML = infoText;
@@ -779,7 +918,7 @@ class CallService {
 
   hideIncomingCallModal = () => this._incomingCallModal("hide");
 
-  _incomingCallModal = className => {
+  _incomingCallModal = (className) => {
     const $initiator = document.getElementById("call-modal-initiator");
 
     if (className === "hide") {
@@ -794,33 +933,37 @@ class CallService {
   };
 
   _getUserById = (userId, key) => {
-    const user = users.find(user => user.id == userId);
+    const user = users.find((user) => user.id == userId);
 
     return typeof key === "string" ? user[key] : user;
   };
 
   getStreamIdByUserId(userId) {
-    return `stream-${userId}`
+    return `stream-${userId}`;
   }
 
   removeStreamLoaderByUserId(user_id) {
-    const $loader = document.querySelector(`.videochat-stream-loader[data-id="${user_id}"]`)
+    const $loader = document.querySelector(
+      `.videochat-stream-loader[data-id="${user_id}"]`
+    );
     if (!$loader) {
-      return
+      return;
     }
-    $loader.remove()
+    $loader.remove();
   }
 
   removeStreamBlockByUserId(user_id) {
-    const $streamBblock = document.querySelector(`.videochat-stream-container[data-id="${user_id}"]`)
-    $streamBblock.remove()
+    const $streamBblock = document.querySelector(
+      `.videochat-stream-container[data-id="${user_id}"]`
+    );
+    $streamBblock.remove();
   }
 
   _prepareVideoElement = (user_id, isStremaWithVideo) => {
     if (!isStremaWithVideo) {
-      return this.toggleUserPlaceholder(user_id, true)
+      return this.toggleUserPlaceholder(user_id, true);
     }
-    const $video = document.getElementById(this.getStreamIdByUserId(user_id))
+    const $video = document.getElementById(this.getStreamIdByUserId(user_id));
 
     $video.style.visibility = "visible";
 
@@ -832,51 +975,68 @@ class CallService {
     }
   };
 
-  initGuestRoom = janusRoomId => {
-    this.currentUserID = this._getUniqueUserId()
-    const parseName = JSON.parse(localStorage.getItem(CallService.USER_NAME_KEY))
+  initGuestRoom = (janusRoomId) => {
+    this.currentUserID = this._getUniqueUserId();
+    const parseName = JSON.parse(
+      localStorage.getItem(CallService.USER_NAME_KEY)
+    );
     const userName = parseName ? parseName : this.getRandomName();
 
     while (!this.currentUserName) {
-      this.currentUserName = prompt(messages.prompt_user_name, userName)
-      localStorage.setItem(CallService.USER_NAME_KEY, JSON.stringify(this.currentUserName))
+      this.currentUserName = prompt(messages.prompt_user_name, userName);
+      localStorage.setItem(
+        CallService.USER_NAME_KEY,
+        JSON.stringify(this.currentUserName)
+      );
       if (this.currentUserName === null) {
         if (confirm(messages.confirm_cancel)) {
-          window.location.href = window.location.origin
-          return
+          window.location.href = window.location.origin;
+          return;
         }
       }
     }
-    this.isGuestMode = true
+    this.isGuestMode = true;
     if (janusRoomId) {
-      this.janusRoomId = janusRoomId
+      this.janusRoomId = janusRoomId;
     } else {
-      this.janusRoomId = this._getUniqueRoomId()
-      const roomInfo = btoa(`${this.janusRoomId}##${appConfig.conference.server}`)
-      window.history.replaceState({}, 'Conference Guest Room', `/join/${roomInfo}`)
+      this.janusRoomId = this._getUniqueRoomId();
+      const roomInfo = btoa(
+        `${this.janusRoomId}##${appConfig.conference.server}`
+      );
+      window.history.replaceState(
+        {},
+        "Conference Guest Room",
+        `/join/${roomInfo}`
+      );
     }
-    this.joinConf(this.janusRoomId)
-      .then(() => this.showSnackbar(messages.share_call_link))
-  }
+    this.joinConf(this.janusRoomId).then(() =>
+      this.showSnackbar(messages.share_call_link)
+    );
+  };
 
   getRandomName = () => {
-    const dogNames = require('dog-names');
+    const dogNames = require("dog-names");
     return dogNames.allRandom();
-  }
+  };
 
   startNoAnswerTimers(participantIds) {
-    participantIds.forEach(user_id => {
-      this._answerUserTimers[user_id] = setTimeout(() => this.onUserNotAnswerListener(this._session, user_id), NO_ASNWER_TIMER)
-    })
+    participantIds.forEach((user_id) => {
+      this._answerUserTimers[user_id] = setTimeout(
+        () => this.onUserNotAnswerListener(this._session, user_id),
+        NO_ASNWER_TIMER
+      );
+    });
   }
 
   clearNoAnswerTimers(user_id) {
     if (user_id) {
-      clearTimeout(this._answerUserTimers[user_id])
-      return delete this._answerUserTimers[user_id]
+      clearTimeout(this._answerUserTimers[user_id]);
+      return delete this._answerUserTimers[user_id];
     }
-    Object.values(this._answerUserTimers).forEach(timerId => clearTimeout(timerId))
-    this._answerUserTimers = {}
+    Object.values(this._answerUserTimers).forEach((timerId) =>
+      clearTimeout(timerId)
+    );
+    this._answerUserTimers = {};
   }
 }
 

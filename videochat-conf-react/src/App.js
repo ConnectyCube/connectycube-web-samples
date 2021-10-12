@@ -2,8 +2,8 @@ import { Route } from "react-router";
 import React from "react";
 import "./App.scss";
 import Conference from "./Components/Conference/Conference";
-import EnterName from "./Components/EnterName/EnterName";
 import Main from "./Components/Main/Main";
+import ReactContext from "./redux/state";
 
 function App(props) {
   return (
@@ -11,12 +11,15 @@ function App(props) {
       <header className="header" />
       <main className="main">
         <div className="page__main">
-          <Route exact path="/"><Main /></Route>
-          <Route path="/enter">
-            <EnterName />
+          <Route exact path="/">
+            <Main />
           </Route>
-          <Route path="/conference">
-            <Conference participants={props.participants} />
+          <Route path={`/join/`}>
+            <ReactContext.Consumer>
+              {(value) => {
+                return <Conference participants={value} />;
+              }}
+            </ReactContext.Consumer>
           </Route>
         </div>
       </main>
