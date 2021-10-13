@@ -1,7 +1,7 @@
 import CryptoJS from "crypto-js";
 import ConnectyCube from "connectycube";
 import CallService from "./call-service";
-import { roomId } from "../redux/state";
+import { roomId } from "../redux/store";
 
 class AuthService {
   constructor() {
@@ -52,7 +52,7 @@ class AuthService {
             };
             ConnectyCube.login(userCredentials)
               .then((user) => {
-                resolve(user);
+                resolve(user, session);
                 //CallService.createAndJoinMeeting(user)
               })
               .catch((error) => {
@@ -79,7 +79,8 @@ class AuthService {
                 };
                 ConnectyCube.login(userCredentials)
                   .then((user) => {
-                    resolve(user);
+                    console.log(session);
+                    resolve(user, session);
                   })
                   .catch((error) => {});
               })

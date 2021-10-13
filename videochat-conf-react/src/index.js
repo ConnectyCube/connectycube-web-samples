@@ -5,13 +5,11 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import ReactContext, { participants, roomId } from "./redux/state";
+import ReactContext, { participants, roomId } from "./redux/store";
 
 ReactDOM.render(
   <BrowserRouter>
-    <ReactContext.Provider value={2}>
-      <App />
-    </ReactContext.Provider>
+    <App />
   </BrowserRouter>,
   document.getElementById("root")
 );

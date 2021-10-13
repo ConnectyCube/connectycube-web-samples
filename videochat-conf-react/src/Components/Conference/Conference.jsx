@@ -10,7 +10,6 @@ import Call from "../../services/call-service";
 
 const Conference = (props) => {
   const allCam = [];
-
   for (let i = 0; i < props.participants; i += 1) {
     allCam.push(<UserStream key={i} participant={i} />);
   }
@@ -38,9 +37,12 @@ const Conference = (props) => {
         let roomId = history.split("/");
         roomId = atob(roomId[2]);
 
-        AuthService.login(userName).then((user) => {
+        AuthService.login(userName).then((user, session) => {
           // join
-          Call.joinMeeting(userName, roomId, user.id);
+
+          Call.joinMeeting(user.full_name, roomId, user.id);
+			 
+          
         });
       }
     };

@@ -5,7 +5,7 @@ const UserStream = (props) => (
 	
 	<div className="user__cam-container">
 
-	<video id={`user__cam`} className={'user__cam'}>
+	<video id={"user__cam"} className={'user__cam'}>
     
 	 </video>
 	

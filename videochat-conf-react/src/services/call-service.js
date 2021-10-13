@@ -1,5 +1,6 @@
 import ConnectyCube from "connectycube";
-import ReactContext from "../redux/state";
+import ReactContext from "../redux/store";
+import { useState } from "react";
 
 class CallService {
   initListeners() {
@@ -17,6 +18,8 @@ class CallService {
       userId,
       stream
     ) => {
+      console.warn("Stream", { session, userId, stream });
+
       console.log(2);
     };
     ConnectyCube.videochatconference.onSlowLinkListener = (
@@ -41,25 +44,22 @@ class CallService {
       console.log(5);
     };
   }
-
+  onRemoteStreamListener = (session, userId, stream) => {
+    console.warn("Stream", { session, userId, stream });
+  };
   onParticipantJoinedListener = (
     session,
     userId,
     userDisplayName,
     isExistingParticipant
   ) => {
-	  debugger
-	<ReactContext.Provider value = {userId}>
-		
-	</ReactContext.Provider>
     console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
   };
 
-  createAndJoinMeeting = (userId) => {
+  createAndJoinMeeting = (userId, userLogin, userName) => {
     return new Promise((resolve, reject) => {
       const params = {
         name: "My meeting",
-
         attendees: [{ id: userId }],
         record: false,
         chat: false,
@@ -69,6 +69,8 @@ class CallService {
         .then((meeting) => {
           this.initListeners();
           const session = ConnectyCube.videochatconference.createNewSession();
+
+          debugger;
           const mediaParams = {
             audio: true,
             video: true,
@@ -81,12 +83,11 @@ class CallService {
             .getUserMedia(mediaParams)
             .then((localStream) => {
               session.attachMediaStream("user__cam", localStream);
-
               console.log(meeting._id);
 
-              console.warn(meeting._id, userId, "Atal");
+              console.warn(meeting._id, userId, userName);
               session
-                .join(meeting._id, userId, "Atal")
+                .join(meeting._id, userId, userName)
                 .then(() => {
                   const confRoomId = session.currentRoomId;
                   console.log("HERE is " + confRoomId);
@@ -97,6 +98,10 @@ class CallService {
                   console.log(error);
                   reject(error);
                 });
+              console.log(
+                session.isVideoMuted() // true/false
+              );
+              session.muteVideo();
             })
 
             .catch((error) => {
@@ -111,7 +116,7 @@ class CallService {
     });
   };
 
-  joinMeeting = (userName, roomId, user) => {
+  joinMeeting = (userName, roomId, userId) => {
     this.initListeners();
     const session = ConnectyCube.videochatconference.createNewSession();
     const mediaParams = {
@@ -122,7 +127,7 @@ class CallService {
         mirror: true,
       },
     };
-    console.warn(roomId, user, userName);
+    console.warn(roomId, userId, userName);
     session
       .getUserMedia(mediaParams)
       .then((localStream) => {
@@ -130,7 +135,7 @@ class CallService {
 
         //   this.initListeners();
         session
-          .join(roomId, user, "Atal21")
+          .join(roomId, userId, userName)
           .then(() => {})
           .catch((error) => {
             console.log(error);
@@ -141,9 +146,7 @@ class CallService {
       });
   };
 
-  turnDownVideo = () => {
-    this.session.muteVideo();
-  };
+  turnDownVideo = () => {};
 }
 
 const Call = new CallService();

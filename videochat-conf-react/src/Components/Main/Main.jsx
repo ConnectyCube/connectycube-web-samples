@@ -28,8 +28,12 @@ const Main = (props) => {
   //   };
   const onLogin = () => {
     const userName = prompt("Enter ur name", localStorage.userName);
-    AuthService.login(userName).then((user) => {
-      CallService.createAndJoinMeeting(user.id).then((meetingId) => {
+    AuthService.login(userName).then((user, session) => {
+      CallService.createAndJoinMeeting(
+        user.id,
+        user.login,
+        user.full_name
+      ).then((meetingId) => {
         const confRoomIdHash = btoa(meetingId);
         window.history.replaceState(
           {},
