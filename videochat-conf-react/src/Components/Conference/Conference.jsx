@@ -9,9 +9,15 @@ import { useHistory } from "react-router";
 import Call from "../../services/call-service";
 
 const Conference = (props) => {
+  console.warn(props.participants);
+  debugger;
+  let info = AuthService.info;
   const allCam = [];
   for (let i = 0; i < props.participants; i += 1) {
-    allCam.push(<UserStream key={i} participant={i} />);
+    allCam.push(
+      <UserStream key={i} participant={i} userId={AuthService.info} />
+    );
+    debugger;
   }
   const audioRef = react.createRef();
   const videoRef = react.createRef();
@@ -41,8 +47,6 @@ const Conference = (props) => {
           // join
 
           Call.joinMeeting(user.full_name, roomId, user.id);
-			 
-          
         });
       }
     };

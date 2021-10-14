@@ -1,6 +1,7 @@
 import ConnectyCube from "connectycube";
-import ReactContext from "../redux/store";
-import { useState } from "react";
+import ReactContext, { UsersContext } from "../UsersContext";
+import { useContext, useState } from "react";
+import { rerenderTree } from "..";
 
 class CallService {
   initListeners() {
@@ -47,12 +48,16 @@ class CallService {
   onRemoteStreamListener = (session, userId, stream) => {
     console.warn("Stream", { session, userId, stream });
   };
+  arr = [];
   onParticipantJoinedListener = (
     session,
     userId,
     userDisplayName,
     isExistingParticipant
   ) => {
+    this.arr.push("new user");
+    rerenderTree();
+    console.log(this.arr);
     console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
   };
 
@@ -70,7 +75,6 @@ class CallService {
           this.initListeners();
           const session = ConnectyCube.videochatconference.createNewSession();
 
-          debugger;
           const mediaParams = {
             audio: true,
             video: true,
@@ -82,7 +86,8 @@ class CallService {
           session
             .getUserMedia(mediaParams)
             .then((localStream) => {
-              session.attachMediaStream("user__cam", localStream);
+              this.arr.push({ userId, userName });
+              session.attachMediaStream(`user__cam`, localStream);
               console.log(meeting._id);
 
               console.warn(meeting._id, userId, userName);
@@ -98,10 +103,6 @@ class CallService {
                   console.log(error);
                   reject(error);
                 });
-              console.log(
-                session.isVideoMuted() // true/false
-              );
-              session.muteVideo();
             })
 
             .catch((error) => {
