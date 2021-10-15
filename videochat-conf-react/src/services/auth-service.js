@@ -1,11 +1,8 @@
 import CryptoJS from "crypto-js";
 import ConnectyCube from "connectycube";
-import CallService from "./call-service";
-import { roomId } from "../UsersContext";
 
 class AuthService {
-  info = 1;
-  arr = []
+  arr = [];
   constructor() {
     console.log("AuthService init");
     this.init();

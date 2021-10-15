@@ -1,6 +1,5 @@
 import "./UserStream.scss";
-import React, { useContext } from "react";
-import { UsersContext } from "../../UsersContext";
+import React from "react";
 
 const UserStream = (props) => {
   return (

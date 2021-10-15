@@ -1,39 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import UserStream from "../UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
-import CallService from "../../services/call-service";
-import { useHistory } from "react-router";
-import Call from "../../services/call-service";
+import CallContext from "../../services/call-service-2";
+import { useState } from "react";
 
 const Conference = (props) => {
-  console.warn(props.participants);
-  debugger;
-  let info = AuthService.info;
-  const allCam = [];
-  for (let i = 0; i < props.participants; i += 1) {
-    allCam.push(
-      <UserStream key={i} participant={i} userId={AuthService.info} />
-    );
-    debugger;
-  }
-  const audioRef = react.createRef();
-  const videoRef = react.createRef();
-  const setAudioMute = () => {
-    audioRef.current.classList.toggle("mute");
-    CallService.turnDownVideo();
-  };
-  const setVideoMute = () => {
-    videoRef.current.classList.toggle("mute");
-    CallService.turnDownVideo();
-  };
-
+  
   useEffect(() => {
     let history = window.location.pathname;
-    console.warn(history);
     const PathCheck = () => {
+      // join
+
       if (history.length < 7) {
         console.log("New room");
         // code to run on component mount
@@ -44,16 +24,29 @@ const Conference = (props) => {
         roomId = atob(roomId[2]);
 
         AuthService.login(userName).then((user, session) => {
-          // join
-
-          Call.joinMeeting(user.full_name, roomId, user.id);
+          props.call.joinMeeting(user.full_name, roomId, user.id);
         });
       }
     };
 
     // code to run on component mount
     PathCheck();
-  }, []);
+  });
+  const allCam = [];
+  for (let i = 0; i < props.call.participants + 1; i += 1) {
+    allCam.push(
+      <UserStream key={i} participant={i} userId={AuthService.info} />
+    );
+    debugger;
+  }
+  const audioRef = react.createRef();
+  const videoRef = react.createRef();
+  const setAudioMute = () => {
+    audioRef.current.classList.toggle("mute");
+  };
+  const setVideoMute = () => {
+    videoRef.current.classList.toggle("mute");
+  };
 
   return (
     <div className="conference">
