@@ -9,7 +9,6 @@ import { useState } from "react/cjs/react.development";
 
 function App(props) {
   const call = useContext(CallContext);
-
   return (
     <div className="wrapper">
       <header className="header" />
@@ -19,7 +18,7 @@ function App(props) {
             <Main call={call} />
           </Route>
           <Route path={`/join/`}>
-            <Conference call={call} />;
+            <Conference call={call} />
           </Route>
         </div>
       </main>

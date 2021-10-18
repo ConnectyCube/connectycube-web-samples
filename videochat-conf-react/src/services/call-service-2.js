@@ -1,66 +1,83 @@
 import ConnectyCube from "connectycube";
-import { createContext } from "react";
-import { rerenderTree } from "..";
+import { createContext, useRef } from "react";
 import { useState } from "react";
 const CallContext = createContext();
 export default CallContext;
 
 export const CallProvider = ({ children }) => {
-  const participants = [];
+  const [participants, setParticipants] = useState([
+    { userId: null, name: "Me", stream: null },
+  ]);
+  const participantRef = useRef([{ userId: null, name: "Me", stream: null }]);
 
-  ConnectyCube.videochatconference.onParticipantLeftListener = (
-    session,
-    userId
-  ) => {
-    console.log(1);
-  };
-  ConnectyCube.videochatconference.onRemoteStreamListener = (
-    session,
-    userId,
-    stream
-  ) => {
-    console.warn("Stream", { session, userId, stream });
+  const createCallbacks = () => {
+    ConnectyCube.videochatconference.onParticipantJoinedListener = (
+      session,
+      userId,
+      userDisplayName,
+      isExistingParticipant
+    ) => {
+      console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
+      console.log("User joined");
 
-    console.log(2);
-  };
-  ConnectyCube.videochatconference.onSlowLinkListener = (
-    session,
-    userId,
-    uplink,
-    nacks
-  ) => {
-    console.log(3);
-  };
-  ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
-    session,
-    userId,
-    iceState
-  ) => {
-    console.log(4);
-  };
-  ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
-    session,
-    iceState
-  ) => {
-    console.log(5);
-  };
+      participantRef.current.push({
+        userId,
+        name: userDisplayName,
+        stream: null,
+      });
+      const newParticipants = [...participantRef.current];
 
-  ConnectyCube.videochatconference.onRemoteStreamListener = (
-    session,
-    userId,
-    stream
-  ) => {
-    console.warn("Stream", { session, userId, stream });
-  };
-  ConnectyCube.videochatconference.onParticipantJoinedListener = (
-    session,
-    userId,
-    userDisplayName,
-    isExistingParticipant
-  ) => {
-    console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
-    participants.push({ userId: userId, userName: localStorage.userName });
-    alert("rerenderes");
+      setParticipants(newParticipants);
+    };
+    ConnectyCube.videochatconference.onParticipantLeftListener = (
+      session,
+      userId
+    ) => {
+      console.log(1);
+
+      participantRef.current = participantRef.current.filter(
+        (e) => e.userId !== userId
+      );
+      const newParticipants = [...participantRef.current];
+      setParticipants(newParticipants);
+    };
+    ConnectyCube.videochatconference.onRemoteStreamListener = (
+      session,
+      userId,
+      stream
+    ) => {
+      console.warn("Stream", { session, userId, stream });
+
+      participantRef.current.map((obj, id) => {
+        if (obj.userId === userId) {
+          obj.stream = stream;
+          session.attachMediaStream(`user__cam ${userId}`, obj.stream);
+        }
+        return obj;
+      });
+      console.log(2);
+    };
+    ConnectyCube.videochatconference.onSlowLinkListener = (
+      session,
+      userId,
+      uplink,
+      nacks
+    ) => {
+      console.log(3);
+    };
+    ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
+      session,
+      userId,
+      iceState
+    ) => {
+      console.log(4);
+    };
+    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
+      session,
+      iceState
+    ) => {
+      console.log(5);
+    };
   };
 
   const createAndJoinMeeting = (userId, userLogin, userName) => {
@@ -74,23 +91,8 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
-          ConnectyCube.videochatconference.onParticipantJoinedListener = (
-            session,
-            userId,
-            userDisplayName,
-            isExistingParticipant
-          ) => {
-            participants.push({
-              userId: userId,
-              userName: localStorage.userName,
-            });
-            console.log(participants);
-            console.log("OnJoin", {
-              userId,
-              userDisplayName,
-              isExistingParticipant,
-            });
-          };
+          createCallbacks();
+
           const session = ConnectyCube.videochatconference.createNewSession();
 
           const mediaParams = {
@@ -104,7 +106,7 @@ export const CallProvider = ({ children }) => {
           session
             .getUserMedia(mediaParams)
             .then((localStream) => {
-              session.attachMediaStream(`user__cam`, localStream);
+              session.attachMediaStream(`user__cam null`, localStream);
               console.log(meeting._id);
               console.warn(meeting._id, userId, userName);
               session
@@ -134,16 +136,8 @@ export const CallProvider = ({ children }) => {
   };
 
   const joinMeeting = (userName, roomId, userId) => {
-    ConnectyCube.videochatconference.onParticipantJoinedListener = (
-      session,
-      userId,
-      userDisplayName,
-      isExistingParticipant
-    ) => {
-      participants.push(userId, userName);
-      console.log(participants);
-      console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
-    };
+    createCallbacks();
+
     const session = ConnectyCube.videochatconference.createNewSession();
     const mediaParams = {
       audio: true,
@@ -157,7 +151,10 @@ export const CallProvider = ({ children }) => {
     session
       .getUserMedia(mediaParams)
       .then((localStream) => {
-        session.attachMediaStream(`user__cam`, localStream);
+        session.attachMediaStream(
+          `user__cam ${participantRef.current[0].userId}`,
+          localStream
+        );
 
         //   this.initListeners();
         session
@@ -179,7 +176,12 @@ export const CallProvider = ({ children }) => {
 
   return (
     <CallContext.Provider
-      value={{ turnDownVideo, joinMeeting, createAndJoinMeeting, participants }}
+      value={{
+        turnDownVideo,
+        joinMeeting,
+        createAndJoinMeeting,
+        participants,
+      }}
     >
       {children}
     </CallContext.Provider>

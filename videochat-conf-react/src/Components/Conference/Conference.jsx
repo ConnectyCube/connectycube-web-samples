@@ -6,9 +6,11 @@ import AuthService from "../../services/auth-service";
 import react from "react";
 import CallContext from "../../services/call-service-2";
 import { useState } from "react";
+import { rerenderTree } from "../..";
 
 const Conference = (props) => {
-  
+  console.table(props.call.participants);
+
   useEffect(() => {
     let history = window.location.pathname;
     const PathCheck = () => {
@@ -22,7 +24,6 @@ const Conference = (props) => {
         console.log(userName);
         let roomId = history.split("/");
         roomId = atob(roomId[2]);
-
         AuthService.login(userName).then((user, session) => {
           props.call.joinMeeting(user.full_name, roomId, user.id);
         });
@@ -31,13 +32,28 @@ const Conference = (props) => {
 
     // code to run on component mount
     PathCheck();
-  });
+  }, []);
   const allCam = [];
-  for (let i = 0; i < props.call.participants + 1; i += 1) {
+  let usersId = props.call.participants.map((u) => {
+    if (u.userId == 11111) {
+      return null;
+    } else {
+      return u.userId;
+    }
+  });
+  console.log(props.call.participants);
+  let usersName = props.call.participants.map((u) => {
+    return u.name;
+  });
+  for (let i = 0; i < props.call.participants.length; i += 1) {
     allCam.push(
-      <UserStream key={i} participant={i} userId={AuthService.info} />
+      <UserStream
+        key={i}
+        streamNumber={i}
+        userId={usersId[i]}
+        userName={usersName[i]}
+      />
     );
-    debugger;
   }
   const audioRef = react.createRef();
   const videoRef = react.createRef();
@@ -50,7 +66,9 @@ const Conference = (props) => {
 
   return (
     <div className="conference">
-      <div className={`users__cams flex-${props.participants}`}>{allCam}</div>
+      <div className={`users__cams grid-${props.call.participants.length}`}>
+        {allCam}
+      </div>
       <div className="user__buttons">
         <button
           type="button"
@@ -69,14 +87,14 @@ const Conference = (props) => {
         >
           <img src="../img/video.svg" alt="Video" />
         </button>
-        <NavLink
-          to="/"
+        <a
+          href="/"
           id="end__btn"
           onClick={AuthService.logout}
           className="call__btn end__btn"
         >
           <img src="../img/call_end.svg" alt="Call end" />
-        </NavLink>
+        </a>
         <button id="switch__btn" className="call__btn switch__btn">
           <img src="../img/switch_video.svg" alt="Switch" />
         </button>
