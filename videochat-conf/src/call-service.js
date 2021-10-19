@@ -723,6 +723,14 @@ class CallService {
       this._session.unmuteVideo()
       $muteVideoButton.classList.remove("muted")
       this.toggleUserPlaceholder(this.currentUserID, false)
+
+      // request keyframe
+      this._session.sendKeyframeRequest(this._session.currentRoomId).then(res => {
+        console.log('[setVideoMute][sendKeyframeRequest] res', res)
+      }).catch(err => {
+        console.error('[setVideoMute][sendKeyframeRequest] err', err)
+      });
+
     } else {
       this._session.muteVideo()
       $muteVideoButton.classList.add("muted")
