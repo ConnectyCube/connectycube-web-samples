@@ -598,6 +598,8 @@ class CallService {
 
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
+    window.confSession = this._session;
+
     this.defaultSettings()
     if (!this._session.getDisplayMedia) {
       this.$switchSharingScreenButton.disabled = true;
@@ -656,6 +658,7 @@ class CallService {
       this.$muteUnmuteVideoButton.disabled = true
       this.$switchCameraButton.disabled = true;
       this._session = null;
+      window.confSession = this._session;
       this.videoDevices = [];
       this.clearNoAnswerTimers()
       this.initiatorID = void 0
@@ -726,7 +729,7 @@ class CallService {
 
       // request keyframe
       this._session.sendKeyframeRequest(this._session.currentRoomId).then(res => {
-        console.log('[setVideoMute][sendKeyframeRequest] res', res)
+        console.log('[setVideoMute][sendKeyframeRequest] res')
       }).catch(err => {
         console.error('[setVideoMute][sendKeyframeRequest] err', err)
       });
