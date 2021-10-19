@@ -4,9 +4,6 @@ import UserStream from "../UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
-import CallContext from "../../services/call-service-2";
-import { useState } from "react";
-import { rerenderTree } from "../..";
 
 const Conference = (props) => {
   console.table(props.call.participants);
@@ -23,9 +20,16 @@ const Conference = (props) => {
         let userName = prompt("Enter ur name 2");
         console.log(userName);
         let roomId = history.split("/");
+        console.log(roomId);
         roomId = atob(roomId[2]);
         AuthService.login(userName).then((user, session) => {
-          props.call.joinMeeting(user.full_name, roomId, user.id);
+          props.call
+            .joinMeeting(user.full_name, roomId, user.id, `user__cam`)
+            .then(() => {})
+            .catch((error) => {
+              alert(error);
+              window.location.href = "/";
+            });
         });
       }
     };
@@ -34,24 +38,15 @@ const Conference = (props) => {
     PathCheck();
   }, []);
   const allCam = [];
-  let usersId = props.call.participants.map((u) => {
-    if (u.userId == 11111) {
-      return null;
-    } else {
-      return u.userId;
-    }
-  });
-  console.log(props.call.participants);
-  let usersName = props.call.participants.map((u) => {
-    return u.name;
-  });
+
   for (let i = 0; i < props.call.participants.length; i += 1) {
+    const user = props.call.participants[i];
     allCam.push(
       <UserStream
         key={i}
         streamNumber={i}
-        userId={usersId[i]}
-        userName={usersName[i]}
+        userId={user.name === "Me" ? "me" : user.userId}
+        userName={user.name}
       />
     );
   }
@@ -106,4 +101,4 @@ const Conference = (props) => {
   );
 };
 
-export default React.memo(Conference);
+export default Conference;

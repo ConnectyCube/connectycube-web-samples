@@ -3,9 +3,7 @@ import React, { useContext } from "react";
 import "./App.scss";
 import Conference from "./Components/Conference/Conference";
 import Main from "./Components/Main/Main";
-
-import CallContext from "./services/call-service-2";
-import { useState } from "react/cjs/react.development";
+import CallContext from "./services/call-service";
 
 function App(props) {
   const call = useContext(CallContext);

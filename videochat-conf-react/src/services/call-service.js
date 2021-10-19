@@ -1,156 +1,219 @@
-// import ConnectyCube from "connectycube";
-// import { createContext } from "react";
-// import { UsersContext } from "../UsersContext";
+import ConnectyCube from "connectycube";
+import { createContext, useRef } from "react";
+import { useState } from "react";
+const CallContext = createContext();
+export default CallContext;
 
+export const CallProvider = ({ children }) => {
+  const [participants, setParticipants] = useState([
+    { userId: null, name: "Me", stream: null },
+  ]);
+  const participantRef = useRef([{ userId: null, name: "Me", stream: null }]);
 
-// class CallService {
-  
+  const mediaDevs = (allDevices) => {
+    let video = false;
+    let audio = false;
+    if (allDevices.find((e) => e.kind == "videoinput")) {
+      console.log("We have camera");
+      video = true;
+    }
+    if (allDevices.find((e) => e.kind == "audioinput")) {
+      console.log("We have micro");
+      audio = true;
+    }
+    let mediaParams = {
+      audio: true,
+      video: true,
+      options: {
+        muted: true,
+        mirror: true,
+      },
+    };
 
-//   participants = [];
-//   setUsersContext = null;
+    if (audio && video) {
+      return (mediaParams = {
+        audio: true,
+        video: true,
+        options: {
+          muted: true,
+          mirror: true,
+        },
+      });
+    } else if (audio && !video) {
+      return (mediaParams = {
+        audio: true,
+        video: false,
+        options: {
+          muted: true,
+          mirror: true,
+        },
+      });
+      console.log("worked we have micro");
+    } else if (!audio && video) {
+      return (mediaParams = {
+        audio: false,
+        video: true,
+        options: {
+          muted: true,
+          mirror: true,
+        },
+      });
+    }
+  };
+  const createCallbacks = () => {
+    ConnectyCube.videochatconference.onParticipantJoinedListener = (
+      session,
+      userId,
+      userDisplayName,
+      isExistingParticipant
+    ) => {
+      console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
+      console.log("User joined");
 
-//   initListeners() {
-//     ConnectyCube.videochatconference.onParticipantJoinedListener =
-//       this.onParticipantJoinedListener;
+      participantRef.current.push({
+        userId,
+        name: userDisplayName,
+        stream: null,
+      });
+      const newParticipants = [...participantRef.current];
 
-//     ConnectyCube.videochatconference.onParticipantLeftListener = (
-//       session,
-//       userId
-//     ) => {
-//       console.log(1);
-//     };
-//     ConnectyCube.videochatconference.onRemoteStreamListener = (
-//       session,
-//       userId,
-//       stream
-//     ) => {
-//       console.warn("Stream", { session, userId, stream });
+      setParticipants(newParticipants);
+    };
+    ConnectyCube.videochatconference.onParticipantLeftListener = (
+      session,
+      userId
+    ) => {
+      console.log(1);
 
-//       console.log(2);
-//     };
-//     ConnectyCube.videochatconference.onSlowLinkListener = (
-//       session,
-//       userId,
-//       uplink,
-//       nacks
-//     ) => {
-//       console.log(3);
-//     };
-//     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
-//       session,
-//       userId,
-//       iceState
-//     ) => {
-//       console.log(4);
-//     };
-//     ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
-//       session,
-//       iceState
-//     ) => {
-//       console.log(5);
-//     };
-//   }
-//   onRemoteStreamListener = (session, userId, stream) => {
-//     console.warn("Stream", { session, userId, stream });
-//   };
-//   arr = [];
-//   onParticipantJoinedListener = (
-//     session,
-//     userId,
-//     userDisplayName,
-//     isExistingParticipant
-//   ) => {
-//     console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
-//   };
+      participantRef.current = participantRef.current.filter(
+        (e) => e.userId !== userId
+      );
+      const newParticipants = [...participantRef.current];
+      setParticipants(newParticipants);
+    };
+    ConnectyCube.videochatconference.onRemoteStreamListener = (
+      session,
+      userId,
+      stream
+    ) => {
+      console.warn("Stream", { session, userId, stream });
 
-//   createAndJoinMeeting = (userId, userLogin, userName) => {
-//     return new Promise((resolve, reject) => {
-//       const params = {
-//         name: "My meeting",
-//         attendees: [{ id: userId }],
-//         record: false,
-//         chat: false,
-//       };
-//       ConnectyCube.meeting
-//         .create(params)
-//         .then((meeting) => {
-//           this.initListeners();
-//           const session = ConnectyCube.videochatconference.createNewSession();
+      participantRef.current.map((obj, id) => {
+        if (obj.userId === userId) {
+          obj.stream = stream;
+          session.attachMediaStream(`user__cam-${userId}`, obj.stream);
+        }
+        return obj;
+      });
+      console.log(2);
+    };
+    ConnectyCube.videochatconference.onSlowLinkListener = (
+      session,
+      userId,
+      uplink,
+      nacks
+    ) => {
+      console.log(3);
+    };
+    ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
+      session,
+      userId,
+      iceState
+    ) => {
+      console.log(4);
+    };
+    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
+      session,
+      iceState
+    ) => {
+      console.log(5);
+    };
+  };
 
-//           const mediaParams = {
-//             audio: true,
-//             video: true,
-//             options: {
-//               muted: true,
-//               mirror: true,
-//             },
-//           };
-//           session
-//             .getUserMedia(mediaParams)
-//             .then((localStream) => {
-//               this.arr.push({ userId, userName });
-//               session.attachMediaStream(`user__cam`, localStream);
-//               console.log(meeting._id);
+  const createAndJoinMeeting = (userId, userLogin, userName, camClass) => {
+    return new Promise((resolve, reject) => {
+      const params = {
+        name: "My meeting",
+        attendees: [{ id: userId }],
+        record: false,
+        chat: false,
+      };
+      ConnectyCube.meeting
+        .create(params)
+        .then((meeting) => {
+          joinMeeting(userName, meeting._id, userId, camClass)
+            .then(() => {
+              resolve(meeting._id);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  };
 
-//               console.warn(meeting._id, userId, userName);
-//               session
-//                 .join(meeting._id, userId, userName)
-//                 .then(() => {
-//                   const confRoomId = session.currentRoomId;
-//                   console.log("HERE is " + confRoomId);
+  const joinMeeting = (userName, roomId, userId, camClass) => {
+    return new Promise((resolve, reject) => {
+      createCallbacks();
+      ConnectyCube.videochatconference
+        .getMediaDevices()
+        .then((allDevices) => {
+          let mediaParams = mediaDevs(allDevices);
+          if (!mediaParams) {
+            reject("Error:You do not have any camera and microphone available");
+            return;
+          }
+          const session = ConnectyCube.videochatconference.createNewSession();
 
-//                   resolve(confRoomId);
-//                 })
-//                 .catch((error) => {
-//                   console.log(error);
-//                   reject(error);
-//                 });
-//             })
+          console.warn(roomId, userId, userName);
+          session
+            .getUserMedia(mediaParams)
+            .then((localStream) => {
+              session.attachMediaStream(`${camClass}-me`, localStream);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+          //   this.initListeners();
+          session
+            .join(roomId, userId, userName)
+            .then(() => {
+              resolve();
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  };
 
-//             .catch((error) => {
-//               console.log(error);
-//               reject(error);
-//             });
-//         })
-//         .catch((error) => {
-//           console.log(error);
-//           reject(error);
-//         });
-//     });
-//   };
+  let turnDownVideo = () => {
+    
+    console.log("Hey i am used");
+    return "Hey Hey";
+  };
 
-//   joinMeeting = (userName, roomId, userId) => {
-//     this.initListeners();
-//     const session = ConnectyCube.videochatconference.createNewSession();
-//     const mediaParams = {
-//       audio: true,
-//       video: true,
-//       options: {
-//         muted: true,
-//         mirror: true,
-//       },
-//     };
-//     console.warn(roomId, userId, userName);
-//     session
-//       .getUserMedia(mediaParams)
-//       .then((localStream) => {
-//         session.attachMediaStream(`user__cam`, localStream);
-
-//         //   this.initListeners();
-//         session
-//           .join(roomId, userId, userName)
-//           .then(() => {})
-//           .catch((error) => {
-//             console.log(error);
-//           });
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//   };
-
-//   turnDownVideo = () => {};
-// }
-
-// const Call = new CallService();
-// export default Call;
+  return (
+    <CallContext.Provider
+      value={{
+        turnDownVideo,
+        joinMeeting,
+        createAndJoinMeeting,
+        participants,
+      }}
+    >
+      {children}
+    </CallContext.Provider>
+  );
+};

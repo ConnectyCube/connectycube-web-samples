@@ -4,16 +4,14 @@ import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import AuthService from "../../services/auth-service";
 import react from "react";
-import CallContext from "../../services/call-service-2";
 
 const Main = (props) => {
-
   const linkRef = react.createRef();
   const onLogin = () => {
     const userName = prompt("Enter ur name", localStorage.userName);
     AuthService.login(userName).then((user, session) => {
       props.call
-        .createAndJoinMeeting(user.id, user.login, user.full_name)
+        .createAndJoinMeeting(user.id, user.login, user.full_name, "user__cam")
         .then((meetingId) => {
           const confRoomIdHash = btoa(meetingId);
           window.history.replaceState(
@@ -21,6 +19,11 @@ const Main = (props) => {
             "Conference Guest Room",
             `/join/${confRoomIdHash}`
           );
+        })
+        .catch((error) => {
+          debugger;
+          alert(error);
+          window.location.href = "/";
         });
     });
   };

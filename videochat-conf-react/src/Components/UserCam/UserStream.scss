@@ -6,7 +6,11 @@
   & .user__cam {
 	  width: 100%;
 	  object-fit: cover;
+	  box-sizing: border-box;
+
 	  height: 100%;
+	  border:1px solid white;
+	  
   }
 
   & .user__name{
@@ -17,5 +21,8 @@
 	  width: 100%;
 	  text-align: center;
 	  color: white;
+	  min-height: 18px;
+	  padding-bottom: 5px;
+	  
   }
 }
