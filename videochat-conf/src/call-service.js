@@ -38,6 +38,7 @@ class CallService {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
     ConnectyCube.videochatconference.onParticipantJoinedListener = this.onAcceptCallListener.bind(this);
     ConnectyCube.videochatconference.onParticipantLeftListener = this.onStopCallListener.bind(this);
+    ConnectyCube.videochatconference.onLocalStreamListener = this.onLocalStreamListener.bind(this)
     ConnectyCube.videochatconference.onRemoteStreamListener = this.onRemoteStreamListener.bind(this);
     ConnectyCube.videochatconference.onSlowLinkListener = this.onSlowLinkListener.bind(this);
     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = this.onRemoteConnectionStateChangedListener.bind(this);
@@ -110,6 +111,7 @@ class CallService {
   };
 
   _session = null;
+  localStream = null;
   videoDevices = []
 
   defaultSettings = () => {
@@ -395,8 +397,15 @@ class CallService {
     this.stopCall(userId)
   };
 
+  onLocalStreamListener = (session, stream) => {
+    console.log('[onLocalStreamListener]', {tracks: stream.getTracks()})
+ 
+  };
+
   onRemoteStreamListener = (session, userId, stream) => {
-    console.log('[onRemoteStreamListener]', userId, stream.getTracks())
+    console.log('[onRemoteStreamListener]', 
+      {userId, tracks: stream.getTracks(), elementId: this.getStreamIdByUserId(userId), 
+      isVideoAvailable: stream.getVideoTracks()[0] && !stream.getVideoTracks()[0].muted});
 
     if (!this._session) {
       return false;
@@ -405,11 +414,11 @@ class CallService {
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId)
 
-    if (stream.getVideoTracks().length > 0) {
-      console.log('[onRemoteStreamListener] video track', {enabled: stream.getVideoTracks()[0].enabled});
-      const isVideoEnabled = stream.getVideoTracks()[0].enabled;
-      this._prepareVideoElement(userId, isVideoEnabled);
-    }
+    // const isVideoAvailable = stream.getVideoTracks().length > 0;
+    // const isVideoAvailable = stream.getVideoTracks()[0] && !stream.getVideoTracks()[0].muted;
+    const isVideoAvailable = true;
+
+    this._prepareVideoElement(userId, isVideoAvailable);
   };
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
@@ -592,7 +601,21 @@ class CallService {
     $stream.classList.toggle('mirror')
   }
 
-  isVideoCall = false;
+  updateMuteButtonState() {
+    const $muteVideoButton = document.getElementById("videochat-mute-unmute-video")
+    if (!this.isVideoCall) {
+      $muteVideoButton.classList.add("muted")
+      this.toggleUserPlaceholder(this.currentUserID, true)
+    } else {
+      $muteVideoButton.classList.remove("muted")
+      this.toggleUserPlaceholder(this.currentUserID, false)
+    }
+  }
+
+  get isVideoCall() {
+    const isVC = this.localStream.getVideoTracks()[0] && !(this.localStream.getVideoTracks()[0] instanceof CanvasCaptureMediaStreamTrack);
+    return isVC;
+  };
 
   createDummyVideoTrack = ({width = 640, height = 480} = {}) => {
     let canvas = Object.assign(document.createElement("canvas"), {width, height});
@@ -612,24 +635,17 @@ class CallService {
       this.$switchSharingScreenButton.disabled = true;
     }
     return this._session.getUserMedia(this.mediaParams).then(stream => {
-      console.log("[joinConf] getUserMedia: stream.getVideoTracks()", stream.getVideoTracks());
-
-      this.isVideoCall = stream.getVideoTracks().length > 0;
-      if (!this.isVideoCall) {
+      if (stream.getVideoTracks().length === 0) {
         stream.addTrack(this.createDummyVideoTrack());
         console.log("[joinConf] getUserMedia: stream.getVideoTracks()2", stream.getVideoTracks());
-
-        const $muteVideoButton = document.getElementById("videochat-mute-unmute-video")
-        $muteVideoButton.classList.add("muted")
       }
+
+      this.updateLocalStream(stream);
 
       this.addStreamElement({ id: this.currentUserID, name: 'Me', local: true })
       this.removeStreamLoaderByUserId(this.currentUserID)
-      this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, { muted: true });
-      this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
-      this.toggelStreamMirror(this.currentUserID)
 
-      return this._session.join(janusRoomId, this.currentUserID, this.currentUserName).then(() => {
+      return this._session.join(janusRoomId, this.currentUserID, this.currentUserName, true).then(() => {
         this.postJoinActions()
       })
     }, error => {
@@ -678,7 +694,12 @@ class CallService {
       this.$muteUnmuteAudioButton.disabled = true;
       this.$muteUnmuteVideoButton.disabled = true
       this.$switchCameraButton.disabled = true;
+      
       this._session = null;
+      //
+      this._localStream.getTracks().forEach(track => track.stop());
+      this._localStream = null;
+
       this.videoDevices = [];
       this.clearNoAnswerTimers()
       this.initiatorID = void 0
@@ -712,11 +733,10 @@ class CallService {
     console.log('[postJoinActions]')
 
     document.getElementById(E2E_STATE_ELEMENT_ID).setAttribute('join-state', `joined`)
+
     this.$muteUnmuteAudioButton.disabled = false
-    // if (this.mediaParams.video) {
-      this.$muteUnmuteVideoButton.disabled = false
-      // this.setSwitchDevice()
-    // }
+    this.$muteUnmuteVideoButton.disabled = false
+
     this.addBodyOnClickListener()
   }
 
@@ -741,45 +761,56 @@ class CallService {
   };
 
   setVideoMute = () => {
-    const $muteVideoButton = document.getElementById("videochat-mute-unmute-video")
     console.log("[setVideoMute] isVideoCall", this.isVideoCall)
 
     if (!this.isVideoCall) {
-      this.enableVideo().then(stream => {
-        stream.getVideoTracks()[0].enabled = true;
-        
-        this.updateStream(stream)
-
-        this.isVideoCall = true;
-
-        $muteVideoButton.classList.remove("muted")
-        this.toggleUserPlaceholder(this.currentUserID, false)
+      this._session.getUserMedia(this.mediaParamsVideoCall, true).then(newStream => {
+        console.log("[setVideoMute] newStream", newStream)
+        this.updateLocalStream(newStream);
       });
+      
+      // this._session.getUserMedia(this.mediaParamsVideoCall).then(newStreamWithVideo => {
+        // this.enableVideo(/*newStreamWithVideo*/).then(() => {
+        //   console.log("[setVideoMute] enableVideo Ok");
+        // }).catch(e => {
+        //   console.error("[setVideoMute] enableVideo Error", e);
+        // });
+      // });
     } else {
-      console.log("[setVideoMute] isVideoMuted", this._session.isVideoMuted())
-
-      if (this._session.isVideoMuted()) {
-        this._session.unmuteVideo()
-        $muteVideoButton.classList.remove("muted")
-        this.toggleUserPlaceholder(this.currentUserID, false)
-      } else {
-        this._session.muteVideo()
-        $muteVideoButton.classList.add("muted")
-        this.toggleUserPlaceholder(this.currentUserID, true)
-      }
+      // this._session.getUserMedia(this.mediaParamsAudioCall).then(newStreamWOVideo => {
+        this.disableVideo(/*newStreamWOVideo*/).then(() => {
+          console.log("[setVideoMute] disableVideo Ok");
+        }).catch(e => {
+          console.error("[setVideoMute] disableVideo Error", e);
+        });
+      // });
     }
   };
 
-  enableVideo = () => {
+  enableVideo = (newStreamWithVideo) => {
     console.log("[enableVideo]");
 
     return new Promise((resolve, reject) => {
-      this.mediaParams = this.mediaParamsVideoCall;
-
-      this._session.getUserMedia(this.mediaParams, true).then(stream => {
-        resolve(stream);
+      this._session.enableVideoTrack(newStreamWithVideo).then(() => {
+        resolve();
       }, error => {
-        console.error('[enableVideo] error', error, this.mediaParams)
+        reject(error);
+      });
+    });
+  }
+
+  disableVideo = (newStreamWOVideo) => {
+    console.log("[disableVideo]");
+    return new Promise((resolve, reject) => {
+  
+      // // stop existing video tracks
+      // const vt = this.localStream.getVideoTracks()[0];
+      // this.localStream.removeTrack(vt);
+      // vt.stop();
+      
+      this._session.disableVideoTrack(newStreamWOVideo).then(() => {
+        resolve();
+      }, error => {
         reject(error);
       });
     });
@@ -789,11 +820,11 @@ class CallService {
     if (!this.isSharingScreen) {
       return this._session.getDisplayMedia(this.sharingScreenMediaParams, true).then(stream => {
         // unmute if muted
-        if (this._session.isVideoMuted()) {
-          this.setVideoMute()
-        }
+        // if (this._session.isVideoMuted()) {
+        //   this.setVideoMute()
+        // }
 
-        this.updateStream(stream)
+        this.updateLocalStream(stream)
         this.isSharingScreen = true;
         this.updateSharingScreenBtn()
         this.$muteUnmuteVideoButton.disabled = true;
@@ -809,7 +840,7 @@ class CallService {
 
   stopSharingScreen = () => {
     return this._session.getUserMedia(this.mediaParams, true).then(stream => {
-      this.updateStream(stream)
+      this.updateLocalStream(stream)
       this.$muteUnmuteVideoButton.disabled = false;
       this.isSharingScreen = false;
       this.updateSharingScreenBtn()
@@ -817,12 +848,19 @@ class CallService {
     })
   }
 
-  updateStream = (stream) => {
-    console.log("[updateStream] stream", stream, stream.getTracks());
+  updateLocalStream = (stream) => {
+    console.log("[updateLocalStream]", {stream, tracks: stream.getTracks()});
 
+    this.localStream = stream;
+
+    // attach to UI
     this._session.attachMediaStream(this.getStreamIdByUserId(this.currentUserID), stream, { muted: true });
-    this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
+
+    this._prepareVideoElement(this.currentUserID, this.isVideoCall);
+
     this.toggelStreamMirror(this.currentUserID);
+
+    this.updateMuteButtonState();
   }
 
   updateSharingScreenBtn = () => {
@@ -895,11 +933,16 @@ class CallService {
     $streamBblock.remove()
   }
 
-  _prepareVideoElement = (user_id, isStremaWithVideo) => {
-    if (!isStremaWithVideo) {
-      return this.toggleUserPlaceholder(user_id, true)
+  _prepareVideoElement = (userId, isVideoTrackAvailable) => {
+    console.log("[_prepareVideoElement]", {userId, isVideoTrackAvailable});
+
+    if (!isVideoTrackAvailable) {
+      this.toggleUserPlaceholder(userId, true)
+      return;
     }
-    const $video = document.getElementById(this.getStreamIdByUserId(user_id))
+    this.toggleUserPlaceholder(userId, false)
+
+    const $video = document.getElementById(this.getStreamIdByUserId(userId))
 
     $video.style.visibility = "visible";
 

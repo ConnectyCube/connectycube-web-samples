@@ -19,6 +19,7 @@ module.exports = env => ({
     new CopyWebpackPlugin([
       { from: "index.html", to: "index.html" },
       { from: "src/events-service.js", to: "events-service.js" },
+      { from: "src/connectycube.js", to: "connectycube.js" },
       { from: "manifest.json", to: "manifest.json" },
       { from: "styles", to: "styles" },
       { from: "images", to: "images" },
@@ -34,7 +35,7 @@ module.exports = env => ({
     historyApiFallback: true,
     https: true,
     host: "127.0.0.1",
-    port: 3000,
+    port: 3001,
     hot: true
   },
   module: {
