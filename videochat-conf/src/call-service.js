@@ -745,8 +745,10 @@ class CallService {
     console.log("[setVideoMute] isVideoCall", this.isVideoCall)
 
     if (!this.isVideoCall) {
+      this.setAudioMute()
       this.enableVideo().then(stream => {
         stream.getVideoTracks()[0].enabled = true;
+        this.setAudioMute()
         
         this.updateStream(stream)
 
@@ -756,17 +758,15 @@ class CallService {
         this.toggleUserPlaceholder(this.currentUserID, false)
       });
     } else {
-      console.log("[setVideoMute] isVideoMuted", this._session.isVideoMuted())
+      this.disableVideo().then(stream => {
+        
+        this.updateStream(stream)
 
-      if (this._session.isVideoMuted()) {
-        this._session.unmuteVideo()
-        $muteVideoButton.classList.remove("muted")
-        this.toggleUserPlaceholder(this.currentUserID, false)
-      } else {
-        this._session.muteVideo()
+        this.isVideoCall = false;
+
         $muteVideoButton.classList.add("muted")
         this.toggleUserPlaceholder(this.currentUserID, true)
-      }
+      });
     }
   };
 
@@ -784,6 +784,24 @@ class CallService {
       });
     });
   }
+
+  disableVideo = () => {
+    console.log("[disableVideo]");
+
+    return new Promise((resolve, reject) => {
+      this.mediaParams = this.mediaParamsAudioCall;
+
+      this._session.getUserMedia(this.mediaParams, true).then(stream => {
+        stream.addTrack(this.createDummyVideoTrack());
+        resolve(stream);
+      }, error => {
+        console.error('[disableVideo] error', error, this.mediaParams)
+        reject(error);
+      });
+    });
+  }
+
+
 
   sharingScreen = () => {
     if (!this.isSharingScreen) {
