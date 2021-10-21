@@ -10,9 +10,12 @@ import Devices from "./Devices/Devices";
 
 const Conference = (props) => {
   let href = useHistory();
-  let cams = "Ur cam";
+
   useEffect(() => {
     const PathCheck = () => {
+      if (props.call.isiOS) {
+        alert("iOS");
+      }
       // join
       const hrefState = href.location.state;
       console.log("href", href.location.state);
@@ -48,10 +51,19 @@ const Conference = (props) => {
   let [video, setVideo] = useState(props.call.devices.video);
   debugger;
   let camName = [];
-
+  const newDevice = (e) => {
+    let deviceId = e.target.name;
+    props.call.newCamera(deviceId);
+  };
   if (props.call.cams) {
     for (let i = 0; i < props.call.cams.length; i += 1) {
-      camName.push(<Devices call = {props.call} camInfo={props.call.cams[i]} />);
+      camName.push(
+        <Devices
+          call={props.call}
+          onClick={newDevice}
+          camInfo={props.call.cams[i]}
+        />
+      );
     }
   }
   debugger;
@@ -67,23 +79,24 @@ const Conference = (props) => {
       />
     );
   }
+
   const audioRef = react.createRef();
   const videoRef = react.createRef();
   const devicesRef = react.createRef();
   const setAudioMute = () => {
     audioRef.current.classList.toggle("mute");
-    let muted = props.call.turnDownAudio();
+    let muted = props.call.toggleAudio();
   };
   const setVideoMute = () => {
     videoRef.current.classList.toggle("mute");
-    let muted = props.call.turnDownVideo();
+    let muted = props.call.toggleVideo();
     let cam = document.getElementById("user__cam-me");
     cam.classList.toggle("muted");
   };
 
   const [allDevices, setAllDevices] = useState([]);
 
-  const switcher = () => {
+  const switchCamera = () => {
     let devices = document.getElementById("user__devices");
     devices.classList.toggle("active");
   };
@@ -92,7 +105,7 @@ const Conference = (props) => {
   };
 
   return (
-    <div className="conference">
+    <div id="conference" className="conference">
       <div className={`users__cams grid-${props.call.participants.length}`}>
         {allCam}
       </div>
@@ -128,7 +141,7 @@ const Conference = (props) => {
         </a>
         <button
           disabled={!video}
-          onClick={switcher}
+          onClick={switchCamera}
           id="switch__btn"
           className="call__btn switch__btn"
         >

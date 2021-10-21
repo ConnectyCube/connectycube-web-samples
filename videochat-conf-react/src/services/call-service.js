@@ -1,5 +1,5 @@
 import ConnectyCube from "connectycube";
-import { createContext, useRef } from "react";
+import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
 const CallContext = createContext();
 export default CallContext;
@@ -11,17 +11,32 @@ export const CallProvider = ({ children }) => {
   const participantRef = useRef([{ userId: null, name: "Me", stream: null }]);
   const [devices, setDevices] = useState({});
   const [cams, setCams] = useState();
-  ConnectyCube.videochatconference
-    .getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
-    .then((videoDevices) => {
-      if (cams == undefined) {
+  const isiOS = () => {
+    return (
+      [
+        "iPad Simulator",
+        "iPhone Simulator",
+        "iPod Simulator",
+        "iPad",
+        "iPhone",
+        "iPod",
+      ].includes(navigator.platform) ||
+      // iPad on iOS 13 detection
+      (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    );
+  };
+  useEffect(() => {
+    ConnectyCube.videochatconference
+      .getMediaDevices(
+        ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+      )
+      .then((videoDevices) => {
         setCams(videoDevices);
-        debugger;
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const _session = useRef(null);
   const mediaDevs = (allDevices) => {
@@ -36,34 +51,14 @@ export const CallProvider = ({ children }) => {
       audio = true;
     }
 
-    if (audio && video) {
-      return {
-        audio: true,
-        video: true,
-        options: {
-          muted: true,
-          mirror: true,
-        },
-      };
-    } else if (audio && !video) {
-      return {
-        audio: true,
-        video: false,
-        options: {
-          muted: true,
-          mirror: true,
-        },
-      };
-    } else if (!audio && video) {
-      return {
-        audio: false,
-        video: true,
-        options: {
-          muted: true,
-          mirror: true,
-        },
-      };
-    }
+    return {
+      audio,
+      video,
+      options: {
+        muted: true,
+        mirror: true,
+      },
+    };
   };
   const createCallbacks = () => {
     ConnectyCube.videochatconference.onParticipantJoinedListener = (
@@ -223,7 +218,7 @@ export const CallProvider = ({ children }) => {
       resolve(devices);
     });
   };
-  const turnDownAudio = () => {
+  const toggleAudio = () => {
     //session.muteAudio();
     _session.current.isAudioMuted()
       ? _session.current.unmuteAudio()
@@ -233,7 +228,7 @@ export const CallProvider = ({ children }) => {
     );
     return _session.current.isAudioMuted();
   };
-  const turnDownVideo = () => {
+  const toggleVideo = () => {
     _session.current.isVideoMuted()
       ? _session.current.unmuteVideo()
       : _session.current.muteVideo();
@@ -265,8 +260,7 @@ export const CallProvider = ({ children }) => {
     });
   };
 
-  const newCamera = (userId) => {
-    let deviceId = userId;
+  const newCamera = (deviceId) => {
     _session.current
       .switchMediaTracks({ video: deviceId })
       .then((updatedLocaStream) => {
@@ -296,16 +290,17 @@ export const CallProvider = ({ children }) => {
   return (
     <CallContext.Provider
       value={{
-        turnDownVideo,
+        toggleVideo,
         joinMeeting,
         createAndJoinMeeting,
         participants,
-        turnDownAudio,
+        toggleAudio,
         switcher,
         screenShare,
         devices,
         cams,
         newCamera,
+        isiOS,
       }}
     >
       {children}
