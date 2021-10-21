@@ -28,16 +28,6 @@ class AuthService {
     };
     ConnectyCube.init(credentials, appConfig);
   };
-  //   parseJoinRoomUrl = () =>{
-  // 	  const {pathname} = window.location;
-  // 	  const [, joinPath, roomInfo] = pathname.split('/')
-  // 	  if (joinPath === 'join' && roomInfo) {
-  // 		  alert(console.log(atob(roomInfo).split("##")))
-  // 		 return atob(roomInfo).split("##");
-  // 	  }
-  // 	  return null
-  //   }
-
   login(userName, roomID) {
     return new Promise((resolve, reject) => {
       ConnectyCube.createSession()
@@ -51,8 +41,8 @@ class AuthService {
             };
             ConnectyCube.login(userCredentials)
               .then((user) => {
-                resolve(user, session);
-                this.info = user.id;
+                resolve(user);
+
                 //CallService.createAndJoinMeeting(user)
               })
               .catch((error) => {
@@ -70,6 +60,7 @@ class AuthService {
             ConnectyCube.users
               .signup(userProfile)
               .then((user) => {
+                debugger;
                 localStorage.setItem("userName", userName);
                 localStorage.setItem("userPass", userProfile.password);
                 localStorage.setItem("userLogin", userProfile.login);

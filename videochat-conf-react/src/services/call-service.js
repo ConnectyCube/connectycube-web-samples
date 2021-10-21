@@ -9,55 +9,60 @@ export const CallProvider = ({ children }) => {
     { userId: null, name: "Me", stream: null },
   ]);
   const participantRef = useRef([{ userId: null, name: "Me", stream: null }]);
+  const [devices, setDevices] = useState({});
+  const [cams, setCams] = useState();
+  ConnectyCube.videochatconference
+    .getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
+    .then((videoDevices) => {
+      if (cams == undefined) {
+        setCams(videoDevices);
+        debugger;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
+  const _session = useRef(null);
   const mediaDevs = (allDevices) => {
     let video = false;
     let audio = false;
-    if (allDevices.find((e) => e.kind == "videoinput")) {
+    if (allDevices.find((e) => e.kind === "videoinput")) {
       console.log("We have camera");
       video = true;
     }
-    if (allDevices.find((e) => e.kind == "audioinput")) {
+    if (allDevices.find((e) => e.kind === "audioinput")) {
       console.log("We have micro");
       audio = true;
     }
-    let mediaParams = {
-      audio: true,
-      video: true,
-      options: {
-        muted: true,
-        mirror: true,
-      },
-    };
 
     if (audio && video) {
-      return (mediaParams = {
+      return {
         audio: true,
         video: true,
         options: {
           muted: true,
           mirror: true,
         },
-      });
+      };
     } else if (audio && !video) {
-      return (mediaParams = {
+      return {
         audio: true,
         video: false,
         options: {
           muted: true,
           mirror: true,
         },
-      });
-      console.log("worked we have micro");
+      };
     } else if (!audio && video) {
-      return (mediaParams = {
+      return {
         audio: false,
         video: true,
         options: {
           muted: true,
           mirror: true,
         },
-      });
+      };
     }
   };
   const createCallbacks = () => {
@@ -138,15 +143,22 @@ export const CallProvider = ({ children }) => {
         record: false,
         chat: false,
       };
+
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
           joinMeeting(userName, meeting._id, userId, camClass)
-            .then(() => {
-              resolve(meeting._id);
+            .then((devices) => {
+              console.log(devices);
+              setDevices(devices);
+              debugger;
+
+              resolve({
+                meetingId: meeting._id,
+              });
             })
             .catch((error) => {
-              console.log(error);
+              console.log("This error", error);
               reject(error);
             });
         })
@@ -160,6 +172,8 @@ export const CallProvider = ({ children }) => {
   const joinMeeting = (userName, roomId, userId, camClass) => {
     return new Promise((resolve, reject) => {
       createCallbacks();
+
+      //Doesnt working for IOS
       ConnectyCube.videochatconference
         .getMediaDevices()
         .then((allDevices) => {
@@ -168,12 +182,16 @@ export const CallProvider = ({ children }) => {
             reject("Error:You do not have any camera and microphone available");
             return;
           }
+
+          //let devices = { audio: mediaParams.audio, video: mediaParams.video };
           const session = ConnectyCube.videochatconference.createNewSession();
+          _session.current = session;
 
           console.warn(roomId, userId, userName);
           session
             .getUserMedia(mediaParams)
             .then((localStream) => {
+              debugger;
               session.attachMediaStream(`${camClass}-me`, localStream);
             })
             .catch((error) => {
@@ -183,13 +201,14 @@ export const CallProvider = ({ children }) => {
           //   this.initListeners();
           session
             .join(roomId, userId, userName)
-            .then(() => {
-              resolve();
-            })
+            .then(() => {})
             .catch((error) => {
               console.log(error);
               reject(error);
             });
+          haveCamera(mediaParams).then((devices) => {
+            resolve(devices);
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -198,10 +217,80 @@ export const CallProvider = ({ children }) => {
     });
   };
 
-  let turnDownVideo = () => {
-    
-    console.log("Hey i am used");
-    return "Hey Hey";
+  const haveCamera = (mediaParams) => {
+    return new Promise((resolve, reject) => {
+      let devices = { audio: mediaParams.audio, video: mediaParams.video };
+      resolve(devices);
+    });
+  };
+  const turnDownAudio = () => {
+    //session.muteAudio();
+    _session.current.isAudioMuted()
+      ? _session.current.unmuteAudio()
+      : _session.current.muteAudio();
+    console.log(
+      _session.current.isAudioMuted() ? "Audio Muted" : "Audio Unmuted"
+    );
+    return _session.current.isAudioMuted();
+  };
+  const turnDownVideo = () => {
+    _session.current.isVideoMuted()
+      ? _session.current.unmuteVideo()
+      : _session.current.muteVideo();
+    console.log(
+      _session.current.isVideoMuted() ? "Video Muted" : "Video Unmuted"
+    );
+    return _session.current.isVideoMuted();
+  };
+
+  const switcher = () => {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.videochatconference
+        .getMediaDevices(
+          ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+        )
+        .then((videoDevices) => {
+          console.log(videoDevices);
+        })
+        .catch((error) => {});
+      ConnectyCube.videochatconference
+        .getMediaDevices(
+          ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.AUDIO
+        )
+        .then((audioDevices) => {
+          resolve(audioDevices);
+          debugger;
+        })
+        .catch((error) => {});
+    });
+  };
+
+  const newCamera = (userId) => {
+    let deviceId = userId;
+    _session.current
+      .switchMediaTracks({ video: deviceId })
+      .then((updatedLocaStream) => {
+        console.log(updatedLocaStream);
+      }) // you can reattach local stream
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const screenShare = () => {
+    const constraints = {
+      video: true,
+      audio: true,
+    };
+
+    _session.current
+      .getDisplayMedia(constraints)
+      .then((localDesktopStream) => {
+        console.log(localDesktopStream);
+        alert("here");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -211,6 +300,12 @@ export const CallProvider = ({ children }) => {
         joinMeeting,
         createAndJoinMeeting,
         participants,
+        turnDownAudio,
+        switcher,
+        screenShare,
+        devices,
+        cams,
+        newCamera,
       }}
     >
       {children}

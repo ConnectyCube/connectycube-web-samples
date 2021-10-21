@@ -2,17 +2,19 @@ const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
-module.exports = env => ({
+module.exports = (env) => ({
   mode: env.production ? "production" : "development",
-  entry: env.production ? "./src/index.js" : ["webpack/hot/dev-server", "./src/index.js"],
+  entry: env.production
+    ? "./src/index.js"
+    : ["webpack/hot/dev-server", "./src/index.js"],
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "main.js",
     sourceMapFilename: "main.map",
-    libraryTarget: "umd"
+    libraryTarget: "umd",
   },
   optimization: {
-    minimize: !env.non_minimize
+    minimize: !env.non_minimize,
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -23,7 +25,7 @@ module.exports = env => ({
       { from: "styles", to: "styles" },
       { from: "images", to: "images" },
       { from: "audio", to: "audio" },
-    ])
+    ]),
   ],
   watch: env.development,
   devtool: env.production ? false : "source-map",
@@ -34,8 +36,8 @@ module.exports = env => ({
     historyApiFallback: true,
     https: true,
     host: "127.0.0.1",
-    port: 3000,
-    hot: true
+    port: 8000,
+    hot: true,
   },
   module: {
     rules: [
@@ -51,13 +53,13 @@ module.exports = env => ({
               plugins: [
                 "@babel/plugin-proposal-object-rest-spread",
                 "@babel/plugin-proposal-class-properties",
-                "@babel/plugin-proposal-optional-chaining"
-              ]
-            }
-          }
-        ]
-      }
-    ]
+                "@babel/plugin-proposal-optional-chaining",
+              ],
+            },
+          },
+        ],
+      },
+    ],
   },
-  externals: ["node-fetch", "form-data"]
+  externals: ["node-fetch", "form-data"],
 });

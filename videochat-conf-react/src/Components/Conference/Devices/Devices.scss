@@ -1,0 +1,10 @@
+.cam__button {
+  width: 150px;
+  height: 30px;
+  overflow: hidden;
+  font-size: 20px;
+
+  &:not(:last-child) {
+    margin-bottom: 5px;
+  }
+}

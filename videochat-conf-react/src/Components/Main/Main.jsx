@@ -4,38 +4,35 @@ import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import AuthService from "../../services/auth-service";
 import react from "react";
-
+import { useState } from "react/cjs/react.development";
+import { useHistory } from "react-router";
 const Main = (props) => {
-  const linkRef = react.createRef();
+  let href = useHistory();
   const onLogin = () => {
-    const userName = prompt("Enter ur name", localStorage.userName);
-    AuthService.login(userName).then((user, session) => {
+    const userName = prompt("Enter your name", localStorage.userName);
+    AuthService.login(userName).then((user) => {
       props.call
         .createAndJoinMeeting(user.id, user.login, user.full_name, "user__cam")
-        .then((meetingId) => {
-          const confRoomIdHash = btoa(meetingId);
-          window.history.replaceState(
-            {},
-            "Conference Guest Room",
-            `/join/${confRoomIdHash}`
-          );
+        .then((state) => {
+          debugger;
+          const confRoomIdHash = btoa(state.meetingId);
+          href.push(`join/${confRoomIdHash}`);
+          href.location.state = "Creator";
         })
         .catch((error) => {
-          debugger;
           alert(error);
-          window.location.href = "/";
+          href.location.pathname = "/";
         });
     });
   };
-
   return (
     <div className="container">
       <div className="img__container">
         <img src="./img/logo.png" alt="" />
       </div>
-      <NavLink ref={linkRef} to={`/join/`} className="join" onClick={onLogin}>
+      <button className="join" onClick={onLogin}>
         Join room as guest
-      </NavLink>
+      </button>
     </div>
   );
 };

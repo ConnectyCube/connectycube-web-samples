@@ -7,6 +7,8 @@ import CallContext from "./services/call-service";
 
 function App(props) {
   const call = useContext(CallContext);
+  debugger;
+
   return (
     <div className="wrapper">
       <header className="header" />

@@ -1,31 +1,39 @@
-import React, { useContext, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import UserStream from "../UserCam/UserStream";
+import React, { useEffect } from "react";
+import UserStream from "./UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
+import { useState } from "react/cjs/react.development";
+import { createElement } from "react";
+import { useHistory } from "react-router";
+import Devices from "./Devices/Devices";
 
 const Conference = (props) => {
-  console.table(props.call.participants);
-
+  let href = useHistory();
+  let cams = "Ur cam";
   useEffect(() => {
-    let history = window.location.pathname;
     const PathCheck = () => {
       // join
-
-      if (history.length < 7) {
-        console.log("New room");
+      const hrefState = href.location.state;
+      console.log("href", href.location.state);
+      debugger;
+      if (hrefState === "Creator") {
+        alert("New room");
         // code to run on component mount
       } else {
         let userName = prompt("Enter ur name 2");
         console.log(userName);
+        const history = window.location.pathname;
         let roomId = history.split("/");
         console.log(roomId);
         roomId = atob(roomId[2]);
         AuthService.login(userName).then((user, session) => {
           props.call
             .joinMeeting(user.full_name, roomId, user.id, `user__cam`)
-            .then(() => {})
+            .then((devices) => {
+              setVideo(devices.video);
+              debugger;
+            })
             .catch((error) => {
               alert(error);
               window.location.href = "/";
@@ -37,8 +45,17 @@ const Conference = (props) => {
     // code to run on component mount
     PathCheck();
   }, []);
-  const allCam = [];
+  let [video, setVideo] = useState(props.call.devices.video);
+  debugger;
+  let camName = [];
 
+  if (props.call.cams) {
+    for (let i = 0; i < props.call.cams.length; i += 1) {
+      camName.push(<Devices call = {props.call} camInfo={props.call.cams[i]} />);
+    }
+  }
+  debugger;
+  const allCam = [];
   for (let i = 0; i < props.call.participants.length; i += 1) {
     const user = props.call.participants[i];
     allCam.push(
@@ -52,11 +69,26 @@ const Conference = (props) => {
   }
   const audioRef = react.createRef();
   const videoRef = react.createRef();
+  const devicesRef = react.createRef();
   const setAudioMute = () => {
     audioRef.current.classList.toggle("mute");
+    let muted = props.call.turnDownAudio();
   };
   const setVideoMute = () => {
     videoRef.current.classList.toggle("mute");
+    let muted = props.call.turnDownVideo();
+    let cam = document.getElementById("user__cam-me");
+    cam.classList.toggle("muted");
+  };
+
+  const [allDevices, setAllDevices] = useState([]);
+
+  const switcher = () => {
+    let devices = document.getElementById("user__devices");
+    devices.classList.toggle("active");
+  };
+  const screenShare = () => {
+    props.call.screenShare();
   };
 
   return (
@@ -65,6 +97,9 @@ const Conference = (props) => {
         {allCam}
       </div>
       <div className="user__buttons">
+        <div id="user__devices" className="user__devices">
+          {camName}
+        </div>
         <button
           type="button"
           ref={audioRef}
@@ -77,6 +112,7 @@ const Conference = (props) => {
         <button
           ref={videoRef}
           onClick={setVideoMute}
+          disabled={!video}
           id="video_btn"
           className="call__btn video__btn"
         >
@@ -90,10 +126,20 @@ const Conference = (props) => {
         >
           <img src="../img/call_end.svg" alt="Call end" />
         </a>
-        <button id="switch__btn" className="call__btn switch__btn">
+        <button
+          disabled={!video}
+          onClick={switcher}
+          id="switch__btn"
+          className="call__btn switch__btn"
+        >
           <img src="../img/switch_video.svg" alt="Switch" />
         </button>
-        <button id="share__btn" className="call__btn share__btn">
+        <button
+          onClick={screenShare}
+          id="share__btn"
+          className="call__btn share__btn"
+          disabled={!video}
+        >
           <img src="../img/share.svg" alt="Share" />
         </button>
       </div>
