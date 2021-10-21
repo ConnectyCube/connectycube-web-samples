@@ -748,26 +748,17 @@ class CallService {
     console.log("[setVideoMute] isVideoCall", this.isVideoCall)
 
     if (!this.isVideoCall) {
-      // this._session.getUserMedia(this.mediaParamsVideoCall, true).then(newStream => {
-      //   console.log("[setVideoMute] newStream", newStream)
-      //   this.updateLocalStream(newStream);
-      // });
-      
-      // this._session.getUserMedia(this.mediaParamsVideoCall).then(newStreamWithVideo => {
         this.enableVideo(/*newStreamWithVideo*/).then(() => {
           console.log("[setVideoMute] enableVideo Ok");
         }).catch(e => {
           console.error("[setVideoMute] enableVideo Error", e);
         });
-      // });
     } else {
-      // this._session.getUserMedia(this.mediaParamsAudioCall).then(newStreamWOVideo => {
         this.disableVideo(/*newStreamWOVideo*/).then(() => {
           console.log("[setVideoMute] disableVideo Ok");
         }).catch(e => {
           console.error("[setVideoMute] disableVideo Error", e);
         });
-      // });
     }
   };
 
@@ -786,12 +777,6 @@ class CallService {
   disableVideo = (newStreamWOVideo) => {
     console.log("[disableVideo]");
     return new Promise((resolve, reject) => {
-  
-      // // stop existing video tracks
-      // const vt = this.localStream.getVideoTracks()[0];
-      // this.localStream.removeTrack(vt);
-      // vt.stop();
-      
       this._session.disableVideoTrack(newStreamWOVideo).then(() => {
         resolve();
       }, error => {
