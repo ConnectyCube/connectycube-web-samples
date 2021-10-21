@@ -399,6 +399,8 @@ class CallService {
 
   onLocalStreamListener = (session, stream) => {
     console.log('[onLocalStreamListener]', {tracks: stream.getTracks()})
+
+    this.updateLocalStream(stream);
  
   };
 
@@ -613,20 +615,9 @@ class CallService {
   }
 
   get isVideoCall() {
-    const isVC = this.localStream.getVideoTracks()[0] && !(this.localStream.getVideoTracks()[0] instanceof CanvasCaptureMediaStreamTrack);
-    return isVC;
+    return this.localStream.getVideoTracks().length > 0;
   };
 
-  createDummyVideoTrack = ({width = 640, height = 480} = {}) => {
-    let canvas = Object.assign(document.createElement("canvas"), {width, height});
-    const ctx = canvas.getContext('2d');
-    ctx.fillRect(0, 0, width, height);
-    let stream = canvas.captureStream();
-    console.log("[createDummyVideoTrack] tracks", stream.getTracks());
-    const videoTrack = Object.assign(stream.getVideoTracks()[0], {enabled: false});
-    console.log("[createDummyVideoTrack] videoTrack", videoTrack);
-    return videoTrack;
-  }
 
   joinConf = (janusRoomId, retry) => {
     this._session = ConnectyCube.videochatconference.createNewSession()
@@ -635,13 +626,6 @@ class CallService {
       this.$switchSharingScreenButton.disabled = true;
     }
     return this._session.getUserMedia(this.mediaParams).then(stream => {
-      if (stream.getVideoTracks().length === 0) {
-        stream.addTrack(this.createDummyVideoTrack());
-        console.log("[joinConf] getUserMedia: stream.getVideoTracks()2", stream.getVideoTracks());
-      }
-
-      this.updateLocalStream(stream);
-
       this.addStreamElement({ id: this.currentUserID, name: 'Me', local: true })
       this.removeStreamLoaderByUserId(this.currentUserID)
 
@@ -764,17 +748,17 @@ class CallService {
     console.log("[setVideoMute] isVideoCall", this.isVideoCall)
 
     if (!this.isVideoCall) {
-      this._session.getUserMedia(this.mediaParamsVideoCall, true).then(newStream => {
-        console.log("[setVideoMute] newStream", newStream)
-        this.updateLocalStream(newStream);
-      });
+      // this._session.getUserMedia(this.mediaParamsVideoCall, true).then(newStream => {
+      //   console.log("[setVideoMute] newStream", newStream)
+      //   this.updateLocalStream(newStream);
+      // });
       
       // this._session.getUserMedia(this.mediaParamsVideoCall).then(newStreamWithVideo => {
-        // this.enableVideo(/*newStreamWithVideo*/).then(() => {
-        //   console.log("[setVideoMute] enableVideo Ok");
-        // }).catch(e => {
-        //   console.error("[setVideoMute] enableVideo Error", e);
-        // });
+        this.enableVideo(/*newStreamWithVideo*/).then(() => {
+          console.log("[setVideoMute] enableVideo Ok");
+        }).catch(e => {
+          console.error("[setVideoMute] enableVideo Error", e);
+        });
       // });
     } else {
       // this._session.getUserMedia(this.mediaParamsAudioCall).then(newStreamWOVideo => {
