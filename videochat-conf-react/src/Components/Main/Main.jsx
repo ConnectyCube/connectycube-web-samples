@@ -1,10 +1,7 @@
 import "./Main.scss";
-import React, { useContext } from "react";
+import React from "react";
 
-import { NavLink } from "react-router-dom";
 import AuthService from "../../services/auth-service";
-import react from "react";
-import { useState } from "react/cjs/react.development";
 import { useHistory } from "react-router";
 const Main = (props) => {
   let href = useHistory();

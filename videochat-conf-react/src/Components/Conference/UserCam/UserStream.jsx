@@ -8,7 +8,7 @@ const UserStream = (props) => {
         playsInline
         id={`user__cam-${props.userId}`}
         className={`user__cam `}
-        preload="metadata"
+        preload="yes"
         
       ></video>
 

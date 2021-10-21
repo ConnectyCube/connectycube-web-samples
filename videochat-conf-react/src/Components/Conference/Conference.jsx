@@ -4,7 +4,6 @@ import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
 import { useState } from "react/cjs/react.development";
-import { createElement } from "react";
 import { useHistory } from "react-router";
 import Devices from "./Devices/Devices";
 
@@ -46,7 +45,8 @@ const Conference = (props) => {
     };
 
     // code to run on component mount
-    PathCheck();
+	 PathCheck();
+	 // eslint-disable-next-line
   }, []);
   let [video, setVideo] = useState(props.call.devices.video);
   debugger;
@@ -82,19 +82,19 @@ const Conference = (props) => {
 
   const audioRef = react.createRef();
   const videoRef = react.createRef();
-  const devicesRef = react.createRef();
   const setAudioMute = () => {
-    audioRef.current.classList.toggle("mute");
-    let muted = props.call.toggleAudio();
+	 audioRef.current.classList.toggle("mute");
+	props.call.toggleAudio();
+
   };
   const setVideoMute = () => {
     videoRef.current.classList.toggle("mute");
-    let muted = props.call.toggleVideo();
     let cam = document.getElementById("user__cam-me");
-    cam.classList.toggle("muted");
+	 cam.classList.toggle("muted");
+	 props.call.toggleVideo();
+
   };
 
-  const [allDevices, setAllDevices] = useState([]);
 
   const switchCamera = () => {
     let devices = document.getElementById("user__devices");
