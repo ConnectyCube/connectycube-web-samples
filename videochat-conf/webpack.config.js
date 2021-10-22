@@ -3,11 +3,9 @@ const path = require("path");
 const webpack = require('webpack')
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-let cubeConfigJSON = void 0
 
-if (fs.existsSync('./cubeConfig.json')) {
-  cubeConfigJSON = require('./cubeConfig.json')
-}
+const configJSONPath = path.join(__dirname, 'cubeConfig.json')
+const cubeConfigJSON = fs.existsSync(configJSONPath) ? require(configJSONPath) : void 0
 
 module.exports = env => ({
   mode: env.production ? "production" : "development",
