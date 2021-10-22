@@ -11,7 +11,6 @@ const Main = (props) => {
       props.call
         .createAndJoinMeeting(user.id, user.login, user.full_name, "user__cam")
         .then((state) => {
-          debugger;
           const confRoomIdHash = btoa(state.meetingId);
           href.push(`join/${confRoomIdHash}`);
           href.location.state = "Creator";

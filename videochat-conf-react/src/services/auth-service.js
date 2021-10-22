@@ -60,7 +60,6 @@ class AuthService {
             ConnectyCube.users
               .signup(userProfile)
               .then((user) => {
-                debugger;
                 localStorage.setItem("userName", userName);
                 localStorage.setItem("userPass", userProfile.password);
                 localStorage.setItem("userLogin", userProfile.login);

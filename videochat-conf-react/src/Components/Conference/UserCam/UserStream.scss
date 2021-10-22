@@ -7,7 +7,7 @@
     object-fit: cover;
     box-sizing: border-box;
     position: relative;
-
+    pointer-events: none;
     height: 100%;
     border: 1px solid white;
     opacity: 100;

@@ -9,18 +9,17 @@ import Devices from "./Devices/Devices";
 
 const Conference = (props) => {
   let href = useHistory();
+  debugger;
 
   useEffect(() => {
+    if (props.call.isiOS()) {
+    }
     const PathCheck = () => {
-      if (props.call.isiOS) {
-        alert("iOS");
-      }
       // join
       const hrefState = href.location.state;
       console.log("href", href.location.state);
-      debugger;
       if (hrefState === "Creator") {
-        alert("New room");
+        //   alert("New room");
         // code to run on component mount
       } else {
         let userName = prompt("Enter ur name 2");
@@ -29,27 +28,29 @@ const Conference = (props) => {
         let roomId = history.split("/");
         console.log(roomId);
         roomId = atob(roomId[2]);
-        AuthService.login(userName).then((user, session) => {
-          props.call
-            .joinMeeting(user.full_name, roomId, user.id, `user__cam`)
-            .then((devices) => {
-              setVideo(devices.video);
-              debugger;
-            })
-            .catch((error) => {
-              alert(error);
-              window.location.href = "/";
-            });
+        AuthService.login(userName).then((user) => {
+          setTimeout(() => {
+            props.call
+              .joinMeeting(user.full_name, roomId, user.id, `user__cam`)
+              .then((devices) => {
+                setVideo(devices.video);
+              })
+              .catch((error) => {
+                //  alert(error);
+                window.location.href = "/";
+              });
+          }, 1000);
         });
       }
     };
 
     // code to run on component mount
-	 PathCheck();
-	 // eslint-disable-next-line
+    PathCheck();
+    // eslint-disable-next-line
   }, []);
+
   let [video, setVideo] = useState(props.call.devices.video);
-  debugger;
+
   let camName = [];
   const newDevice = (e) => {
     let deviceId = e.target.name;
@@ -59,6 +60,7 @@ const Conference = (props) => {
     for (let i = 0; i < props.call.cams.length; i += 1) {
       camName.push(
         <Devices
+          key={i}
           call={props.call}
           onClick={newDevice}
           camInfo={props.call.cams[i]}
@@ -66,10 +68,9 @@ const Conference = (props) => {
       );
     }
   }
-  debugger;
   const allCam = [];
   for (let i = 0; i < props.call.participants.length; i += 1) {
-    const user = props.call.participants[i];
+    let user = props.call.participants[i];
     allCam.push(
       <UserStream
         key={i}
@@ -82,19 +83,30 @@ const Conference = (props) => {
 
   const audioRef = react.createRef();
   const videoRef = react.createRef();
-  const setAudioMute = () => {
-	 audioRef.current.classList.toggle("mute");
-	props.call.toggleAudio();
 
+  const fullScreen = () => {
+    let videoItem = document.getElementById("user__cam-me");
+    if (!document.fullscreenElement) {
+      videoItem.requestFullscreen().catch((err) => {
+        alert(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+		
+    } else {
+      document.exitFullscreen();
+    }
+  };
+  const setAudioMute = () => {
+    audioRef.current.classList.toggle("mute");
+    props.call.toggleAudio();
   };
   const setVideoMute = () => {
     videoRef.current.classList.toggle("mute");
     let cam = document.getElementById("user__cam-me");
-	 cam.classList.toggle("muted");
-	 props.call.toggleVideo();
-
+    cam.classList.toggle("muted");
+    props.call.toggleVideo();
   };
-
 
   const switchCamera = () => {
     let devices = document.getElementById("user__devices");
@@ -151,10 +163,11 @@ const Conference = (props) => {
           onClick={screenShare}
           id="share__btn"
           className="call__btn share__btn"
-          disabled={!video}
+          disabled={props.call.isiOS() ? true : !video}
         >
           <img src="../img/share.svg" alt="Share" />
         </button>
+        <button onClick={fullScreen}></button>
       </div>
     </div>
   );

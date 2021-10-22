@@ -9,7 +9,6 @@ const UserStream = (props) => {
         id={`user__cam-${props.userId}`}
         className={`user__cam `}
         preload="yes"
-        
       ></video>
 
       <span className={`user__name`}>{props.userName}</span>
