@@ -1,7 +1,13 @@
+const fs = require('fs')
 const path = require("path");
 const webpack = require('webpack')
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+let cubeConfigJSON = void 0
+
+if (fs.existsSync('./cubeConfig.json')) {
+  cubeConfigJSON = require('./cubeConfig.json')
+}
 
 module.exports = env => ({
   mode: env.production ? "production" : "development",
@@ -25,15 +31,9 @@ module.exports = env => ({
       { from: "images", to: "images" },
       { from: "audio", to: "audio" },
     ]),
-    new webpack.DefinePlugin({
-      API_SERVER: JSON.stringify(process.env.API_SERVER),
-      CHAT_SERVER: JSON.stringify(process.env.CHAT_SERVER),
-      JANUS_SERVER: JSON.stringify(process.env.JANUS_SERVER),
-
-      APP_ID: JSON.stringify(process.env.APP_ID),
-      APP_KEY: JSON.stringify(process.env.APP_KEY),
-      APP_SECRET: JSON.stringify(process.env.APP_SECRET)
-    })
+    new webpack.DefinePlugin(cubeConfigJSON ? {
+      CUBE_CONFIG_JSON: JSON.stringify(JSON.stringify(cubeConfigJSON))
+    } : {})
   ],
   watch: env.development,
   devtool: env.production ? false : "source-map",

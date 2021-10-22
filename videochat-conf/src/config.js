@@ -17,19 +17,23 @@ export const messages = {
   confirm_cancel: "Do you shure to leave the call ?"
 };
 
-export const credentials = {
-  appId: APP_ID || 385,
-  authKey: APP_KEY || "DFBMs5-dKBBCXcd",
-  authSecret: APP_SECRET || "SkCW-ThdnmRg9Za"
+const PARSED_CUBE_CONFIG_JSON = CUBE_CONFIG_JSON ? JSON.parse(CUBE_CONFIG_JSON) : null;
+
+console.log('[PARSED_CUBE_CONFIG_JSON]', PARSED_CUBE_CONFIG_JSON)
+
+export const credentials = PARSED_CUBE_CONFIG_JSON ? PARSED_CUBE_CONFIG_JSON['creds'] : {
+  appId: 385,
+  authKey: "DFBMs5-dKBBCXcd",
+  authSecret: "SkCW-ThdnmRg9Za"
 };
 
-export const appConfig = {
+export const appConfig = PARSED_CUBE_CONFIG_JSON ? PARSED_CUBE_CONFIG_JSON['settings'] : {
   debug: { mode: 1 },
   endpoints: {
-    api: API_SERVER || 'api.connectycube.com',
-    chat: CHAT_SERVER || 'chat.connectycube.com'
+    api: 'api.connectycube.com',
+    chat: 'chat.connectycube.com'
   },
-  conference: { server: JANUS_SERVER || 'wss://janus2.connectycube.com:8989' }
+  conference: { server: 'wss://janus2.connectycube.com:8989' }
 };
 
 export const users = [
