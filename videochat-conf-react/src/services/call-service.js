@@ -183,7 +183,7 @@ export const CallProvider = ({ children }) => {
             reject("Error:You do not have any camera and microphone available");
             return;
           }
-
+			 
           const session = ConnectyCube.videochatconference.createNewSession();
           _session.current = session;
 

@@ -69,6 +69,19 @@ const Conference = (props) => {
     }
   }
   const allCam = [];
+  const fullScreen = (userId) => {
+    debugger;
+    let videoItem = document.getElementById(`user__cam-${userId}`);
+    if (!document.fullscreenElement) {
+      videoItem.requestFullscreen().catch((err) => {
+        alert(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
   for (let i = 0; i < props.call.participants.length; i += 1) {
     let user = props.call.participants[i];
     allCam.push(
@@ -77,6 +90,7 @@ const Conference = (props) => {
         streamNumber={i}
         userId={user.name === "Me" ? "me" : user.userId}
         userName={user.name}
+        fullScreen={fullScreen}
       />
     );
   }
@@ -84,19 +98,6 @@ const Conference = (props) => {
   const audioRef = react.createRef();
   const videoRef = react.createRef();
 
-  const fullScreen = () => {
-    let videoItem = document.getElementById("user__cam-me");
-    if (!document.fullscreenElement) {
-      videoItem.requestFullscreen().catch((err) => {
-        alert(
-          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
-        );
-      });
-		
-    } else {
-      document.exitFullscreen();
-    }
-  };
   const setAudioMute = () => {
     audioRef.current.classList.toggle("mute");
     props.call.toggleAudio();
