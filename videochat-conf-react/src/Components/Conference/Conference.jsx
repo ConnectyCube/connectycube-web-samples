@@ -9,8 +9,6 @@ import Devices from "./Devices/Devices";
 
 const Conference = (props) => {
   let href = useHistory();
-  debugger;
-
   useEffect(() => {
     if (props.call.isiOS()) {
     }
@@ -91,6 +89,9 @@ const Conference = (props) => {
         userId={user.name === "Me" ? "me" : user.userId}
         userName={user.name}
         fullScreen={fullScreen}
+        bitrate={props.call.participants[i].bitrate}
+        micLevel={props.call.participants[i].micLevel}
+		  isMobile={props.call.isMobile}
       />
     );
   }
@@ -113,8 +114,17 @@ const Conference = (props) => {
     let devices = document.getElementById("user__devices");
     devices.classList.toggle("active");
   };
+
   const screenShare = () => {
-    props.call.screenShare();
+    let screenShareButton = document.getElementById("share__btn");
+    if (!screenShareButton.classList.contains(`sharing`)) {
+      props.call.screenShare();
+
+      screenShareButton.classList.add("sharing");
+    } else {
+      props.call.stopSharingScreen();
+      screenShareButton.classList.remove("sharing");
+    }
   };
 
   return (
@@ -164,11 +174,11 @@ const Conference = (props) => {
           onClick={screenShare}
           id="share__btn"
           className="call__btn share__btn"
-          disabled={props.call.isiOS() ? true : !video}
+          disabled={props.call.isMobile ? true : !video}
+          //  disabled={props.call.isiOS() ? true : !video}
         >
           <img src="../img/share.svg" alt="Share" />
         </button>
-        <button onClick={fullScreen}></button>
       </div>
     </div>
   );

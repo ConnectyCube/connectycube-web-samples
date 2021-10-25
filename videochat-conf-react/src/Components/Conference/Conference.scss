@@ -1,4 +1,11 @@
 @import "./ConferenceFlex.scss";
+.stats {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 .conference {
   width: 100vw;
   height: 100vh;
@@ -92,6 +99,10 @@
     }
   }
   & .share__btn {
+    transition: 0.4s ease-in-out;
+    &.sharing {
+      opacity: 40%;
+    }
     &:disabled {
       cursor: default;
       opacity: 40%;

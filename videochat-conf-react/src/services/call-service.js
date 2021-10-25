@@ -6,11 +6,19 @@ export default CallContext;
 
 export const CallProvider = ({ children }) => {
   const [participants, setParticipants] = useState([
-    { userId: null, name: "Me", stream: null },
+    { userId: null, name: "Me", stream: null, bitrate: null, micLevel: null },
   ]);
-  const participantRef = useRef([{ userId: null, name: "Me", stream: null }]);
+  const participantRef = useRef([
+    { userId: null, name: "Me", stream: null, bitrate: null, micLevel: null },
+  ]);
+  const MAX_MIC_LEVEL = 20000;
+  let [screenIsSharing, setScreenIsSharing] = useState(false);
   const [devices, setDevices] = useState({});
   const [cams, setCams] = useState();
+  let mediaParams = {
+    video: { width: 1280, height: 720 },
+    audio: true,
+  };
   const isMobile =
     /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
       navigator.userAgent || navigator.vendor || window.opera
@@ -34,6 +42,27 @@ export const CallProvider = ({ children }) => {
     );
   };
   useEffect(() => {
+    setInterval(() => {
+      participantRef.current.forEach((p) => {
+        if (p.name !== "Me") {
+          try {
+            let bitrate = _session.current.getRemoteUserBitrate(p.userId);
+            let micLevel =
+              (_session.current.getRemoteUserVolume(p.userId) / MAX_MIC_LEVEL) *
+              100;
+            p.bitrate = bitrate;
+            p.micLevel = micLevel.toFixed(2) + "%";
+          } catch {
+            console.log("errored");
+          }
+        } else {
+          p.bitrate = null;
+          console.log("Your own bitrate is ok");
+        }
+      });
+
+      setParticipants([...participantRef.current]);
+    }, 3000);
     ConnectyCube.videochatconference
       .getMediaDevices(
         ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
@@ -77,6 +106,12 @@ export const CallProvider = ({ children }) => {
     ) => {
       console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
       console.log("User joined");
+      setTimeout(() => {
+        const bitrate = session.getRemoteUserBitrate(userId);
+        const micLevel = session.getRemoteUserVolume(userId);
+        console.log(bitrate);
+        console.log(micLevel, "Micro lvl");
+      }, 2000);
 
       participantRef.current.push({
         userId,
@@ -137,6 +172,15 @@ export const CallProvider = ({ children }) => {
     };
   };
 
+  //   function random_item(items) {
+  //     return items[Math.floor(Math.random() * items.length)];
+  //   }
+  //   const [connection, setConnection] = useState("default");
+  //   var items = ["good", "bad"];
+  //   setInterval(() => {
+  //     setConnection(random_item(items));
+  //   }, 10000);
+  //   debugger;
   const createAndJoinMeeting = (userId, userLogin, userName, camClass) => {
     return new Promise((resolve, reject) => {
       const params = {
@@ -153,7 +197,10 @@ export const CallProvider = ({ children }) => {
             .then((devices) => {
               console.log(devices);
               setDevices(devices);
-
+              console.log(userId);
+              //   debugger;
+              //const bitrate = _session.current.getRemoteUserBitrate(userId);
+              //   debugger;
               resolve({
                 meetingId: meeting._id,
               });
@@ -183,7 +230,7 @@ export const CallProvider = ({ children }) => {
             reject("Error:You do not have any camera and microphone available");
             return;
           }
-			 
+
           const session = ConnectyCube.videochatconference.createNewSession();
           _session.current = session;
 
@@ -271,21 +318,34 @@ export const CallProvider = ({ children }) => {
         console.log(error);
       });
   };
+  const stopSharingScreen = () => {
+    let screenShareButton = document.getElementById("share__btn");
+
+    screenShareButton.classList.remove("sharing");
+    return _session.current
+      .getUserMedia(mediaParams, true)
+      .then((stream) => {});
+  };
 
   const screenShare = () => {
     const constraints = {
-      video: true,
+      video: {
+        width: 1280,
+        height: 720,
+        frameRate: { ideal: 10, max: 15 },
+      },
       audio: true,
     };
 
     _session.current
-      .getDisplayMedia(constraints)
-      .then((localDesktopStream) => {
-        console.log(localDesktopStream);
-        alert("here");
+      .getDisplayMedia(constraints, true)
+      .then((stream) => {
+        stream
+          .getVideoTracks()[0]
+          .addEventListener("ended", () => stopSharingScreen());
       })
       .catch((error) => {
-        console.log(error);
+        stopSharingScreen()
       });
   };
 
@@ -305,6 +365,8 @@ export const CallProvider = ({ children }) => {
         isiOS,
         isMobile,
         _session,
+        screenIsSharing,
+        stopSharingScreen,
       }}
     >
       {children}

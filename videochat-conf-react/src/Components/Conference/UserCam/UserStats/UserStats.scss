@@ -1,0 +1,19 @@
+.user__stats{
+	opacity: 0;
+	color: white;
+	width: 150px;
+	
+	background-color: rgba(0, 0, 0, 0.616);
+	border-radius: 10px;
+	text-align: center;
+	padding: 5px 0px;
+	position: absolute;
+	left: 35px;
+	top:15px;
+	transition: .3s ease-in-out;
+
+	& h4{
+		font-size: 16px;
+		font-weight: 500;
+	}
+}
