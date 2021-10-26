@@ -10,9 +10,9 @@ const UserStats = (props) => {
 		  ${props.bitrate}`
           : "Connection good"}
         <br />
-		  
         {props.micLevel ? `Micro level: ${props.micLevel}` : ``}
       </h4>
+      
     </div>
   );
 };

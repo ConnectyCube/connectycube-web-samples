@@ -3,10 +3,18 @@ import React, { useContext } from "react";
 import UserStats from "./UserStats/UserStats";
 
 const UserStream = (props) => {
+  
   return (
     <div className={`user__cam-container stream${props.streamNumber}`}>
+		 {/* <button
+        onClick={() => {
+          props.badConnection(props.userId);
+        }}
+      >
+        Red Light
+      </button> */}
       <div
-        className="user__stats-btn"
+        className={`user__stats-btn ${props.connectionStatus}`}
         onMouseOver={() => {
           document.getElementById(`user__stats-${props.userId}`).style.opacity =
             "100";
@@ -16,12 +24,14 @@ const UserStream = (props) => {
             "0";
         }}
       >
-        <UserStats
+        
+      </div>
+		<UserStats
           userId={props.userId}
           micLevel={props.micLevel}
           bitrate={props.bitrate}
+          connectionStatus={props.connectionStatus}
         />
-      </div>
       <video
         playsInline
         id={`user__cam-${props.userId}`}
@@ -35,10 +45,10 @@ const UserStream = (props) => {
           props.fullScreen(props.userId);
         }}
         alt="Full screen button"
-        src="https://www.svgrepo.com/show/213383/fullscreen.svg"
+        src="../../img/full-screen.png"
         disabled={props.isMobile}
       />
-
+      
       <span className={`user__name`}>{props.userName}</span>
     </div>
   );

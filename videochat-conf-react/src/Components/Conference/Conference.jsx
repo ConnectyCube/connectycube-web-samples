@@ -9,6 +9,7 @@ import Devices from "./Devices/Devices";
 
 const Conference = (props) => {
   let href = useHistory();
+  console.table(props.call.participants, "Participants");
   useEffect(() => {
     if (props.call.isiOS()) {
     }
@@ -68,7 +69,7 @@ const Conference = (props) => {
   }
   const allCam = [];
   const fullScreen = (userId) => {
-    debugger;
+    
     let videoItem = document.getElementById(`user__cam-${userId}`);
     if (!document.fullscreenElement) {
       videoItem.requestFullscreen().catch((err) => {
@@ -91,7 +92,9 @@ const Conference = (props) => {
         fullScreen={fullScreen}
         bitrate={props.call.participants[i].bitrate}
         micLevel={props.call.participants[i].micLevel}
-		  isMobile={props.call.isMobile}
+        isMobile={props.call.isMobile}
+        connectionStatus={props.call.participants[i].connectionStatus}
+        badConnection={props.call.badConnection}
       />
     );
   }
