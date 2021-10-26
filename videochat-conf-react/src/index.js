@@ -5,7 +5,7 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import  { CallProvider } from "./services/call-service";
+import { CallProvider } from "./services/call-service";
 
 export const rerenderTree = () => {
   ReactDOM.render(
@@ -17,7 +17,7 @@ export const rerenderTree = () => {
     document.getElementById("root")
   );
 };
-rerenderTree()
+rerenderTree();
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

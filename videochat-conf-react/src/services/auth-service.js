@@ -4,7 +4,6 @@ import ConnectyCube from "connectycube";
 class AuthService {
   arr = [];
   constructor() {
-    console.log("AuthService init");
     this.init();
   }
 
@@ -14,16 +13,20 @@ class AuthService {
 
   init = () => {
     const credentials = {
-      appId: 5497,
-      authKey: "BxHxMLzGJjQsLAL",
-      authSecret: "cXmO7AaYQK5BQ-t",
+      appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
+      authKey: process.env.REACT_APP_CONNECTYCUBE_APP_AUTH_KEY,
+      authSecret: process.env.REACT_APP_CONNECTYCUBE_APP_SECRET,
     };
-    const MULTIPARTY_SERVER_ENDPOINT = "wss://janus.connectycube:8989";
 
     const appConfig = {
       debug: {
         mode: 1,
-        conference: { server: MULTIPARTY_SERVER_ENDPOINT },
+        conference: {
+          server: process.env.REACT_APP_CONNECTYCUBE_MULTIPARTY_SERVER_ENDPOINT,
+        },
+      },
+      endpoints: {
+        api: process.env.REACT_APP_CONNECTYCUBE_API_ENDPOINT,
       },
     };
     ConnectyCube.init(credentials, appConfig);
@@ -69,7 +72,6 @@ class AuthService {
                 };
                 ConnectyCube.login(userCredentials)
                   .then((user) => {
-                    console.log(session);
                     resolve(user, session);
                   })
                   .catch((error) => {});

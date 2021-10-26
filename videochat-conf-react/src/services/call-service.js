@@ -5,6 +5,7 @@ const CallContext = createContext();
 export default CallContext;
 
 export const CallProvider = ({ children }) => {
+  const meetingIsRecording = useRef(false);
   const [participants, setParticipants] = useState([
     {
       userId: null,
@@ -29,7 +30,7 @@ export const CallProvider = ({ children }) => {
   const slowLinkTimersRef = useRef({});
 
   const MAX_MIC_LEVEL = 20000;
-  let [screenIsSharing, setScreenIsSharing] = useState(false);
+  const meetingId = useRef(null);
   const [devices, setDevices] = useState({});
   const [cams, setCams] = useState();
   let mediaParams = {
@@ -69,12 +70,9 @@ export const CallProvider = ({ children }) => {
               100;
             p.bitrate = bitrate;
             p.micLevel = micLevel.toFixed(2) + "%";
-          } catch {
-            console.log("errored");
-          }
+          } catch {}
         } else {
           p.bitrate = null;
-          console.log("Your own bitrate is ok");
         }
       });
 
@@ -98,11 +96,9 @@ export const CallProvider = ({ children }) => {
     let video = false;
     let audio = false;
     if (allDevices.find((e) => e.kind === "videoinput")) {
-      console.log("We have camera");
       video = true;
     }
     if (allDevices.find((e) => e.kind === "audioinput")) {
-      console.log("We have micro");
       audio = true;
     }
 
@@ -123,14 +119,6 @@ export const CallProvider = ({ children }) => {
       isExistingParticipant
     ) => {
       console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
-      console.log("User joined");
-      setTimeout(() => {
-        const bitrate = session.getRemoteUserBitrate(userId);
-        const micLevel = session.getRemoteUserVolume(userId);
-        console.log(bitrate);
-        console.log(micLevel, "Micro lvl");
-      }, 2000);
-
       participantRef.current.push({
         userId,
         name: userDisplayName,
@@ -144,8 +132,6 @@ export const CallProvider = ({ children }) => {
       session,
       userId
     ) => {
-      console.log(1);
-
       participantRef.current = participantRef.current.filter(
         (e) => e.userId !== userId
       );
@@ -157,7 +143,6 @@ export const CallProvider = ({ children }) => {
       userId,
       stream
     ) => {
-      console.warn("Stream", { session, userId, stream });
       participantRef.current.map((obj, id) => {
         if (obj.userId === userId) {
           obj.stream = stream;
@@ -165,7 +150,6 @@ export const CallProvider = ({ children }) => {
         }
         return obj;
       });
-      console.log(2);
     };
 
     ConnectyCube.videochatconference.onSlowLinkListener = (
@@ -175,9 +159,10 @@ export const CallProvider = ({ children }) => {
       nacks
     ) => {
       participantRef.current.filter((e) => {
-        if (e.userId == userId) {
+        if (e.userId === userId) {
           e.connectionStatus = "average";
         }
+        return e.connectionStatus;
       });
       setParticipants([...participantRef.current]);
 
@@ -188,52 +173,23 @@ export const CallProvider = ({ children }) => {
 
       slowLinkTimersRef.current[userId] = setTimeout(() => {
         participantRef.current.filter((e) => {
-          if (e.userId == userId) {
+          if (e.userId === userId) {
             e.connectionStatus = "good";
           }
+          return e.connectionStatus;
         });
         setParticipants([...participantRef.current]);
       }, 9000);
-
-      console.log("Link has slowed");
     };
     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
       session,
       userId,
       iceState
-    ) => {
-      console.log(4);
-    };
+    ) => {};
     ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
       session,
       iceState
-    ) => {
-      console.log(5);
-    };
-  };
-  const badConnection = (userId) => {
-    participantRef.current.filter((e) => {
-      if (e.userId == userId) {
-        e.connectionStatus = "average";
-      }
-    });
-    setParticipants([...participantRef.current]);
-
-    let existingSlowLinkTimer = slowLinkTimersRef.current[userId];
-    if (existingSlowLinkTimer) {
-      clearTimeout(existingSlowLinkTimer);
-    }
-
-    slowLinkTimersRef.current[userId] = setTimeout(() => {
-      participantRef.current.filter((e) => {
-        if (e.userId == userId) {
-          e.connectionStatus = "good";
-        }
-      });
-      setParticipants([...participantRef.current]);
-    }, 9000);
-
-    console.log("Link has slowed");
+    ) => {};
   };
 
   const createAndJoinMeeting = (userId, userLogin, userName, camClass) => {
@@ -248,11 +204,10 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
+          meetingId.current = meeting._id;
           joinMeeting(userName, meeting._id, userId, camClass)
             .then((devices) => {
-              console.log(devices);
               setDevices(devices);
-              console.log(userId);
               resolve({
                 meetingId: meeting._id,
               });
@@ -324,48 +279,21 @@ export const CallProvider = ({ children }) => {
     _session.current.isAudioMuted()
       ? _session.current.unmuteAudio()
       : _session.current.muteAudio();
-    console.log(
-      _session.current.isAudioMuted() ? "Audio Muted" : "Audio Unmuted"
-    );
+
     return _session.current.isAudioMuted();
   };
   const toggleVideo = () => {
     _session.current.isVideoMuted()
       ? _session.current.unmuteVideo()
       : _session.current.muteVideo();
-    console.log(
-      _session.current.isVideoMuted() ? "Video Muted" : "Video Unmuted"
-    );
+
     return _session.current.isVideoMuted();
   };
 
-  const switcher = () => {
-    return new Promise((resolve, reject) => {
-      ConnectyCube.videochatconference
-        .getMediaDevices(
-          ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
-        )
-        .then((videoDevices) => {
-          console.log(videoDevices);
-        })
-        .catch((error) => {});
-      ConnectyCube.videochatconference
-        .getMediaDevices(
-          ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.AUDIO
-        )
-        .then((audioDevices) => {
-          resolve(audioDevices);
-        })
-        .catch((error) => {});
-    });
-  };
-
-  const newCamera = (deviceId) => {
+  const switchCamera = (deviceId) => {
     _session.current
       .switchMediaTracks({ video: deviceId })
-      .then((newLocalStream) => {
-        console.log(newLocalStream);
-      }) // you can reattach local stream
+      .then((newLocalStream) => {}) // you can reattach local stream
       .catch((error) => {
         console.log(error);
       });
@@ -379,7 +307,7 @@ export const CallProvider = ({ children }) => {
       .then((stream) => {});
   };
 
-  const screenShare = () => {
+  const startScreenSharing = () => {
     const constraints = {
       video: {
         width: 1280,
@@ -400,7 +328,27 @@ export const CallProvider = ({ children }) => {
         stopSharingScreen();
       });
   };
-
+  const recording = () => {
+    if (!meetingIsRecording.current) {
+      meetingIsRecording.current = true;
+      ConnectyCube.meeting
+        .update(meetingId.current, { record: true })
+        .then((meeting) => {
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      meetingIsRecording.current = false;
+      ConnectyCube.meeting
+        .update(meetingId.current, { record: false })
+        .then((meeting) => {
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
   return (
     <CallContext.Provider
       value={{
@@ -409,17 +357,15 @@ export const CallProvider = ({ children }) => {
         createAndJoinMeeting,
         participants,
         toggleAudio,
-        switcher,
-        screenShare,
+        startScreenSharing,
         devices,
         cams,
-        newCamera,
+        switchCamera,
         isiOS,
         isMobile,
         _session,
-        screenIsSharing,
         stopSharingScreen,
-        badConnection,
+        recording,
       }}
     >
       {children}

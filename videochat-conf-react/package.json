@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^12.8.3",
     "connectycube": "^3.13.0",
     "crypto-js": "^4.1.1",
+    "env-cmd": "^10.1.0",
     "node-sass": "^6.0.1",
     "random-username-generator": "^1.0.4",
     "react": "^17.0.2",
