@@ -1,1 +1,2 @@
-<app-login></app-login>
+<app-login (JoinBtnClick)="changeIsAuthorization($event)" [hidden]="!isAuthorization"></app-login>
+<app-videochat [hidden]="isAuthorization"></app-videochat>

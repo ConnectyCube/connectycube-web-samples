@@ -1,0 +1,19 @@
+.user-placeholder.show {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.user-placeholder {
+  height: 100%;
+  width: 100%;
+  background: black;
+  display: none;
+}
+.user-image {
+  width: 35%;
+  height: 0;
+  padding-bottom: 35%;
+  border-radius: 50%;
+}
+

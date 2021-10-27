@@ -1,0 +1,21 @@
+@import "grid-templates";
+
+.videochat-streams{
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-auto-columns: 1fr;
+}
+app-stream-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #bfbfbf;
+  box-sizing: border-box;
+}
+
+
+
+
+
