@@ -1,19 +1,30 @@
-.user-placeholder.show {
+.user-placeholder.show-bg-image {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
+
 .user-placeholder {
   height: 100%;
   width: 100%;
   background: black;
   display: none;
 }
+
 .user-image {
   width: 35%;
   height: 0;
   padding-bottom: 35%;
   border-radius: 50%;
+}
+.container-full-screen {
+  width: 100%;
+  height: 100%;
+}
+.videochat-stream{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-videochat',
@@ -7,17 +7,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VideochatComponent {
 
-  countOfUsers = 3;
+  countOfUsers = 1;
   userArray = this.createArray();
 
-  createArray(){
+  createArray() {
     let arr = [];
 
-    for (let i=0;i<this.countOfUsers;i++){
+    for (let i = 0; i < this.countOfUsers; i++) {
       arr.push(i);
     }
-    return arr;
 
+    return arr;
   }
 
 }

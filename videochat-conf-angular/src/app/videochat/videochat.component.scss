@@ -1,11 +1,12 @@
 @import "grid-templates";
 
-.videochat-streams{
-    height: 100%;
-    width: 100%;
-    display: grid;
-    grid-auto-columns: 1fr;
+.videochat-streams {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-auto-columns: 1fr;
 }
+
 app-stream-container {
   height: 100%;
   width: 100%;

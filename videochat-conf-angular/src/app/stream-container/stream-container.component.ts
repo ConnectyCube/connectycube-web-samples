@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-stream-container',
@@ -7,7 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class StreamContainerComponent implements OnInit {
 
-  constructor() { }
+  videoWork: boolean = true;
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

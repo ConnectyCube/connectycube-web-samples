@@ -33,7 +33,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js"]
+            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js","./src/adapter/adapter-latest.js"]
           },
           "configurations": {
             "production": {
@@ -101,7 +101,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js"]
+            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js","./src/adapter/adapter-latest.js"]
           }
         }
       }

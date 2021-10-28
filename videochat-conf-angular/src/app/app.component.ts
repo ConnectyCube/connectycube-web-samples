@@ -5,15 +5,12 @@ import {Component, OnInit} from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent{
+export class AppComponent {
 
   isAuthorization = false;
 
-  changeIsAuthorization(event:boolean){
-
+  changeIsAuthorization(event: boolean) {
     this.isAuthorization = event;
-
   }
-
 
 }
