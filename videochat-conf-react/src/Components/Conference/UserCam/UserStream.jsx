@@ -1,49 +1,76 @@
 import "./UserStream.scss";
-import React from "react";
+import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
 
 const UserStream = (props) => {
+  const {
+    stream,
+    userId,
+    bitrate,
+    micLevel,
+    connectionStatus,
+    userName,
+    isMobile,
+    streamNumber,
+    fullScreen,
+  } = props;
+
+  const videoRef = useCallback(
+    (videoElement) => {
+      if (!stream || !videoElement) {
+        return;
+      }
+      videoElement.srcObject = stream;
+      videoElement.onloadedmetadata = function (e) {
+        videoElement.play();
+      };
+    },
+
+    [stream]
+  );
+
   return (
     <div
+      
       id="user__cam-container"
-      className={`user__cam-container stream${props.streamNumber}`}
+      className={`user__cam-container stream${streamNumber || "0"}`}
     >
-     
       <div
-        className={`user__stats-btn ${props.connectionStatus}`}
+        className={`user__stats-btn ${connectionStatus}`}
         onMouseOver={() => {
-          document.getElementById(`user__stats-${props.userId}`).style.opacity =
+          document.getElementById(`user__stats-${userId}`).style.opacity =
             "100";
         }}
         onMouseOut={() => {
-          document.getElementById(`user__stats-${props.userId}`).style.opacity =
-            "0";
+          document.getElementById(`user__stats-${userId}`).style.opacity = "0";
         }}
       ></div>
       <UserStats
-        userId={props.userId}
-        micLevel={props.micLevel}
-        bitrate={props.bitrate}
-        connectionStatus={props.connectionStatus}
+        userId={userId}
+        micLevel={micLevel}
+        bitrate={bitrate}
+        connectionStatus={connectionStatus}
       />
       <video
         playsInline
-        id={`user__cam-${props.userId}`}
-        className={`user__cam `}
+        muted={userId === "me"}
+        id={`user__cam-${userId}`}
+        className={`user__cam`}
         preload="yes"
+        ref={videoRef}
       ></video>
       <input
         type="image"
         className="full__screen"
         onClick={() => {
-          props.fullScreen(props.userId);
+          fullScreen(userId);
         }}
         alt="Full screen button"
         src="../../img/full-screen.png"
-        disabled={props.isMobile}
+        disabled={isMobile}
       />
 
-      <span className={`user__name`}>{props.userName}</span>
+      <span className={`user__name`}>{userName}</span>
     </div>
   );
 };

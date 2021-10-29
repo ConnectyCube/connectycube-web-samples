@@ -5,7 +5,9 @@ const CallContext = createContext();
 export default CallContext;
 
 export const CallProvider = ({ children }) => {
-  const meetingIsRecording = useRef(false);
+  const meetingIsRecording = useRef(true);
+  const [view, setView] = useState("grid");
+  const [preJoinScreen, setPreJoinScreen] = useState(false);
   const [participants, setParticipants] = useState([
     {
       userId: null,
@@ -77,7 +79,7 @@ export const CallProvider = ({ children }) => {
       });
 
       setParticipants([...participantRef.current]);
-    }, 3000);
+    }, 15000);
     ConnectyCube.videochatconference
       .getMediaDevices(
         ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
@@ -91,7 +93,6 @@ export const CallProvider = ({ children }) => {
   }, []);
 
   const _session = useRef(null);
-  const _localStream = useRef(null);
   const mediaDevs = (allDevices) => {
     let video = false;
     let audio = false;
@@ -107,7 +108,7 @@ export const CallProvider = ({ children }) => {
       video,
       options: {
         muted: true,
-        mirror: true,
+        mirror: false,
       },
     };
   };
@@ -146,10 +147,12 @@ export const CallProvider = ({ children }) => {
       participantRef.current.map((obj, id) => {
         if (obj.userId === userId) {
           obj.stream = stream;
-          session.attachMediaStream(`user__cam-${userId}`, obj.stream);
+          // session.attachMediaStream(`user__cam-${userId}`, obj.stream);
         }
         return obj;
       });
+      const newParticipants = [...participantRef.current];
+      setParticipants(newParticipants);
     };
 
     ConnectyCube.videochatconference.onSlowLinkListener = (
@@ -196,8 +199,8 @@ export const CallProvider = ({ children }) => {
     return new Promise((resolve, reject) => {
       const params = {
         name: "My meeting",
-        attendees: [{ id: userId }],
-        record: false,
+        attendees: [],
+        record: true,
         chat: false,
       };
 
@@ -224,6 +227,37 @@ export const CallProvider = ({ children }) => {
     });
   };
 
+  const joinScreen = () => {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.createSession()
+        .then((session) => {
+          debugger;
+          ConnectyCube.videochatconference
+            .getMediaDevices()
+            .then((allDevices) => {
+              let mediaParams = mediaDevs(allDevices);
+              if (!mediaParams.audio && !mediaParams.video) {
+                return;
+              }
+              const session =
+                ConnectyCube.videochatconference.createNewSession();
+              session.getUserMedia(mediaParams).then((localStream) => {
+                console.log(localStream);
+                participantRef.current.filter(
+                  (p) => p.name === "Me"
+                )[0].stream = localStream;
+                const newParticipants = [...participantRef.current];
+
+                setParticipants(newParticipants);
+              });
+            });
+        })
+        .catch((error) => {
+          console.log("Error is ");
+        });
+    });
+  };
+
   const joinMeeting = (userName, roomId, userId, camClass) => {
     return new Promise((resolve, reject) => {
       createCallbacks();
@@ -237,7 +271,6 @@ export const CallProvider = ({ children }) => {
             reject("Error:You do not have any camera and microphone available");
             return;
           }
-
           const session = ConnectyCube.videochatconference.createNewSession();
           _session.current = session;
 
@@ -245,16 +278,20 @@ export const CallProvider = ({ children }) => {
           session
             .getUserMedia(mediaParams)
             .then((localStream) => {
-              _localStream.current = localStream;
+              participantRef.current.filter((p) => p.name === "Me")[0].stream =
+                localStream;
+              const newParticipants = [...participantRef.current];
+
+              setParticipants(newParticipants);
               session
                 .join(roomId, userId, userName)
                 .then(() => {
                   resolve(mediaParams);
-                  setTimeout(() => {
-                    session.attachMediaStream(`${camClass}-me`, localStream, {
-                      muted: true,
-                    });
-                  }, 1000);
+                  // setTimeout(() => {
+                  //   session.attachMediaStream(`${camClass}-me`, localStream, {
+                  //     muted: true,
+                  //   });
+                  // }, 1000);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -271,6 +308,16 @@ export const CallProvider = ({ children }) => {
           console.log(error);
           reject(error);
         });
+    });
+  };
+
+  const speakerNow = useRef(null);
+  const speakerStream = (userId) => {
+    participantRef.current.filter((p) => {
+      if (p.userId === userId) {
+        return p.userId;
+      }
+      return 0;
     });
   };
 
@@ -333,8 +380,7 @@ export const CallProvider = ({ children }) => {
       meetingIsRecording.current = true;
       ConnectyCube.meeting
         .update(meetingId.current, { record: true })
-        .then((meeting) => {
-        })
+        .then((meeting) => {})
         .catch((error) => {
           console.log(error);
         });
@@ -342,12 +388,15 @@ export const CallProvider = ({ children }) => {
       meetingIsRecording.current = false;
       ConnectyCube.meeting
         .update(meetingId.current, { record: false })
-        .then((meeting) => {
-        })
+        .then((meeting) => {})
         .catch((error) => {
           console.log(error);
         });
     }
+  };
+
+  const viewChange = (newView) => {
+    setView(newView);
   };
   return (
     <CallContext.Provider
@@ -366,6 +415,12 @@ export const CallProvider = ({ children }) => {
         _session,
         stopSharingScreen,
         recording,
+        view,
+        viewChange,
+        speakerStream,
+        speakerNow,
+        joinScreen,
+        preJoinScreen,
       }}
     >
       {children}

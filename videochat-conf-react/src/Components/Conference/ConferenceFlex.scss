@@ -42,6 +42,7 @@
   grid-template-rows: 1fr;
 }
 
+
 @media screen and (orientation: landscape) {
   .grid-2 {
     grid-template: "stream0 stream1";

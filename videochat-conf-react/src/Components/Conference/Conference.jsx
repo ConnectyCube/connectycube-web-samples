@@ -4,22 +4,58 @@ import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
 import { useState } from "react/cjs/react.development";
-import { useHistory } from "react-router";
+import { Prompt, useHistory } from "react-router";
 import Devices from "./Devices/Devices";
+import JoinScreen from "../JoinScreen/JoinScreen";
 
 const Conference = (props) => {
   let href = useHistory();
+
+  const [preJoinScreen, setPreJoinScreen] = useState(true);
+
+  const { joinScreen, participants, toggleVideo, toggleAudio } = props.call;
+
+  const [userName, setUserName] = useState("");
+
+  const onPrejoinFinish = (userName) => {
+    setUserName(userName);
+    const hrefState = href.location.state;
+
+    if (hrefState) {
+      AuthService.login(userName).then((user) => {
+        props.call
+          .createAndJoinMeeting(
+            user.id,
+            user.login,
+            user.full_name,
+            "user__cam"
+          )
+          .then((state) => {
+            const confRoomIdHash = btoa(state.meetingId);
+            href.push(`${confRoomIdHash}`);
+            setPreJoinScreen(false);
+          })
+          .catch((error) => {
+            alert(error);
+            href.location.pathname = "/";
+          });
+      }); //   alert("New room");
+      //   // code to run on component mount
+    } else {
+      setPreJoinScreen(false);
+    }
+  };
+
   useEffect(() => {
     if (props.call.isiOS()) {
     }
     const PathCheck = () => {
       // join
       const hrefState = href.location.state;
-      if (hrefState === "Creator") {
-        //   alert("New room");
-        // code to run on component mount
-      } else {
-        let userName = prompt("Enter ur name 2");
+
+      if (preJoinScreen && !hrefState) {
+        joinScreen();
+      } else if (!preJoinScreen) {
         const history = window.location.pathname;
         let roomId = history.split("/");
         roomId = atob(roomId[2]);
@@ -31,7 +67,6 @@ const Conference = (props) => {
                 setVideo(devices.video);
               })
               .catch((error) => {
-                //  alert(error);
                 window.location.href = "/";
               });
           }, 1000);
@@ -42,7 +77,7 @@ const Conference = (props) => {
     // code to run on component mount
     PathCheck();
     // eslint-disable-next-line
-  }, []);
+  }, [preJoinScreen]);
 
   let [video, setVideo] = useState(props.call.devices.video);
 
@@ -63,7 +98,7 @@ const Conference = (props) => {
       );
     }
   }
-  const allCam = [];
+  const usersStreams = [];
   const fullScreen = (userId) => {
     let videoItem = document.getElementById(`user__cam-${userId}`);
     if (!document.fullscreenElement) {
@@ -76,21 +111,84 @@ const Conference = (props) => {
       document.exitFullscreen();
     }
   };
-  for (let i = 0; i < props.call.participants.length; i += 1) {
-    let user = props.call.participants[i];
-    allCam.push(
-      <UserStream
-        key={i}
-        streamNumber={i}
-        userId={user.name === "Me" ? "me" : user.userId}
-        userName={user.name}
-        fullScreen={fullScreen}
-        bitrate={props.call.participants[i].bitrate}
-        micLevel={props.call.participants[i].micLevel}
-        isMobile={props.call.isMobile}
-        connectionStatus={props.call.participants[i].connectionStatus}
-      />
-    );
+  let speakerUser;
+  let usersSortedById;
+  if (props.call.view === "grid") {
+    for (let i = 0; i < props.call.participants.length; i += 1) {
+      let user = props.call.participants[i];
+      usersStreams.push(
+        <UserStream
+          key={i}
+          streamNumber={i}
+          userId={user.name === "Me" ? "me" : user.userId}
+          userName={user.name}
+          stream={user.stream}
+          fullScreen={fullScreen}
+          bitrate={props.call.participants[i].bitrate}
+          micLevel={props.call.participants[i].micLevel}
+          isMobile={props.call.isMobile}
+          connectionStatus={props.call.participants[i].connectionStatus}
+        />
+      );
+    }
+  } else {
+    let usersSortedByMicLevel = props.call.participants.sort((a, b) => {
+      if (a.micLevel < b.micLevel) {
+        return -1;
+      }
+      if (a.micLevel > b.micLevel) {
+        return 1;
+      }
+      return 0;
+    });
+
+    speakerUser = usersSortedByMicLevel[usersSortedByMicLevel.length - 1];
+    //  speakerUser = props.call.participants[0];
+
+    usersSortedById = props.call.participants.sort((a, b) => {
+      if (a.userId < b.userId) {
+        return -1;
+      }
+      if (a.userId > b.userId) {
+        return 1;
+      }
+      return 0;
+    });
+
+    for (let i = 0; i < usersSortedById.length; i += 1) {
+      let user = usersSortedById[i];
+      if (user.userId !== speakerUser.userId) {
+        usersStreams.push(
+          <UserStream
+            key={i}
+            streamNumber={i}
+            userId={user.name === "Me" ? "me" : user.userId}
+            userName={user.name}
+            stream={user.stream}
+            fullScreen={fullScreen}
+            bitrate={props.call.participants[i].bitrate}
+            micLevel={props.call.participants[i].micLevel}
+            isMobile={props.call.isMobile}
+            connectionStatus={props.call.participants[i].connectionStatus}
+          />
+        );
+      } else {
+        props.call.speakerStream(user.userId);
+
+        speakerUser = (
+          <UserStream
+            userId={user.name === "Me" ? "me" : user.userId}
+            userName={user.name}
+            stream={user.stream}
+            fullScreen={fullScreen}
+            bitrate={props.call.participants[i].bitrate}
+            micLevel={props.call.participants[i].micLevel}
+            isMobile={props.call.isMobile}
+            connectionStatus={props.call.participants[i].connectionStatus}
+          />
+        );
+      }
+    }
   }
 
   const audioRef = react.createRef();
@@ -125,70 +223,97 @@ const Conference = (props) => {
   };
   const onRecording = () => {
     let button = document.getElementById("record__button");
-	 button.classList.toggle("recording")
+    button.classList.toggle("recording");
     props.call.recording();
   };
 
   return (
     <div id="conference" className="conference">
-      <div className={`users__cams grid-${props.call.participants.length}`}>
-        {allCam}
-      </div>
-      <div className="user__buttons">
-        <div id="user__devices" className="user__devices">
-          {camName}
+      {preJoinScreen === true && (
+        <JoinScreen
+          onPrejoinFinish={onPrejoinFinish}
+          toggleVideo={toggleVideo}
+          toggleAudio={toggleAudio}
+        />
+      )}
+      {!preJoinScreen && (
+        <div className="conference__container">
+          <select
+            className="view__changer"
+            onChange={(e) => {
+              props.call.viewChange(e.target.value);
+            }}
+          >
+            <option value="grid">Grid</option>
+            <option value="sidebar">Speaker Full + sidebar</option>
+          </select>
+          <div className={`streams_container ${props.call.view}`}>
+            {props.call.view === "sidebar" && (
+              <div className={"speaker-stream"} id="speakerStream">
+                {speakerUser}
+              </div>
+            )}
+            <div
+              className={`users__cams ${props.call.view} ${props.call.view}-${props.call.participants.length}`}
+            >
+              {usersStreams}
+            </div>
+          </div>
+          <div className="user__buttons">
+            <div id="user__devices" className="user__devices">
+              {camName}
+            </div>
+            <button
+              type="button"
+              ref={audioRef}
+              onClick={onSetAudioMute}
+              id="micro__btn"
+              className="call__btn micro__btn"
+            >
+              <img src="../img/mic.svg" alt="Micro" />
+            </button>
+            <button
+              ref={videoRef}
+              onClick={onSetVideoMute}
+              disabled={!video}
+              id="video_btn"
+              className="call__btn video__btn"
+            >
+              <img src="../img/video.svg" alt="Video" />
+            </button>
+            <a
+              href="/"
+              id="end__btn"
+              onClick={AuthService.logout}
+              className="call__btn end__btn"
+            >
+              <img src="../img/call_end.svg" alt="Call end" />
+            </a>
+            <button
+              disabled={!video}
+              onClick={onSwitchCamera}
+              id="switch__btn"
+              className="call__btn switch__btn"
+            >
+              <img src="../img/switch_video.svg" alt="Switch" />
+            </button>
+            <button
+              onClick={onStartScreenSharing}
+              id="share__btn"
+              className="call__btn share__btn"
+              disabled={props.call.isMobile ? true : !video}
+              //  disabled={props.call.isiOS() ? true : !video}
+            >
+              <img src="../img/share.svg" alt="Share" />
+            </button>
+            <button
+              onClick={onRecording}
+              id="record__button"
+              className="record__button"
+            ></button>
+          </div>
         </div>
-        <button
-          type="button"
-          ref={audioRef}
-          onClick={onSetAudioMute}
-          id="micro__btn"
-          className="call__btn micro__btn"
-        >
-          <img src="../img/mic.svg" alt="Micro" />
-        </button>
-        <button
-          ref={videoRef}
-          onClick={onSetVideoMute}
-          disabled={!video}
-          id="video_btn"
-          className="call__btn video__btn"
-        >
-          <img src="../img/video.svg" alt="Video" />
-        </button>
-        <a
-          href="/"
-          id="end__btn"
-          onClick={AuthService.logout}
-          className="call__btn end__btn"
-        >
-          <img src="../img/call_end.svg" alt="Call end" />
-        </a>
-        <button
-          disabled={!video}
-          onClick={onSwitchCamera}
-          id="switch__btn"
-          className="call__btn switch__btn"
-        >
-          <img src="../img/switch_video.svg" alt="Switch" />
-        </button>
-        <button
-          onClick={onStartScreenSharing}
-          id="share__btn"
-          className="call__btn share__btn"
-          disabled={props.call.isMobile ? true : !video}
-          //  disabled={props.call.isiOS() ? true : !video}
-        >
-          <img src="../img/share.svg" alt="Share" />
-        </button>
-        <button
-          onClick={onRecording}
-          id="record__button"
-          className="record__button"
-        >
-          
-        </button>
-      </div>
+      )}
     </div>
   );
 };

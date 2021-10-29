@@ -35,6 +35,7 @@ class AuthService {
     return new Promise((resolve, reject) => {
       ConnectyCube.createSession()
         .then((session) => {
+          debugger;
           if (!userName) {
             ConnectyCube.destroySession().catch((error) => {});
           } else if (localStorage.getItem("userName") === userName) {

@@ -1,0 +1,136 @@
+.join__form {
+  position: relative;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+
+  & .form__info {
+    display: flex;
+    opacity: 0%;
+    transition: 0.2s ease-in-out;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    & > *:not(:last-child) {
+      margin-bottom: 10px;
+    }
+    & input[type="text"] {
+      /* Remove First */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+
+      /* Then Style */
+      border-radius: 15px;
+      border: 1px dashed #bbb;
+      padding: 10px;
+      line-height: 20px;
+      text-align: center;
+      background: transparent;
+      outline: none;
+    }
+    & input {
+      flex: 0 1 50%;
+      padding: 5px 0px;
+      width: 50%;
+      border: none;
+      outline: none;
+      border-bottom: 1px solid #000;
+      &:focus {
+      }
+      &::placeholder {
+        text-align: center;
+      }
+    }
+    & button {
+      cursor: pointer;
+
+      flex: 0 0 auto;
+      height: 40px;
+      width: 50%;
+      border-radius: 5px;
+      border: none;
+      background: linear-gradient(#464d55, #25292e);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      opacity: 100%;
+      transition: 0.3s;
+
+      &:hover {
+        opacity: 95%;
+      }
+    }
+  }
+  & .video__container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    & .camera__bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url("../../images/camera__off.png") no-repeat center;
+      border: 10px solid;
+      padding: 2px;
+      opacity: 0%;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      transition: 0.2s;
+
+      &.show {
+        opacity: 100%;
+      }
+    }
+    & .user__cam {
+      position: relative;
+      opacity: 100%;
+      width: 100%;
+      height: 100%;
+      transition: 0.2s;
+      object-fit: fill;
+
+      &.muted {
+        opacity: 0%;
+        position: relative;
+      }
+    }
+  }
+
+  & .buttons {
+    position: absolute;
+    top: 80%;
+    opacity: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    z-index: 4;
+
+    & button {
+      cursor: pointer;
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+    }
+  }
+}
+.micro__btn {
+  background-color: rgb(112, 112, 252);
+}
+
+.video__btn {
+  background-color: rgb(77, 139, 77);
+  &:disabled {
+    background-color: #004000;
+    opacity: 80%;
+    cursor: default;
+  }
+}
+@media screen and (max-width: 767px) {
+  .join__form {
+    width: 100%;
+  }
+}
