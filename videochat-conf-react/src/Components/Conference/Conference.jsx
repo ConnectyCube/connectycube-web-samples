@@ -12,13 +12,13 @@ const Conference = (props) => {
   let href = useHistory();
 
   const [preJoinScreen, setPreJoinScreen] = useState(true);
+  const [videOff, setVideoOff] = useState("");
+  const [audioOff, setAudioOff] = useState("");
+  const { toggleVideo, toggleAudio, devices } =
+    props.call;
 
-  const { joinScreen, participants, toggleVideo, toggleAudio } = props.call;
 
-  const [userName, setUserName] = useState("");
-
-  const onPrejoinFinish = (userName) => {
-    setUserName(userName);
+  const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
 
     if (hrefState) {
@@ -28,12 +28,21 @@ const Conference = (props) => {
             user.id,
             user.login,
             user.full_name,
-            "user__cam"
+            "user__cam",
+            isVideo,
+            isAudio
           )
           .then((state) => {
             const confRoomIdHash = btoa(state.meetingId);
-            href.push(`${confRoomIdHash}`);
+            href.push(`${confRoomIdHash}`, "Creator");
             setPreJoinScreen(false);
+            if (!isVideo) {
+              setVideoOff(`mute`);
+            }
+            if (!isAudio) {
+              setAudioOff(`mute`);
+            }
+            debugger;
           })
           .catch((error) => {
             alert(error);
@@ -42,42 +51,32 @@ const Conference = (props) => {
       }); //   alert("New room");
       //   // code to run on component mount
     } else {
+      const history = window.location.pathname;
+      let roomId = history.split("/");
+      roomId = atob(roomId[2]);
+      AuthService.login(userName).then((user) => {
+        setTimeout(() => {
+          props.call
+            .joinMeeting(
+              user.full_name,
+              roomId,
+              user.id,
+              `user__cam`,
+              isVideo,
+              isAudio
+            )
+            .then((devices) => {
+              setVideo(devices.video);
+            })
+            .catch((error) => {
+              debugger;
+              window.location.href = "/";
+            });
+        }, 1000);
+      });
       setPreJoinScreen(false);
     }
   };
-
-  useEffect(() => {
-    if (props.call.isiOS()) {
-    }
-    const PathCheck = () => {
-      // join
-      const hrefState = href.location.state;
-
-      if (preJoinScreen && !hrefState) {
-        joinScreen();
-      } else if (!preJoinScreen) {
-        const history = window.location.pathname;
-        let roomId = history.split("/");
-        roomId = atob(roomId[2]);
-        AuthService.login(userName).then((user) => {
-          setTimeout(() => {
-            props.call
-              .joinMeeting(user.full_name, roomId, user.id, `user__cam`)
-              .then((devices) => {
-                setVideo(devices.video);
-              })
-              .catch((error) => {
-                window.location.href = "/";
-              });
-          }, 1000);
-        });
-      }
-    };
-
-    // code to run on component mount
-    PathCheck();
-    // eslint-disable-next-line
-  }, [preJoinScreen]);
 
   let [video, setVideo] = useState(props.call.devices.video);
 
@@ -98,6 +97,7 @@ const Conference = (props) => {
       );
     }
   }
+
   const usersStreams = [];
   const fullScreen = (userId) => {
     let videoItem = document.getElementById(`user__cam-${userId}`);
@@ -268,16 +268,16 @@ const Conference = (props) => {
               ref={audioRef}
               onClick={onSetAudioMute}
               id="micro__btn"
-              className="call__btn micro__btn"
+              className={`call__btn micro__btn ${audioOff}`}
             >
               <img src="../img/mic.svg" alt="Micro" />
             </button>
             <button
               ref={videoRef}
               onClick={onSetVideoMute}
-              disabled={!video}
+              disabled={!devices.video}
               id="video_btn"
-              className="call__btn video__btn"
+              className={`call__btn video__btn ${videOff}`}
             >
               <img src="../img/video.svg" alt="Video" />
             </button>
@@ -290,7 +290,7 @@ const Conference = (props) => {
               <img src="../img/call_end.svg" alt="Call end" />
             </a>
             <button
-              disabled={!video}
+              disabled={!devices.video}
               onClick={onSwitchCamera}
               id="switch__btn"
               className="call__btn switch__btn"
@@ -301,7 +301,7 @@ const Conference = (props) => {
               onClick={onStartScreenSharing}
               id="share__btn"
               className="call__btn share__btn"
-              disabled={props.call.isMobile ? true : !video}
+              disabled={props.call.isMobile ? true : !devices.video}
               //  disabled={props.call.isiOS() ? true : !video}
             >
               <img src="../img/share.svg" alt="Share" />

@@ -1,4 +1,5 @@
 import ConnectyCube from "connectycube";
+import { mediaDevices } from "connectycube/lib/cubeDependencies";
 import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
 const CallContext = createContext();
@@ -8,6 +9,12 @@ export const CallProvider = ({ children }) => {
   const meetingIsRecording = useRef(true);
   const [view, setView] = useState("grid");
   const [preJoinScreen, setPreJoinScreen] = useState(false);
+  const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const [devicesStatus, setDevicesStatus] = useState({
+    video: true,
+    audio: true,
+  });
+  const withVideo = useRef(true);
   const [participants, setParticipants] = useState([
     {
       userId: null,
@@ -195,12 +202,19 @@ export const CallProvider = ({ children }) => {
     ) => {};
   };
 
-  const createAndJoinMeeting = (userId, userLogin, userName, camClass) => {
+  const createAndJoinMeeting = (
+    userId,
+    userLogin,
+    userName,
+    camClass,
+    isVideo,
+    isAudio
+  ) => {
     return new Promise((resolve, reject) => {
       const params = {
         name: "My meeting",
         attendees: [],
-        record: true,
+        record: false,
         chat: false,
       };
 
@@ -208,7 +222,7 @@ export const CallProvider = ({ children }) => {
         .create(params)
         .then((meeting) => {
           meetingId.current = meeting._id;
-          joinMeeting(userName, meeting._id, userId, camClass)
+          joinMeeting(userName, meeting._id, userId, camClass, isVideo, isAudio)
             .then((devices) => {
               setDevices(devices);
               resolve({
@@ -227,42 +241,16 @@ export const CallProvider = ({ children }) => {
     });
   };
 
-  const joinScreen = () => {
-    return new Promise((resolve, reject) => {
-      ConnectyCube.createSession()
-        .then((session) => {
-          debugger;
-          ConnectyCube.videochatconference
-            .getMediaDevices()
-            .then((allDevices) => {
-              let mediaParams = mediaDevs(allDevices);
-              if (!mediaParams.audio && !mediaParams.video) {
-                return;
-              }
-              const session =
-                ConnectyCube.videochatconference.createNewSession();
-              session.getUserMedia(mediaParams).then((localStream) => {
-                console.log(localStream);
-                participantRef.current.filter(
-                  (p) => p.name === "Me"
-                )[0].stream = localStream;
-                const newParticipants = [...participantRef.current];
-
-                setParticipants(newParticipants);
-              });
-            });
-        })
-        .catch((error) => {
-          console.log("Error is ");
-        });
-    });
-  };
-
-  const joinMeeting = (userName, roomId, userId, camClass) => {
+  const joinMeeting = (
+    userName,
+    roomId,
+    userId,
+    camClass,
+    isVideo,
+    isAudio
+  ) => {
     return new Promise((resolve, reject) => {
       createCallbacks();
-
-      // //Doesnt working for IOS
       ConnectyCube.videochatconference
         .getMediaDevices()
         .then((allDevices) => {
@@ -273,25 +261,27 @@ export const CallProvider = ({ children }) => {
           }
           const session = ConnectyCube.videochatconference.createNewSession();
           _session.current = session;
-
-          // alert(JSON.stringify(mediaParams));
+          setDevicesStatus({ video: isVideo, audio: isAudio });
+          const devicesVisible = { video: isVideo, audio: isAudio };
+          withVideo.current = isVideo;
+          setIsVideoMuted(!devicesVisible.video);
+          console.log("PRAMS", devicesVisible);
           session
-            .getUserMedia(mediaParams)
+            .getUserMedia(devicesVisible)
             .then((localStream) => {
+              if (!isVideo) {
+                localStream.addTrack(createDummyVideoTrack());
+              }
               participantRef.current.filter((p) => p.name === "Me")[0].stream =
                 localStream;
-              const newParticipants = [...participantRef.current];
 
+              const newParticipants = [...participantRef.current];
               setParticipants(newParticipants);
               session
                 .join(roomId, userId, userName)
                 .then(() => {
+                  setDevices(mediaParams);
                   resolve(mediaParams);
-                  // setTimeout(() => {
-                  //   session.attachMediaStream(`${camClass}-me`, localStream, {
-                  //     muted: true,
-                  //   });
-                  // }, 1000);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -320,9 +310,58 @@ export const CallProvider = ({ children }) => {
       return 0;
     });
   };
+  const createDummyVideoTrack = ({ width = 640, height = 480 } = {}) => {
+    let canvas = Object.assign(document.createElement("canvas"), {
+      width,
+      height,
+    });
+    const ctx = canvas.getContext("2d");
+    ctx.fillRect(0, 0, width, height);
+    let stream = canvas.captureStream();
+    console.log("[createDummyVideoTrack] tracks", stream.getTracks());
+    const videoTrack = Object.assign(stream.getVideoTracks()[0], {
+      enabled: false,
+    });
+    console.log("[createDummyVideoTrack] videoTrack", videoTrack);
+    return videoTrack;
+  };
+  const enableVideo = () => {
+    console.log("[enableVideo]");
 
+    return new Promise((resolve, reject) => {
+      let params = { video: true, audio: true };
+      _session.current.getUserMedia(params, true).then(
+        (stream) => {
+          debugger;
+          resolve(stream);
+        },
+        (error) => {
+          console.error("[enableVideo] error", error, params);
+          reject(error);
+        }
+      );
+    });
+  };
+  const disableVideo = () => {
+    console.log("[disableVideo]");
+    let params = { video: false, audio: true };
+    participantRef.current[0].stream.getVideoTracks()[0].stop();
+    setParticipants(...participantRef.current);
+    return new Promise((resolve, reject) => {
+      _session.current.getUserMedia(params, true).then(
+        (stream) => {
+          stream.addTrack(createDummyVideoTrack());
+          console.log(stream);
+          resolve(stream);
+        },
+        (error) => {
+          console.error("[disableVideo] error", error, params);
+          reject(error);
+        }
+      );
+    });
+  };
   const toggleAudio = () => {
-    //session.muteAudio();
     _session.current.isAudioMuted()
       ? _session.current.unmuteAudio()
       : _session.current.muteAudio();
@@ -330,11 +369,30 @@ export const CallProvider = ({ children }) => {
     return _session.current.isAudioMuted();
   };
   const toggleVideo = () => {
-    _session.current.isVideoMuted()
-      ? _session.current.unmuteVideo()
-      : _session.current.muteVideo();
-
-    return _session.current.isVideoMuted();
+    if (!isVideoMuted) {
+      disableVideo().then((stream) => {
+        participantRef.current[0].stream = stream;
+        let updateStream = [...participantRef.current];
+        setParticipants(updateStream);
+        console.log(participants);
+        setIsVideoMuted(true);
+		  
+      });
+		
+    } else {
+      enableVideo().then((stream) => {
+        debugger;
+        stream.getVideoTracks()[0].enabled = true;
+        participantRef.current[0].stream = stream;
+        let updateStream = [...participantRef.current];
+        setParticipants(updateStream);
+        setIsVideoMuted(false);
+		  
+      });
+    }
+    //  _session.current.isVideoMuted()
+    //    ? _session.current.unmuteVideo()
+    //    : _session.current.muteVideo();
   };
 
   const switchCamera = (deviceId) => {
@@ -419,8 +477,9 @@ export const CallProvider = ({ children }) => {
         viewChange,
         speakerStream,
         speakerNow,
-        joinScreen,
+
         preJoinScreen,
+        devicesStatus,
       }}
     >
       {children}
