@@ -54,7 +54,7 @@
 
       flex: 0 0 auto;
       height: 40px;
-      width: 50%;
+      width: 150px;
       border-radius: 5px;
       border: none;
       background: linear-gradient(#464d55, #25292e);
@@ -136,12 +136,58 @@
     cursor: default;
   }
 }
+@media screen and (max-width: 992px) {
+	.join__form{
+		padding: 0;
+		margin: 0;
+		width: 100%;
+
+		& .buttons{
+			top: auto;
+			bottom:3%;
+		}
+
+		& .video__container{
+			height: 100%;
+
+			& .user__cam{
+				width: auto;
+			}
+		}
+
+		& .form__info{
+			padding-top: 20px;
+
+			& input{
+			}
+		}
+	}
+}
 @media screen and (max-width: 767px) {
 	.join__form{
-		padding-top: 10px;
+		padding: 0;
+		margin: 0;
+		width: 100%;
+
+		& .buttons{
+			top: auto;
+			bottom:3%;
+		}
+
+		& .video__container{
+			height: 100%;
+
+			& .user__cam{
+				width: auto;
+			}
+		}
 
 		& .form__info{
 			padding-top: 0;
+
+			& input{
+				width: 100%;
+			}
 		}
 	}
   
