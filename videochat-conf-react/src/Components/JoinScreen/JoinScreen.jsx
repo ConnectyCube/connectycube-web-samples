@@ -88,6 +88,7 @@ const JoinScreen = (props) => {
             <img src="../img/video.svg" alt="Video" />
           </button>
         </div>
+		  <div className="lds-dual-ring"></div>
         <video
           muted={true}
           playsInline
