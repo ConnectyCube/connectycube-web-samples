@@ -244,21 +244,6 @@ export const CallProvider = ({ children }) => {
           const devicesVisible = { video: isVideo, audio: isAudio };
           withVideo.current = isVideo;
           setIsVideoMuted(!devicesVisible.video);
-          const userCredentials = {
-            userId: userId,
-            password: localStorage.userPass,
-          };
-          debugger;
-          ConnectyCube.chat
-            .connect(userCredentials)
-            .then((chat) => {
-              console.log("CHAT", chat);
-              // connected
-            })
-            .catch((error) => {
-              alert();
-            });
-
           session
             .getUserMedia(devicesVisible)
             .then((localStream) => {
