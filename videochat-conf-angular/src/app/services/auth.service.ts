@@ -1,8 +1,16 @@
-import {EventEmitter} from "@angular/core";
+import {EventEmitter, Injectable} from '@angular/core';
+import {Store} from "@ngrx/store";
+import {State} from "../reducers";
 
 declare let ConnectyCube: any;
 
-class UserAuthorization {
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+
+  constructor(private store$: Store<State>) {
+  }
 
   private static randomLogin(): string {
     let text = "";
@@ -22,28 +30,43 @@ class UserAuthorization {
     }, 0));
   }
 
-  public init(CREDENTIALS: object) {
-    ConnectyCube.init(CREDENTIALS);
-    ConnectyCube.createSession();
+  private static login(userProfileLogin:object){
+    return  ConnectyCube.login(userProfileLogin);
   }
 
-  public auth(userName: string, JoinBtnClick: EventEmitter<boolean>) {
+  public init(CREDENTIALS: object, appConfig:object) {
+    return new Promise<void>((resolve)=>{
+      ConnectyCube.init(CREDENTIALS,appConfig);
+      ConnectyCube.createSession().then(() => {
+        resolve();
+      });
+
+    })
+  }
+
+  public auth(userName: string, JoinBtnClick?: EventEmitter<boolean>) {
     return new Promise<number>((resolve, reject) => {
 
-      const login: string = UserAuthorization.randomLogin();
+      const login: string = AuthService.randomLogin() + AuthService.randomLogin();
 
       const userProfile = {
         login: login,
-        password: UserAuthorization.hashCode(login),
+        password: AuthService.hashCode(login),
         full_name: userName,
       };
+      const userProfileLogin = {
+        login: userProfile.login,
+        password: userProfile.password
+      }
 
       ConnectyCube.users.signup(userProfile)
         .then(() => {
-          ConnectyCube.login({login: userProfile.login, password: userProfile.password})
+          AuthService.login(userProfileLogin)
             .then((user: any) => {
               console.log("logging user", user);
-              JoinBtnClick.emit(true);
+              if(JoinBtnClick){
+                JoinBtnClick.emit(true);
+              }
               resolve(user.id)
             })
             .catch((error: any) => {
@@ -56,10 +79,12 @@ class UserAuthorization {
             const IsRegisteredUser: boolean = error.info.errors.base.includes("login must be unique");
 
             if (IsRegisteredUser) {
-              ConnectyCube.login({login: userProfile.login, password: userProfile.password})
+              AuthService.login(userProfileLogin)
                 .then((user: any) => {
                   console.log("logging user", user);
-                  JoinBtnClick.emit(true);
+                  if(JoinBtnClick){
+                    JoinBtnClick.emit(true);
+                  }
                   resolve(user.id)
                 })
                 .catch((error: any) => {
@@ -80,7 +105,4 @@ class UserAuthorization {
 
     })
   }
-
 }
-
-export const userAuthorization = Object.freeze(new UserAuthorization());

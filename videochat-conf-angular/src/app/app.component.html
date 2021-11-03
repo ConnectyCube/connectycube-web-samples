@@ -1,2 +1,5 @@
-<app-login (JoinBtnClick)="changeIsAuthorization($event)" [hidden]="isAuthorization"></app-login>
-<app-videochat [hidden]="!isAuthorization"></app-videochat>
+<router-outlet *ngIf="meetingId$ | async; else loginScreen"></router-outlet>
+<ng-template #loginScreen>
+  <app-login (JoinBtnClick)="isAuthorization=!isAuthorization" *ngIf="isAuthorization"></app-login>
+  <app-videochat *ngIf="!isAuthorization"></app-videochat>
+</ng-template>

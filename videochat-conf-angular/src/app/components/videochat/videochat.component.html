@@ -1,0 +1,9 @@
+<div [attr.data-meetId]="meetingId$ | async" class="videochat-streams grid-{{(participantArray$ | async)?.length}}">
+  <app-stream-container
+    *ngFor="let user of (participantArray$ | async);index as i;"
+    [currentUserStream]="user.stream"
+    [currentUserId] = "user.id"
+    [currentUserIndex] = "i"
+    [className]="'stream'+i"
+  ></app-stream-container>
+</div>

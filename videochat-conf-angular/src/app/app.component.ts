@@ -1,16 +1,20 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {select, Store} from "@ngrx/store";
+import {State} from "./reducers";
+import { selectMeetingIdRouterParam} from "./reducers/route.selectors";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent{
 
-  isAuthorization = false;
+  public isAuthorization = true;
+  public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
 
-  changeIsAuthorization(event: boolean) {
-    this.isAuthorization = event;
+  constructor(private store$: Store<State>) {
   }
 
 }
