@@ -118,8 +118,8 @@ const Conference = (props) => {
           userName={user.name}
           stream={user.stream}
           fullScreen={fullScreen}
-          bitrate={props.call.participants[i].bitrate}
-          micLevel={props.call.participants[i].micLevel}
+          bitrate={user.bitrate}
+          micLevel={user.micLevel}
           isMobile={props.call.isMobile}
           connectionStatus={props.call.participants[i].connectionStatus}
         />

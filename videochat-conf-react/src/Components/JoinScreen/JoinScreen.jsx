@@ -5,10 +5,8 @@ import "./JoinScreen.scss";
 
 const JoinScreen = (props) => {
   const { onPrejoinFinish } = props;
-//   const audioRef = React.createRef();
   const videoRef = React.createRef();
   const userNameRef = React.createRef();
-//   const [isAudio, setIsAudio] = useState(true);
   const [isVideo, setIsVideo] = useState(true);
   const [stream, setStream] = useState(null);
   const [cameraBg, setCameraBg] = useState("");
@@ -64,11 +62,7 @@ const JoinScreen = (props) => {
 
     [stream]
   );
-//   const onSetAudioMute = () => {
-//     audioRef.current.classList.toggle("mute");
-//     isAudio ? setIsAudio(false) : setIsAudio(true);
-//     // toggleAudio();
-//   };
+
   const onSetVideoMute = () => {
     videoRef.current.classList.toggle("mute");
     let cameraBg = document.getElementById("camera__bg");
@@ -77,28 +71,17 @@ const JoinScreen = (props) => {
     cam.classList.toggle("muted");
     stream.getTracks().forEach((t) => t.stop());
     isVideo ? setIsVideo(false) : setIsVideo(true);
-    //toggleVideo();
   };
 
   return (
     <form onSubmit={formSend} className="join__form">
       <div className="video__container">
         <div className="buttons" id="buttons">
-          {/* <button
-            type="button"
-            ref={audioRef}
-            onClick={onSetAudioMute}
-            id="micro__btn"
-            className="call__btn micro__btn"
-          >
-            <img src="../img/mic.svg" alt="Micro" />
-          </button> */}
           <button
             disabled={videoOff}
             type="button"
             ref={videoRef}
             onClick={onSetVideoMute}
-            //   disabled={!video}
             id="video_btn"
             className="call__btn video__btn"
           >

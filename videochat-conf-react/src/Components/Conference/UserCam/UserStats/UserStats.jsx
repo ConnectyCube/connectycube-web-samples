@@ -2,17 +2,16 @@ import React from "react";
 import "./UserStats.scss";
 
 const UserStats = (props) => {
+	const {userId, micLevel, bitrate} = props
   return (
-    <div id={`user__stats-${props.userId}`} className="user__stats">
+    <div id={`user__stats-${userId}`} className="user__stats">
       <h4>
-        {props.bitrate
-          ? `Connection good
-		  ${props.bitrate}`
+        {bitrate? `Connection good 
+		  ${bitrate}`
           : "Connection good"}
         <br />
-        {props.micLevel ? `Micro level: ${props.micLevel}` : ``}
+        {micLevel ? `Micro level: ${micLevel}` : ``}
       </h4>
-      
     </div>
   );
 };
