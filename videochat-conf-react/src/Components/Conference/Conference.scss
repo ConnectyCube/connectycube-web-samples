@@ -95,7 +95,7 @@
       height: 32px;
     }
     &:hover {
-      opacity: 75%;
+      opacity: 0.75;
     }
     &.mute {
       &::after {
@@ -118,7 +118,7 @@
     background-color: rgb(77, 139, 77);
     &:disabled {
       background-color: #004000;
-      opacity: 80%;
+      opacity: 0.80;
       cursor: default;
     }
   }
@@ -129,18 +129,18 @@
     background-color: #ffa500;
     &:disabled {
       background-color: #8e8f5a;
-      opacity: 80%;
+      opacity: 0.80;
       cursor: default;
     }
   }
   & .share__btn {
     transition: 0.4s ease-in-out;
     &.sharing {
-      opacity: 40%;
+      opacity: 0.40;
     }
     &:disabled {
       cursor: default;
-      opacity: 40%;
+      opacity: 0.40;
     }
   }
 }
