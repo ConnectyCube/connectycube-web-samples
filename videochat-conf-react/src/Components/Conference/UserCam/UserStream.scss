@@ -29,11 +29,11 @@
   }
 
   & .user__name {
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
     background-color: rgba(146, 143, 143, 0.685);
-    width: 100%;
+    width: 100vw;
     text-align: center;
     color: white;
     min-height: 18px;

@@ -1,5 +1,4 @@
 import ConnectyCube from "connectycube";
-import { mediaDevices } from "connectycube/lib/cubeDependencies";
 import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
 const CallContext = createContext();
@@ -8,7 +7,7 @@ export default CallContext;
 export const CallProvider = ({ children }) => {
   const meetingIsRecording = useRef(true);
   const [view, setView] = useState("grid");
-  const [preJoinScreen, setPreJoinScreen] = useState(false);
+  const [preJoinScreen] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [devicesStatus, setDevicesStatus] = useState({
     video: true,

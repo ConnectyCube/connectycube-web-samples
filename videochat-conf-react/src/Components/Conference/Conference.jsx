@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import UserStream from "./UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
 import { useState } from "react/cjs/react.development";
-import { Prompt, useHistory } from "react-router";
+import { useHistory } from "react-router";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 
@@ -14,9 +14,7 @@ const Conference = (props) => {
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [videOff, setVideoOff] = useState("");
   const [audioOff, setAudioOff] = useState("");
-  const { toggleVideo, toggleAudio, devices } =
-    props.call;
-
+  const { toggleVideo, toggleAudio, devices } = props.call;
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
@@ -65,9 +63,7 @@ const Conference = (props) => {
               isVideo,
               isAudio
             )
-            .then((devices) => {
-              setVideo(devices.video);
-            })
+            .then((devices) => {})
             .catch((error) => {
               debugger;
               window.location.href = "/";
@@ -77,8 +73,6 @@ const Conference = (props) => {
       setPreJoinScreen(false);
     }
   };
-
-  let [video, setVideo] = useState(props.call.devices.video);
 
   let camName = [];
   const newDevice = (e) => {

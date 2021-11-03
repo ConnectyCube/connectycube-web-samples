@@ -1,14 +1,14 @@
-import React, { createRef } from "react";
+import React from "react";
 import { useCallback } from "react";
 import { useEffect, useState } from "react/cjs/react.development";
 import "./JoinScreen.scss";
 
 const JoinScreen = (props) => {
-  const { onPrejoinFinish, toggleAudio, toggleVideo } = props;
-  const audioRef = React.createRef();
+  const { onPrejoinFinish } = props;
+//   const audioRef = React.createRef();
   const videoRef = React.createRef();
   const userNameRef = React.createRef();
-  const [isAudio, setIsAudio] = useState(true);
+//   const [isAudio, setIsAudio] = useState(true);
   const [isVideo, setIsVideo] = useState(true);
   const [stream, setStream] = useState(null);
   const [cameraBg, setCameraBg] = useState("");
@@ -16,7 +16,7 @@ const JoinScreen = (props) => {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ audio: isAudio, video: isVideo })
+      .getUserMedia({ audio: true, video: isVideo })
       .then((stream) => {
         setStream(stream);
         setVideoOff(false);
@@ -25,7 +25,7 @@ const JoinScreen = (props) => {
         alert(error);
         setIsVideo(false);
         navigator.mediaDevices
-          .getUserMedia({ audio: isAudio, video: false })
+          .getUserMedia({ audio: true, video: false })
           .then((stream) => {
             setStream(stream);
           });
@@ -46,7 +46,7 @@ const JoinScreen = (props) => {
     e.preventDefault();
   };
   const login = () => {
-    onPrejoinFinish(userNameRef.current.value, isVideo, isAudio);
+    onPrejoinFinish(userNameRef.current.value, isVideo, true);
   };
   const preScreenRef = useCallback(
     (videoElement) => {
@@ -64,11 +64,11 @@ const JoinScreen = (props) => {
 
     [stream]
   );
-  const onSetAudioMute = () => {
-    audioRef.current.classList.toggle("mute");
-    isAudio ? setIsAudio(false) : setIsAudio(true);
-    // toggleAudio();
-  };
+//   const onSetAudioMute = () => {
+//     audioRef.current.classList.toggle("mute");
+//     isAudio ? setIsAudio(false) : setIsAudio(true);
+//     // toggleAudio();
+//   };
   const onSetVideoMute = () => {
     videoRef.current.classList.toggle("mute");
     let cameraBg = document.getElementById("camera__bg");
@@ -84,7 +84,7 @@ const JoinScreen = (props) => {
     <form onSubmit={formSend} className="join__form">
       <div className="video__container">
         <div className="buttons" id="buttons">
-          <button
+          {/* <button
             type="button"
             ref={audioRef}
             onClick={onSetAudioMute}
@@ -92,7 +92,7 @@ const JoinScreen = (props) => {
             className="call__btn micro__btn"
           >
             <img src="../img/mic.svg" alt="Micro" />
-          </button>
+          </button> */}
           <button
             disabled={videoOff}
             type="button"

@@ -31,7 +31,6 @@ const UserStream = (props) => {
 
   return (
     <div
-      
       id="user__cam-container"
       className={`user__cam-container stream${streamNumber || "0"}`}
     >
