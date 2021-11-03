@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import UserStream from "./UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
 import react from "react";
-import { useState } from "react/cjs/react.development";
-import { useHistory } from "react-router";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
+import { useHistory } from "react-router";
 
 const Conference = (props) => {
   let href = useHistory();

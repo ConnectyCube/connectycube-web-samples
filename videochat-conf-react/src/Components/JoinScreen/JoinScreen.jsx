@@ -1,6 +1,6 @@
 import React from "react";
 import { useCallback } from "react";
-import { useEffect, useState } from "react/cjs/react.development";
+import { useEffect, useState } from "react";
 import "./JoinScreen.scss";
 
 const JoinScreen = (props) => {
