@@ -34,6 +34,7 @@ const UserStream = (props) => {
       id="user__cam-container"
       className={`user__cam-container stream${streamNumber || "0"}`}
     >
+      <div className="lds-dual-ring-main"></div>{" "}
       <div
         className={`user__stats-btn ${connectionStatus}`}
         onMouseOver={() => {
@@ -67,7 +68,6 @@ const UserStream = (props) => {
         src="../../img/full-screen.png"
         disabled={isMobile}
       />
-
       <span className={`user__name`}>{userName}</span>
     </div>
   );

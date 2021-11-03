@@ -6,6 +6,7 @@ import react from "react";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 import { useHistory } from "react-router";
+import { isMobile } from "../../services/heplers";
 
 const Conference = (props) => {
   let href = useHistory();
@@ -293,9 +294,10 @@ const Conference = (props) => {
             <button
               onClick={onStartScreenSharing}
               id="share__btn"
-              className="call__btn share__btn"
+              className={`call__btn share__btn ${
+                props.call.isMobile ? `hide` : ``
+              }`}
               disabled={props.call.isMobile ? true : !devices.video}
-              //  disabled={props.call.isiOS() ? true : !video}
             >
               <img src="../img/share.svg" alt="Share" />
             </button>

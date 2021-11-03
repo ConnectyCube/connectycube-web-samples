@@ -17,9 +17,10 @@
 
   & .view__changer {
     position: absolute !important;
-    z-index: 3;
-    top: 0;
-    right: 0;
+    z-index: 101;
+    top: 10px;
+    right: 5px;
+	 height: 40px;
   }
   .streams_container {
     height: 100%;
@@ -57,7 +58,7 @@
 
   & .user__buttons {
     position: absolute;
-    width: 320px;
+    width: 400px;
     left: 50%;
     transform: translateX(-50%);
     bottom: 20px;
@@ -118,7 +119,7 @@
     background-color: rgb(77, 139, 77);
     &:disabled {
       background-color: #004000;
-      opacity: 0.80;
+      opacity: 0.8;
       cursor: default;
     }
   }
@@ -129,18 +130,22 @@
     background-color: #ffa500;
     &:disabled {
       background-color: #8e8f5a;
-      opacity: 0.80;
+      opacity: 0.8;
       cursor: default;
     }
   }
   & .share__btn {
     transition: 0.4s ease-in-out;
+
+    &.hide {
+      display: none;
+    }
     &.sharing {
-      opacity: 0.40;
+      opacity: 0.4;
     }
     &:disabled {
       cursor: default;
-      opacity: 0.40;
+      opacity: 0.4;
     }
   }
 }
@@ -191,5 +196,10 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
+  }
+}
+@media screen and(max-width:767px) {
+  .user__buttons {
+    width: 320px;
   }
 }
