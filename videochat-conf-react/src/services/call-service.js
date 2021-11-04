@@ -134,6 +134,7 @@ export const CallProvider = ({ children }) => {
       userId,
       stream
     ) => {
+      alert("GOT STREAM");
       participantRef.current.map((obj, id) => {
         if (obj.userId === userId) {
           obj.stream = stream;
@@ -198,7 +199,7 @@ export const CallProvider = ({ children }) => {
         name: "My meeting",
         attendees: [],
         record: false,
-        chat: true,
+        chat: false,
       };
 
       ConnectyCube.meeting

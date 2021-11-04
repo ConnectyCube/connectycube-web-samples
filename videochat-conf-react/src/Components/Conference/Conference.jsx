@@ -17,8 +17,8 @@ const Conference = (props) => {
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
-
     if (hrefState) {
+      setPreJoinScreen(false);
       AuthService.login(userName).then((user) => {
         props.call
           .createAndJoinMeeting(
@@ -32,7 +32,6 @@ const Conference = (props) => {
           .then((state) => {
             const confRoomIdHash = btoa(state.meetingId);
             href.push(`${confRoomIdHash}`, "Creator");
-            setPreJoinScreen(false);
             if (!isVideo) {
               setVideoOff(`mute`);
             }
@@ -48,6 +47,8 @@ const Conference = (props) => {
       }); //   alert("New room");
       //   // code to run on component mount
     } else {
+      setPreJoinScreen(false);
+
       const history = window.location.pathname;
       let roomId = history.split("/");
       roomId = atob(roomId[2]);
@@ -69,7 +70,12 @@ const Conference = (props) => {
             });
         }, 1000);
       });
-      setPreJoinScreen(false);
+      if (!isVideo) {
+        setVideoOff(`mute`);
+      }
+      if (!isAudio) {
+        setAudioOff(`mute`);
+      }
     }
   };
 
