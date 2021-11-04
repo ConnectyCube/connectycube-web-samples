@@ -1,4 +1,4 @@
-import { isiOS, isMobile } from "./heplers";
+import { isiOS, isMobile, detectBrowser } from "./heplers";
 import ConnectyCube from "connectycube";
 import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
@@ -56,7 +56,11 @@ export const CallProvider = ({ children }) => {
             let micLevel =
               (_session.current.getRemoteUserVolume(p.userId) / MAX_MIC_LEVEL) *
               100;
-            p.bitrate = bitrate;
+            if (detectBrowser() === "Safari") {
+              p.bitrate = bitrate / 1000;
+            } else {
+              p.bitrate = bitrate;
+            }
             p.micLevel = micLevel.toFixed(2) + "%";
           } catch {}
         } else {
@@ -328,7 +332,7 @@ export const CallProvider = ({ children }) => {
     console.log("[disableVideo]");
     let params = { video: false, audio: true };
     participantRef.current[0].stream.getVideoTracks()[0].stop();
-    setParticipants(...participantRef.current);
+    setParticipants([...participantRef.current]);
     return new Promise((resolve, reject) => {
       _session.current.getUserMedia(params, true).then(
         (stream) => {

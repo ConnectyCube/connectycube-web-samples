@@ -6,7 +6,6 @@ import react from "react";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 import { useHistory } from "react-router";
-import { isMobile } from "../../services/heplers";
 
 const Conference = (props) => {
   let href = useHistory();
@@ -14,7 +13,7 @@ const Conference = (props) => {
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [videOff, setVideoOff] = useState("");
   const [audioOff, setAudioOff] = useState("");
-  const { toggleVideo, toggleAudio, devices } = props.call;
+  const { toggleVideo, toggleAudio, devices, isMobile } = props.call;
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
@@ -294,9 +293,7 @@ const Conference = (props) => {
             <button
               onClick={onStartScreenSharing}
               id="share__btn"
-              className={`call__btn share__btn ${
-                props.call.isMobile ? `hide` : ``
-              }`}
+              className={`call__btn share__btn ${isMobile ? `hide` : ``}`}
               disabled={props.call.isMobile ? true : !devices.video}
             >
               <img src="../img/share.svg" alt="Share" />
