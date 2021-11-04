@@ -134,7 +134,6 @@ export const CallProvider = ({ children }) => {
       userId,
       stream
     ) => {
-      alert("GOT STREAM");
       participantRef.current.map((obj, id) => {
         if (obj.userId === userId) {
           obj.stream = stream;
