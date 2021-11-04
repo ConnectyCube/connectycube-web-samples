@@ -60,13 +60,12 @@ const UserStream = (props) => {
       ></video>
       <input
         type="image"
-        className="full__screen"
+        className={`full__screen ${isMobile ? `hide` : ``}`}
         onClick={() => {
           fullScreen(userId);
         }}
         alt="Full screen button"
         src="../../img/full-screen.png"
-        disabled={isMobile}
       />
       <span className={`user__name`}>{userName}</span>
     </div>

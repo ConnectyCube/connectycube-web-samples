@@ -119,7 +119,7 @@ const Conference = (props) => {
           fullScreen={fullScreen}
           bitrate={user.bitrate}
           micLevel={user.micLevel}
-          isMobile={props.call.isMobile}
+          isMobile={isMobile}
           connectionStatus={props.call.participants[i].connectionStatus}
         />
       );

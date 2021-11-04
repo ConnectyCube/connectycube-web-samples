@@ -11,6 +11,10 @@
     left: 10px;
     width: 40px;
     height: 40px;
+
+    &.hide {
+      display: none;
+    }
   }
   & .user__cam {
     width: 100%;
@@ -21,7 +25,7 @@
     height: 100%;
     border: 1px solid white;
     opacity: 1;
-	 max-height: 100vh;
+    max-height: 100vh;
 
     transition: 0.2s;
     &.muted {
@@ -60,34 +64,31 @@
   }
 }
 
-
 .lds-dual-ring-main {
-	display: inline-block;
-	width: 80px;
-	height: 80px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-
- }
- .lds-dual-ring-main:after {
-	content: " ";
-	display: block;
-	width: 64px;
-	height: 64px;
-	margin: 8px;
-	border-radius: 50%;
-	border: 6px solid #fff;
-	border-color: #fff transparent #fff transparent;
-	animation: lds-dual-ring 1.2s linear infinite;
- }
- @keyframes lds-dual-ring-main {
-	0% {
-	  transform: rotate(0deg);
-	}
-	100% {
-	  transform: rotate(360deg);
-	}
- }
- 
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.lds-dual-ring-main:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring-main {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

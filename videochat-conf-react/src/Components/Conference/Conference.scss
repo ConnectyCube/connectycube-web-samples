@@ -200,6 +200,14 @@
 }
 @media screen and(max-width:767px) {
   .user__buttons {
-    width: 320px;
+  
   }
+  .sidebar{
+	  flex-direction: column;
+
+	  & .user__cam-container {
+		max-height: 100% !important;
+	 }
+  }
+
 }
