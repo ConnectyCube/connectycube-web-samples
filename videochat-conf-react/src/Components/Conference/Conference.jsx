@@ -38,7 +38,6 @@ const Conference = (props) => {
             if (!isAudio) {
               setAudioOff(`mute`);
             }
-            debugger;
           })
           .catch((error) => {
             alert(error);
@@ -65,7 +64,6 @@ const Conference = (props) => {
             )
             .then((devices) => {})
             .catch((error) => {
-              debugger;
               window.location.href = "/";
             });
         }, 1000);

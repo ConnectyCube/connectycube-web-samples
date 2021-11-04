@@ -20,7 +20,7 @@
     z-index: 101;
     top: 10px;
     right: 5px;
-	 height: 40px;
+    height: 40px;
   }
   .streams_container {
     height: 100%;
@@ -73,7 +73,7 @@
         right: 0;
         display: flex;
         flex-direction: column;
-        top: -100px;
+        bottom: 190%;
         padding: 10px 20px;
         background-color: white;
       }
@@ -200,14 +200,12 @@
 }
 @media screen and(max-width:767px) {
   .user__buttons {
-  
   }
-  .sidebar{
-	  flex-direction: column;
+  .sidebar {
+    flex-direction: column;
 
-	  & .user__cam-container {
-		max-height: 100% !important;
-	 }
+    & .user__cam-container {
+      max-height: 100% !important;
+    }
   }
-
 }

@@ -3,6 +3,8 @@
   height: 30px;
   overflow: hidden;
   font-size: 20px;
+  font-family: 'Times New Roman', Times, serif;
+  color: black;
 
   &:not(:last-child) {
     margin-bottom: 5px;

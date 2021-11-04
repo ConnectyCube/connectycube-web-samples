@@ -317,7 +317,6 @@ export const CallProvider = ({ children }) => {
       let params = { video: true, audio: true };
       _session.current.getUserMedia(params, true).then(
         (stream) => {
-          debugger;
           resolve(stream);
         },
         (error) => {
@@ -367,7 +366,6 @@ export const CallProvider = ({ children }) => {
       });
     } else {
       enableVideo().then((stream) => {
-        debugger;
         stream.getVideoTracks()[0].enabled = true;
         participantRef.current[0].stream = stream;
         let updateStream = [...participantRef.current];
