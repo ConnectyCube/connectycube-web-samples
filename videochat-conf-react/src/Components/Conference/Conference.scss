@@ -209,3 +209,23 @@
     }
   }
 }
+.chat__button {
+  padding: 0px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border: 0;
+  background: grey;
+  box-sizing: border-box;
+}
+.bi-chat {
+  border-radius: 50%;
+  object-fit: contain;
+  min-height: 35px;
+  min-width: 35px;
+  background: grey;
+  color: white;
+}
+
+
+

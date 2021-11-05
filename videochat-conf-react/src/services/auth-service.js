@@ -8,7 +8,10 @@ class AuthService {
   }
 
   logout = () => {
-    ConnectyCube.destroySession();
+    return new Promise((resolve, reject) => {
+      ConnectyCube.destroySession();
+      resolve();
+    });
   };
 
   init = () => {
@@ -27,11 +30,23 @@ class AuthService {
       },
       endpoints: {
         api: process.env.REACT_APP_CONNECTYCUBE_API_ENDPOINT,
+        chat: process.env.REACT_APP_CONNECTYCUBE_CHAT_ENDPOINT,
       },
     };
     ConnectyCube.init(credentials, appConfig);
   };
-  login(userName, roomID) {
+  chatConnection = (chatCredentials) => {
+    ConnectyCube.chat
+      .connect(chatCredentials)
+      .then(() => {
+        debugger;
+        console.log("Connected", `chatConnection`);
+      })
+      .catch((error) => {
+        console.log(`Failed connection due to ${error}`);
+      });
+  };
+  login(userName) {
     return new Promise((resolve, reject) => {
       ConnectyCube.createSession()
         .then((session) => {
@@ -42,9 +57,14 @@ class AuthService {
               login: localStorage.getItem("userLogin"),
               password: localStorage.getItem("userPass"),
             };
+
             ConnectyCube.login(userCredentials)
               .then((user) => {
-                resolve(user);
+                const chatCredentials = {
+                  userId: user.id,
+                  password: userCredentials.password,
+                };
+                this.chatConnection(chatCredentials);
 
                 //CallService.createAndJoinMeeting(user)
               })
@@ -67,11 +87,17 @@ class AuthService {
                 localStorage.setItem("userPass", userProfile.password);
                 localStorage.setItem("userLogin", userProfile.login);
                 const userCredentials = {
-                  login: localStorage.getItem("userLogin"),
-                  password: localStorage.getItem("userPass"),
+                  login: userProfile.login,
+                  password: userProfile.password,
                 };
                 ConnectyCube.login(userCredentials)
                   .then((user) => {
+                    const chatCredentials = {
+                      userId: user.id,
+                      password: userCredentials.password,
+                    };
+                    this.chatConnection(chatCredentials);
+
                     resolve(user, session);
                   })
                   .catch((error) => {});

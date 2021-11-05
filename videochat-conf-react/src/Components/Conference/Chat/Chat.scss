@@ -1,0 +1,46 @@
+.chat__container {
+  height: 100%;
+  width: 360px;
+  position: absolute;
+  right: 0;
+  z-index: 6;
+  top: 0;
+  background: white;
+
+  & .chat__form {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    padding: 0px 15px;
+
+    & .area__container {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      & textarea {
+        width: 100%;
+        resize: none;
+        border-radius: 25px;
+        padding: 10px 0px 5px 5px;
+        flex: 1 1 80%;
+        margin-right: 10px;
+      }
+      & button {
+        height: 40px;
+        width: 40px;
+        cursor: pointer;
+        border: none;
+        background: url(../../../images/send-message.png) no-repeat center;
+        transition: 0.2s ease-in-out;
+        border-radius: 50%;
+        background-color: white;
+        outline: none;
+        &:hover {
+          background-color: rgb(223, 222, 222);
+        }
+      }
+    }
+  }
+}

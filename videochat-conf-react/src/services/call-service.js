@@ -40,6 +40,7 @@ export const CallProvider = ({ children }) => {
 
   const MAX_MIC_LEVEL = 20000;
   const meetingId = useRef(null);
+  const chatId = useRef(null);
   const [devices, setDevices] = useState({});
   const [cams, setCams] = useState();
   let mediaParams = {
@@ -183,6 +184,14 @@ export const CallProvider = ({ children }) => {
       session,
       iceState
     ) => {};
+
+    ConnectyCube.chat.onMessageListener = (userId, message) => {
+      return console.log(
+        "[ConnectyCube.chat.onMessageListener] callback:",
+        userId,
+        message
+      );
+    };
   };
 
   const createAndJoinMeeting = (
@@ -198,12 +207,35 @@ export const CallProvider = ({ children }) => {
         name: "My meeting",
         attendees: [],
         record: false,
-        chat: false,
+        chat: true,
       };
 
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
+          chatId.current = meeting.chat_dialog_id;
+          const params = {
+            type: 4,
+            name: "Blockchain trends",
+          };
+
+          ConnectyCube.chat.dialog
+            .create(params)
+            .then((dialog) => {
+              const dialogId = dialog._id;
+              const toUpdateParams = {
+                push_all: { occupants_ids: [dialog.user_id] },
+              };
+
+              ConnectyCube.chat.dialog
+                .update(dialogId, toUpdateParams)
+                .then((dialog) => {
+                  debugger;
+                })
+                .catch((error) => {});
+            })
+            .catch((error) => {});
+
           meetingId.current = meeting._id;
           joinMeeting(userName, meeting._id, userId, camClass, isVideo, isAudio)
             .then((devices) => {
@@ -460,6 +492,7 @@ export const CallProvider = ({ children }) => {
         speakerNow,
         preJoinScreen,
         devicesStatus,
+        chatId,
       }}
     >
       {children}
