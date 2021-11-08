@@ -1,5 +1,4 @@
-<router-outlet *ngIf="meetingId$ | async; else loginScreen"></router-outlet>
-<ng-template #loginScreen>
-  <app-login (JoinBtnClick)="isAuthorization=!isAuthorization" *ngIf="isAuthorization"></app-login>
-  <app-videochat *ngIf="!isAuthorization"></app-videochat>
-</ng-template>
+<router-outlet #videoElem *ngIf="(meetingId$ | async)"></router-outlet>
+<app-login (JoinBtnClick)="isAuthorization=!isAuthorization"
+           *ngIf="!(meetingId$ | async)"
+></app-login>

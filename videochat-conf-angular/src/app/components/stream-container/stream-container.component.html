@@ -1,13 +1,18 @@
 <div [ngClass]="videoWork || currentUserIndex === 0?'':'show-bg-image'" class="user-placeholder">
   <div class="user-image"
-       style="background: url(../../../assets/animals/animals_1.jpg) center center / contain no-repeat rgb(255, 255, 255);"></div>
+       style="background: url(../../../assets/animals/animals_1.jpg)
+       center center / contain no-repeat rgb(255, 255, 255);"></div>
 </div>
 <div class="container-full-screen">
   <video [srcObject]="currentUserStream"
          autoplay
          [muted]="currentUserIndex === 0"
          (loadeddata)="showVideo()"
+         (playing)="unDisableButton()"
          id="stream-{{currentUserId}}"
          class="videochat-stream"
   ></video>
+</div>
+<div class="display-user-name">
+  <p class="user-name">{{currentUserName}}</p>
 </div>

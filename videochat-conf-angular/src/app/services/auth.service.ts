@@ -30,79 +30,75 @@ export class AuthService {
     }, 0));
   }
 
-  private static login(userProfileLogin:object){
-    return  ConnectyCube.login(userProfileLogin);
+  private static login(userProfileLogin: object) {
+    return ConnectyCube.login(userProfileLogin);
   }
 
-  public init(CREDENTIALS: object, appConfig:object) {
-    return new Promise<void>((resolve)=>{
-      ConnectyCube.init(CREDENTIALS,appConfig);
-      ConnectyCube.createSession().then(() => {
-        resolve();
-      });
-
-    })
+  public init(CREDENTIALS: object, appConfig: object) {
+    ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
   public auth(userName: string, JoinBtnClick?: EventEmitter<boolean>) {
     return new Promise<number>((resolve, reject) => {
 
-      const login: string = AuthService.randomLogin() + AuthService.randomLogin();
+      ConnectyCube.createSession().then(() => {
+        const login: string = AuthService.randomLogin() + AuthService.randomLogin();
 
-      const userProfile = {
-        login: login,
-        password: AuthService.hashCode(login),
-        full_name: userName,
-      };
-      const userProfileLogin = {
-        login: userProfile.login,
-        password: userProfile.password
-      }
+        const userProfile = {
+          login: login,
+          password: AuthService.hashCode(login),
+          full_name: userName,
+        };
+        const userProfileLogin = {
+          login: userProfile.login,
+          password: userProfile.password
+        }
 
-      ConnectyCube.users.signup(userProfile)
-        .then(() => {
-          AuthService.login(userProfileLogin)
-            .then((user: any) => {
-              console.log("logging user", user);
-              if(JoinBtnClick){
-                JoinBtnClick.emit(true);
+        ConnectyCube.users.signup(userProfile)
+          .then(() => {
+            AuthService.login(userProfileLogin)
+              .then((user: any) => {
+                console.log("logging user", user);
+                if (JoinBtnClick) {
+                  JoinBtnClick.emit(true);
+                }
+                resolve(user.id)
+              })
+              .catch((error: any) => {
+                console.log('LoginError!', error);
+                reject();
+              })
+          })
+          .catch((error: any) => {
+            try {
+              const IsRegisteredUser: boolean = error.info.errors.base.includes("login must be unique");
+
+              if (IsRegisteredUser) {
+                AuthService.login(userProfileLogin)
+                  .then((user: any) => {
+                    console.log("logging user", user);
+                    if (JoinBtnClick) {
+                      JoinBtnClick.emit(true);
+                    }
+                    resolve(user.id)
+                  })
+                  .catch((error: any) => {
+                    console.log('LoginError!', error);
+                    reject();
+                  })
               }
-              resolve(user.id)
-            })
-            .catch((error: any) => {
-              console.log('LoginError!', error);
-              reject();
-            })
-        })
-        .catch((error: any) => {
-          try {
-            const IsRegisteredUser: boolean = error.info.errors.base.includes("login must be unique");
-
-            if (IsRegisteredUser) {
-              AuthService.login(userProfileLogin)
-                .then((user: any) => {
-                  console.log("logging user", user);
-                  if(JoinBtnClick){
-                    JoinBtnClick.emit(true);
-                  }
-                  resolve(user.id)
-                })
-                .catch((error: any) => {
-                  console.log('LoginError!', error);
-                  reject();
-                })
+              else {
+                console.log("signUpError", error);
+                reject();
+              }
             }
-            else {
-              console.log("signUpError", error);
+            catch {
+              console.log(error);
               reject();
             }
-          }
-          catch {
-            console.log(error);
-            reject();
-          }
-        })
+          })
 
+      });
     })
   }
 }

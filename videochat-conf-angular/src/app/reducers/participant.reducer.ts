@@ -1,5 +1,5 @@
 import {createReducer, on} from '@ngrx/store';
-import {addUser, updateUser, removeUser} from "./participant.actions";
+import {addUser, updateUser, removeUser, removeAllUsers} from "./participant.actions";
 
 export interface User {
   id: number,
@@ -16,24 +16,29 @@ export const initialState: participantState = {
 };
 
 export const participantReducer = createReducer(
-  initialState,
-  on(addUser, (state, {id, name, stream}) => ({
-    ...state,
-    participantArray: state.participantArray.concat([{id, name, stream}])
-  })),
-  on(removeUser, (state, {id}) => ({
-    ...state,
-    participantArray: state.participantArray.filter(item => item.id !== id)
-  })),
-  on(updateUser, (state, {id, stream}) => ({
+    initialState,
+    on(addUser, (state, {id, name, stream}) => ({
       ...state,
-      participantArray: state.participantArray.map((item) => {
-        if (item.id === id) {
-          return {...item, stream};
-        }
-        return item;
+      participantArray: state.participantArray.concat([{id, name, stream}])
+    })),
+    on(removeUser, (state, {id}) => ({
+      ...state,
+      participantArray: state.participantArray.filter(item => item.id !== id)
+    })),
+    on(updateUser, (state, {id, stream}) => ({
+        ...state,
+        participantArray: state.participantArray.map((item) => {
+          if (item.id === id) {
+            return {...item, stream};
+          }
+          return item;
+        })
       })
-    })
+    ),
+    on(removeAllUsers, (state) => ({
+      ...state,
+      participantArray: []
+    })),
   )
-);
+;
 

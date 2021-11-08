@@ -1,4 +1,14 @@
-import {AfterViewChecked, AfterViewInit, Component, DoCheck, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  DoCheck,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 
 @Component({
   selector: 'app-stream-container',
@@ -10,6 +20,8 @@ export class StreamContainerComponent {
   @Input() currentUserId: number = 0;
   @Input() currentUserStream: any;
   @Input() currentUserIndex: number = -1;
+  @Input() currentUserName:string | undefined;
+  @Output() videoLoaded:EventEmitter<any> = new EventEmitter<any>();
 
   public videoWork: boolean = false;
 
@@ -17,6 +29,9 @@ export class StreamContainerComponent {
     if(this.currentUserIndex !== 0){
       this.videoWork = true;
     }
+  }
+  unDisableButton(){
+    this.videoLoaded.emit(false);
   }
 
   constructor() {

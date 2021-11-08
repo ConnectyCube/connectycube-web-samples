@@ -2,9 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
 import {addUser, removeUser, updateUser} from "../reducers/participant.actions";
-import {User} from "../reducers/participant.reducer";
-import {resolve} from "@angular/compiler-cli/src/ngtsc/file_system";
-import {mediaParams} from "./config";
+import {constraints, mediaParams} from "./config";
 
 declare let ConnectyCube: any;
 
@@ -12,8 +10,14 @@ declare let ConnectyCube: any;
   providedIn: 'root'
 })
 export class CallService {
-  constructor(private store: Store<State>) {
+  constructor(
+    private store: Store<State>
+  ) {
   }
+
+  private OurSession: any;
+  private OurDeviceId: any;
+  private OurSharingStatus: any;
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -47,13 +51,153 @@ export class CallService {
     };
   }
 
+  public muteOrUnmuteMicro() {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        const session = this.OurSession;
+        if (session.isAudioMuted()) {
+          session.unmuteAudio();
+        }
+        else {
+          session.muteAudio();
+        }
+        resolve();
+      }
+      catch (error: any) {
+        console.log("MuteOrUnmuteMicro Error!", error);
+        reject();
+      }
+    })
+  }
+
+  public muteOrUnmuteVideo() {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        const mediaParamsDeviceId = {
+          audio: true,
+          video: {deviceId: this.OurDeviceId}
+        }
+        const session = this.OurSession;
+        const readyState = session.localStream.getVideoTracks()[0].readyState;
+
+        if (readyState === "ended") {
+          session.getUserMedia(mediaParamsDeviceId)
+            .then((stream: any) => {
+              this.store.dispatch(updateUser({id: 77777, stream: stream}));
+            })
+            .catch((error: any) => {
+              console.log("Local stream Error!", error);
+              reject();
+            })
+        }
+        else {
+          session.localStream.getVideoTracks()[0].stop();
+          console.log(session.localStream.getVideoTracks())
+        }
+        resolve();
+      }
+      catch (error: any) {
+        console.log("MuteOrUnmuteVideo Error!", error);
+        reject();
+      }
+    })
+  }
+
+  public stopCall() {
+    return new Promise<void>((resolve, reject) => {
+      const session = this.OurSession;
+      session
+        .leave()
+        .then(() => {
+          resolve();
+        })
+        .catch((error: any) => {
+          console.log(error)
+          reject();
+        })
+    })
+  }
+
+  public getListDevices() {
+    return new Promise<any>((resolve, reject) => {
+      const session = this.OurSession;
+      ConnectyCube.videochatconference
+        .getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
+        .then((videoDevices: any) => {
+          resolve(videoDevices);
+        })
+        .catch((error: any) => {
+          console.log("List Devices Error!", error);
+          reject();
+        });
+    })
+  }
+
+  public switchCamera(deviceId: string) {
+    this.OurDeviceId = deviceId;
+    const session = this.OurSession;
+    session
+      .switchMediaTracks({video: deviceId})
+      .then((updatedLocaStream: any) => {
+        this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
+      })
+      .catch((error: any) => {
+        console.log("Switch camera Error!", error);
+      });
+  }
+
+  public stopSharingScreen() {
+    const mediaParamsDeviceId = {
+      audio: true,
+      video: {deviceId: this.OurDeviceId}
+    }
+    const session = this.OurSession;
+    session.getUserMedia(mediaParamsDeviceId)
+      .then((stream: any) => {
+        this.store.dispatch(updateUser({id: 77777, stream: stream}));
+        this.OurSharingStatus = false;
+      })
+      .catch((error: any) => {
+        console.log("Stop sharing Error!", error);
+      })
+  }
+
+  public shareScreen() {
+    return new Promise<any>((resolve, reject) => {
+      const shareStatus = this.OurSharingStatus;
+      if (shareStatus) {
+        reject();
+      }
+      else {
+        const session = this.OurSession;
+        session
+          .getDisplayMedia(constraints, true)
+          .then((localDesktopStream: any) => {
+            this.store.dispatch(updateUser({id: 77777, stream: localDesktopStream}));
+            this.OurSharingStatus = true;
+            resolve(localDesktopStream);
+          })
+          .catch((error: any) => {
+            if (error.message.includes('Permission denied')) {
+              reject();
+            }
+            else {
+              console.log("Share screen Error!", error);
+              reject(error);
+            }
+          });
+      }
+    })
+  }
+
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
+      this.OurSession = session;
 
       session.getUserMedia(mediaParams)
         .then((stream: any) => {
-          this.store.dispatch(addUser({id: userId, name: userDisplayName, stream: stream}));
+          this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream}));
 
           session.join(confRoomId, userId, userDisplayName);
 

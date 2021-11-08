@@ -27,4 +27,18 @@
   width: 100%;
   object-fit: cover;
 }
+.display-user-name {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+
+  p{
+    color: white;
+    padding: 7px 0;
+    margin: 0;
+  }
+}
 

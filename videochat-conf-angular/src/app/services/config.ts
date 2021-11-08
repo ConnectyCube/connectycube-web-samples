@@ -5,11 +5,21 @@ export const CREDENTIALS = {
 };
 
 export const appConfig = {
-  debug: { mode: 1 },
-  conference: { server: 'wss://janus.connectycube.com:8989' },
+  debug: {mode: 1},
+  conference: {server: 'wss://janus.connectycube.com:8989'},
 }
 
 export const mediaParams = {
   audio: true,
   video: true
 };
+
+export const constraints = {
+  video: {
+    width: 1280,
+    height: 720,
+    frameRate: { ideal: 25, max: 30 },
+  },
+  audio: true,
+};
+

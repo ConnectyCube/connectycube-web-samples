@@ -13,3 +13,6 @@ export const updateUser = createAction(
   '[PARTICIPANT] update user',
   props<User>()
 );
+export const removeAllUsers = createAction(
+  '[PARTICIPANT] remove all users'
+);
