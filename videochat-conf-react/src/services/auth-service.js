@@ -19,6 +19,11 @@ class AuthService {
       appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
       authKey: process.env.REACT_APP_CONNECTYCUBE_APP_AUTH_KEY,
       authSecret: process.env.REACT_APP_CONNECTYCUBE_APP_SECRET,
+      chat: {
+        streamManagement: {
+          enable: true,
+        },
+      },
     };
 
     const appConfig = {
@@ -39,7 +44,6 @@ class AuthService {
     ConnectyCube.chat
       .connect(chatCredentials)
       .then(() => {
-        debugger;
         console.log("Connected", `chatConnection`);
       })
       .catch((error) => {
@@ -65,8 +69,8 @@ class AuthService {
                   password: userCredentials.password,
                 };
                 this.chatConnection(chatCredentials);
-
                 //CallService.createAndJoinMeeting(user)
+                resolve(user, session);
               })
               .catch((error) => {
                 console.log(error);
@@ -92,13 +96,14 @@ class AuthService {
                 };
                 ConnectyCube.login(userCredentials)
                   .then((user) => {
+
                     const chatCredentials = {
                       userId: user.id,
                       password: userCredentials.password,
                     };
                     this.chatConnection(chatCredentials);
-
-                    resolve(user, session);
+						  
+                    resolve(user);
                   })
                   .catch((error) => {});
               })

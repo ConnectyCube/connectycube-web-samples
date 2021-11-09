@@ -1,18 +1,26 @@
 import React, { createRef } from "react";
 import "./Chat.scss";
 import ConnectyCube from "connectycube";
+import Message from "./Message/Message";
 const Chat = (props) => {
-  debugger;
+  const { messages } = props;
   const messageRef = createRef();
   const messageArea = (e) => {
     e.currentTarget.style.height = "1px";
     let newHeight = 10 + e.currentTarget.scrollHeight;
-    if (newHeight < 300) {
+    if (newHeight < 160) {
       e.currentTarget.style.height = newHeight + "px";
     } else {
-      e.currentTarget.style.height = 200 + "px";
+      e.currentTarget.style.height = 160 + "px";
     }
   };
+  let allMessages = [];
+
+  for (let i = 0; i < messages.length; i += 1) {
+    allMessages.push(
+		 <Message message= {messages[i]}/>
+    );
+  }
 
   const sendMessage = () => {
     const message = {
@@ -20,15 +28,16 @@ const Chat = (props) => {
       body: messageRef.current.value,
       extension: {
         save_to_history: 1,
-        dialog_id: props.dialog,
       },
-      markable: 1,
     };
-    ConnectyCube.chat.send(props.dialog, message);
+
+    ConnectyCube.chat.send(props.dialog.current, message);
   };
 
   return (
     <div className="chat__container">
+      <div className="messages__container">{allMessages}</div>
+
       <form action="#" className="chat__form">
         <div className="area__container">
           <textarea

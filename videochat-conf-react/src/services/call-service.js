@@ -18,17 +18,19 @@ export const CallProvider = ({ children }) => {
   const [participants, setParticipants] = useState([
     {
       userId: null,
-      name: "Me",
+      name: "me",
       stream: null,
       bitrate: null,
       micLevel: null,
       connectionStatus: "good",
     },
   ]);
+  const [messages, setMessages] = useState([]);
+  const messagesRef = useRef([]);
   const participantRef = useRef([
     {
       userId: null,
-      name: "Me",
+      name: "me",
       stream: null,
       bitrate: null,
       micLevel: null,
@@ -51,7 +53,7 @@ export const CallProvider = ({ children }) => {
   useEffect(() => {
     setInterval(() => {
       participantRef.current.forEach((p) => {
-        if (p.name !== "Me") {
+        if (p.name !== "me") {
           try {
             let bitrate = _session.current.getRemoteUserBitrate(p.userId);
             let micLevel =
@@ -186,11 +188,24 @@ export const CallProvider = ({ children }) => {
     ) => {};
 
     ConnectyCube.chat.onMessageListener = (userId, message) => {
-      return console.log(
+      console.log(
         "[ConnectyCube.chat.onMessageListener] callback:",
         userId,
         message
       );
+
+      participantRef.current.filter((e) => {
+        if (e.userId === userId) {
+          messagesRef.current.push({
+            message: message.body,
+            userName: e.name,
+            time: message.delay.attrs.stamp,
+          });
+        }
+        return e.userId;
+      });
+      setMessages([...messagesRef.current]);
+      console.table(messagesRef.current);
     };
   };
 
@@ -213,29 +228,6 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
-          chatId.current = meeting.chat_dialog_id;
-          const params = {
-            type: 4,
-            name: "Blockchain trends",
-          };
-
-          ConnectyCube.chat.dialog
-            .create(params)
-            .then((dialog) => {
-              const dialogId = dialog._id;
-              const toUpdateParams = {
-                push_all: { occupants_ids: [dialog.user_id] },
-              };
-
-              ConnectyCube.chat.dialog
-                .update(dialogId, toUpdateParams)
-                .then((dialog) => {
-                  debugger;
-                })
-                .catch((error) => {});
-            })
-            .catch((error) => {});
-
           meetingId.current = meeting._id;
           joinMeeting(userName, meeting._id, userId, camClass, isVideo, isAudio)
             .then((devices) => {
@@ -255,7 +247,63 @@ export const CallProvider = ({ children }) => {
         });
     });
   };
+  const joinChat = (roomId) => {
+    ConnectyCube.meeting
+      .get({ _id: roomId })
+      .then((meeting) => {
+        chatId.current = meeting.chat_dialog_id;
+        ConnectyCube.chat.dialog
+          .subscribe(meeting.chat_dialog_id)
+          .then((dialog) => {
+            ConnectyCube.chat.muc
+              .join(meeting.chat_dialog_id)
+              .then(() => {
+                const params = {
+                  chat_dialog_id: meeting.chat_dialog_id,
+                  sort_desc: "date_sent",
+                  limit: 100,
+                  skip: 0,
+                };
 
+                ConnectyCube.chat.message
+                  .list(params)
+                  .then((messages) => {
+                    for (let i = 0; i < messages.items.length; i += 1) {
+                      let date = new Date(messages.items[i].date_sent * 1000);
+                      let hours = date.getHours();
+                      let minutes = "0" + date.getMinutes();
+                      var seconds = "0" + date.getSeconds();
+                      let time =
+                        hours +
+                        ":" +
+                        minutes.substr(-2) +
+                        ":" +
+                        seconds.substr(-2);
+                      participantRef.current.filter((e) => {
+                        if (e.userId === messages.items[i].sender_id) {
+                          messagesRef.current.push({
+                            message: messages.items[i].message,
+                            userName: e.name,
+                            time: time,
+                          });
+                        }
+                        return e.name;
+                      });
+                      setMessages([...messagesRef.current]);
+                    }
+
+                    console.table(messages.items);
+                  })
+                  .catch((error) => {});
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          })
+          .catch((error) => {});
+      })
+      .catch((error) => {});
+  };
   const joinMeeting = (
     userName,
     roomId,
@@ -266,6 +314,8 @@ export const CallProvider = ({ children }) => {
   ) => {
     return new Promise((resolve, reject) => {
       createCallbacks();
+      participantRef.current[0].userId = userId;
+      setParticipants([...participantRef.current]);
       ConnectyCube.videochatconference
         .getMediaDevices()
         .then((allDevices) => {
@@ -286,14 +336,16 @@ export const CallProvider = ({ children }) => {
               if (!isVideo) {
                 localStream.addTrack(createDummyVideoTrack());
               }
-              participantRef.current.filter((p) => p.name === "Me")[0].stream =
+              participantRef.current.filter((p) => p.name === "me")[0].stream =
                 localStream;
 
               const newParticipants = [...participantRef.current];
               setParticipants(newParticipants);
+
               session
                 .join(roomId, userId, userName)
                 .then(() => {
+                  joinChat(roomId);
                   setDevices(mediaParams);
                   resolve(mediaParams);
                 })
@@ -493,6 +545,7 @@ export const CallProvider = ({ children }) => {
         preJoinScreen,
         devicesStatus,
         chatId,
+        messages,
       }}
     >
       {children}

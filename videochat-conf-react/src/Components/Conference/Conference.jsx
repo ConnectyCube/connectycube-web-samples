@@ -14,7 +14,8 @@ const Conference = (props) => {
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [videOff, setVideoOff] = useState("");
   const [audioOff, setAudioOff] = useState("");
-  const { toggleVideo, toggleAudio, devices, isMobile, chatId } = props.call;
+  const { toggleVideo, toggleAudio, devices, isMobile, chatId, messages } =
+    props.call;
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
@@ -174,7 +175,7 @@ const Conference = (props) => {
 
         speakerUser = (
           <UserStream
-            userId={user.name === "Me" ? "me" : user.userId}
+            userId={user.name}
             userName={user.name}
             stream={user.stream}
             fullScreen={fullScreen}
@@ -242,7 +243,7 @@ const Conference = (props) => {
       {!preJoinScreen && (
         <div className="conference__container">
           <div className="chat__block">
-            {chatShow && <Chat dialog={chatId} />}
+            {chatShow && <Chat dialog={chatId} messages={messages} />}
           </div>
 
           <select
@@ -271,6 +272,7 @@ const Conference = (props) => {
               {camName}
             </div>
             <button
+              disabled={!devices.video}
               type="button"
               ref={audioRef}
               onClick={onSetAudioMute}

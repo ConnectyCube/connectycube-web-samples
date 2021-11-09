@@ -113,6 +113,10 @@
   }
   & .micro__btn {
     background-color: rgb(112, 112, 252);
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
   }
 
   & .video__btn {
@@ -226,6 +230,3 @@
   background: grey;
   color: white;
 }
-
-
-
