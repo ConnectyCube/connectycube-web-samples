@@ -10,6 +10,7 @@ export const CallProvider = ({ children }) => {
   const [view, setView] = useState("grid");
   const [preJoinScreen] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
+
   const [devicesStatus, setDevicesStatus] = useState({
     video: true,
     audio: true,
@@ -25,7 +26,11 @@ export const CallProvider = ({ children }) => {
       connectionStatus: "good",
     },
   ]);
+
+  console.log("participants", participants);
+
   const [messages, setMessages] = useState([]);
+  console.log("MSGS", messages);
   const messagesRef = useRef([]);
   const participantRef = useRef([
     {
@@ -194,18 +199,13 @@ export const CallProvider = ({ children }) => {
         message
       );
 
-      participantRef.current.filter((e) => {
-        if (e.userId === userId) {
-          messagesRef.current.push({
-            message: message.body,
-            userName: e.name,
-            time: message.delay.attrs.stamp,
-          });
-        }
-        return e.userId;
+      message.sender_id = userId;
+      message.message = message.body;
+      processMessages([message]).then((msgs) => {
+        console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
+        messagesRef.current = messagesRef.current.concat(msgs);
+        setMessages(messagesRef.current);
       });
-      setMessages([...messagesRef.current]);
-      console.table(messagesRef.current);
     };
   };
 
@@ -247,6 +247,60 @@ export const CallProvider = ({ children }) => {
         });
     });
   };
+  const processMessages = async (records) => {
+    const messagesBySender = {};
+    records.forEach((m) => {
+      const sID = parseInt(m.sender_id);
+      let msgs = messagesBySender[m.sender_id];
+      if (!msgs) {
+        msgs = [];
+      }
+      msgs.push(m);
+      messagesBySender[m.sender_id] = msgs;
+    });
+
+    for (let senderId of Object.keys(messagesBySender)) {
+      // find user
+      const notFoundUsersIds = [];
+
+      for (let i = 0; i < participantRef.current.length; i += 1) {
+        let participant = participantRef.current[i];
+        debugger;
+        if (participant.userId === parseInt(senderId)) {
+          const name = i === 0 ? "me" : participant.name;
+          messagesBySender[senderId].forEach((m) => {
+            m.senderName = name;
+          });
+          break;
+        } else {
+          notFoundUsersIds.push(senderId);
+        }
+      }
+
+      // console.log("notFoundUsersIds", notFoundUs?ersIds);
+      if (notFoundUsersIds.length > 0) {
+        const params = {
+          filter: {
+            field: "id",
+            param: "in",
+            value: notFoundUsersIds.map((id) => parseInt(id)),
+          },
+        };
+
+        const users = await ConnectyCube.users.get(params);
+        users.items.forEach((rec) => {
+          const uID = rec.user.id;
+          console.log("messagesBySender", messagesBySender, uID);
+          messagesBySender[uID].forEach((m) => {
+            m.senderName = rec.user.full_name;
+          });
+        });
+      }
+    }
+
+    return records;
+  };
+
   const joinChat = (roomId) => {
     ConnectyCube.meeting
       .get({ _id: roomId })
@@ -255,50 +309,31 @@ export const CallProvider = ({ children }) => {
         ConnectyCube.chat.dialog
           .subscribe(meeting.chat_dialog_id)
           .then((dialog) => {
-            ConnectyCube.chat.muc
-              .join(meeting.chat_dialog_id)
-              .then(() => {
-                const params = {
-                  chat_dialog_id: meeting.chat_dialog_id,
-                  sort_desc: "date_sent",
-                  limit: 100,
-                  skip: 0,
-                };
+            // ConnectyCube.chat.muc
+            //   .join(meeting.chat_dialog_id)
+            //   .then(() => {
+            const params = {
+              chat_dialog_id: meeting.chat_dialog_id,
+              sort_desc: "date_sent",
+              limit: 100,
+              skip: 0,
+            };
 
-                ConnectyCube.chat.message
-                  .list(params)
-                  .then((messages) => {
-                    for (let i = 0; i < messages.items.length; i += 1) {
-                      let date = new Date(messages.items[i].date_sent * 1000);
-                      let hours = date.getHours();
-                      let minutes = "0" + date.getMinutes();
-                      var seconds = "0" + date.getSeconds();
-                      let time =
-                        hours +
-                        ":" +
-                        minutes.substr(-2) +
-                        ":" +
-                        seconds.substr(-2);
-                      participantRef.current.filter((e) => {
-                        if (e.userId === messages.items[i].sender_id) {
-                          messagesRef.current.push({
-                            message: messages.items[i].message,
-                            userName: e.name,
-                            time: time,
-                          });
-                        }
-                        return e.name;
-                      });
-                      setMessages([...messagesRef.current]);
-                    }
-
-                    console.table(messages.items);
-                  })
-                  .catch((error) => {});
+            ConnectyCube.chat.message
+              .list(params)
+              .then((resp) => {
+                console.table(resp.items);
+                processMessages(resp.items).then((msgs) => {
+                  console.table(msgs);
+                  messagesRef.current = msgs;
+                  setMessages(msgs);
+                });
               })
-              .catch((error) => {
-                console.error(error);
-              });
+              .catch((error) => {});
+          })
+          .catch((error) => {
+            console.error(error);
+            //   });
           })
           .catch((error) => {});
       })

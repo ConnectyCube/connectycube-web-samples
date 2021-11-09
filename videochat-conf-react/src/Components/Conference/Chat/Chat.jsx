@@ -1,9 +1,19 @@
-import React, { createRef } from "react";
+import React, { createRef, useEffect, useMemo } from "react";
 import "./Chat.scss";
 import ConnectyCube from "connectycube";
 import Message from "./Message/Message";
 const Chat = (props) => {
   const { messages } = props;
+  debugger;
+  let sortedMessages = messages.sort((a, b) => {
+    if (a.date_sent < b.date_sent) {
+      return -1;
+    }
+    if (a.date_sent > b.date_sent) {
+      return 1;
+    }
+    return 0;
+  });
   const messageRef = createRef();
   const messageArea = (e) => {
     e.currentTarget.style.height = "1px";
@@ -14,12 +24,16 @@ const Chat = (props) => {
       e.currentTarget.style.height = 160 + "px";
     }
   };
+
   let allMessages = [];
 
-  for (let i = 0; i < messages.length; i += 1) {
-    allMessages.push(
-		 <Message message= {messages[i]}/>
-    );
+  useEffect(() => {
+    var elem = document.getElementById("messages__container");
+    elem.scrollTop = elem.scrollHeight;
+  }, [allMessages]);
+
+  for (let i = 0; i < sortedMessages.length; i += 1) {
+    allMessages.push(<Message message={sortedMessages[i]} />);
   }
 
   const sendMessage = () => {
@@ -36,7 +50,9 @@ const Chat = (props) => {
 
   return (
     <div className="chat__container">
-      <div className="messages__container">{allMessages}</div>
+      <div id="messages__container" className="messages__container">
+        {allMessages}
+      </div>
 
       <form action="#" className="chat__form">
         <div className="area__container">

@@ -118,7 +118,7 @@ const Conference = (props) => {
         <UserStream
           key={i}
           streamNumber={i}
-          userId={user.name === "Me" ? "me" : user.userId}
+          userId={user.name === "me" ? "me" : user.userId}
           userName={user.name}
           stream={user.stream}
           fullScreen={fullScreen}
