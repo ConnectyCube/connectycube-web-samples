@@ -9,6 +9,21 @@
 .conference__container {
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  & .camera__block {
+    position: relative;
+    flex: 1 1 100%;
+  }
+
+  @media screen and (max-width: 767px) {
+    & .chat__block {
+      width: 100%;
+      position: absolute;
+      height: 100%;
+      z-index: 9;
+    }
+  }
 }
 .conference {
   width: 100%;
@@ -17,7 +32,7 @@
 
   & .view__changer {
     position: absolute !important;
-    z-index: 101;
+    z-index: 6;
     top: 10px;
     right: 5px;
     height: 40px;

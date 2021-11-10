@@ -7,10 +7,9 @@
   font-family: Roboto;
   font-size: 1.1rem;
   font-weight: 300;
-  height: 80%;
-  padding: 4rem 1.5rem 1.5rem 1.5rem;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
   width: 100%;
-  
+  align-self: flex-start;
   overflow-x: hidden;
   & .message:not(:last-child) {
     margin-bottom: 20px;
@@ -20,26 +19,39 @@
     border-radius: 1.15rem;
     line-height: 1.25;
     max-width: 75%;
-    padding: 0.5rem 0.875rem;
+    padding: 0.2rem 0.875rem;
     position: relative;
     word-wrap: break-word;
     position: relative;
+    min-width: 150px;
 
-    & .message__name {
+    & .message__time {
       font-size: 0.85rem !important;
       font-weight: normal;
       position: absolute;
       bottom: -15px;
-      left: 0;
+      right: 0;
       color: black;
 
+      &.me {
+        right: 70%;
+      }
+    }
+    & .message__text {
+      padding-top: 5px;
+    }
+    & .message__name {
+      font-size: 0.85rem !important;
+      font-weight: 700;
+      color: black;
+      max-width: 50px;
       &.me {
         left: 100%;
       }
     }
 
     &.them {
-		align-self: flex-start;
+      align-self: flex-start;
       background-color: #e5e5ea;
       color: #000;
 

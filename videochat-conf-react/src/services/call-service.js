@@ -2,6 +2,7 @@ import { isiOS, isMobile, detectBrowser } from "./heplers";
 import ConnectyCube from "connectycube";
 import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
+import sound from "../sounds/notification_sound.mp3";
 const CallContext = createContext();
 export default CallContext;
 
@@ -9,6 +10,7 @@ export const CallProvider = ({ children }) => {
   const meetingIsRecording = useRef(true);
   const [view, setView] = useState("grid");
   const [preJoinScreen] = useState(false);
+
   const [isVideoMuted, setIsVideoMuted] = useState(false);
 
   const [devicesStatus, setDevicesStatus] = useState({
@@ -16,6 +18,7 @@ export const CallProvider = ({ children }) => {
     audio: true,
   });
   const withVideo = useRef(true);
+
   const [participants, setParticipants] = useState([
     {
       userId: null,
@@ -145,7 +148,6 @@ export const CallProvider = ({ children }) => {
       participantRef.current.map((obj, id) => {
         if (obj.userId === userId) {
           obj.stream = stream;
-          // session.attachMediaStream(`user__cam-${userId}`, obj.stream);
         }
         return obj;
       });
@@ -198,6 +200,10 @@ export const CallProvider = ({ children }) => {
         userId,
         message
       );
+      if (userId !== participantRef.current[0].userId) {
+        let audio = new Audio(sound);
+        audio.play();
+      }
 
       message.sender_id = userId;
       message.message = message.body;
@@ -250,7 +256,6 @@ export const CallProvider = ({ children }) => {
   const processMessages = async (records) => {
     const messagesBySender = {};
     records.forEach((m) => {
-      const sID = parseInt(m.sender_id);
       let msgs = messagesBySender[m.sender_id];
       if (!msgs) {
         msgs = [];
@@ -265,7 +270,6 @@ export const CallProvider = ({ children }) => {
 
       for (let i = 0; i < participantRef.current.length; i += 1) {
         let participant = participantRef.current[i];
-        debugger;
         if (participant.userId === parseInt(senderId)) {
           const name = i === 0 ? "me" : participant.name;
           messagesBySender[senderId].forEach((m) => {
@@ -309,9 +313,6 @@ export const CallProvider = ({ children }) => {
         ConnectyCube.chat.dialog
           .subscribe(meeting.chat_dialog_id)
           .then((dialog) => {
-            // ConnectyCube.chat.muc
-            //   .join(meeting.chat_dialog_id)
-            //   .then(() => {
             const params = {
               chat_dialog_id: meeting.chat_dialog_id,
               sort_desc: "date_sent",
@@ -333,7 +334,6 @@ export const CallProvider = ({ children }) => {
           })
           .catch((error) => {
             console.error(error);
-            //   });
           })
           .catch((error) => {});
       })

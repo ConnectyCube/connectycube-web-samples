@@ -1,36 +1,67 @@
 .chat__container {
   height: 100%;
   width: 360px;
-  position: absolute;
+  //   position: absolute;
+  position: relative;
   right: 0;
   z-index: 6;
   top: 0;
   background: white;
-  display: flex;
+  padding: 0px 0px 15px 0px;
 
   @media screen and (max-width: 767px) {
-    width: 100%;
-
-    &::after {
+    .close__btn {
       position: absolute;
       content: "";
-		z-index: 100;
-      left: 5px;
+      z-index: 7;
+      right: 20px;
       top: 10px;
       width: 50px;
       height: 50px;
-      background: url(https://st4.depositphotos.com/34984980/37843/v/450/depositphotos_378432966-stock-illustration-close-icon-delete-icon-remove.jpg)
-        no-repeat;
-		  background-size: cover;
+      cursor: pointer;
+      &::after,
+      &::before {
+        position: absolute;
+        right: 0;
+        bottom: 50%;
+        transform: translateY(-50%);
+        content: "";
+        width: 100%;
+        height: 3px;
+        border-radius: 25%;
+        background-color: black;
+      }
+      &::after {
+        transform: rotateZ(45deg);
+      }
+      &::before {
+        transform: rotateZ(-45deg);
+      }
     }
+
+    .chat__content {
+      padding-top: 50px;
+    }
+  }
+  & .chat__content {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    right: 0;
+    z-index: 6;
+    top: 0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  @media screen and (max-width: 767px) {
+    width: 100%;
   }
 
   & .chat__form {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
     width: 100%;
-    padding: 0px 15px;
+    padding: 0px 0px 0px 15px;
 
     & .area__container {
       position: relative;
