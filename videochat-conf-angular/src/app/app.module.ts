@@ -12,30 +12,37 @@ import {environment} from '../environments/environment';
 import {EffectsModule} from '@ngrx/effects';
 import {AppEffects} from './app.effects';
 import {StoreRouterConnectingModule} from '@ngrx/router-store';
-import {RouterModule} from "@angular/router";
+import {PreloadAllModules, RouterModule} from "@angular/router";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
+import {PrejoinComponent} from './components/prejoin/prejoin.component';
+import { VideochatWrapComponent } from './components/videochat-wrap/videochat-wrap.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     VideochatComponent,
-    StreamContainerComponent
+    StreamContainerComponent,
+    PrejoinComponent,
+    VideochatWrapComponent
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot([
+        {
+          path: '',
+          component: LoginComponent
+        },
+        {
+          path: 'join/:hashCode',
+          component: VideochatWrapComponent,
+        },
+      ],
       {
-        path: '',
-        component: LoginComponent
-      },
-      {
-        path: 'join/:hashCode',
-        component: VideochatComponent
-      },
-    ]),
+        preloadingStrategy: PreloadAllModules
+      }),
     StoreModule.forRoot(reducers, {
       metaReducers
     }),

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
 import {addUser, removeUser, updateUser} from "../reducers/participant.actions";
-import {constraints, mediaParams} from "./config";
+import {constraints, localConstraints, mediaParams} from "./config";
 
 declare let ConnectyCube: any;
 
@@ -78,21 +78,29 @@ export class CallService {
           video: {deviceId: this.OurDeviceId}
         }
         const session = this.OurSession;
-        const readyState = session.localStream.getVideoTracks()[0].readyState;
 
-        if (readyState === "ended") {
+        if (session.localStream.getVideoTracks()[0]) {
+          const readyState = session.localStream.getVideoTracks()[0].readyState;
+          if (readyState === "ended") {
+            session.getUserMedia(mediaParamsDeviceId)
+              .then((stream: any) => {
+                this.store.dispatch(updateUser({id: 77777, stream: stream}));
+              })
+              .catch((error: any) => {
+                console.log("Local stream Error!", error);
+                reject();
+              })
+          }
+          else {
+            session.localStream.getVideoTracks()[0].stop();
+            console.log(session.localStream.getVideoTracks())
+          }
+        }
+        else {
           session.getUserMedia(mediaParamsDeviceId)
             .then((stream: any) => {
               this.store.dispatch(updateUser({id: 77777, stream: stream}));
             })
-            .catch((error: any) => {
-              console.log("Local stream Error!", error);
-              reject();
-            })
-        }
-        else {
-          session.localStream.getVideoTracks()[0].stop();
-          console.log(session.localStream.getVideoTracks())
         }
         resolve();
       }
@@ -152,6 +160,9 @@ export class CallService {
       video: {deviceId: this.OurDeviceId}
     }
     const session = this.OurSession;
+    session.localStream.getTracks().forEach((item: any) => {
+      item.stop();
+    });
     session.getUserMedia(mediaParamsDeviceId)
       .then((stream: any) => {
         this.store.dispatch(updateUser({id: 77777, stream: stream}));
@@ -188,6 +199,10 @@ export class CallService {
           });
       }
     })
+  }
+
+  public getLocalUserVideo() {
+    return navigator.mediaDevices.getUserMedia(localConstraints);
   }
 
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {

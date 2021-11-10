@@ -1,0 +1,17 @@
+<div class="prejoin-wrap">
+  <div class="video-container">
+    <button (click)="muteOrUnmuteVideo()" id="mute-video-user" mat-fab class="videochat-button"
+            aria-label="Mute Video">
+      <mat-icon>{{videoIconName}}</mat-icon>
+    </button>
+    <video playsinline autoplay muted id="user-video" #videoElement class="user-video" preload="auto"></video>
+    <div id="video-bg" class="video-bg"
+         [ngStyle]="{'width.px': videoElement.offsetWidth}"
+         [ngClass]="videoIconName === 'videocam_off'?'show':''"></div>
+  </div>
+  <div class="user-data">
+    <h2>Enter your name</h2>
+    <input #userName type="text" placeholder="Jason" class="userName">
+    <button (click)="JoinToRoom()" id="join-btn">Join Room</button>
+  </div>
+</div>

@@ -5,6 +5,7 @@
 </div>
 <div class="container-full-screen">
   <video [srcObject]="currentUserStream"
+         preload="auto"
          autoplay
          [muted]="currentUserIndex === 0"
          (loadeddata)="showVideo()"

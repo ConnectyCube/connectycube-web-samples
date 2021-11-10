@@ -22,4 +22,12 @@ export const constraints = {
   },
   audio: true,
 };
+export const localConstraints = {
+  video: {
+    width: 1280,
+    height: 720,
+    frameRate: { ideal: 25, max: 30 },
+  },
+  audio: false,
+};
 

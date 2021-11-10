@@ -1,0 +1,3 @@
+<app-prejoin (JoinBtnClick)="showPrejoinScreen = !showPrejoinScreen;"
+             *ngIf="showPrejoinScreen"></app-prejoin>
+<app-videochat *ngIf="!showPrejoinScreen"></app-videochat>

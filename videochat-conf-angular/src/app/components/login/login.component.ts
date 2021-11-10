@@ -29,13 +29,17 @@ export class LoginComponent implements OnInit {
     this.authService.init(CREDENTIALS, appConfig)
   }
 
+  public GoToPrejoin(){
+    this.router.navigateByUrl("/join/prejoin");
+  }
+
   public CreateAndJoinToGuestRoom() {
     const userName = prompt("Input user name", "User");
 
     if (userName) {
       this.callService.init();
 
-      this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
+      this.authService.auth(userName).then((userId) => {
         const user: User = {id: userId, name: userName};
 
         this.callService.createMeetingAndJoin(user).then((roomUrl: string) => {

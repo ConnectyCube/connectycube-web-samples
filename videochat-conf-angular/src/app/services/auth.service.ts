@@ -38,7 +38,7 @@ export class AuthService {
     ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
-  public auth(userName: string, JoinBtnClick?: EventEmitter<boolean>) {
+  public auth(userName: string, JoinBtnClick?: EventEmitter<string>) {
     return new Promise<number>((resolve, reject) => {
 
       ConnectyCube.createSession().then(() => {
@@ -60,7 +60,7 @@ export class AuthService {
               .then((user: any) => {
                 console.log("logging user", user);
                 if (JoinBtnClick) {
-                  JoinBtnClick.emit(true);
+                  JoinBtnClick.emit(userName);
                 }
                 resolve(user.id)
               })
@@ -78,7 +78,7 @@ export class AuthService {
                   .then((user: any) => {
                     console.log("logging user", user);
                     if (JoinBtnClick) {
-                      JoinBtnClick.emit(true);
+                      JoinBtnClick.emit(userName);
                     }
                     resolve(user.id)
                   })
