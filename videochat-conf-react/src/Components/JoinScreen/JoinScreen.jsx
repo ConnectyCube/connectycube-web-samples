@@ -20,12 +20,16 @@ const JoinScreen = (props) => {
         setVideoOff(false);
       })
       .catch((error) => {
-        alert(error);
+        debugger;
         setIsVideo(false);
         navigator.mediaDevices
           .getUserMedia({ audio: true, video: false })
           .then((stream) => {
             setStream(stream);
+          })
+          .catch((error) => {
+            alert(`No devices found, please conect devices and come back`);
+            window.location.href = "/";
           });
         setVideoOff(true);
         setCameraBg("show");
@@ -78,7 +82,7 @@ const JoinScreen = (props) => {
       <div className="video__container">
         <div className="buttons" id="buttons">
           <button
-            disabled={videoOff}
+            disabled={!isVideo}
             type="button"
             ref={videoRef}
             onClick={onSetVideoMute}
