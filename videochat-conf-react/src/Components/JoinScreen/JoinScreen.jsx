@@ -20,7 +20,6 @@ const JoinScreen = (props) => {
         setStream(stream);
       })
       .catch((error) => {
-        debugger;
         //   setIsVideo(false);
         navigator.mediaDevices
           .getUserMedia({ audio: true, video: false })
@@ -34,13 +33,11 @@ const JoinScreen = (props) => {
             href.push({
               pathname: "/",
             });
-            let lol = href;
-            debugger;
           });
 
         setCameraBg("show");
       });
-  }, [isVideo]);
+  }, [isVideo, href]);
 
   useEffect(() => {
     if (stream) {
@@ -54,7 +51,6 @@ const JoinScreen = (props) => {
     e.preventDefault();
   };
   const login = () => {
-   
     userNameRef.current.value
       ? onPrejoinFinish(userNameRef.current.value, isVideo, true)
       : alert("Enter your name");
