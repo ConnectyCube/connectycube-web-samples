@@ -41,9 +41,10 @@ const Chat = (props) => {
         save_to_history: 1,
       },
     };
-    messageRef.current.value = "";
-
-    ConnectyCube.chat.send(props.dialog.current, message);
+    if (messageRef.current.value) {
+      messageRef.current.value = "";
+      ConnectyCube.chat.send(props.dialog.current, message);
+    }
   };
   const myFormRef = createRef();
   const onEnterPress = (e) => {

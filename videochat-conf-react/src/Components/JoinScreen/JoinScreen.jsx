@@ -1,6 +1,7 @@
 import React from "react";
 import { useCallback } from "react";
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router";
 import "./JoinScreen.scss";
 
 const JoinScreen = (props) => {
@@ -10,28 +11,33 @@ const JoinScreen = (props) => {
   const [isVideo, setIsVideo] = useState(true);
   const [stream, setStream] = useState(null);
   const [cameraBg, setCameraBg] = useState("");
-  const [videoOff, setVideoOff] = useState();
-
+  const [videoOff, setVideoOff] = useState(false);
+  const href = useHistory();
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: isVideo })
       .then((stream) => {
         setStream(stream);
-        setVideoOff(false);
       })
       .catch((error) => {
         debugger;
-        setIsVideo(false);
+        //   setIsVideo(false);
         navigator.mediaDevices
           .getUserMedia({ audio: true, video: false })
           .then((stream) => {
+            setVideoOff(true);
             setStream(stream);
           })
           .catch((error) => {
+            console.log("CONNECTING");
             alert(`No devices found, please conect devices and come back`);
-            window.location.href = "/";
+            href.push({
+              pathname: "/",
+            });
+            let lol = href;
+            debugger;
           });
-        setVideoOff(true);
+
         setCameraBg("show");
       });
   }, [isVideo]);
@@ -48,7 +54,10 @@ const JoinScreen = (props) => {
     e.preventDefault();
   };
   const login = () => {
-    onPrejoinFinish(userNameRef.current.value, isVideo, true);
+   
+    userNameRef.current.value
+      ? onPrejoinFinish(userNameRef.current.value, isVideo, true)
+      : alert("Enter your name");
   };
   const preScreenRef = useCallback(
     (videoElement) => {
@@ -82,7 +91,7 @@ const JoinScreen = (props) => {
       <div className="video__container">
         <div className="buttons" id="buttons">
           <button
-            disabled={!isVideo}
+            disabled={videoOff}
             type="button"
             ref={videoRef}
             onClick={onSetVideoMute}
