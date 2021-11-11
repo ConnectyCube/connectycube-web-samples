@@ -1,6 +1,5 @@
 import React, { createRef, useEffect } from "react";
 import "./Chat.scss";
-import ConnectyCube from "connectycube";
 import Message from "./Message/Message";
 import { sendMessage } from "../../../services/chat-service";
 

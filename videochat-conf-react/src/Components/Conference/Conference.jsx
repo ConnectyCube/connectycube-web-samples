@@ -6,7 +6,6 @@ import react from "react";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 import { useHistory } from "react-router";
-import { NavLink } from "react-router-dom";
 import Chat from "./Chat/Chat";
 const Conference = (props) => {
   let href = useHistory();
@@ -324,9 +323,7 @@ const Conference = (props) => {
                 id="end__btn"
                 onClick={() => {
                   AuthService.logout().then(() => {
-						
                     href.push("/");
-
                   });
                 }}
                 className="call__btn end__btn"
