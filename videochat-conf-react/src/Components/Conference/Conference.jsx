@@ -13,6 +13,7 @@ const Conference = (props) => {
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [videOff, setVideoOff] = useState("");
   const [audioOff, setAudioOff] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
   const {
     toggleVideo,
     toggleAudio,
@@ -40,6 +41,7 @@ const Conference = (props) => {
           .then((state) => {
             const confRoomIdHash = btoa(state.meetingId);
             href.push(`${confRoomIdHash}`, "Creator");
+            setIsLoaded(true);
             if (!isVideo) {
               setVideoOff(`mute`);
             }
@@ -76,6 +78,8 @@ const Conference = (props) => {
             });
         }, 1000);
       });
+      setIsLoaded(true);
+
       if (!isVideo) {
         setVideoOff(`mute`);
       }
@@ -325,7 +329,7 @@ const Conference = (props) => {
                 {camName}
               </div>
               <button
-                //  disabled={!devices.video}
+                disabled={!isLoaded}
                 type="button"
                 ref={audioRef}
                 onClick={onSetAudioMute}
@@ -335,7 +339,11 @@ const Conference = (props) => {
                 <img src="../img/mic.svg" alt="Micro" />
               </button>
 
-              <button className="chat__button" onClick={chatToggle}>
+              <button
+                disabled={!isLoaded}
+                className="chat__button"
+                onClick={chatToggle}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -357,6 +365,7 @@ const Conference = (props) => {
                 <img src="../img/video.svg" alt="Video" />
               </button>
               <button
+                disabled={!isLoaded}
                 id="end__btn"
                 onClick={() => {
                   leaveMeeting().then(() => {
