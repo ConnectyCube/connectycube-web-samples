@@ -5,13 +5,37 @@
   width: 100%;
   transition: 1s ease-in-out;
 
+  & .img__container {
+    display: flex;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 3;
+    &.hide {
+      display: none;
+    }
+  }
+  & .no-image {
+    width: 50%;
+    height: width;
+
+    background-color: white;
+    border-radius: 50%;
+
+    &.hide {
+    }
+  }
+
   & .full__screen {
     position: absolute;
     top: 60px;
     left: 10px;
     width: 40px;
     height: 40px;
-
+    z-index: 5;
     &.hide {
       display: none;
     }
@@ -26,7 +50,7 @@
     border: 1px solid white;
     opacity: 1;
     max-height: 100vh;
-
+    z-index: 4;
     transition: 0.2s;
     &.muted {
       // opacity: 0;
@@ -43,6 +67,7 @@
     color: white;
     min-height: 18px;
     padding-bottom: 5px;
+    z-index: 5;
   }
 }
 .user__stats-btn {
@@ -72,6 +97,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  &.hide {
+    display: none;
+  }
 }
 .lds-dual-ring-main:after {
   content: " ";

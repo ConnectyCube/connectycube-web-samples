@@ -217,10 +217,15 @@ const Conference = (props) => {
     devices.classList.toggle("active");
   };
   const onHideButtons = (e) => {
+    debugger;
     let clickedItem = e.target.id;
     let classItem = e.target.classList[0];
 
-    if (clickedItem === "user__cam-container" || classItem === "users__cams") {
+    if (
+      clickedItem === "user__cam-container" ||
+      classItem === "users__cams" ||
+      classItem === "no-image"
+    ) {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");
     }

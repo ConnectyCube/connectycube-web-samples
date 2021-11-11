@@ -73,6 +73,7 @@
 
   & .user__buttons {
     position: absolute;
+    z-index: 8;
     width: 400px;
     left: 50%;
     transform: translateX(-50%);
