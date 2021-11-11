@@ -262,7 +262,7 @@ const Conference = (props) => {
         }
       }
     });
-  }, [locationKeys]);
+  }, [locationKeys, history, href, leaveMeeting]);
 
   const onRecording = () => {
     let button = document.getElementById("record__button");
