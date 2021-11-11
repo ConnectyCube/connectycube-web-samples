@@ -412,7 +412,9 @@ export const CallProvider = ({ children }) => {
       _session.current
         .leave()
         .then(() => {})
-        .catch((error) => {});
+        .catch((error) => {
+          console.log("You already left the room");
+        });
       resolve();
     });
   };

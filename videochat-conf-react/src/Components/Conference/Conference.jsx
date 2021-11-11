@@ -7,6 +7,7 @@ import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 import { useHistory } from "react-router";
 import Chat from "./Chat/Chat";
+import { useEffect } from "react/cjs/react.development";
 const Conference = (props) => {
   let href = useHistory();
   const [chatShow, setChatShow] = useState(false);
@@ -237,6 +238,31 @@ const Conference = (props) => {
       screenShareButton.classList.remove("sharing");
     }
   };
+
+  const [locationKeys, setLocationKeys] = useState([]);
+  const history = useHistory();
+  useEffect(() => {
+    return history.listen((location) => {
+      if (history.action === "PUSH") {
+        setLocationKeys([location.key]);
+      }
+
+      if (history.action === "POP") {
+        if (locationKeys[1] === location.key) {
+          setLocationKeys(([_, ...keys]) => keys);
+          leaveMeeting();
+          // Handle forward event
+        } else {
+          debugger;
+          setLocationKeys((keys) => [location.key, ...keys]);
+          href.push("/");
+          leaveMeeting();
+
+          // Handle back event
+        }
+      }
+    });
+  }, [locationKeys]);
 
   const onRecording = () => {
     let button = document.getElementById("record__button");
