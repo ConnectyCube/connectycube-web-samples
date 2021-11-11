@@ -29,14 +29,14 @@ const UserStream = (props) => {
 
     [stream]
   );
-
-  useEffect(() => {
-    if (stream) {
-      return () => {
+  useEffect(
+    () => () => {
+      if (stream) {
         stream.getTracks().forEach((t) => t.stop());
-      };
-    }
-  }, [stream]);
+      }
+    },
+    [stream]
+  );
 
   return (
     <div
