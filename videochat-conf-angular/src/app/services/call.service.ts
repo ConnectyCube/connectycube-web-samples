@@ -141,17 +141,43 @@ export class CallService {
     })
   }
 
-  public switchCamera(deviceId: string) {
-    this.OurDeviceId = deviceId;
-    const session = this.OurSession;
-    session
-      .switchMediaTracks({video: deviceId})
-      .then((updatedLocaStream: any) => {
-        this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
-      })
-      .catch((error: any) => {
-        console.log("Switch camera Error!", error);
-      });
+  public switchCamera(deviceId: string, videoIcon: string) {
+    return new Promise<void>((resolve, reject) => {
+      this.OurDeviceId = deviceId;
+      const session = this.OurSession;
+
+      const mediaParamsDeviceId = {
+        audio: true,
+        video: {deviceId: deviceId}
+      }
+
+      if (videoIcon === 'videocam_off') {
+        console.log("Off", session.localStream.getVideoTracks())
+        session.getUserMedia(mediaParamsDeviceId)
+          .then((stream: any) => {
+            this.store.dispatch(updateUser({id: 77777, stream: stream}));
+            resolve();
+          })
+      }
+      else {
+        console.log(session.localStream.getVideoTracks())
+        session.localStream.getVideoTracks()[0].stop();
+        session.getUserMedia(mediaParamsDeviceId)
+          .then((stream: any) => {
+            this.store.dispatch(updateUser({id: 77777, stream: stream}));
+            resolve();
+          })
+
+        // session
+        //   .switchMediaTracks({video: deviceId})
+        //   .then((updatedLocaStream: any) => {
+        //     this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
+        //   })
+        //   .catch((error: any) => {
+        //     console.log("Switch camera Error!", error);
+        //   });
+      }
+    })
   }
 
   public stopSharingScreen() {
@@ -202,7 +228,7 @@ export class CallService {
   }
 
   public getLocalUserVideo() {
-    return navigator.mediaDevices.getUserMedia(localConstraints);
+    return navigator.mediaDevices.getUserMedia(constraints);
   }
 
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {

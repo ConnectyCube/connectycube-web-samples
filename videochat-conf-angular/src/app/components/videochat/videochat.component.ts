@@ -66,7 +66,9 @@ export class VideochatComponent implements OnInit {
 
   public switchCamera(event: any) {
     const deviceId = event.target.name;
-    this.callService.switchCamera(deviceId);
+    this.callService.switchCamera(deviceId,this.videoIconName).then(()=>{
+      this.videoIconName = 'videocam';
+    });
   }
 
   public shareScreen() {

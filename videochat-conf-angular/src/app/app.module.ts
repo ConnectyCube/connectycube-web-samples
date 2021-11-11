@@ -18,6 +18,9 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {PrejoinComponent} from './components/prejoin/prejoin.component';
 import { VideochatWrapComponent } from './components/videochat-wrap/videochat-wrap.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatDialogModule} from "@angular/material/dialog";
+import { DialogWarningComponent } from './components/dialog-warning/dialog-warning.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +29,8 @@ import { VideochatWrapComponent } from './components/videochat-wrap/videochat-wr
     VideochatComponent,
     StreamContainerComponent,
     PrejoinComponent,
-    VideochatWrapComponent
+    VideochatWrapComponent,
+    DialogWarningComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,7 +55,9 @@ import { VideochatWrapComponent } from './components/videochat-wrap/videochat-wr
     StoreRouterConnectingModule.forRoot(),
     BrowserAnimationsModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
