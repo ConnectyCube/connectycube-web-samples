@@ -11,8 +11,9 @@
   width: 100%;
   align-self: flex-start;
   overflow-x: hidden;
+
   & .message:not(:last-child) {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 
   & .message {
@@ -29,13 +30,9 @@
       font-size: 0.85rem !important;
       font-weight: normal;
       position: absolute;
-      bottom: -15px;
+      bottom: -20px;
       right: 0;
       color: black;
-
-      &.me {
-        right: 70%;
-      }
     }
     & .message__text {
       padding-top: 5px;

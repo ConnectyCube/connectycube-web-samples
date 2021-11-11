@@ -52,3 +52,33 @@ export const isiOS = () => {
     (navigator.userAgent.includes("Mac") && "ontouchend" in document)
   );
 };
+
+export const getTime = (messageTime) => {
+  try {
+    const now = new Date(messageTime);
+    let d = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      0
+    );
+    return (
+      d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes()
+    );
+  } catch {
+    const now = new Date(messageTime);
+    let d = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      0
+    );
+    return (
+      d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes()
+    );
+  }
+};

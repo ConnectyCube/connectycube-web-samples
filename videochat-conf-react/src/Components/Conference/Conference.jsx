@@ -42,6 +42,7 @@ const Conference = (props) => {
             }
           })
           .catch((error) => {
+            alert("BINGO");
             alert(error);
             href.location.pathname = "/";
           });
@@ -160,7 +161,7 @@ const Conference = (props) => {
           <UserStream
             key={i}
             streamNumber={i}
-            userId={user.name === "Me" ? "me" : user.userId}
+            userId={user.name === "me" ? "me" : user.userId}
             userName={user.name}
             stream={user.stream}
             fullScreen={fullScreen}
@@ -188,9 +189,10 @@ const Conference = (props) => {
       }
     }
   }
-
+  const containerRef = react.createRef();
   const audioRef = react.createRef();
   const videoRef = react.createRef();
+  const buttonsRef = react.createRef();
 
   const onSetAudioMute = () => {
     audioRef.current.classList.toggle("mute");
@@ -207,6 +209,15 @@ const Conference = (props) => {
   const onSwitchCamera = () => {
     let devices = document.getElementById("user__devices");
     devices.classList.toggle("active");
+  };
+  const onHideButtons = (e) => {
+    let clickedItem = e.target.id;
+    let classItem = e.target.classList[0];
+
+    if (clickedItem === "user__cam-container" || classItem === "users__cams") {
+      let btns = buttonsRef.current;
+      btns.classList.toggle("hide");
+    }
   };
 
   const onStartScreenSharing = () => {
@@ -241,10 +252,14 @@ const Conference = (props) => {
         />
       )}
       {!preJoinScreen && (
-        <div className="conference__container">
+        <div
+          className="conference__container"
+          ref={containerRef}
+          onClick={onHideButtons}
+        >
           {chatShow && (
             <div className="chat__block">
-              <Chat dialog={chatId} messages={messages} chatHide = {chatToggle} />
+              <Chat dialog={chatId} messages={messages} chatHide={chatToggle} />
             </div>
           )}
           <div className="camera__block">
@@ -255,7 +270,7 @@ const Conference = (props) => {
               }}
             >
               <option value="grid">Grid</option>
-              <option value="sidebar">Speaker Full + sidebar</option>
+              <option value="sidebar">Speaker view</option>
             </select>
             <div className={`streams_container ${props.call.view}`}>
               {props.call.view === "sidebar" && (
@@ -269,12 +284,12 @@ const Conference = (props) => {
                 {usersStreams}
               </div>
             </div>
-            <div className="user__buttons">
+            <div className="user__buttons" ref={buttonsRef}>
               <div id="user__devices" className="user__devices">
                 {camName}
               </div>
               <button
-                disabled={!devices.video}
+                //  disabled={!devices.video}
                 type="button"
                 ref={audioRef}
                 onClick={onSetAudioMute}
@@ -305,16 +320,19 @@ const Conference = (props) => {
               >
                 <img src="../img/video.svg" alt="Video" />
               </button>
-              <NavLink
-                to="/"
+              <button
                 id="end__btn"
                 onClick={() => {
-                  AuthService.logout();
+                  AuthService.logout().then(() => {
+						
+                    href.push("/");
+
+                  });
                 }}
                 className="call__btn end__btn"
               >
                 <img src="../img/call_end.svg" alt="Call end" />
-              </NavLink>
+              </button>
               <button
                 disabled={!devices.video}
                 onClick={onSwitchCamera}

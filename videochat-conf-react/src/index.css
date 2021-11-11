@@ -1,10 +1,30 @@
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 15%;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 * {
   box-sizing: border-box;
 }
 html {
   height: 100%;
 }
-h4, p {
+h4,
+p {
   margin: 0;
   padding: 0;
 }

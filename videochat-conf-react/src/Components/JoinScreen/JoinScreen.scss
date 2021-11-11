@@ -61,10 +61,6 @@
       font-weight: 600;
       opacity: 1;
       transition: 0.3s;
-
-      &:hover {
-        opacity: 0.95;
-      }
     }
   }
   & .video__container {
@@ -116,25 +112,36 @@
     transform: translateX(-50%);
     display: flex;
     z-index: 4;
-
-    & button {
-      cursor: pointer;
-      &:not(:last-child) {
-        margin-right: 15px;
-      }
-    }
   }
 }
 .micro__btn {
   background-color: rgb(112, 112, 252);
 }
 
-.video__btn {
+.video__btn-prejoin {
   background-color: rgb(77, 139, 77);
+  cursor: pointer;
+  &:hover {
+    opacity: 0.95;
+  }
   &:disabled {
     background-color: #004000;
-    opacity: 0.8;
-    cursor: default;
+    opacity: 0.5;
+    cursor: not-allowed;
+    &:hover {
+      opacity: 0.5;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      height: 90%;
+      width: 3px;
+      background-color: white;
+      left: 50%;
+      z-index: 20;
+      transform: rotateZ(-45deg);
+    }
   }
 }
 .lds-dual-ring {

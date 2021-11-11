@@ -79,6 +79,16 @@
     bottom: 20px;
     display: flex;
     justify-content: space-around;
+    opacity: 1;
+    transition: 0.2s ease-in-out;
+
+    & > button {
+      cursor: pointer;
+    }
+    &.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
 
     & .user__devices {
       display: none;
@@ -129,7 +139,7 @@
   & .micro__btn {
     background-color: rgb(112, 112, 252);
     &:disabled {
-      cursor: default;
+      cursor: not-allowed;
       opacity: 0.4;
     }
   }
@@ -139,7 +149,7 @@
     &:disabled {
       background-color: #004000;
       opacity: 0.8;
-      cursor: default;
+      cursor: not-allowed;
     }
   }
   & .end__btn {
@@ -150,7 +160,7 @@
     &:disabled {
       background-color: #8e8f5a;
       opacity: 0.8;
-      cursor: default;
+      cursor: not-allowed;
     }
   }
   & .share__btn {
@@ -163,7 +173,7 @@
       opacity: 0.4;
     }
     &:disabled {
-      cursor: default;
+      cursor: not-allowed;
       opacity: 0.4;
     }
   }

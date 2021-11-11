@@ -10,7 +10,7 @@ export const CallProvider = ({ children }) => {
   const meetingIsRecording = useRef(true);
   const [view, setView] = useState("grid");
   const [preJoinScreen] = useState(false);
-
+  const [choosedCam, setChoosedCam] = useState();
   const [isVideoMuted, setIsVideoMuted] = useState(false);
 
   const [devicesStatus, setDevicesStatus] = useState({
@@ -86,6 +86,7 @@ export const CallProvider = ({ children }) => {
         ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
       )
       .then((videoDevices) => {
+        setChoosedCam(videoDevices[0].deviceId);
         setCams(videoDevices);
       })
       .catch((error) => {
@@ -238,6 +239,7 @@ export const CallProvider = ({ children }) => {
           joinMeeting(userName, meeting._id, userId, camClass, isVideo, isAudio)
             .then((devices) => {
               setDevices(devices);
+
               resolve({
                 meetingId: meeting._id,
               });
@@ -495,12 +497,16 @@ export const CallProvider = ({ children }) => {
   };
 
   const switchCamera = (deviceId) => {
-    _session.current
-      .switchMediaTracks({ video: deviceId })
-      .then((newLocalStream) => {}) // you can reattach local stream
-      .catch((error) => {
-        console.log(error);
-      });
+    if (deviceId !== choosedCam) {
+      _session.current
+        .switchMediaTracks({ video: deviceId })
+        .then((newLocalStream) => {
+          setChoosedCam(deviceId);
+        }) // you can reattach local stream
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   const stopSharingScreen = () => {

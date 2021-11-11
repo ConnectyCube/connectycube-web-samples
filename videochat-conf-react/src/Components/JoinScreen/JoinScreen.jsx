@@ -20,7 +20,7 @@ const JoinScreen = (props) => {
         setStream(stream);
       })
       .catch((error) => {
-        //   setIsVideo(false);
+        setIsVideo(false);
         navigator.mediaDevices
           .getUserMedia({ audio: true, video: false })
           .then((stream) => {
@@ -28,8 +28,6 @@ const JoinScreen = (props) => {
             setStream(stream);
           })
           .catch((error) => {
-            console.log("CONNECTING");
-            alert(`No devices found, please conect devices and come back`);
             href.push({
               pathname: "/",
             });
@@ -92,7 +90,7 @@ const JoinScreen = (props) => {
             ref={videoRef}
             onClick={onSetVideoMute}
             id="video_btn"
-            className="call__btn video__btn"
+            className="call__btn video__btn-prejoin"
           >
             <img src="../img/video.svg" alt="Video" />
           </button>
@@ -114,7 +112,7 @@ const JoinScreen = (props) => {
         <input
           ref={userNameRef}
           type="text"
-          placeholder="James"
+          placeholder="Enter your name"
           name="userName"
         />
         <button onClick={login} type="submit">

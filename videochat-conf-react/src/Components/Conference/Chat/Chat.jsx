@@ -2,6 +2,8 @@ import React, { createRef, useEffect } from "react";
 import "./Chat.scss";
 import ConnectyCube from "connectycube";
 import Message from "./Message/Message";
+import { sendMessage } from "../../../services/chat-service";
+
 const Chat = (props) => {
   const { messages, chatHide } = props;
   let sortedMessages = messages.sort((a, b) => {
@@ -24,26 +26,21 @@ const Chat = (props) => {
     }
   };
   let allMessages = [];
+  const messagesContainerRef = React.createRef();
   useEffect(() => {
-    let elem = document.getElementById("messages__container");
-    elem.scrollTop = elem.scrollHeight;
+    let elem = messagesContainerRef;
+    debugger;
+    elem.current.scrollTop = elem.current.scrollHeight;
   });
 
   for (let i = 0; i < sortedMessages.length; i += 1) {
     allMessages.push(<Message message={sortedMessages[i]} />);
   }
 
-  const sendMessage = () => {
-    const message = {
-      type: "groupchat",
-      body: messageRef.current.value,
-      extension: {
-        save_to_history: 1,
-      },
-    };
+  const onSendMessage = () => {
+    sendMessage(messageRef.current.value, props.dialog.current);
     if (messageRef.current.value) {
       messageRef.current.value = "";
-      ConnectyCube.chat.send(props.dialog.current, message);
     }
   };
   const myFormRef = createRef();
@@ -60,7 +57,11 @@ const Chat = (props) => {
       <div onClick={chatHide} className="close__btn"></div>
 
       <div className="chat__content">
-        <div id="messages__container" className="messages__container">
+        <div
+          id="messages__container"
+          ref={messagesContainerRef}
+          className="messages__container"
+        >
           {allMessages}
         </div>
         <form ref={myFormRef} action="#" className="chat__form">
@@ -78,7 +79,7 @@ const Chat = (props) => {
             <button
               className="send__messsage-btn"
               type="button"
-              onClick={sendMessage}
+              onClick={onSendMessage}
             ></button>
           </div>
         </form>

@@ -1,32 +1,14 @@
 import React from "react";
 import "./Message.scss";
+import "../../../../services/heplers";
+import { getTime } from "../../../../services/heplers";
 const Message = (props) => {
   const { message } = props;
   let timeOfMessage = null;
   try {
-    const now = new Date(message.delay.attrs.stamp);
-    let d = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours(),
-      now.getMinutes(),
-      0
-    );
-    timeOfMessage =
-      d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+    timeOfMessage = getTime(message.delay.attrs.stamp);
   } catch {
-    const now = new Date(message.created_at);
-    let d = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours(),
-      now.getMinutes(),
-      0
-    );
-    timeOfMessage =
-      d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+    timeOfMessage = getTime(message.created_at);
   }
 
   return (
@@ -40,13 +22,13 @@ const Message = (props) => {
       </span>
       <p className={`message__text`}>{message.message}</p>
 
-      <span
+      <p
         className={`message__time ${
           message.senderName === "me" ? "me" : "them"
         }`}
       >
         {timeOfMessage}
-      </span>
+      </p>
     </div>
   );
 };
