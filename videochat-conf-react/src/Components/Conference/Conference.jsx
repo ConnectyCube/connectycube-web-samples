@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UserStream from "./UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
@@ -7,7 +7,6 @@ import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 import { useHistory } from "react-router";
 import Chat from "./Chat/Chat";
-import { useEffect } from "react/cjs/react.development";
 const Conference = (props) => {
   let href = useHistory();
   const [chatShow, setChatShow] = useState(false);
