@@ -13,8 +13,15 @@ const Conference = (props) => {
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [videOff, setVideoOff] = useState("");
   const [audioOff, setAudioOff] = useState("");
-  const { toggleVideo, toggleAudio, devices, isMobile, chatId, messages } =
-    props.call;
+  const {
+    toggleVideo,
+    toggleAudio,
+    devices,
+    isMobile,
+    chatId,
+    messages,
+    leaveMeeting,
+  } = props.call;
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
@@ -322,7 +329,7 @@ const Conference = (props) => {
               <button
                 id="end__btn"
                 onClick={() => {
-                  AuthService.logout().then(() => {
+                  leaveMeeting().then(() => {
                     href.push("/");
                   });
                 }}

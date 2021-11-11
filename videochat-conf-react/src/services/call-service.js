@@ -139,6 +139,7 @@ export const CallProvider = ({ children }) => {
         (e) => e.userId !== userId
       );
       const newParticipants = [...participantRef.current];
+      debugger;
       setParticipants(newParticipants);
     };
     ConnectyCube.videochatconference.onRemoteStreamListener = (
@@ -405,7 +406,16 @@ export const CallProvider = ({ children }) => {
   };
 
   const speakerNow = useRef(null);
-
+  const leaveMeeting = () => {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.destroySession();
+      _session.current
+        .leave()
+        .then(() => {})
+        .catch((error) => {});
+      resolve();
+    });
+  };
   const speakerStream = (userId) => {
     participantRef.current.filter((p) => {
       if (p.userId === userId) {
@@ -587,6 +597,7 @@ export const CallProvider = ({ children }) => {
         devicesStatus,
         chatId,
         messages,
+        leaveMeeting,
       }}
     >
       {children}

@@ -1,7 +1,6 @@
 import "./UserStream.scss";
 import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
-import { useEffect } from "react/cjs/react.development";
 
 const UserStream = (props) => {
   const {
@@ -27,14 +26,6 @@ const UserStream = (props) => {
       };
     },
 
-    [stream]
-  );
-  useEffect(
-    () => () => {
-      if (stream) {
-        stream.getTracks().forEach((t) => t.stop());
-      }
-    },
     [stream]
   );
 

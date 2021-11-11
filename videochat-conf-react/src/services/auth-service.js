@@ -7,12 +7,17 @@ class AuthService {
     this.init();
   }
 
-  logout = () => {
-    return new Promise((resolve, reject) => {
-      ConnectyCube.destroySession();
-      resolve();
-    });
-  };
+  //   logout = () => {
+  //     return new Promise((resolve, reject) => {
+  //       ConnectyCube.destroySession();
+  //       session
+  //         .leave()
+  //         .then(() => {})
+  //         .catch((error) => {});
+  //       alert("destroyed");
+  //       resolve();
+  //     });
+  //   };
 
   init = () => {
     const credentials = {
@@ -96,13 +101,12 @@ class AuthService {
                 };
                 ConnectyCube.login(userCredentials)
                   .then((user) => {
-
                     const chatCredentials = {
                       userId: user.id,
                       password: userCredentials.password,
                     };
                     this.chatConnection(chatCredentials);
-						  
+
                     resolve(user);
                   })
                   .catch((error) => {});
