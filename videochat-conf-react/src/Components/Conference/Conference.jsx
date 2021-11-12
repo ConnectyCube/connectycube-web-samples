@@ -11,7 +11,6 @@ const Conference = (props) => {
   let href = useHistory();
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
-
   const [audioOff, setAudioOff] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const {
@@ -48,7 +47,6 @@ const Conference = (props) => {
             }
           })
           .catch((error) => {
-            alert("BINGO");
             alert(error);
             href.location.pathname = "/";
           });
@@ -75,8 +73,8 @@ const Conference = (props) => {
               console.error(error);
             });
         }, 1000);
+        setIsLoaded(true);
       });
-      setIsLoaded(true);
 
       if (!isAudio) {
         setAudioOff(`mute`);
@@ -240,7 +238,7 @@ const Conference = (props) => {
       screenShareButton.classList.remove("sharing");
     }
   };
-
+  const devicesRef = React.createRef();
   const [locationKeys, setLocationKeys] = useState([]);
   const history = useHistory();
   useEffect(() => {
@@ -252,11 +250,15 @@ const Conference = (props) => {
       if (history.action === "POP") {
         if (locationKeys[1] === location.key) {
           setLocationKeys(([_, ...keys]) => keys);
+          setIsLoaded(false);
+
           leaveMeeting();
           // Handle forward event
         } else {
           setLocationKeys((keys) => [location.key, ...keys]);
           href.push("/");
+          setIsLoaded(false);
+
           leaveMeeting();
 
           // Handle back event
@@ -318,7 +320,12 @@ const Conference = (props) => {
               </div>
             </div>
             <div className="user__buttons" ref={buttonsRef}>
-              <div id="user__devices" className="user__devices">
+              <div
+                ref={devicesRef}
+                id="user__devices"
+                className="user__devices"
+                onMouseLeave={onSwitchCamera}
+              >
                 {camName}
               </div>
               <button
@@ -362,6 +369,8 @@ const Conference = (props) => {
                 id="end__btn"
                 onClick={() => {
                   leaveMeeting().then(() => {
+                    setIsLoaded(false);
+
                     href.push("/");
                   });
                 }}

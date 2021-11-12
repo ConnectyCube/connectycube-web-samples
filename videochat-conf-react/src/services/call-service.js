@@ -81,17 +81,6 @@ export const CallProvider = ({ children }) => {
 
       setParticipants([...participantRef.current]);
     }, 15000);
-    ConnectyCube.videochatconference
-      .getMediaDevices(
-        ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
-      )
-      .then((videoDevices) => {
-        setChoosedCam(videoDevices[0].deviceId);
-        setCams(videoDevices);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }, []);
 
   const _session = useRef(null);
@@ -378,7 +367,17 @@ export const CallProvider = ({ children }) => {
 
               const newParticipants = [...participantRef.current];
               setParticipants(newParticipants);
-
+              ConnectyCube.videochatconference
+                .getMediaDevices(
+                  ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+                )
+                .then((videoDevices) => {
+                  setChoosedCam(videoDevices[0].deviceId);
+                  setCams(videoDevices);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
               session
                 .join(roomId, userId, userName)
                 .then(() => {

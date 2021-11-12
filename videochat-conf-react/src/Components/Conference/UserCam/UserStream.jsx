@@ -1,6 +1,7 @@
 import "./UserStream.scss";
 import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
+import { useState } from "react";
 
 const UserStream = (props) => {
   const {
@@ -14,8 +15,13 @@ const UserStream = (props) => {
     streamNumber,
     fullScreen,
   } = props;
+  const [isStreamLoaded, setIsStreamLoaded] = useState(false);
   const loaderRef = React.createRef();
   const noImageRef = React.createRef();
+  setTimeout(() => {
+    setIsStreamLoaded((isStreamLoaded) => true);
+  }, 4000);
+
   const videoRef = useCallback(
     (videoElement) => {
       if (!stream || !videoElement) {
@@ -25,8 +31,6 @@ const UserStream = (props) => {
       videoElement.onloadedmetadata = function (e) {
         videoElement.play();
       };
-      loaderRef.current.classList.toggle("hide");
-      noImageRef.current.classList.toggle("hide");
     },
 
     [stream]
@@ -37,14 +41,19 @@ const UserStream = (props) => {
       id="user__cam-container"
       className={`user__cam-container stream${streamNumber || "0"}`}
     >
-      <div ref={loaderRef} className="lds-dual-ring-main"></div>{" "}
-      <div ref={noImageRef} className="img__container hide">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/OOjs_UI_icon_userAvatar.svg/1200px-OOjs_UI_icon_userAvatar.svg.png"
-          alt=""
-          className="no-image"
-        />
-      </div>
+      {!isStreamLoaded && (
+        <div ref={loaderRef} className="lds-dual-ring-main"></div>
+      )}
+      {isStreamLoaded && (
+        <div ref={noImageRef} className="img__container">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/OOjs_UI_icon_userAvatar.svg/1200px-OOjs_UI_icon_userAvatar.svg.png"
+            alt=""
+            className="no-image"
+          />
+        </div>
+      )}
+
       <div
         className={`user__stats-btn ${connectionStatus}`}
         onMouseOver={() => {
