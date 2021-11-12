@@ -11,7 +11,7 @@ const Conference = (props) => {
   let href = useHistory();
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
-  const [videOff, setVideoOff] = useState("");
+
   const [audioOff, setAudioOff] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const {
@@ -22,6 +22,7 @@ const Conference = (props) => {
     chatId,
     messages,
     leaveMeeting,
+    isVideoMuted,
   } = props.call;
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
@@ -42,9 +43,6 @@ const Conference = (props) => {
             const confRoomIdHash = btoa(state.meetingId);
             href.push(`${confRoomIdHash}`, "Creator");
             setIsLoaded(true);
-            if (!isVideo) {
-              setVideoOff(`mute`);
-            }
             if (!isAudio) {
               setAudioOff(`mute`);
             }
@@ -80,9 +78,6 @@ const Conference = (props) => {
       });
       setIsLoaded(true);
 
-      if (!isVideo) {
-        setVideoOff(`mute`);
-      }
       if (!isAudio) {
         setAudioOff(`mute`);
       }
@@ -221,7 +216,6 @@ const Conference = (props) => {
     devices.classList.toggle("active");
   };
   const onHideButtons = (e) => {
-    debugger;
     let clickedItem = e.target.id;
     let classItem = e.target.classList[0];
 
@@ -261,7 +255,6 @@ const Conference = (props) => {
           leaveMeeting();
           // Handle forward event
         } else {
-          debugger;
           setLocationKeys((keys) => [location.key, ...keys]);
           href.push("/");
           leaveMeeting();
@@ -360,7 +353,7 @@ const Conference = (props) => {
                 onClick={onSetVideoMute}
                 disabled={!devices.video}
                 id="video_btn"
-                className={`call__btn video__btn ${videOff}`}
+                className={`call__btn video__btn ${isVideoMuted}`}
               >
                 <img src="../img/video.svg" alt="Video" />
               </button>

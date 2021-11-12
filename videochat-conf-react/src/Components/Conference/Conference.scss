@@ -62,11 +62,13 @@
     &.sidebar {
       flex-basis: 20%;
       height: 100%;
-      overflow: auto;
+      display: flex;
+      flex-direction: row;
+      overflow-y: hidden;
       background: #282c34;
 
       & .user__cam-container {
-        max-height: 20%;
+        flex: 0 1 30%;
       }
     }
   }
@@ -124,7 +126,8 @@
     &:hover {
       opacity: 0.75;
     }
-    &.mute {
+    &.mute,
+    &.true {
       &::after {
         content: "";
         position: absolute;
@@ -229,8 +232,7 @@
   }
 }
 @media screen and(max-width:767px) {
-  .user__buttons {
-  }
+  
   .sidebar {
     flex-direction: column;
 

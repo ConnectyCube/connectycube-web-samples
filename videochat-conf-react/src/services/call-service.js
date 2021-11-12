@@ -95,6 +95,7 @@ export const CallProvider = ({ children }) => {
   }, []);
 
   const _session = useRef(null);
+
   const mediaDevs = (allDevices) => {
     let video = false;
     let audio = false;
@@ -114,6 +115,7 @@ export const CallProvider = ({ children }) => {
       },
     };
   };
+
   const createCallbacks = () => {
     ConnectyCube.videochatconference.onParticipantJoinedListener = (
       session,
@@ -139,7 +141,6 @@ export const CallProvider = ({ children }) => {
         (e) => e.userId !== userId
       );
       const newParticipants = [...participantRef.current];
-      debugger;
       setParticipants(newParticipants);
     };
     ConnectyCube.videochatconference.onRemoteStreamListener = (
@@ -156,7 +157,6 @@ export const CallProvider = ({ children }) => {
       const newParticipants = [...participantRef.current];
       setParticipants(newParticipants);
     };
-
     ConnectyCube.videochatconference.onSlowLinkListener = (
       session,
       userId,
@@ -170,12 +170,10 @@ export const CallProvider = ({ children }) => {
         return e.connectionStatus;
       });
       setParticipants([...participantRef.current]);
-
       let existingSlowLinkTimer = slowLinkTimersRef.current[userId];
       if (existingSlowLinkTimer) {
         clearTimeout(existingSlowLinkTimer);
       }
-
       slowLinkTimersRef.current[userId] = setTimeout(() => {
         participantRef.current.filter((e) => {
           if (e.userId === userId) {
@@ -232,7 +230,6 @@ export const CallProvider = ({ children }) => {
         record: false,
         chat: true,
       };
-
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
@@ -256,6 +253,7 @@ export const CallProvider = ({ children }) => {
         });
     });
   };
+
   const processMessages = async (records) => {
     const messagesBySender = {};
     records.forEach((m) => {
@@ -342,6 +340,7 @@ export const CallProvider = ({ children }) => {
       })
       .catch((error) => {});
   };
+
   const joinMeeting = (
     userName,
     roomId,
@@ -406,6 +405,7 @@ export const CallProvider = ({ children }) => {
   };
 
   const speakerNow = useRef(null);
+
   const leaveMeeting = () => {
     return new Promise((resolve, reject) => {
       ConnectyCube.destroySession();
@@ -444,7 +444,7 @@ export const CallProvider = ({ children }) => {
   };
 
   const enableVideo = () => {
-    console.log("[enableVideo]");
+    console.log("[enableVideo] ");
 
     return new Promise((resolve, reject) => {
       let params = { video: true, audio: true };
@@ -514,6 +514,11 @@ export const CallProvider = ({ children }) => {
         .switchMediaTracks({ video: deviceId })
         .then((newLocalStream) => {
           setChoosedCam(deviceId);
+          newLocalStream.getVideoTracks()[0].enabled = true;
+          participantRef.current[0].stream = newLocalStream;
+          let updateStream = [...participantRef.current];
+          setParticipants(updateStream);
+          setIsVideoMuted(false);
         }) // you can reattach local stream
         .catch((error) => {
           console.log(error);
@@ -532,7 +537,7 @@ export const CallProvider = ({ children }) => {
   const startScreenSharing = () => {
     const constraints = {
       video: {
-        width: 1279,
+        width: 1280,
         height: 720,
         frameRate: { ideal: 10, max: 15 },
       },
@@ -542,6 +547,7 @@ export const CallProvider = ({ children }) => {
     _session.current
       .getDisplayMedia(constraints, true)
       .then((stream) => {
+        stream.getVideoTracks()[0].enabled = true;
         stream
           .getVideoTracks()[0]
           .addEventListener("ended", () => stopSharingScreen());
@@ -600,6 +606,7 @@ export const CallProvider = ({ children }) => {
         chatId,
         messages,
         leaveMeeting,
+        isVideoMuted,
       }}
     >
       {children}

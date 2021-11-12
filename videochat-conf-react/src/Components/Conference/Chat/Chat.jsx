@@ -5,6 +5,7 @@ import { sendMessage } from "../../../services/chat-service";
 
 const Chat = (props) => {
   const { messages, chatHide } = props;
+
   let sortedMessages = messages.sort((a, b) => {
     if (a.date_sent < b.date_sent) {
       return -1;
@@ -14,7 +15,9 @@ const Chat = (props) => {
     }
     return 0;
   });
+
   const messageRef = createRef();
+
   const messageArea = (e) => {
     e.currentTarget.style.height = "1px";
     let newHeight = 10 + e.currentTarget.scrollHeight;
@@ -24,11 +27,12 @@ const Chat = (props) => {
       e.currentTarget.style.height = 160 + "px";
     }
   };
+
   let allMessages = [];
   const messagesContainerRef = React.createRef();
+
   useEffect(() => {
     let elem = messagesContainerRef;
-    debugger;
     elem.current.scrollTop = elem.current.scrollHeight;
   });
 
@@ -37,17 +41,22 @@ const Chat = (props) => {
   }
 
   const onSendMessage = () => {
-    sendMessage(messageRef.current.value, props.dialog.current);
     if (messageRef.current.value) {
+      sendMessage(messageRef.current.value, props.dialog.current);
+
       messageRef.current.value = "";
     }
   };
+
   const myFormRef = createRef();
+
   const onEnterPress = (e) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault();
-      sendMessage();
-      messageRef.current.value = "";
+      if (messageRef.current.value !== "") {
+        sendMessage(messageRef.current.value, props.dialog.current);
+        messageRef.current.value = "";
+      }
     }
   };
 

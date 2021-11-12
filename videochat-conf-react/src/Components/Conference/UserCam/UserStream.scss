@@ -24,9 +24,6 @@
 
     background-color: white;
     border-radius: 50%;
-
-    &.hide {
-    }
   }
 
   & .full__screen {
@@ -52,9 +49,7 @@
     max-height: 100vh;
     z-index: 4;
     transition: 0.2s;
-    &.muted {
-      // opacity: 0;
-    }
+    transition: 0.2s;
   }
 
   & .user__name {
