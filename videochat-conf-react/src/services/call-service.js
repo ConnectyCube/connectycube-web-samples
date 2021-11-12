@@ -532,7 +532,7 @@ export const CallProvider = ({ children }) => {
   const startScreenSharing = () => {
     const constraints = {
       video: {
-        width: 1280,
+        width: 1279,
         height: 720,
         frameRate: { ideal: 10, max: 15 },
       },
