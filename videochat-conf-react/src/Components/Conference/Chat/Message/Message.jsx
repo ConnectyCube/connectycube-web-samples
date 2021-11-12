@@ -5,10 +5,11 @@ import { getTime } from "../../../../services/heplers";
 const Message = (props) => {
   const { message } = props;
   let timeOfMessage = null;
+  debugger;
   try {
-    timeOfMessage = getTime(message.delay.attrs.stamp);
+    timeOfMessage = getTime(message.extension.date_sent);
   } catch {
-    timeOfMessage = getTime(message.created_at);
+    timeOfMessage = getTime(message.date_sent);
   }
 
   return (
