@@ -1,12 +1,12 @@
 import React, { createRef, useEffect } from "react";
 import "./Chat.scss";
 import Message from "./Message/Message";
-import { sendMessage } from "../../../services/chat-service";
+// import { sendMessage } from "../../../services/chat-service";
 
 const Chat = (props) => {
-  const { messages, chatHide } = props;
-
-  let sortedMessages = messages.sort((a, b) => {
+  const { messages, chatHide, chat, dialog, participants } = props;
+  chat.getMessages(dialog.current, participants);
+  let sortedMessages = chat.messages.sort((a, b) => {
     if (a.date_sent < b.date_sent) {
       return -1;
     }
@@ -42,7 +42,7 @@ const Chat = (props) => {
 
   const onSendMessage = () => {
     if (messageRef.current.value) {
-      sendMessage(messageRef.current.value, props.dialog.current);
+      chat.sendMessage(messageRef.current.value, props.dialog.current);
 
       messageRef.current.value = "";
     }
@@ -54,7 +54,7 @@ const Chat = (props) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault();
       if (messageRef.current.value !== "") {
-        sendMessage(messageRef.current.value, props.dialog.current);
+        chat.sendMessage(messageRef.current.value, props.dialog.current);
         messageRef.current.value = "";
       }
     }

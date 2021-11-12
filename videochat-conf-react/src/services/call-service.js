@@ -189,10 +189,10 @@ export const CallProvider = ({ children }) => {
         userId,
         message
       );
-      if (userId !== participantRef.current[0].userId) {
-        let audio = new Audio(sound);
-        audio.play();
-      }
+      // if (userId !== participants[0].userId) {
+      //   let audio = new Audio(sound);
+      //   audio.play();
+      // }
 
       message.sender_id = userId;
       message.message = message.body;
@@ -309,18 +309,6 @@ export const CallProvider = ({ children }) => {
               limit: 100,
               skip: 0,
             };
-
-            ConnectyCube.chat.message
-              .list(params)
-              .then((resp) => {
-                console.table(resp.items);
-                processMessages(resp.items).then((msgs) => {
-                  console.table(msgs);
-                  messagesRef.current = msgs;
-                  setMessages(msgs);
-                });
-              })
-              .catch((error) => {});
           })
           .catch((error) => {
             console.error(error);

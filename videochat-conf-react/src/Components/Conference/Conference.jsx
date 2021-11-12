@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import UserStream from "./UserCam/UserStream";
 import "./Conference.scss";
 import AuthService from "../../services/auth-service";
@@ -7,7 +7,9 @@ import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
 import { useHistory } from "react-router";
 import Chat from "./Chat/Chat";
+import ChatContext from "../../services/chat-service";
 const Conference = (props) => {
+  const chat = useContext(ChatContext);
   let href = useHistory();
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
@@ -22,6 +24,7 @@ const Conference = (props) => {
     messages,
     leaveMeeting,
     isVideoMuted,
+    participants,
   } = props.call;
 
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
@@ -294,7 +297,13 @@ const Conference = (props) => {
         >
           {chatShow && (
             <div className="chat__block">
-              <Chat dialog={chatId} messages={messages} chatHide={chatToggle} />
+              <Chat
+                chat={chat}
+                dialog={chatId}
+                messages={messages}
+                chatHide={chatToggle}
+                participants={participants}
+              />
             </div>
           )}
           <div className="camera__block">

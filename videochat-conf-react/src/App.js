@@ -4,6 +4,7 @@ import "./App.scss";
 import Conference from "./Components/Conference/Conference";
 import Main from "./Components/Main/Main";
 import CallContext from "./services/call-service";
+import { ChatProvider } from "./services/chat-service";
 
 function App(props) {
   const call = useContext(CallContext);
@@ -17,7 +18,9 @@ function App(props) {
             <Main call={call} />
           </Route>
           <Route path={`/join/`}>
-            <Conference call={call} />
+            <ChatProvider>
+              <Conference call={call} />
+            </ChatProvider>
           </Route>
         </div>
       </main>
