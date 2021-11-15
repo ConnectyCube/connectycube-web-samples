@@ -20,8 +20,9 @@ export const ChatProvider = ({ children }) => {
         userId,
         message
       );
-      if (!isiOS) {
+      if (!isiOS()) {
         if (userId !== chatParticipantsRef.current[0].userId) {
+          debugger;
           let audio = new Audio(sound);
           audio.play();
         }

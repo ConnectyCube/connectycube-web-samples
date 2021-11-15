@@ -96,7 +96,7 @@ export const CallProvider = ({ children }) => {
       video,
       options: {
         muted: true,
-        mirror: false,
+        mirror: true,
       },
     };
   };
@@ -288,6 +288,7 @@ export const CallProvider = ({ children }) => {
           session
             .getUserMedia(devicesVisible)
             .then((localStream) => {
+              debugger;
               if (!isVideo) {
                 localStream.addTrack(createDummyVideoTrack());
               }
@@ -471,7 +472,8 @@ export const CallProvider = ({ children }) => {
       },
       audio: true,
     };
-
+    const blockVideo = document.getElementById("video_btn");
+    blockVideo.disable = "true";
     _session.current
       .getDisplayMedia(constraints, true)
       .then((stream) => {

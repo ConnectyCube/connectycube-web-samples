@@ -68,6 +68,9 @@
     height: 100%;
     position: relative;
     overflow: hidden;
+    & video {
+      transform: rotateY(180deg);
+    }
 
     & .camera__bg {
       position: absolute;
@@ -146,10 +149,11 @@
 }
 .lds-dual-ring {
   position: absolute;
-  left: 44%;
-  top: 44%;
+  left: 50%;
+  top: 50%;
   display: inline-block;
   width: 80px;
+  transform: translate(-50%, -50%);
   height: 80px;
   z-index: 1;
 }

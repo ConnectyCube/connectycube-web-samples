@@ -205,37 +205,41 @@ const Conference = (props) => {
   const videoRef = react.createRef();
   const buttonsRef = react.createRef();
 
-  const onSetAudioMute = () => {
+  const onSetAudioMute = (e) => {
+    e.stopPropagation();
     audioRef.current.classList.toggle("mute");
     props.call.toggleAudio();
   };
 
-  const onSetVideoMute = () => {
+  const onSetVideoMute = (e) => {
+    e.stopPropagation();
+
     videoRef.current.classList.toggle("mute");
     let cam = document.getElementById("user__cam-me");
     cam.classList.toggle("muted");
     props.call.toggleVideo();
   };
 
-  const onSwitchCamera = () => {
+  const onSwitchCamera = (e) => {
+    e.stopPropagation();
+
     let devices = document.getElementById("user__devices");
     devices.classList.toggle("active");
   };
   const onHideButtons = (e) => {
     let clickedItem = e.target.id;
     let classItem = e.target.classList[0];
-
-    if (
-      clickedItem === "user__cam-container" ||
-      classItem === "users__cams" ||
-      classItem === "no-image"
-    ) {
+    let target = e.currentTarget.className;
+    debugger;
+    if (target === "conference__container") {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");
     }
   };
 
-  const onStartScreenSharing = () => {
+  const onStartScreenSharing = (e) => {
+    e.stopPropagation();
+
     let screenShareButton = document.getElementById("share__btn");
     if (!screenShareButton.classList.contains(`sharing`)) {
       props.call.startScreenSharing();
@@ -275,13 +279,17 @@ const Conference = (props) => {
     });
   }, [locationKeys, history, href, leaveMeeting]);
 
-  const onRecording = () => {
+  const onRecording = (e) => {
+    e.stopPropagation();
+
     let button = document.getElementById("record__button");
     button.classList.toggle("recording");
     props.call.recording();
   };
 
-  const chatToggle = () => {
+  const chatToggle = (e) => {
+    e.stopPropagation();
+
     chatShow ? setChatShow(false) : setChatShow(true);
   };
 
@@ -296,6 +304,7 @@ const Conference = (props) => {
       )}
       {!preJoinScreen && (
         <div
+          id="conference__container"
           className="conference__container"
           ref={containerRef}
           onClick={onHideButtons}

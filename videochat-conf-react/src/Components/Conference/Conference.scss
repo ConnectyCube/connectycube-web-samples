@@ -63,12 +63,19 @@
       flex-basis: 20%;
       height: 100%;
       display: flex;
-      flex-direction: row;
-      overflow-y: hidden;
+      flex-direction: column;
+      overflow-x: hidden;
       background: #282c34;
-
       & .user__cam-container {
-        flex: 0 1 30%;
+        max-height: 20%;
+      }
+
+      @media screen and (max-width: 767px) {
+        flex-direction: row;
+        overflow-y: hidden;
+        & .user__cam-container {
+          flex: 0 1 30%;
+        }
       }
     }
   }

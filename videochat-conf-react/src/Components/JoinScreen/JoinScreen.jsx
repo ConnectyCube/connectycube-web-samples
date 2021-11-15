@@ -29,6 +29,7 @@ const JoinScreen = (props) => {
             setStream(stream);
           })
           .catch((error) => {
+            alert("No connected devices or permission denied");
             href.push({
               pathname: "/",
             });
