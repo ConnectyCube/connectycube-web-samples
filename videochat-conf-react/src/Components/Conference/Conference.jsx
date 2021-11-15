@@ -25,13 +25,13 @@ const Conference = (props) => {
     toggleAudio,
     devices,
     isMobile,
-    chatId,
+
     messages,
     leaveMeeting,
     isVideoMuted,
     participants,
   } = props.call;
-
+  let [chatId, setChatId] = useState("");
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
     if (hrefState) {
@@ -47,6 +47,9 @@ const Conference = (props) => {
             isAudio
           )
           .then((state) => {
+            chat.joinChat(state.meetingId).then((chat) => {
+              setChatId(chat._id);
+            });
             const confRoomIdHash = btoa(state.meetingId);
             href.push(`${confRoomIdHash}`, "Creator");
             setIsLoaded(true);
@@ -58,8 +61,7 @@ const Conference = (props) => {
             alert(error);
             href.location.pathname = "/";
           });
-      }); //   alert("New room");
-      //   // code to run on component mount
+      });
     } else {
       setPreJoinScreen(false);
       const history = window.location.pathname;
@@ -76,7 +78,11 @@ const Conference = (props) => {
               isVideo,
               isAudio
             )
-            .then((devices) => {})
+            .then((devices) => {
+              chat.joinChat(roomId).then((chat) => {
+                setChatId(chat._id);
+              });
+            })
             .catch((error) => {
               console.error(error);
             });
@@ -153,7 +159,6 @@ const Conference = (props) => {
     });
 
     speakerUser = usersSortedByMicLevel[usersSortedByMicLevel.length - 1];
-    //  speakerUser = props.call.participants[0];
 
     usersSortedById = props.call.participants.sort((a, b) => {
       if (a.userId < b.userId) {
@@ -227,10 +232,7 @@ const Conference = (props) => {
     devices.classList.toggle("active");
   };
   const onHideButtons = (e) => {
-    let clickedItem = e.target.id;
-    let classItem = e.target.classList[0];
     let target = e.currentTarget.className;
-    debugger;
     if (target === "conference__container") {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");

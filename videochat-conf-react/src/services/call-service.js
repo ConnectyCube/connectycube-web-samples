@@ -179,26 +179,7 @@ export const CallProvider = ({ children }) => {
       iceState
     ) => {};
 
-    //  ConnectyCube.chat.onMessageListener = (userId, message) => {
-    //    console.log(
-    //      "[ConnectyCube.chat.onMessageListener] callback:",
-    //      userId,
-    //      message
-    //    );
-    //    if (!isiOS) {
-    //      if (userId !== participants[0].userId) {
-    //        let audio = new Audio(sound);
-    //        audio.play();
-    //      }
-    //    }
-    //    message.sender_id = userId;
-    //    message.message = message.body;
-    //    processMessages([message], participantRef.current).then((msgs) => {
-    //      console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
-    //      messagesRef.current = messagesRef.current.concat(msgs);
-    //      setMessages(messagesRef.current);
-    //    });
-    //  };
+
     navigator.mediaDevices.addEventListener("devicechange", function (event) {
       setDevices({ video: true, audio: true });
     });
@@ -243,21 +224,7 @@ export const CallProvider = ({ children }) => {
     });
   };
 
-  const joinChat = (roomId) => {
-    ConnectyCube.meeting
-      .get({ _id: roomId })
-      .then((meeting) => {
-        chatId.current = meeting.chat_dialog_id;
-        ConnectyCube.chat.dialog
-          .subscribe(meeting.chat_dialog_id)
-          .then((dialog) => {})
-          .catch((error) => {
-            console.error(error);
-          })
-          .catch((error) => {});
-      })
-      .catch((error) => {});
-  };
+
 
   const joinMeeting = (
     userName,
@@ -288,7 +255,6 @@ export const CallProvider = ({ children }) => {
           session
             .getUserMedia(devicesVisible)
             .then((localStream) => {
-              debugger;
               if (!isVideo) {
                 localStream.addTrack(createDummyVideoTrack());
               }
@@ -311,7 +277,7 @@ export const CallProvider = ({ children }) => {
               session
                 .join(roomId, userId, userName)
                 .then(() => {
-                  joinChat(roomId);
+                  
                   setDevices(mediaParams);
                   resolve(mediaParams);
                 })

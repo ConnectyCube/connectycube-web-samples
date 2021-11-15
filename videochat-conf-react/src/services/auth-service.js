@@ -7,18 +7,7 @@ class AuthService {
     this.init();
   }
 
-  //   logout = () => {
-  //     return new Promise((resolve, reject) => {
-  //       ConnectyCube.destroySession();
-  //       session
-  //         .leave()
-  //         .then(() => {})
-  //         .catch((error) => {});
-  //       alert("destroyed");
-  //       resolve();
-  //     });
-  //   };
-
+ 
   init = () => {
     const credentials = {
       appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
@@ -45,7 +34,7 @@ class AuthService {
     };
     ConnectyCube.init(credentials, appConfig);
   };
-  chatConnection = (chatCredentials) => {
+  connectToChat = (chatCredentials) => {
     ConnectyCube.chat
       .connect(chatCredentials)
       .then(() => {
@@ -73,8 +62,8 @@ class AuthService {
                   userId: user.id,
                   password: userCredentials.password,
                 };
-                this.chatConnection(chatCredentials);
-                //CallService.createAndJoinMeeting(user)
+                this.connectToChat(chatCredentials);
+               
                 resolve(user, session);
               })
               .catch((error) => {
@@ -105,7 +94,7 @@ class AuthService {
                       userId: user.id,
                       password: userCredentials.password,
                     };
-                    this.chatConnection(chatCredentials);
+                    this.connectToChat(chatCredentials);
 
                     resolve(user);
                   })

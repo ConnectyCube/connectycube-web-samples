@@ -5,7 +5,6 @@ import Message from "./Message/Message";
 
 const Chat = (props) => {
   const { messages, chatHide, chat, dialog, participants } = props;
-
   let sortedMessages = chat.messages.sort((a, b) => {
     if (a.date_sent < b.date_sent) {
       return -1;
@@ -16,7 +15,7 @@ const Chat = (props) => {
     return 0;
   });
   useEffect(() => {
-    chat.getMessages(dialog.current, participants);
+    chat.getMessages(dialog, participants);
     // eslint-disable-next-line
   }, [messages]);
   const messageRef = createRef();
@@ -44,7 +43,7 @@ const Chat = (props) => {
 
   const onSendMessage = () => {
     if (messageRef.current.value) {
-      chat.sendMessage(messageRef.current.value, props.dialog.current);
+      chat.sendMessage(messageRef.current.value, props.dialog);
 
       messageRef.current.value = "";
     }

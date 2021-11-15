@@ -22,7 +22,6 @@ export const ChatProvider = ({ children }) => {
       );
       if (!isiOS()) {
         if (userId !== chatParticipantsRef.current[0].userId) {
-          debugger;
           let audio = new Audio(sound);
           audio.play();
         }
@@ -36,7 +35,24 @@ export const ChatProvider = ({ children }) => {
       });
     };
   };
-
+  const joinChat = (roomId) => {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.meeting
+        .get({ _id: roomId })
+        .then((meeting) => {
+          ConnectyCube.chat.dialog
+            .subscribe(meeting.chat_dialog_id)
+            .then((dialog) => {
+              resolve(dialog);
+            })
+            .catch((error) => {
+              console.error(error);
+            })
+            .catch((error) => {});
+        })
+        .catch((error) => {});
+    });
+  };
   const sendMessage = (messageText, dialogId) => {
     const message = {
       type: "groupchat",
@@ -56,14 +72,12 @@ export const ChatProvider = ({ children }) => {
       limit: 100,
       skip: 0,
     };
-    debugger;
     ConnectyCube.chat.message
       .list(params)
       .then((resp) => {
         console.table(resp.items);
         processMessages(resp.items, participants).then((msgs) => {
           chatParticipantsRef.current = participants;
-          debugger;
           console.table(msgs);
           messagesRef.current = msgs;
           setMessages(msgs);
@@ -81,7 +95,6 @@ export const ChatProvider = ({ children }) => {
       msgs.push(m);
       messagesBySender[m.sender_id] = msgs;
     });
-    debugger;
     for (let senderId of Object.keys(messagesBySender)) {
       // find user
       const notFoundUsersIds = [];
@@ -99,7 +112,6 @@ export const ChatProvider = ({ children }) => {
         }
       }
 
-      // console.log("notFoundUsersIds", notFoundUs?ersIds);
       if (notFoundUsersIds.length > 0) {
         const params = {
           filter: {
@@ -123,7 +135,9 @@ export const ChatProvider = ({ children }) => {
     return records;
   };
   return (
-    <ChatContext.Provider value={{ sendMessage, messages, getMessages }}>
+    <ChatContext.Provider
+      value={{ sendMessage, messages, getMessages, joinChat }}
+    >
       {children}
     </ChatContext.Provider>
   );
