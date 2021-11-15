@@ -16,18 +16,10 @@ export const mediaParams = {
 
 export const constraints = {
   video: {
-    width: 1280,
-    height: 720,
-    frameRate: { ideal: 25, max: 30 },
+    width: 1920,
+    height: 1080,
+    frameRate: {ideal: 25, max: 30},
   },
   audio: true,
-};
-export const localConstraints = {
-  video: {
-    width: 1280,
-    height: 720,
-    frameRate: { ideal: 25, max: 30 },
-  },
-  audio: false,
 };
 

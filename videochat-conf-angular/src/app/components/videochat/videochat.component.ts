@@ -1,15 +1,16 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {State} from "../../reducers";
 import {select, Store} from "@ngrx/store";
-import {selectMeetingIdRouterParam, selectRouteData} from "../../reducers/route.selectors";
+import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
 import {participantSelector} from "../../reducers/participant.selectors";
 import {AuthService} from "../../services/auth.service";
 import {CallService} from "../../services/call.service";
-import {appConfig, CREDENTIALS, mediaParams} from "../../services/config";
-import {User} from "../../reducers/participant.reducer";
+import {mediaParams} from "../../services/config";
 import {removeAllUsers} from "../../reducers/participant.actions";
 import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
+import {DeviceDetectorService} from "ngx-device-detector";
+import {PermissionsService} from "../../services/permissions.service";
 
 @Component({
   selector: 'app-videochat',
@@ -27,6 +28,11 @@ export class VideochatComponent implements OnInit {
   public mediaDevice: any;
   public switchVideoActive: boolean = false;
   public shareScreenIconName = 'screen_share';
+  public isMobile = this.deviceService.isMobile();
+  public isTablet = this.deviceService.isTablet();
+  public MicroConnect = false;
+  public CameraConnect = false;
+  public videoPermission: any;
 
   constructor
   (
@@ -35,7 +41,32 @@ export class VideochatComponent implements OnInit {
     private store$: Store<State>,
     private authService: AuthService,
     private callService: CallService,
+    private deviceService: DeviceDetectorService,
+    private permission: PermissionsService,
   ) {
+  }
+
+  private checkPermissions() {
+    this.permission.checkVideoPermission().then((perm: any) => {
+      if (perm === 'denied') {
+        this.videoPermission = true;
+      }
+      else if (perm === 'granted') {
+        this.videoPermission = false;
+      }
+    })
+  }
+
+  private checkConnect() {
+    navigator.mediaDevices.enumerateDevices()
+      .then((dev: any) => {
+        const InputDevice = dev.filter((device: any) => device.kind.includes('input'))
+        console.log(InputDevice);
+        this.MicroConnect = InputDevice.some((device: any) => device.kind === "audioinput");
+        this.CameraConnect = InputDevice.some((device: any) => device.kind === "videoinput");
+        console.log("Micro", this.MicroConnect);
+        console.log("Camera", this.CameraConnect);
+      })
   }
 
   public muteOrUnmuteMicro() {
@@ -45,7 +76,7 @@ export class VideochatComponent implements OnInit {
   }
 
   public muteOrUnmuteVideo() {
-    this.callService.muteOrUnmuteVideo().then(() => {
+    this.callService.muteOrUnmuteVideo(this.videoIconName === 'videocam').then(() => {
       this.videoIconName = this.videoIconName === 'videocam' ? 'videocam_off' : 'videocam';
     })
   }
@@ -66,7 +97,7 @@ export class VideochatComponent implements OnInit {
 
   public switchCamera(event: any) {
     const deviceId = event.target.name;
-    this.callService.switchCamera(deviceId,this.videoIconName).then(()=>{
+    this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
       this.videoIconName = 'videocam';
     });
   }
@@ -76,6 +107,9 @@ export class VideochatComponent implements OnInit {
       .then((localDesktopStream: any) => {
         localDesktopStream.getVideoTracks()[0]
           .addEventListener("ended", () => {
+            if (this.videoIconName === 'videocam_off') {
+              this.videoIconName = 'videocam';
+            }
             this.callService.stopSharingScreen();
             this.shareScreenIconName = 'screen_share';
           });
@@ -86,6 +120,9 @@ export class VideochatComponent implements OnInit {
           console.log(error)
         }
         else {
+          if (this.videoIconName === 'videocam_off') {
+            this.videoIconName = 'videocam';
+          }
           this.callService.stopSharingScreen();
           this.shareScreenIconName = 'screen_share';
         }
@@ -93,7 +130,16 @@ export class VideochatComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(mediaParams.video === false){
+    this.checkConnect();
+    this.checkPermissions();
+    navigator.mediaDevices.addEventListener('devicechange', () => {
+      this.checkConnect();
+      this.callService.getListDevices().then((mediaDevice: any) => {
+        this.mediaDevice = mediaDevice;
+        console.log(this.mediaDevice)
+      });
+    })
+    if (mediaParams.video === false) {
       this.videoIconName = 'videocam_off';
     }
     this.callService.getListDevices().then((mediaDevice: any) => {

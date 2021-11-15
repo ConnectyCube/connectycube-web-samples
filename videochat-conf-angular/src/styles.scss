@@ -139,7 +139,10 @@ button:disabled {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+app-login{
+  position: relative;
+  z-index: 2;
+}
 app-videochat{
   height: 100%;
   width: 100%;

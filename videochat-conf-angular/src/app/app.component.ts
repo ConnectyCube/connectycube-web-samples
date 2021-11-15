@@ -8,6 +8,7 @@ import {filter} from "rxjs/operators";
 import {UrlService} from "./services/url.service";
 import {removeAllUsers} from "./reducers/participant.actions";
 import {CallService} from "./services/call.service";
+import {LoadingService} from "./services/loading.service";
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit {
     private store$: Store<State>,
     private router: Router,
     private urlService: UrlService,
-    private callService: CallService
+    private callService: CallService,
   ) {
 
     router.events

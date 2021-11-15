@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
 import {addUser, removeUser, updateUser} from "../reducers/participant.actions";
-import {constraints, localConstraints, mediaParams} from "./config";
+import {constraints, mediaParams} from "./config";
 
 declare let ConnectyCube: any;
 
@@ -21,6 +21,17 @@ export class CallService {
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
+  }
+
+  private createDummyVideoTrack = ({width = 640, height = 480} = {}) => {
+    let canvas: any = Object.assign(document.createElement("canvas"), {width, height});
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(0, 0, width, height);
+    let stream = canvas.captureStream();
+    console.log("[createDummyVideoTrack] tracks", stream.getTracks());
+    const videoTrack = Object.assign(stream.getVideoTracks()[0], {enabled: true});
+    console.log("[createDummyVideoTrack] videoTrack", videoTrack);
+    return videoTrack;
   }
 
   public init() {
@@ -51,6 +62,10 @@ export class CallService {
     };
   }
 
+  public SetOurDeviceId(id: any) {
+    this.OurDeviceId = id;
+  }
+
   public muteOrUnmuteMicro() {
     return new Promise<void>((resolve, reject) => {
       try {
@@ -70,38 +85,37 @@ export class CallService {
     })
   }
 
-  public muteOrUnmuteVideo() {
+
+  public muteOrUnmuteVideo(videoWork: boolean) {
     return new Promise<void>((resolve, reject) => {
       try {
         const mediaParamsDeviceId = {
           audio: true,
           video: {deviceId: this.OurDeviceId}
         }
+
         const session = this.OurSession;
 
-        if (session.localStream.getVideoTracks()[0]) {
-          const readyState = session.localStream.getVideoTracks()[0].readyState;
-          if (readyState === "ended") {
-            session.getUserMedia(mediaParamsDeviceId)
-              .then((stream: any) => {
-                this.store.dispatch(updateUser({id: 77777, stream: stream}));
-              })
-              .catch((error: any) => {
-                console.log("Local stream Error!", error);
-                reject();
-              })
-          }
-          else {
-            session.localStream.getVideoTracks()[0].stop();
-            console.log(session.localStream.getVideoTracks())
-          }
-        }
-        else {
-          session.getUserMedia(mediaParamsDeviceId)
+        console.log(videoWork)
+
+        if (!videoWork) {
+          session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
               this.store.dispatch(updateUser({id: 77777, stream: stream}));
+              console.log("IF", stream.getVideoTracks());
             })
         }
+        else {
+          session.getUserMedia({audio: true}, true)
+            .then((stream: any) => {
+              stream.addTrack(this.createDummyVideoTrack());
+              this.store.dispatch(updateUser({id: 77777, stream: stream}));
+              console.log("ELSE", stream.getVideoTracks());
+            })
+        }
+
+
+        console.log("LOCAL STREAM", session.localStream.getVideoTracks());
         resolve();
       }
       catch (error: any) {
@@ -112,33 +126,12 @@ export class CallService {
   }
 
   public stopCall() {
-    return new Promise<void>((resolve, reject) => {
-      const session = this.OurSession;
-      session
-        .leave()
-        .then(() => {
-          resolve();
-        })
-        .catch((error: any) => {
-          console.log(error)
-          reject();
-        })
-    })
+    return this.OurSession.leave();
   }
 
   public getListDevices() {
-    return new Promise<any>((resolve, reject) => {
-      const session = this.OurSession;
-      ConnectyCube.videochatconference
-        .getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO)
-        .then((videoDevices: any) => {
-          resolve(videoDevices);
-        })
-        .catch((error: any) => {
-          console.log("List Devices Error!", error);
-          reject();
-        });
-    })
+    return ConnectyCube.videochatconference
+      .getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO);
   }
 
   public switchCamera(deviceId: string, videoIcon: string) {
@@ -151,32 +144,17 @@ export class CallService {
         video: {deviceId: deviceId}
       }
 
-      if (videoIcon === 'videocam_off') {
-        console.log("Off", session.localStream.getVideoTracks())
-        session.getUserMedia(mediaParamsDeviceId)
-          .then((stream: any) => {
-            this.store.dispatch(updateUser({id: 77777, stream: stream}));
+      session
+        .switchMediaTracks({video: deviceId})
+        .then((updatedLocaStream: any) => {
+          if (videoIcon === 'videocam_off') {
             resolve();
-          })
-      }
-      else {
-        console.log(session.localStream.getVideoTracks())
-        session.localStream.getVideoTracks()[0].stop();
-        session.getUserMedia(mediaParamsDeviceId)
-          .then((stream: any) => {
-            this.store.dispatch(updateUser({id: 77777, stream: stream}));
-            resolve();
-          })
-
-        // session
-        //   .switchMediaTracks({video: deviceId})
-        //   .then((updatedLocaStream: any) => {
-        //     this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
-        //   })
-        //   .catch((error: any) => {
-        //     console.log("Switch camera Error!", error);
-        //   });
-      }
+          }
+          this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
+        })
+        .catch((error: any) => {
+          console.log("Switch camera Error!", error);
+        });
     })
   }
 
@@ -236,8 +214,22 @@ export class CallService {
       const session = this.createSession();
       this.OurSession = session;
 
-      session.getUserMedia(mediaParams)
+      const mediaParamsDeviceId = {
+        audio: true,
+        video: {deviceId: this.OurDeviceId}
+      }
+
+      const params = this.OurDeviceId && mediaParams.video ? mediaParamsDeviceId : mediaParams;
+
+      console.log("PARAMS", params);
+      console.log(this.OurDeviceId);
+
+      session.getUserMedia(params)
         .then((stream: any) => {
+          console.log(mediaParams);
+          if (!mediaParams.video) {
+            stream.addTrack(this.createDummyVideoTrack());
+          }
           this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream}));
 
           session.join(confRoomId, userId, userDisplayName);

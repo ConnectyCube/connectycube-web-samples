@@ -23,12 +23,12 @@
            class="device-btn"
            type="button">
   </div>
-  <button [disabled]="DisableButton" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab color="primary"
+  <button [disabled]="DisableButton || !MicroConnect" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab color="primary"
           class="videochat-button"
           aria-label="Mute Microphone">
     <mat-icon>{{microphoneIconName}}</mat-icon>
   </button>
-  <button [disabled]="DisableButton" (click)="muteOrUnmuteVideo()" id="mute-video" mat-fab class="videochat-button"
+  <button [disabled]="DisableButton || !CameraConnect || videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video" mat-fab class="videochat-button"
           aria-label="Mute Video">
     <mat-icon>{{videoIconName}}</mat-icon>
   </button>
@@ -36,13 +36,13 @@
           id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
     <mat-icon>phone_missed</mat-icon>
   </button>
-  <button [disabled]="DisableButton"
+  <button [disabled]="DisableButton || mediaDevice.length < 2 || !CameraConnect || videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">
     <mat-icon>switch_video</mat-icon>
   </button>
-  <button (click)="shareScreen()"
+  <button [disabled]="isMobile || isTablet" (click)="shareScreen()"
           id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
     <mat-icon>{{shareScreenIconName}}</mat-icon>
   </button>

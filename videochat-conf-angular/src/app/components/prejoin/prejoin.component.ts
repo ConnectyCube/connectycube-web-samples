@@ -11,7 +11,7 @@ import {appConfig, CREDENTIALS, mediaParams} from "../../services/config";
 import {LoadingService} from "../../services/loading.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogWarningComponent} from "../dialog-warning/dialog-warning.component";
-import {Message} from "@angular/compiler/src/i18n/i18n_ast";
+import {PermissionsService} from "../../services/permissions.service";
 
 @Component({
   selector: 'app-prejoin',
@@ -21,10 +21,24 @@ import {Message} from "@angular/compiler/src/i18n/i18n_ast";
 export class PrejoinComponent implements OnInit, OnDestroy {
 
   private ourLocalStream: any;
-  private AllDenied = false;
-  private MicroDenied = false;
+  private audioPermission: string = '';
+  private videoPermission: string = '';
   private MicroConnect = false;
+  private CameraConnect = false;
   private DoorOpen = true;
+  private messageErrorDeniedAll = `You not allow permission to use your camera and microphone,
+           please necessarily give permission for use your microphone,
+           at worst we can not join you to meet room`;
+  private messageErrorOrDenied = `You not allow permission to use your camera or microphone,
+           please necessarily give permission for use your microphone,
+           at worst we can not join you to meet room`;
+  private messageErrorDeniedMicro = `You not allow permission microphone,
+           please necessarily give permission for use your microphone,
+           at worst we can not join you to meet room`;
+  private messageErrorDevice = `Your camera or microphone not found,
+           please connect one of this devices, at worst we can not join you to meet room`;
+  private messageErrorDeviceMicro = `Your microphone not found,
+           please connect one of this devices, at worst we can not join you to meet room`;
 
   @Output() JoinBtnClick: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('videoElement') videoTag: any;
@@ -45,16 +59,39 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     private store$: Store<State>,
     public loader: LoadingService,
     public dialog: MatDialog,
+    public permissions: PermissionsService
   ) {
+  }
+
+  private checkPermissions() {
+    this.permissions.checkAudioPermission().then((perm: any) => {
+      this.audioPermission = perm;
+    })
+    this.permissions.checkVideoPermission().then((perm: any) => {
+      this.videoPermission = perm;
+    })
+  }
+
+  private checkDeviceWidth() {
+    if (window.innerWidth < 768) {
+      this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.8}px`;
+    }
+    else {
+      this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.5}px`;
+    }
   }
 
   private onVideo() {
     this.loader.show();
     this.disableVideoBtn = true;
     this.callService.getLocalUserVideo().then((localStream) => {
+
+      this.callService.SetOurDeviceId(localStream.getVideoTracks()[0].getSettings().deviceId);
+
       localStream.getAudioTracks().forEach((audioTrack: MediaStreamTrack) => {
         audioTrack.stop();
       })
+
       this.videoTag.nativeElement.srcObject = localStream;
       this.ourLocalStream = localStream;
     }).then(() => {
@@ -63,31 +100,24 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     })
       .catch((error: any) => {
         if (error.message === 'Permission denied') {
-          const messageError = `You not allow permission to use your camera or microphone,
-           please necessarily give permission for use your microphone,
-           at worst we can not join you to meet room`
 
-          this.ModalOn(messageError);
-          if (window.innerWidth < 768) {
-            this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.8}px`;
+          if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
+            this.ModalOn('Camera and Microphone Denied', this.messageErrorDeniedAll);
           }
-          else {
-            this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.5}px`;
+          else if (this.audioPermission === 'denied') {
+            this.ModalOn('Microphone Denied', this.messageErrorDeniedMicro);
           }
+
+          this.checkDeviceWidth();
 
           this.videoIconName = 'videocam_off';
           this.loader.hide();
         }
         else if (error.message === 'Requested device not found') {
-          const messageError = `Your camera or microphone not found,
-           please connect one of this devices, at worst we can not join you to meet room`;
-          this.ModalOn(messageError);
-          if (window.innerWidth < 768) {
-            this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.8}px`;
-          }
-          else {
-            this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.5}px`;
-          }
+          this.ModalOn('Camera or Microphone Not Found', this.messageErrorDevice);
+
+          this.checkDeviceWidth();
+
           this.videoIconName = 'videocam_off';
           this.loader.hide();
         }
@@ -101,37 +131,10 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     this.ourLocalStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
   }
 
-  private ModalOn(message: string) {
+  private ModalOn(title: string, message: string) {
     this.dialog.open(DialogWarningComponent, {
-      data: {message: message}
+      data: {title: title, message: message}
     });
-  }
-
-  private checkPermissions() {
-    const permissions = {audio: '', video: ''};
-    navigator.permissions.query({name: 'microphone'})
-      .then((permissionObj) => {
-        permissions.audio = permissionObj.state;
-      })
-      .catch((error: any) => {
-        console.log("Microphone permissions Error!", error);
-      })
-      .then(() => {
-        navigator.permissions.query({name: 'camera'})
-          .then((permissionObj) => {
-            permissions.video = permissionObj.state;
-
-            if (permissions.audio === 'denied' && permissions.video === 'denied') {
-              this.AllDenied = true;
-            }
-            else if (permissions.audio === 'denied' && permissions.video === 'granted') {
-              this.MicroDenied = true;
-            }
-          })
-          .catch((error: any) => {
-            console.log("Camera permissions Error!", error);
-          })
-      })
   }
 
   public muteOrUnmuteVideo() {
@@ -149,67 +152,85 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     if (this.DoorOpen) {
       this.DoorOpen = false;
 
-      navigator.mediaDevices.enumerateDevices().then((dev: any) => {
-        const InputDevice = dev.filter((device: any) => device.kind.includes('input'))
-        console.log(InputDevice);
-        this.MicroConnect = InputDevice.some((device: any) => device.kind === "audioinput");
-        console.log(this.MicroConnect);
-      }).then(() => {
-        const userName = this.userName.nativeElement.value;
-        const meetId = atob(this.meetId);
+      navigator.mediaDevices.enumerateDevices()
+        .then((dev: any) => {
+          const InputDevice = dev.filter((device: any) => device.kind.includes('input'))
+          console.log(InputDevice);
+          this.MicroConnect = InputDevice.some((device: any) => device.kind === "audioinput");
+          this.CameraConnect = InputDevice.some((device: any) => device.kind === "videoinput");
+          console.log("Micro", this.MicroConnect);
+          console.log("Camera", this.CameraConnect);
+        })
+        .then(() => {
+          const userName = this.userName.nativeElement.value;
+          const meetId = atob(this.meetId);
 
-        if (!this.MicroConnect || this.AllDenied || this.MicroDenied) {
-          this.userName.nativeElement.value = '';
-          return;
-        }
-        else if (this.videoIconName === 'videocam_off') {
-          mediaParams.video = false;
-        }
-        else {
-          mediaParams.video = true;
-        }
-
-        if (meetId && !this.previousUrl) {
-          console.log("Meeting ID", this.meetId);
-
-          this.authService.init(CREDENTIALS, appConfig)
-          this.callService.init();
-
-          if (userName) {
-            this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
-              const user: User = {id: userId, name: userName};
-
-              this.callService.joinUser(meetId, userId, userName).then(() => {
-              });
-
-            })
-          }
-          else {
+          if (!this.MicroConnect || this.audioPermission === 'denied') {
+            if (!this.MicroConnect) {
+              this.ModalOn('Microphone Not Found', this.messageErrorDeviceMicro);
+            }
+            else if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
+              this.ModalOn('Camera and Microphone Denied', this.messageErrorDeniedAll);
+            }
+            else if (this.audioPermission === 'denied') {
+              this.ModalOn('Microphone Denied', this.messageErrorDeniedMicro);
+            }
             this.userName.nativeElement.value = '';
+            this.DoorOpen = true;
             return;
           }
+          else if (this.videoIconName === 'videocam_off') {
+            mediaParams.video = false;
+          }
+          else {
+            mediaParams.video = true;
+          }
 
-        }
+          if (meetId && !this.previousUrl) {
+            console.log("Meeting ID", this.meetId);
 
-        else {
-          if (userName.trim()) {
+            this.authService.init(CREDENTIALS, appConfig)
             this.callService.init();
 
-            this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
-              const user: User = {id: userId, name: userName};
+            if (userName) {
+              this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
+                const user: User = {id: userId, name: userName};
 
-              this.callService.createMeetingAndJoin(user).then((roomUrl: string) => {
-                this.router.navigateByUrl("/join/" + roomUrl).then(() => {
+                this.callService.joinUser(meetId, userId, userName).then(() => {
+                  this.DoorOpen = true;
                 });
+
               })
-            })
+            }
+            else {
+              this.userName.nativeElement.value = '';
+              this.DoorOpen = true;
+              return;
+            }
+
           }
+
           else {
-            this.userName.nativeElement.value = '';
-            return;
+            if (userName.trim()) {
+              this.callService.init();
+
+              this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
+                const user: User = {id: userId, name: userName};
+
+                this.callService.createMeetingAndJoin(user).then((roomUrl: string) => {
+                  this.router.navigateByUrl("/join/" + roomUrl).then(() => {
+                    this.DoorOpen = true;
+                  });
+                })
+              })
+            }
+            else {
+              this.userName.nativeElement.value = '';
+              this.DoorOpen = true;
+              return;
+            }
           }
-        }
-      })
+        })
     }
     else {
       this.userName.nativeElement.value = '';
