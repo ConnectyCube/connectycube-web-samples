@@ -119,10 +119,10 @@
 }
 
 .video__btn-prejoin {
-  background-color: rgb(77, 139, 77);
+  background-color: rgb(112, 112, 252);
   cursor: pointer;
   &:hover {
-    opacity: 0.95;
+    opacity: 0.95 !important;
   }
   &:disabled {
     background-color: #004000;

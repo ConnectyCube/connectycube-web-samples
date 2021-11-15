@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import "./JoinScreen.scss";
+import { BsCameraVideo } from "react-icons/bs";
 
 const JoinScreen = (props) => {
   const { onPrejoinFinish } = props;
@@ -92,7 +93,7 @@ const JoinScreen = (props) => {
             id="video_btn"
             className="call__btn video__btn-prejoin"
           >
-            <img src="../img/video.svg" alt="Video" />
+            <BsCameraVideo size={24} style={{ fill: `white` }} />
           </button>
         </div>
         <div className="lds-dual-ring"></div>

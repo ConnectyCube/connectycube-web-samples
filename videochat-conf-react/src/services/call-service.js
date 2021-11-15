@@ -2,7 +2,6 @@ import { isiOS, isMobile, detectBrowser } from "./heplers";
 import ConnectyCube from "connectycube";
 import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
-import sound from "../sounds/notification_sound.mp3";
 const CallContext = createContext();
 export default CallContext;
 
@@ -32,9 +31,6 @@ export const CallProvider = ({ children }) => {
 
   console.log("participants", participants);
 
-  const [messages, setMessages] = useState([]);
-  console.log("MSGS", messages);
-  const messagesRef = useRef([]);
   const participantRef = useRef([
     {
       userId: null,
@@ -51,7 +47,7 @@ export const CallProvider = ({ children }) => {
   const MAX_MIC_LEVEL = 20000;
   const meetingId = useRef(null);
   const chatId = useRef(null);
-  const [devices, setDevices] = useState({});
+  const [devices, setDevices] = useState({ video: false, audio: false });
   const [cams, setCams] = useState();
   let mediaParams = {
     video: { width: 1280, height: 720 },
@@ -183,25 +179,29 @@ export const CallProvider = ({ children }) => {
       iceState
     ) => {};
 
-    ConnectyCube.chat.onMessageListener = (userId, message) => {
-      console.log(
-        "[ConnectyCube.chat.onMessageListener] callback:",
-        userId,
-        message
-      );
-      // if (userId !== participants[0].userId) {
-      //   let audio = new Audio(sound);
-      //   audio.play();
-      // }
-
-      message.sender_id = userId;
-      message.message = message.body;
-      processMessages([message]).then((msgs) => {
-        console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
-        messagesRef.current = messagesRef.current.concat(msgs);
-        setMessages(messagesRef.current);
-      });
-    };
+    //  ConnectyCube.chat.onMessageListener = (userId, message) => {
+    //    console.log(
+    //      "[ConnectyCube.chat.onMessageListener] callback:",
+    //      userId,
+    //      message
+    //    );
+    //    if (!isiOS) {
+    //      if (userId !== participants[0].userId) {
+    //        let audio = new Audio(sound);
+    //        audio.play();
+    //      }
+    //    }
+    //    message.sender_id = userId;
+    //    message.message = message.body;
+    //    processMessages([message], participantRef.current).then((msgs) => {
+    //      console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
+    //      messagesRef.current = messagesRef.current.concat(msgs);
+    //      setMessages(messagesRef.current);
+    //    });
+    //  };
+    navigator.mediaDevices.addEventListener("devicechange", function (event) {
+      setDevices({ video: true, audio: true });
+    });
   };
 
   const createAndJoinMeeting = (
@@ -243,58 +243,6 @@ export const CallProvider = ({ children }) => {
     });
   };
 
-  const processMessages = async (records) => {
-    const messagesBySender = {};
-    records.forEach((m) => {
-      let msgs = messagesBySender[m.sender_id];
-      if (!msgs) {
-        msgs = [];
-      }
-      msgs.push(m);
-      messagesBySender[m.sender_id] = msgs;
-    });
-
-    for (let senderId of Object.keys(messagesBySender)) {
-      // find user
-      const notFoundUsersIds = [];
-
-      for (let i = 0; i < participantRef.current.length; i += 1) {
-        let participant = participantRef.current[i];
-        if (participant.userId === parseInt(senderId)) {
-          const name = i === 0 ? "me" : participant.name;
-          messagesBySender[senderId].forEach((m) => {
-            m.senderName = name;
-          });
-          break;
-        } else {
-          notFoundUsersIds.push(senderId);
-        }
-      }
-
-      // console.log("notFoundUsersIds", notFoundUs?ersIds);
-      if (notFoundUsersIds.length > 0) {
-        const params = {
-          filter: {
-            field: "id",
-            param: "in",
-            value: notFoundUsersIds.map((id) => parseInt(id)),
-          },
-        };
-
-        const users = await ConnectyCube.users.get(params);
-        users.items.forEach((rec) => {
-          const uID = rec.user.id;
-          console.log("messagesBySender", messagesBySender, uID);
-          messagesBySender[uID].forEach((m) => {
-            m.senderName = rec.user.full_name;
-          });
-        });
-      }
-    }
-
-    return records;
-  };
-
   const joinChat = (roomId) => {
     ConnectyCube.meeting
       .get({ _id: roomId })
@@ -302,14 +250,7 @@ export const CallProvider = ({ children }) => {
         chatId.current = meeting.chat_dialog_id;
         ConnectyCube.chat.dialog
           .subscribe(meeting.chat_dialog_id)
-          .then((dialog) => {
-            const params = {
-              chat_dialog_id: meeting.chat_dialog_id,
-              sort_desc: "date_sent",
-              limit: 100,
-              skip: 0,
-            };
-          })
+          .then((dialog) => {})
           .catch((error) => {
             console.error(error);
           })
@@ -591,7 +532,6 @@ export const CallProvider = ({ children }) => {
         preJoinScreen,
         devicesStatus,
         chatId,
-        messages,
         leaveMeeting,
         isVideoMuted,
       }}

@@ -5,7 +5,7 @@ import Message from "./Message/Message";
 
 const Chat = (props) => {
   const { messages, chatHide, chat, dialog, participants } = props;
-  chat.getMessages(dialog.current, participants);
+
   let sortedMessages = chat.messages.sort((a, b) => {
     if (a.date_sent < b.date_sent) {
       return -1;
@@ -15,9 +15,12 @@ const Chat = (props) => {
     }
     return 0;
   });
-
+  useEffect(() => {
+    chat.getMessages(dialog.current, participants);
+    alert("ADEDD");
+    // eslint-disable-next-line
+  }, [messages]);
   const messageRef = createRef();
-
   const messageArea = (e) => {
     e.currentTarget.style.height = "1px";
     let newHeight = 10 + e.currentTarget.scrollHeight;
@@ -72,6 +75,7 @@ const Chat = (props) => {
         >
           {allMessages}
         </div>
+
         <form ref={myFormRef} action="#" className="chat__form">
           <div className="area__container">
             <textarea

@@ -1,11 +1,76 @@
 import ConnectyCube from "connectycube";
 import { createContext, useRef, useState } from "react";
+import { isiOS } from "./heplers";
+
+import sound from "../sounds/notification_sound.mp3";
+
 const ChatContext = createContext();
 export default ChatContext;
 
 export const ChatProvider = ({ children }) => {
-  const processMessages = async (records, participants) => {
+  const [messages, setMessages] = useState([]);
+  const chatParticipantsRef = useRef([]);
+  console.log("MSGS", messages);
+  const messagesRef = useRef([]);
+
+  const chatCallbaks = () => {
+    ConnectyCube.chat.onMessageListener = (userId, message) => {
+      console.log(
+        "[ConnectyCube.chat.onMessageListener] callback:",
+        userId,
+        message
+      );
+      if (!isiOS) {
+        if (userId !== chatParticipantsRef.current[0].userId) {
+          let audio = new Audio(sound);
+          audio.play();
+        }
+      }
+      message.sender_id = userId;
+      message.message = message.body;
+      processMessages([message], chatParticipantsRef.current).then((msgs) => {
+        console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
+        messagesRef.current = messagesRef.current.concat(msgs);
+        setMessages(messagesRef.current);
+      });
+    };
+  };
+
+  const sendMessage = (messageText, dialogId) => {
+    const message = {
+      type: "groupchat",
+      body: messageText,
+      extension: {
+        save_to_history: 1,
+      },
+    };
+    ConnectyCube.chat.send(dialogId, message);
+  };
+
+  const getMessages = (chat_id, participants) => {
+    chatCallbaks();
+    const params = {
+      chat_dialog_id: chat_id,
+      sort_desc: "date_sent",
+      limit: 100,
+      skip: 0,
+    };
     debugger;
+    ConnectyCube.chat.message
+      .list(params)
+      .then((resp) => {
+        console.table(resp.items);
+        processMessages(resp.items, participants).then((msgs) => {
+          chatParticipantsRef.current = participants;
+          debugger;
+          console.table(msgs);
+          messagesRef.current = msgs;
+          setMessages(msgs);
+        });
+      })
+      .catch((error) => {});
+  };
+  const processMessages = async (records, participants) => {
     const messagesBySender = {};
     records.forEach((m) => {
       let msgs = messagesBySender[m.sender_id];
@@ -15,7 +80,7 @@ export const ChatProvider = ({ children }) => {
       msgs.push(m);
       messagesBySender[m.sender_id] = msgs;
     });
-
+    debugger;
     for (let senderId of Object.keys(messagesBySender)) {
       // find user
       const notFoundUsersIds = [];
@@ -55,42 +120,6 @@ export const ChatProvider = ({ children }) => {
     }
 
     return records;
-  };
-  const [messages, setMessages] = useState([]);
-
-  console.log("MSGS", messages);
-  const messagesRef = useRef([]);
-
-  const sendMessage = (messageText, dialogId) => {
-    const message = {
-      type: "groupchat",
-      body: messageText,
-      extension: {
-        save_to_history: 1,
-      },
-    };
-    ConnectyCube.chat.send(dialogId, message);
-  };
-
-  const getMessages = (chat_id, participants) => {
-    const params = {
-      chat_dialog_id: chat_id,
-      sort_desc: "date_sent",
-      limit: 100,
-      skip: 0,
-    };
-    ConnectyCube.chat.message
-      .list(params)
-      .then((resp) => {
-        debugger;
-        console.table(resp.items);
-        processMessages(resp.items, participants).then((msgs) => {
-          console.table(msgs);
-          messagesRef.current = msgs;
-          setMessages(msgs);
-        });
-      })
-      .catch((error) => {});
   };
   return (
     <ChatContext.Provider value={{ sendMessage, messages, getMessages }}>
