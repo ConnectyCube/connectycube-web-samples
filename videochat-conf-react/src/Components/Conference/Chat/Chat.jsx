@@ -17,7 +17,6 @@ const Chat = (props) => {
   });
   useEffect(() => {
     chat.getMessages(dialog.current, participants);
-    alert("ADEDD");
     // eslint-disable-next-line
   }, [messages]);
   const messageRef = createRef();
