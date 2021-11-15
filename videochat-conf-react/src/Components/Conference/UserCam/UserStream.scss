@@ -37,6 +37,9 @@
       display: none;
     }
   }
+  & #user__cam-me {
+    transform: rotateY(180deg);
+  }
   & .user__cam {
     width: 100%;
     object-fit: cover;
@@ -49,7 +52,9 @@
     max-height: 100vh;
     z-index: 4;
     transition: 0.2s;
-    transition: 0.2s;
+    &.unmirror {
+      transform: rotateY(360deg) !important;
+    }
   }
 
   & .user__name {

@@ -243,13 +243,16 @@ const Conference = (props) => {
     e.stopPropagation();
 
     let screenShareButton = document.getElementById("share__btn");
-    if (!screenShareButton.classList.contains(`sharing`)) {
-      props.call.startScreenSharing();
-
-      screenShareButton.classList.add("sharing");
-    } else {
+    if (screenShareButton.classList.contains(`sharing`)) {
       props.call.stopSharingScreen();
+      let myCamera = document.getElementById("user__cam-me");
+      myCamera.classList.remove("unmirror");
       screenShareButton.classList.remove("sharing");
+    } else {
+      props.call.startScreenSharing();
+      let myCamera = document.getElementById("user__cam-me");
+      myCamera.classList.add("unmirror");
+      screenShareButton.classList.add("sharing");
     }
   };
   const devicesRef = React.createRef();

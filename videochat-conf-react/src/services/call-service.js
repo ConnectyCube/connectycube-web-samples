@@ -179,7 +179,6 @@ export const CallProvider = ({ children }) => {
       iceState
     ) => {};
 
-
     navigator.mediaDevices.addEventListener("devicechange", function (event) {
       setDevices({ video: true, audio: true });
     });
@@ -223,8 +222,6 @@ export const CallProvider = ({ children }) => {
         });
     });
   };
-
-
 
   const joinMeeting = (
     userName,
@@ -277,7 +274,6 @@ export const CallProvider = ({ children }) => {
               session
                 .join(roomId, userId, userName)
                 .then(() => {
-                  
                   setDevices(mediaParams);
                   resolve(mediaParams);
                 })
@@ -424,6 +420,8 @@ export const CallProvider = ({ children }) => {
   const stopSharingScreen = () => {
     let screenShareButton = document.getElementById("share__btn");
     screenShareButton.classList.remove("sharing");
+    let myCamera = document.getElementById("user__cam-me");
+    myCamera.classList.remove("unmirror");
     return _session.current
       .getUserMedia(mediaParams, true)
       .then((stream) => {});
