@@ -14,6 +14,6 @@
          class="videochat-stream"
   ></video>
 </div>
-<div class="display-user-name">
+<div class="display-user-name" [ngClass]="{unmirror:currentUserIndex ===0}">
   <p class="user-name">{{currentUserName}}</p>
 </div>

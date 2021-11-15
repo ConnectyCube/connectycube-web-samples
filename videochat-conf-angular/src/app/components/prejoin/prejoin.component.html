@@ -5,7 +5,7 @@
             aria-label="Mute Video">
       <mat-icon>{{videoIconName}}</mat-icon>
     </button>
-    <video playsinline autoplay muted id="user-video" #videoElement class="user-video" preload="auto"></video>
+    <video playsinline autoplay muted id="user-video" #videoElement class="user-video mirror" preload="auto"></video>
     <mat-progress-spinner *ngIf="loading$ | async" [mode]="'indeterminate'"></mat-progress-spinner>
     <div id="video-bg" class="video-bg"
          [ngStyle]="{'width.px': videoElement.offsetWidth}"

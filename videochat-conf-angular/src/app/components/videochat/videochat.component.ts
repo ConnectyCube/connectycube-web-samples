@@ -27,6 +27,7 @@ export class VideochatComponent implements OnInit {
   public DisableButton: boolean = true;
   public mediaDevice: any;
   public switchVideoActive: boolean = false;
+  public switchDone: boolean = false
   public shareScreenIconName = 'screen_share';
   public isMobile = this.deviceService.isMobile();
   public isTablet = this.deviceService.isTablet();
@@ -76,9 +77,18 @@ export class VideochatComponent implements OnInit {
   }
 
   public muteOrUnmuteVideo() {
-    this.callService.muteOrUnmuteVideo(this.videoIconName === 'videocam').then(() => {
-      this.videoIconName = this.videoIconName === 'videocam' ? 'videocam_off' : 'videocam';
-    })
+    if (this.shareScreenIconName === 'stop_screen_share') {
+      this.callService.stopSharingScreen();
+      this.shareScreenIconName = 'screen_share';
+      if (this.videoIconName === 'videocam_off') {
+        this.videoIconName = 'videocam';
+      }
+    }
+    else {
+      this.callService.muteOrUnmuteVideo(this.videoIconName === 'videocam').then(() => {
+        this.videoIconName = this.videoIconName === 'videocam' ? 'videocam_off' : 'videocam';
+      })
+    }
   }
 
   public stopCall() {
@@ -97,9 +107,20 @@ export class VideochatComponent implements OnInit {
 
   public switchCamera(event: any) {
     const deviceId = event.target.name;
-    this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
-      this.videoIconName = 'videocam';
-    });
+    if (this.shareScreenIconName === 'stop_screen_share') {
+      this.callService.stopSharingScreen(deviceId);
+      this.shareScreenIconName = 'screen_share';
+    }
+    else {
+      this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
+        this.videoIconName = 'videocam';
+      }).catch(()=>{
+        this.switchDone = !this.switchDone;
+      })
+      if (this.isMobile) {
+        this.switchDone = !this.switchDone;
+      }
+    }
   }
 
   public shareScreen() {

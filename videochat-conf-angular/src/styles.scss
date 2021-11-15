@@ -3,6 +3,7 @@
   font: 400 15px/1 "Open Sans", sans-serif;
 
 }
+
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800&subset=latin,latin-ext);
 
 /** RESET */
@@ -130,20 +131,28 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.rotate
-{
+
+.rotate {
   transform: rotateY(180deg);
-  -webkit-transform:rotateY(180deg); /* Safari and Chrome */
-  -moz-transform:rotateY(180deg); /* Firefox */
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-app-login{
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+app-login {
   position: relative;
   z-index: 2;
 }
-app-videochat{
+
+app-videochat {
   height: 100%;
   width: 100%;
   position: relative;
@@ -151,5 +160,17 @@ app-videochat{
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+}
+
+.unmirror {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.mirror {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
 }
 

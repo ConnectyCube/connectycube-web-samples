@@ -15,6 +15,7 @@ app-stream-container {
   overflow: hidden;
   box-sizing: border-box;
 }
+
 #videochat-buttons-container {
   width: 320px;
   height: 50px;
@@ -35,10 +36,12 @@ app-stream-container {
     height: 50px;
     border-radius: 25px;
   }
-  .mat-button-disabled{
+
+  .mat-button-disabled {
     color: white;
   }
-  .user-device{
+
+  .user-device {
     opacity: 0;
     position: absolute;
     right: 0;
@@ -52,6 +55,7 @@ app-stream-container {
     animation-duration: 350ms;
     transition-duration: 350ms;
   }
+
   .user-device.active {
     opacity: 1;
   }
@@ -73,15 +77,18 @@ app-stream-container {
 
 }
 
-#mute-video{
+#mute-video {
   background-color: #404fff;
 }
-#switch-video{
+
+#switch-video {
   background-color: #ffd640e8;
 }
-#share-screen{
+
+#share-screen {
   background-color: #fff;
-  mat-icon{
+
+  mat-icon {
     color: black;
   }
 }

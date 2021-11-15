@@ -136,6 +136,10 @@ export class CallService {
 
   public switchCamera(deviceId: string, videoIcon: string) {
     return new Promise<void>((resolve, reject) => {
+      if(this.OurDeviceId === deviceId){
+        reject();
+        return;
+      }
       this.OurDeviceId = deviceId;
       const session = this.OurSession;
 
@@ -158,22 +162,19 @@ export class CallService {
     })
   }
 
-  public stopSharingScreen() {
+  public stopSharingScreen(deviceID?: string) {
+    if (deviceID) {
+      this.OurDeviceId = deviceID;
+    }
     const mediaParamsDeviceId = {
       audio: true,
       video: {deviceId: this.OurDeviceId}
     }
     const session = this.OurSession;
-    session.localStream.getTracks().forEach((item: any) => {
-      item.stop();
-    });
-    session.getUserMedia(mediaParamsDeviceId)
+    session.getUserMedia(mediaParamsDeviceId, true)
       .then((stream: any) => {
         this.store.dispatch(updateUser({id: 77777, stream: stream}));
         this.OurSharingStatus = false;
-      })
-      .catch((error: any) => {
-        console.log("Stop sharing Error!", error);
       })
   }
 

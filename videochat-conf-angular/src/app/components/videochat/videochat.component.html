@@ -3,6 +3,7 @@
   <app-stream-container
     (videoLoaded)="ChangeDisable($event)"
     *ngFor="let user of (participantArray$ | async);index as i;"
+    [ngClass]="{'mirror':shareScreenIconName !== 'stop_screen_share' && !switchDone && i===0}"
     [className]="'stream'+i"
     [currentUserStream]="user.stream"
     [currentUserId]="user.id"
@@ -23,12 +24,14 @@
            class="device-btn"
            type="button">
   </div>
-  <button [disabled]="DisableButton || !MicroConnect" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab color="primary"
+  <button [disabled]="DisableButton || !MicroConnect" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab
+          color="primary"
           class="videochat-button"
           aria-label="Mute Microphone">
     <mat-icon>{{microphoneIconName}}</mat-icon>
   </button>
-  <button [disabled]="DisableButton || !CameraConnect || videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video" mat-fab class="videochat-button"
+  <button [disabled]="DisableButton || !CameraConnect || videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
+          mat-fab class="videochat-button"
           aria-label="Mute Video">
     <mat-icon>{{videoIconName}}</mat-icon>
   </button>
