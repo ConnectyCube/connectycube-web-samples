@@ -1,4 +1,7 @@
 .DS_Store
+
+*/.env
+
 dist
 !videochat/dist
 # Storm

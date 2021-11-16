@@ -1,0 +1,96 @@
+.messages__container {
+  background-color: #fff;
+  //   border: 1px solid #e5e5ea;
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto;
+  font-size: 1.1rem;
+  font-weight: 300;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  width: 100%;
+  align-self: flex-start;
+  overflow-x: hidden;
+
+  & .message:not(:last-child) {
+    margin-bottom: 30px;
+  }
+
+  & .message {
+    border-radius: 1.15rem;
+    line-height: 1.25;
+    max-width: 75%;
+    padding: 0.2rem 0.875rem;
+    position: relative;
+    word-wrap: break-word;
+    position: relative;
+    min-width: 150px;
+
+    & .message__time {
+      font-size: 0.85rem !important;
+      font-weight: normal;
+      position: absolute;
+      bottom: -20px;
+      right: 0;
+      color: black;
+    }
+    & .message__text {
+      padding-top: 5px;
+    }
+    & .message__name {
+      font-size: 0.85rem !important;
+      font-weight: 700;
+      color: black;
+      max-width: 50px;
+      &.me {
+        left: 100%;
+      }
+    }
+
+    &.them {
+      align-self: flex-start;
+      background-color: #e5e5ea;
+      color: #000;
+
+      &::before {
+        border-bottom-right-radius: 0.8rem 0.7rem;
+        border-left: 1rem solid #e5e5ea;
+        left: -0.35rem;
+        transform: translate(0, -0.1rem);
+      }
+      &::after {
+        background-color: #fff;
+        border-bottom-right-radius: 0.5rem;
+        left: 20px;
+        transform: translate(-30px, -2px);
+        width: 10px;
+      }
+    }
+    &.me {
+      align-self: flex-end;
+      background-color: #248bf5;
+      color: #fff !important;
+
+      &::before {
+        border-bottom-left-radius: 0.8rem 0.7rem;
+        border-right: 1rem solid #248bf5;
+        right: -0.35rem;
+        transform: translate(0, -0.1rem);
+      }
+      &::after {
+        background-color: #fff;
+        border-bottom-left-radius: 0.5rem;
+        right: -40px;
+        transform: translate(-30px, -2px);
+        width: 10px;
+      }
+    }
+    &::before,
+    &::after {
+      bottom: -0.1rem;
+      content: "";
+      height: 1rem;
+      position: absolute;
+    }
+  }
+}

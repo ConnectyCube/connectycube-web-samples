@@ -1,0 +1,145 @@
+.chat__container {
+  height: 100%;
+  width: 360px;
+  //   position: absolute;
+  position: relative;
+  right: 0;
+  z-index: 6;
+  top: 0;
+  background: white;
+  padding: 0px 0px 15px 0px;
+
+  .close__btn {
+    position: absolute;
+    content: "";
+    z-index: 7;
+    right: 20px;
+    top: 10px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    &::after,
+    &::before {
+      position: absolute;
+      right: 0;
+      bottom: 50%;
+      transform: translateY(-50%);
+      content: "";
+      width: 100%;
+      height: 3px;
+      border-radius: 25%;
+      background-color: black;
+    }
+    &::after {
+      transform: rotateZ(45deg);
+    }
+    &::before {
+      transform: rotateZ(-45deg);
+    }
+  }
+
+  .chat__content {
+    padding-top: 50px;
+  }
+
+  & .chat__content {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    right: 0;
+    z-index: 6;
+    top: 0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    //  justify-content: space-between;
+    justify-content: flex-end;
+
+    & .messages__loader {
+      width: 8vmax;
+      height: 8vmax;
+      border-right: 4px solid #005b96;
+      border-radius: 100%;
+      animation: spinRight 800ms linear infinite;
+
+      &:before,
+      &:after {
+        content: "";
+        width: 6vmax;
+        height: 6vmax;
+        display: block;
+        position: absolute;
+        top: calc(50% - 3vmax);
+        left: calc(50% - 3vmax);
+        border-left: 3px solid #005b96;
+        border-radius: 100%;
+        animation: spinLeft 800ms linear infinite;
+      }
+
+      &:after {
+        width: 4vmax;
+        height: 4vmax;
+        top: calc(50% - 2vmax);
+        left: calc(50% - 2vmax);
+        border: 0;
+        border-right: 2px solid #005b96;
+        animation: none;
+      }
+
+      @keyframes spinLeft {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(720deg);
+        }
+      }
+
+      @keyframes spinRight {
+        from {
+          transform: rotate(360deg);
+        }
+        to {
+          transform: rotate(0deg);
+        }
+      }
+    }
+  }
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
+
+  & .chat__form {
+    width: 100%;
+    padding: 0px 0px 0px 15px;
+
+    & .area__container {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      & textarea {
+        width: 100%;
+        resize: none;
+        border-radius: 25px;
+        padding: 10px 0px 5px 5px;
+        flex: 1 1 80%;
+        margin-right: 10px;
+      }
+      & button {
+        height: 40px;
+        width: 40px;
+        cursor: pointer;
+        border: none;
+        background: url(../../../images/send-message.png) no-repeat center;
+        transition: 0.2s ease-in-out;
+        border-radius: 50%;
+        background-color: white;
+        outline: none;
+        &:hover {
+          background-color: rgb(223, 222, 222);
+        }
+      }
+    }
+  }
+}
