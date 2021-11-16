@@ -19,13 +19,13 @@ const Conference = (props) => {
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [audioOff, setAudioOff] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
+
   const {
     toggleVideo,
     toggleAudio,
     devices,
     isMobile,
-
+    isLoaded,
     messages,
     leaveMeeting,
     isVideoMuted,
@@ -52,7 +52,7 @@ const Conference = (props) => {
             });
             const confRoomIdHash = btoa(state.meetingId);
             href.push(`${confRoomIdHash}`, "Creator");
-            setIsLoaded(true);
+
             if (!isAudio) {
               setAudioOff(`mute`);
             }
@@ -87,7 +87,6 @@ const Conference = (props) => {
               console.error(error);
             });
         }, 1000);
-        setIsLoaded(true);
       });
 
       if (!isAudio) {
@@ -267,14 +266,12 @@ const Conference = (props) => {
       if (history.action === "POP") {
         if (locationKeys[1] === location.key) {
           setLocationKeys(([_, ...keys]) => keys);
-          setIsLoaded(false);
 
           leaveMeeting();
           // Handle forward event
         } else {
           setLocationKeys((keys) => [location.key, ...keys]);
           href.push("/");
-          setIsLoaded(false);
 
           leaveMeeting();
 
@@ -394,8 +391,6 @@ const Conference = (props) => {
                 id="end__btn"
                 onClick={() => {
                   leaveMeeting().then(() => {
-                    setIsLoaded(false);
-
                     href.push("/");
                   });
                 }}

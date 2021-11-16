@@ -5,17 +5,10 @@ import Message from "./Message/Message";
 
 const Chat = (props) => {
   const { messages, chatHide, chat, dialog, participants } = props;
-  let sortedMessages = chat.messages.sort((a, b) => {
-    if (a.date_sent < b.date_sent) {
-      return -1;
-    }
-    if (a.date_sent > b.date_sent) {
-      return 1;
-    }
-    return 0;
-  });
+
   useEffect(() => {
-    chat.getMessages(dialog, participants);
+    chat.setParticipants(participants);
+    chat.getMessages(dialog);
     // eslint-disable-next-line
   }, [messages]);
   const messageRef = createRef();
@@ -37,8 +30,8 @@ const Chat = (props) => {
     elem.current.scrollTop = elem.current.scrollHeight;
   });
 
-  for (let i = 0; i < sortedMessages.length; i += 1) {
-    allMessages.push(<Message message={sortedMessages[i]} />);
+  for (let i = 0; i < chat.sortedMessages.length; i += 1) {
+    allMessages.push(<Message message={chat.sortedMessages[i]} />);
   }
 
   const onSendMessage = () => {
@@ -55,7 +48,7 @@ const Chat = (props) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault();
       if (messageRef.current.value !== "") {
-        chat.sendMessage(messageRef.current.value, props.dialog.current);
+        chat.sendMessage(messageRef.current.value, props.dialog);
         messageRef.current.value = "";
       }
     }

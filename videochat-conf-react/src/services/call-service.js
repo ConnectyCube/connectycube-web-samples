@@ -11,6 +11,7 @@ export const CallProvider = ({ children }) => {
   const [preJoinScreen] = useState(false);
   const [choosedCam, setChoosedCam] = useState();
   const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const [devicesStatus, setDevicesStatus] = useState({
     video: true,
@@ -81,7 +82,7 @@ export const CallProvider = ({ children }) => {
 
   const _session = useRef(null);
 
-  const mediaDevs = (allDevices) => {
+  const mediaDevices = (allDevices) => {
     let video = false;
     let audio = false;
     if (allDevices.find((e) => e.kind === "videoinput")) {
@@ -182,6 +183,14 @@ export const CallProvider = ({ children }) => {
     navigator.mediaDevices.addEventListener("devicechange", function (event) {
       setDevices({ video: true, audio: true });
     });
+    ConnectyCube.chat.onSystemMessageListener = (msg) => {
+      let camera = document.getElementById(`user__cam-${msg.userId}`);
+      if (msg.body === "camera__off") {
+        camera.style.opacity = "0";
+      } else if (msg.body === "camera__on") {
+        camera.style.opacity = "1";
+      }
+    };
   };
 
   const createAndJoinMeeting = (
@@ -238,13 +247,14 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.videochatconference
         .getMediaDevices()
         .then((allDevices) => {
-          let mediaParams = mediaDevs(allDevices);
+          let mediaParams = mediaDevices(allDevices);
           if (!mediaParams.audio && !mediaParams.video) {
             reject("Error:You do not have any camera and microphone available");
             return;
           }
           const session = ConnectyCube.videochatconference.createNewSession();
           _session.current = session;
+
           setDevicesStatus({ video: isVideo, audio: isAudio });
           const devicesVisible = { video: isVideo, audio: isAudio };
           withVideo.current = isVideo;
@@ -274,6 +284,7 @@ export const CallProvider = ({ children }) => {
               session
                 .join(roomId, userId, userName)
                 .then(() => {
+                  setIsLoaded(true);
                   setDevices(mediaParams);
                   resolve(mediaParams);
                 })
@@ -336,6 +347,19 @@ export const CallProvider = ({ children }) => {
 
   const enableVideo = () => {
     console.log("[enableVideo] ");
+    participantRef.current.forEach((p) => {
+      const userId = p.userId;
+      const msg = {
+        body: "camera__on",
+        extension: {
+          photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+          name: "Our photos",
+        },
+      };
+      let camera = document.getElementById("user__cam-me");
+      camera.style.opacity = "1";
+      ConnectyCube.chat.sendSystemMessage(userId, msg);
+    });
 
     return new Promise((resolve, reject) => {
       let params = { video: true, audio: true };
@@ -352,6 +376,19 @@ export const CallProvider = ({ children }) => {
   };
 
   const disableVideo = () => {
+    participantRef.current.forEach((p) => {
+      const userId = p.userId;
+      const msg = {
+        body: "camera__off",
+        extension: {
+          name: "Camera status",
+        },
+      };
+      let camera = document.getElementById("user__cam-me");
+      camera.style.opacity = "0";
+      ConnectyCube.chat.sendSystemMessage(userId, msg);
+    });
+
     console.log("[disableVideo]");
     let params = { video: false, audio: true };
     participantRef.current[0].stream.getVideoTracks()[0].stop();
@@ -500,6 +537,7 @@ export const CallProvider = ({ children }) => {
         chatId,
         leaveMeeting,
         isVideoMuted,
+        isLoaded,
       }}
     >
       {children}

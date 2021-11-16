@@ -35,6 +35,7 @@ export const ChatProvider = ({ children }) => {
       });
     };
   };
+
   const joinChat = (roomId) => {
     return new Promise((resolve, reject) => {
       ConnectyCube.meeting
@@ -53,6 +54,7 @@ export const ChatProvider = ({ children }) => {
         .catch((error) => {});
     });
   };
+
   const sendMessage = (messageText, dialogId) => {
     const message = {
       type: "groupchat",
@@ -64,7 +66,11 @@ export const ChatProvider = ({ children }) => {
     ConnectyCube.chat.send(dialogId, message);
   };
 
-  const getMessages = (chat_id, participants) => {
+  const setParticipants = (participants) => {
+    chatParticipantsRef.current = participants;
+  };
+
+  const getMessages = (chat_id) => {
     chatCallbaks();
     const params = {
       chat_dialog_id: chat_id,
@@ -76,16 +82,18 @@ export const ChatProvider = ({ children }) => {
       .list(params)
       .then((resp) => {
         console.table(resp.items);
-        processMessages(resp.items, participants).then((msgs) => {
-          chatParticipantsRef.current = participants;
-          console.table(msgs);
-          messagesRef.current = msgs;
-          setMessages(msgs);
-        });
+        processMessages(resp.items, chatParticipantsRef.current).then(
+          (msgs) => {
+            console.table(msgs);
+            messagesRef.current = msgs;
+            setMessages(msgs);
+          }
+        );
       })
       .catch((error) => {});
   };
-  const processMessages = async (records, participants) => {
+
+  const processMessages = async (records) => {
     const messagesBySender = {};
     records.forEach((m) => {
       let msgs = messagesBySender[m.sender_id];
@@ -98,9 +106,8 @@ export const ChatProvider = ({ children }) => {
     for (let senderId of Object.keys(messagesBySender)) {
       // find user
       const notFoundUsersIds = [];
-
-      for (let i = 0; i < participants.length; i += 1) {
-        let participant = participants[i];
+      for (let i = 0; i < chatParticipantsRef.current.length; i += 1) {
+        let participant = chatParticipantsRef.current[i];
         if (participant.userId === parseInt(senderId)) {
           const name = i === 0 ? "me" : participant.name;
           messagesBySender[senderId].forEach((m) => {
@@ -111,7 +118,6 @@ export const ChatProvider = ({ children }) => {
           notFoundUsersIds.push(senderId);
         }
       }
-
       if (notFoundUsersIds.length > 0) {
         const params = {
           filter: {
@@ -120,7 +126,6 @@ export const ChatProvider = ({ children }) => {
             value: notFoundUsersIds.map((id) => parseInt(id)),
           },
         };
-
         const users = await ConnectyCube.users.get(params);
         users.items.forEach((rec) => {
           const uID = rec.user.id;
@@ -131,12 +136,28 @@ export const ChatProvider = ({ children }) => {
         });
       }
     }
-
     return records;
   };
+
+  const sortedMessages = messages.sort((a, b) => {
+    if (a.date_sent < b.date_sent) {
+      return -1;
+    }
+    if (a.date_sent > b.date_sent) {
+      return 1;
+    }
+    return 0;
+  });
+
   return (
     <ChatContext.Provider
-      value={{ sendMessage, messages, getMessages, joinChat }}
+      value={{
+        sendMessage,
+        sortedMessages,
+        getMessages,
+        joinChat,
+        setParticipants,
+      }}
     >
       {children}
     </ChatContext.Provider>
