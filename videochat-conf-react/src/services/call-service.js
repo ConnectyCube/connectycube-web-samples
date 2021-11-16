@@ -438,6 +438,8 @@ export const CallProvider = ({ children }) => {
 
   const switchCamera = (deviceId) => {
     if (deviceId !== choosedCam) {
+      let myCamera = document.getElementById("user__cam-me");
+      myCamera.classList.toggle("unmirror");
       _session.current
         .switchMediaTracks({ video: deviceId })
         .then((newLocalStream) => {
