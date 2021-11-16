@@ -61,10 +61,14 @@ const UserStream = (props) => {
       <div
         className={`user__stats-btn ${connectionStatus}`}
         onMouseOver={() => {
-          document.getElementById(`user__stats-${userId}`).style.opacity = "1";
+          let stats = document.getElementById(`user__stats-${userId}`);
+          stats.style.opacity = "1";
+          stats.style.display = "block";
         }}
         onMouseOut={() => {
-          document.getElementById(`user__stats-${userId}`).style.opacity = "0";
+          let stats = document.getElementById(`user__stats-${userId}`);
+          stats.style.opacity = "0";
+          stats.style.display = "none";
         }}
       ></div>
       <UserStats

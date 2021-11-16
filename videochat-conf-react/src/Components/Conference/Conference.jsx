@@ -97,6 +97,7 @@ const Conference = (props) => {
 
   let camName = [];
   const newDevice = (e) => {
+    e.stopPropagation();
     let deviceId = e.target.name;
     props.call.switchCamera(deviceId);
   };
@@ -231,8 +232,10 @@ const Conference = (props) => {
     devices.classList.toggle("active");
   };
   const onHideButtons = (e) => {
-    let target = e.currentTarget.className;
-    if (target === "conference__container") {
+    let classOfClick = e.currentTarget.className;
+    let target = e.target.tagName;
+    debugger;
+    if (classOfClick === "conference__container" && target !== "SELECT") {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");
     }
@@ -326,6 +329,7 @@ const Conference = (props) => {
             <select
               className="view__changer"
               onChange={(e) => {
+                e.stopPropagation();
                 props.call.viewChange(e.target.value);
               }}
             >
