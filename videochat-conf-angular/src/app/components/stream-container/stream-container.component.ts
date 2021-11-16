@@ -21,6 +21,8 @@ export class StreamContainerComponent {
   @Input() currentUserStream: any;
   @Input() currentUserIndex: number = -1;
   @Input() currentUserName:string | undefined;
+  @Input() currentShareScreenIconName:string | undefined;
+  @Input() switchDone:boolean | undefined;
   @Output() videoLoaded:EventEmitter<any> = new EventEmitter<any>();
 
   public videoWork: boolean = false;

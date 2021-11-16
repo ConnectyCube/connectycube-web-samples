@@ -5,6 +5,9 @@
 </div>
 <div class="container-full-screen">
   <video [srcObject]="currentUserStream"
+         [ngClass]="{'mirror':currentShareScreenIconName !== 'stop_screen_share' &&
+          !switchDone &&
+           currentUserIndex===0}"
          preload="auto"
          autoplay
          [muted]="currentUserIndex === 0"
@@ -14,6 +17,6 @@
          class="videochat-stream"
   ></video>
 </div>
-<div class="display-user-name" [ngClass]="{unmirror:currentUserIndex ===0}">
+<div class="display-user-name">
   <p class="user-name">{{currentUserName}}</p>
 </div>

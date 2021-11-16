@@ -3,8 +3,10 @@
   <app-stream-container
     (videoLoaded)="ChangeDisable($event)"
     *ngFor="let user of (participantArray$ | async);index as i;"
-    [ngClass]="{'mirror':shareScreenIconName !== 'stop_screen_share' && !switchDone && i===0}"
+
     [className]="'stream'+i"
+    [currentShareScreenIconName]="shareScreenIconName"
+    [switchDone] = "switchDone"
     [currentUserStream]="user.stream"
     [currentUserId]="user.id"
     [currentUserIndex]="i"

@@ -115,7 +115,12 @@ export class VideochatComponent implements OnInit {
       this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
         this.videoIconName = 'videocam';
       }).catch(()=>{
-        this.switchDone = !this.switchDone;
+          if(this.isMobile){
+            this.switchDone = !this.switchDone;
+          }
+          else{
+            this.switchDone = false;
+          }
       })
       if (this.isMobile) {
         this.switchDone = !this.switchDone;
