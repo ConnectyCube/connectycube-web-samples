@@ -1,4 +1,4 @@
-<div (click)="hideButtons=!hideButtons" [attr.data-meetId]="meetingId$ | async"
+<div (click)="hideButtons=!hideButtons; switchVideoActive = false" [attr.data-meetId]="meetingId$ | async"
      class="videochat-streams grid-{{(participantArray$ | async)?.length}}">
   <app-stream-container
     (videoLoaded)="ChangeDisable($event)"
