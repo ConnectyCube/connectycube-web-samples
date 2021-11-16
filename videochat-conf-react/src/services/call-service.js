@@ -438,8 +438,23 @@ export const CallProvider = ({ children }) => {
 
   const switchCamera = (deviceId) => {
     if (deviceId !== choosedCam) {
-      let myCamera = document.getElementById("user__cam-me");
-      myCamera.classList.toggle("unmirror");
+      if (isMobile) {
+        let myCamera = document.getElementById("user__cam-me");
+        myCamera.classList.toggle("unmirror");
+      }
+      participantRef.current.forEach((p) => {
+        const userId = p.userId;
+        const msg = {
+          body: "camera__on",
+          extension: {
+            photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+            name: "Our photos",
+          },
+        };
+        let camera = document.getElementById("user__cam-me");
+        camera.style.opacity = "1";
+        ConnectyCube.chat.sendSystemMessage(userId, msg);
+      });
       _session.current
         .switchMediaTracks({ video: deviceId })
         .then((newLocalStream) => {
