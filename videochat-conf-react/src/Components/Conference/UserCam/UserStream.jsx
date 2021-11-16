@@ -2,6 +2,7 @@ import "./UserStream.scss";
 import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
 import { useState } from "react";
+import { isiOS } from "../../../services/heplers";
 
 const UserStream = (props) => {
   const {
@@ -28,6 +29,9 @@ const UserStream = (props) => {
         return;
       }
       videoElement.srcObject = stream;
+
+      videoElement.volume = 1;
+
       videoElement.onloadedmetadata = function (e) {
         videoElement.play();
       };

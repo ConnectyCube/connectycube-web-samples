@@ -184,7 +184,12 @@ export const CallProvider = ({ children }) => {
       setDevices({ video: true, audio: true });
     });
     ConnectyCube.chat.onSystemMessageListener = (msg) => {
-      let camera = document.getElementById(`user__cam-${msg.userId}`);
+      let camera = null;
+      if (msg.userId === participantRef.current[0].userId) {
+        camera = document.getElementById(`user__cam-me`);
+      } else {
+        camera = document.getElementById(`user__cam-${msg.userId}`);
+      }
       if (msg.body === "camera__off") {
         camera.style.opacity = "0";
       } else if (msg.body === "camera__on") {
@@ -265,6 +270,7 @@ export const CallProvider = ({ children }) => {
               if (!isVideo) {
                 localStream.addTrack(createDummyVideoTrack());
               }
+
               participantRef.current.filter((p) => p.name === "me")[0].stream =
                 localStream;
 
@@ -356,8 +362,7 @@ export const CallProvider = ({ children }) => {
           name: "Our photos",
         },
       };
-      let camera = document.getElementById("user__cam-me");
-      camera.style.opacity = "1";
+
       ConnectyCube.chat.sendSystemMessage(userId, msg);
     });
 
@@ -384,8 +389,7 @@ export const CallProvider = ({ children }) => {
           name: "Camera status",
         },
       };
-      let camera = document.getElementById("user__cam-me");
-      camera.style.opacity = "0";
+
       ConnectyCube.chat.sendSystemMessage(userId, msg);
     });
 
