@@ -21,6 +21,7 @@ export const ChatProvider = ({ children }) => {
         message
       );
       if (!isiOS()) {
+        let part = chatParticipantsRef.current;
         if (userId !== chatParticipantsRef.current[0].userId) {
           let audio = new Audio(sound);
           audio.play();
@@ -71,7 +72,6 @@ export const ChatProvider = ({ children }) => {
   };
 
   const getMessages = (chat_id) => {
-    chatCallbaks();
     const params = {
       chat_dialog_id: chat_id,
       sort_desc: "date_sent",
@@ -157,6 +157,7 @@ export const ChatProvider = ({ children }) => {
         getMessages,
         joinChat,
         setParticipants,
+        chatCallbaks,
       }}
     >
       {children}

@@ -12,6 +12,7 @@ export const CallProvider = ({ children }) => {
   const [choosedCam, setChoosedCam] = useState();
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isCreator, setIsCreator] = useState("");
 
   const [devicesStatus, setDevicesStatus] = useState({
     video: true,
@@ -24,7 +25,7 @@ export const CallProvider = ({ children }) => {
       userId: null,
       name: "me",
       stream: null,
-      bitrate: null,
+      bitrate: "0 kbits/sec",
       micLevel: null,
       connectionStatus: "good",
     },
@@ -37,7 +38,7 @@ export const CallProvider = ({ children }) => {
       userId: null,
       name: "me",
       stream: null,
-      bitrate: null,
+      bitrate: "0 kbits/sec",
       micLevel: null,
       connectionStatus: "good",
     },
@@ -77,7 +78,7 @@ export const CallProvider = ({ children }) => {
       });
 
       setParticipants([...participantRef.current]);
-    }, 15000);
+    }, 4000);
   }, []);
 
   const _session = useRef(null);
@@ -168,7 +169,7 @@ export const CallProvider = ({ children }) => {
           return e.connectionStatus;
         });
         setParticipants([...participantRef.current]);
-      }, 9000);
+      }, 4000);
     };
     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
       session,
@@ -216,6 +217,9 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.meeting
         .create(params)
         .then((meeting) => {
+          if (userId === meeting.host_id) {
+            setIsCreator("creator");
+          }
           meetingId.current = meeting._id;
           joinMeeting(userName, meeting._id, userId, camClass, isVideo, isAudio)
             .then((devices) => {
@@ -559,6 +563,7 @@ export const CallProvider = ({ children }) => {
         leaveMeeting,
         isVideoMuted,
         isLoaded,
+        isCreator,
       }}
     >
       {children}

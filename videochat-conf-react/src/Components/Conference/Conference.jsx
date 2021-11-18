@@ -16,11 +16,12 @@ import { BsFillChatDotsFill } from "react-icons/bs";
 const Conference = (props) => {
   const chat = useContext(ChatContext);
   let href = useHistory();
+  chat.chatCallbaks();
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [audioOff, setAudioOff] = useState("");
-
   const {
+    isCreator,
     toggleVideo,
     toggleAudio,
     devices,
@@ -47,7 +48,7 @@ const Conference = (props) => {
             isAudio
           )
           .then((state) => {
-            chat.joinChat(state.meetingId).then((chat) => {
+            chat.joinChat(state.meetingId, participants).then((chat) => {
               setChatId(chat._id);
             });
             const confRoomIdHash = btoa(state.meetingId);
@@ -95,6 +96,11 @@ const Conference = (props) => {
     }
   };
 
+  useEffect(() => {
+    chat.setParticipants(participants);
+    console.error(participants);
+  }, [participants]);
+
   let camName = [];
   const newDevice = (e) => {
     e.stopPropagation();
@@ -129,26 +135,8 @@ const Conference = (props) => {
   };
   let speakerUser;
   let usersSortedById;
-  if (props.call.view === "grid") {
-    for (let i = 0; i < props.call.participants.length; i += 1) {
-      let user = props.call.participants[i];
-      usersStreams.push(
-        <UserStream
-          key={i}
-          streamNumber={i}
-          userId={user.name === "me" ? "me" : user.userId}
-          userName={user.name}
-          stream={user.stream}
-          fullScreen={fullScreen}
-          bitrate={user.bitrate}
-          micLevel={user.micLevel}
-          isMobile={isMobile}
-          connectionStatus={props.call.participants[i].connectionStatus}
-        />
-      );
-    }
-  } else {
-    let usersSortedByMicLevel = props.call.participants.sort((a, b) => {
+  if (props.call.view === "sidebar" && participants.length > 1) {
+    let usersSortedByMicLevel = [...props.call.participants].sort((a, b) => {
       if (a.micLevel < b.micLevel) {
         return -1;
       }
@@ -157,10 +145,11 @@ const Conference = (props) => {
       }
       return 0;
     });
+    console.table(usersSortedByMicLevel);
 
     speakerUser = usersSortedByMicLevel[usersSortedByMicLevel.length - 1];
 
-    usersSortedById = props.call.participants.sort((a, b) => {
+    usersSortedById = [...props.call.participants].sort((a, b) => {
       if (a.userId < b.userId) {
         return -1;
       }
@@ -204,6 +193,24 @@ const Conference = (props) => {
         );
       }
     }
+  } else {
+    for (let i = 0; i < props.call.participants.length; i += 1) {
+      let user = props.call.participants[i];
+      usersStreams.push(
+        <UserStream
+          key={i}
+          streamNumber={i}
+          userId={user.name === "me" ? "me" : user.userId}
+          userName={user.name}
+          stream={user.stream}
+          fullScreen={fullScreen}
+          bitrate={user.bitrate}
+          micLevel={user.micLevel}
+          isMobile={isMobile}
+          connectionStatus={props.call.participants[i].connectionStatus}
+        />
+      );
+    }
   }
   const containerRef = react.createRef();
   const audioRef = react.createRef();
@@ -234,7 +241,6 @@ const Conference = (props) => {
   const onHideButtons = (e) => {
     let classOfClick = e.currentTarget.className;
     let target = e.target.tagName;
-    debugger;
     if (classOfClick === "conference__container" && target !== "SELECT") {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");
@@ -336,14 +342,22 @@ const Conference = (props) => {
               <option value="grid">Grid</option>
               <option value="sidebar">Speaker view</option>
             </select>
-            <div className={`streams_container ${props.call.view}`}>
+            <div
+              className={`streams_container ${
+                participants.length > 1 ? props.call.view : "grid"
+              }`}
+            >
               {props.call.view === "sidebar" && (
                 <div className={"speaker-stream"} id="speakerStream">
                   {speakerUser}
                 </div>
               )}
               <div
-                className={`users__cams ${props.call.view} ${props.call.view}-${props.call.participants.length}`}
+                className={`users__cams ${
+                  participants.length > 1 ? props.call.view : "grid"
+                } ${participants.length > 1 ? props.call.view : "grid"}-${
+                  props.call.participants.length
+                }`}
               >
                 {usersStreams}
               </div>
@@ -421,7 +435,7 @@ const Conference = (props) => {
               <button
                 onClick={onRecording}
                 id="record__button"
-                className="record__button"
+                className={`record__button ${isCreator}`}
               ></button>
             </div>
           </div>

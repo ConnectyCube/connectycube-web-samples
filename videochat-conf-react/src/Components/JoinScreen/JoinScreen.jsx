@@ -51,7 +51,7 @@ const JoinScreen = (props) => {
     e.preventDefault();
   };
   const login = () => {
-    userNameRef.current.value
+    userNameRef.current.value.trim()
       ? onPrejoinFinish(userNameRef.current.value, isVideo, true)
       : alert("Enter your name");
   };

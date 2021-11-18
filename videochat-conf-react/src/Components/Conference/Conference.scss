@@ -106,15 +106,15 @@
       opacity: 0;
       transition: 0.2s;
       bottom: 50px;
+
+      display: flex;
+
+      flex-direction: column;
       right: 0;
 
       &.active {
         visibility: visible;
         opacity: 1;
-
-        display: flex;
-
-        flex-direction: column;
         padding: 10px 20px;
         background-color: white;
       }
@@ -198,6 +198,7 @@
 }
 
 .record__button {
+  display: none;
   position: relative;
   outline: none;
   width: 50px;
@@ -209,6 +210,9 @@
   color: white;
   font-size: 18px;
   font-weight: 600;
+  &.creator {
+    display: block;
+  }
   &::after {
     position: absolute;
     width: 80%;

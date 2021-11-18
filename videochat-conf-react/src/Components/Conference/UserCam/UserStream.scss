@@ -5,25 +5,28 @@
   width: 100%;
   transition: 1s ease-in-out;
   border: 1px solid whitesmoke;
+  background: #282c34;
 
   & .img__container {
     display: flex;
     position: absolute;
-    height: 50%;
-    width: 50%;
+    height: 100%;
+    width: 100%;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    z-index: 3;
+    z-index: 5;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    background-color: #282c34;
+    overflow: hidden;
     &.hide {
       display: none;
     }
   }
   & .no-image {
-    width: 70%;
+    width: 40%;
     background-color: white;
     border-radius: 50%;
   }
@@ -56,6 +59,9 @@
     transition: 0.2s;
     &.unmirror {
       transform: rotateY(360deg) !important;
+    }
+    &.hide {
+      opacity: 0;
     }
   }
 

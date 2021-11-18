@@ -7,7 +7,7 @@ const Chat = (props) => {
   const { messages, chatHide, chat, dialog, participants } = props;
 
   useEffect(() => {
-    chat.setParticipants(participants);
+   //  chat.setParticipants(participants);
     chat.getMessages(dialog);
     // eslint-disable-next-line
   }, [messages]);
@@ -35,7 +35,7 @@ const Chat = (props) => {
   }
 
   const onSendMessage = () => {
-    if (messageRef.current.value) {
+    if (messageRef.current.value.trim()) {
       chat.sendMessage(messageRef.current.value, props.dialog);
 
       messageRef.current.value = "";
@@ -47,7 +47,7 @@ const Chat = (props) => {
   const onEnterPress = (e) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault();
-      if (messageRef.current.value !== "") {
+      if (messageRef.current.value.trim()) {
         chat.sendMessage(messageRef.current.value, props.dialog);
         messageRef.current.value = "";
       }

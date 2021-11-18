@@ -2,8 +2,7 @@ import "./UserStream.scss";
 import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
 import { useState } from "react";
-import { isiOS } from "../../../services/heplers";
-
+import { detectBrowser } from "../../../services/heplers";
 const UserStream = (props) => {
   const {
     stream,
@@ -30,8 +29,6 @@ const UserStream = (props) => {
       }
       videoElement.srcObject = stream;
 
-      videoElement.volume = 1;
-
       videoElement.onloadedmetadata = function (e) {
         videoElement.play();
       };
@@ -48,7 +45,7 @@ const UserStream = (props) => {
       {!isStreamLoaded && (
         <div ref={loaderRef} className="lds-dual-ring-main"></div>
       )}
-      {isStreamLoaded && (
+      {isStreamLoaded && bitrate === "0 kbits/sec" && (
         <div ref={noImageRef} className="img__container">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/OOjs_UI_icon_userAvatar.svg/1200px-OOjs_UI_icon_userAvatar.svg.png"
@@ -77,6 +74,7 @@ const UserStream = (props) => {
         bitrate={bitrate}
         connectionStatus={connectionStatus}
       />
+
       <video
         playsInline
         muted={userId === "me"}
@@ -85,9 +83,12 @@ const UserStream = (props) => {
         preload="yes"
         ref={videoRef}
       ></video>
+
       <input
         type="image"
-        className={`full__screen ${isMobile ? `hide` : ``}`}
+        className={`full__screen ${
+          isMobile || detectBrowser() === "Safari" ? `hide` : ``
+        }`}
         onClick={() => {
           fullScreen(userId);
         }}
