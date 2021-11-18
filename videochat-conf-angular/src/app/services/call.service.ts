@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
-import {addUser, removeUser, updateUser} from "../reducers/participant.actions";
+import {addBitrateMicrophone, addUser, removeUser, updateUser} from "../reducers/participant.actions";
 import {constraints, mediaParams} from "./config";
+import {User} from "../reducers/participant.reducer";
+import {participantSelector} from "../reducers/participant.selectors";
+import {take} from "rxjs/operators";
 
 declare let ConnectyCube: any;
 
@@ -15,9 +18,14 @@ export class CallService {
   ) {
   }
 
+  private UPDATE_STREAM_TIME: number = 3000;
   private OurSession: any;
   private OurDeviceId: any;
   private OurSharingStatus: any;
+  private OurIntervalId: any;
+  private subscribeParticipantArray: any;
+  private participantArray: any;
+  private participantArray$ = this.store.select(participantSelector);
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -41,7 +49,19 @@ export class CallService {
       userDisplayName: any,
       isExistingParticipant: any
     ) => {
-      this.store.dispatch(addUser({id: userId, name: userDisplayName}));
+      console.warn(this.store);
+      this.store.dispatch(addUser({id: userId, name: userDisplayName, bitrate: 0}));
+      console.warn(this.store)
+      if (this.subscribeParticipantArray) {
+        this.subscribeParticipantArray.unsubscribe();
+        this.stopCheckUserMicLevel();
+      }
+      //Get listener to Participants array and get participantArray if change
+      this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
+        this.participantArray = res;
+        console.warn(this.participantArray);
+        this.startCheckUsersMicLevel(this.participantArray, session);
+      });
     };
     ConnectyCube.videochatconference.onParticipantLeftListener
       = (session: any, userId: any) => {
@@ -60,6 +80,29 @@ export class CallService {
     ConnectyCube.videochatconference.onSessionConnectionStateChangedListener
       = (session: any, iceState: any) => {
     };
+  }
+
+  public getUsersMicLevel(parcipantsArray: Array<User>, session: any, store:any) {
+    console.log("[getUsersMicLevel 15s]", parcipantsArray, session);
+    const idBitrateMap:any = [];
+    parcipantsArray.forEach((user: User, index) => {
+      if (index !== 0) {
+        idBitrateMap.push({id:user.id, bitrate: session.getRemoteUserVolume(user.id)});
+      }
+    })
+    console.log(idBitrateMap);
+    console.log(store);
+    store.dispatch(addBitrateMicrophone({arr:idBitrateMap}));
+  }
+
+  public startCheckUsersMicLevel(parcipantsArray: Array<User>, session: any) {
+    console.log("[StartCheckUsersMic]");
+    this.OurIntervalId = setInterval(this.getUsersMicLevel, this.UPDATE_STREAM_TIME, parcipantsArray, session, this.store);
+  }
+
+  public stopCheckUserMicLevel() {
+    console.log("[StopCheckUsersMic]");
+    clearInterval(this.OurIntervalId);
   }
 
   public SetOurDeviceId(id: any) {
@@ -136,7 +179,7 @@ export class CallService {
 
   public switchCamera(deviceId: string, videoIcon: string) {
     return new Promise<void>((resolve, reject) => {
-      if(this.OurDeviceId === deviceId){
+      if (this.OurDeviceId === deviceId) {
         reject();
         return;
       }
@@ -214,6 +257,8 @@ export class CallService {
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
       this.OurSession = session;
+
+      console.warn(this.OurSession);
 
       const mediaParamsDeviceId = {
         audio: true,

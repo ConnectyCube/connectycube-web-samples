@@ -1,0 +1,51 @@
+.sidebar-view {
+  display: flex;
+  height: 100%;
+}
+.grid-view{
+  height: 100%;
+  width: 100%;
+}
+
+.speaker-stream {
+  flex-basis: 80%;
+  height: 100%;
+}
+.sidebar{
+  display: flex;
+  flex-basis: 20%;
+  height: 100%;
+  flex-direction: column;
+  overflow-x: hidden;
+  background: #282c34;
+  app-stream-container{
+    max-height: 20%;
+  }
+}
+
+.grid{
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-auto-columns: 1fr;
+  background-color: #282C34;
+}
+
+@media screen and(max-width:767px) {
+  .speaker-stream{
+    max-height: 80%;
+  }
+  .sidebar-view {
+    flex-direction: column;
+
+    .sidebar{
+      flex-direction: row;
+      overflow-y: hidden;
+    }
+    .sidebar app-stream-container {
+      flex: 0 1 30%;
+      min-height: 100% !important;
+      min-width: 20%;
+    }
+  }
+}

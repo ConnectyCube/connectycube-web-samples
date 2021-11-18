@@ -1,17 +1,51 @@
+<mat-form-field class="change-view" appearance="fill">
+  <mat-select
+    [(ngModel)]="selectedValue"
+    (ngModelChange)="changeView()"
+  >
+    <mat-select-trigger>
+      <mat-icon style="margin-right: 10px">{{gridStatus ? 'view_module' : 'view_sidebar'}}</mat-icon>
+      {{gridStatus ? 'Grid View' : 'Speaker View'}}
+    </mat-select-trigger>
+    <mat-option value="grid">
+      <mat-icon>view_module</mat-icon>
+      Grid View
+    </mat-option>
+    <mat-option [disabled]="(participantArray$ | async)?.length === 1" value="sidebar">
+      <mat-icon>view_sidebar</mat-icon>
+      Speaker View
+    </mat-option>
+  </mat-select>
+</mat-form-field>
 <div (click)="hideButtons=!hideButtons; switchVideoActive = false" [attr.data-meetId]="meetingId$ | async"
-     class="videochat-streams grid-{{(participantArray$ | async)?.length}}">
-  <app-stream-container
-    (videoLoaded)="ChangeDisable($event)"
-    *ngFor="let user of (participantArray$ | async);index as i;"
-
-    [className]="'stream'+i"
-    [currentShareScreenIconName]="shareScreenIconName"
-    [switchDone] = "switchDone"
-    [currentUserStream]="user.stream"
-    [currentUserId]="user.id"
-    [currentUserIndex]="i"
-    [currentUserName]="user.name"
-  ></app-stream-container>
+     class="videochat-streams"
+     [ngClass]="{'grid-view':gridStatus, 'sidebar-view':sidebarStatus}">
+  <div class="speaker-stream" *ngIf="sidebarStatus">
+    <app-stream-container
+      (videoLoaded)="ChangeDisable($event)"
+      *ngFor="let user of (participantArray$ | async | slice:startSliceSide:endSliceSide);index as i;"
+      [className]="'stream'+i"
+      [currentShareScreenIconName]="shareScreenIconName"
+      [switchDone]="switchDone"
+      [currentUserStream]="user.stream"
+      [currentUserId]="user.id"
+      [currentUserIndex]="i"
+      [currentUserName]="user.name"
+    ></app-stream-container>
+  </div>
+  <div class="users-streams" [ngClass]="setNgClassProperty((participantArray$ | async)?.length)">
+    <app-stream-container
+      (videoLoaded)="ChangeDisable($event)"
+      *ngFor="let user of (participantArray$ | async | slice:startSliceGrid);index as i;"
+      [className]="'stream'+i"
+      [currentShareScreenIconName]="shareScreenIconName"
+      [switchDone]="switchDone"
+      [currentUserStream]="user.stream"
+      [currentUserId]="user.id"
+      [currentUserIndex]="gridStatus?i:i+1"
+      [currentUserName]="user.name"
+    ></app-stream-container>
+  </div>
 </div>
 <div [style.visibility]="hideButtons?'hidden':'visible'" id="videochat-buttons-container">
   <div id="user-device"

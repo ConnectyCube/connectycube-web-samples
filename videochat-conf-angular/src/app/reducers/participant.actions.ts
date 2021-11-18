@@ -16,3 +16,7 @@ export const updateUser = createAction(
 export const removeAllUsers = createAction(
   '[PARTICIPANT] remove all users'
 );
+export  const addBitrateMicrophone = createAction(
+  '[PARTICIPANT] add users bitrate',
+  props<{arr:any}>()
+);

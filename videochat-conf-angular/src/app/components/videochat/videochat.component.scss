@@ -1,11 +1,9 @@
+@import "container-templates";
 @import "grid-templates";
 
 .videochat-streams {
   height: 100%;
   width: 100%;
-  display: grid;
-  grid-auto-columns: 1fr;
-  background-color: #282C34;
 }
 
 app-stream-container {
@@ -93,6 +91,11 @@ app-stream-container {
   }
 }
 
+.change-view{
+  position: absolute;
+  right: 10px;
+  z-index: 10;
+}
 
 
 

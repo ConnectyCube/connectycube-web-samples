@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {State} from "../../reducers";
 import {select, Store} from "@ngrx/store";
 import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
@@ -11,16 +11,18 @@ import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {PermissionsService} from "../../services/permissions.service";
+import {first, take} from "rxjs/operators";
 
 @Component({
   selector: 'app-videochat',
   templateUrl: './videochat.component.html',
   styleUrls: ['./videochat.component.scss']
 })
-export class VideochatComponent implements OnInit {
+export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
 
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
   public participantArray$ = this.store$.select(participantSelector);
+  public participantArray: any;
   public hideButtons: boolean = false;
   public microphoneIconName: string = 'mic';
   public videoIconName: string = 'videocam';
@@ -34,6 +36,13 @@ export class VideochatComponent implements OnInit {
   public MicroConnect = false;
   public CameraConnect = false;
   public videoPermission: any;
+  public selectedValue: string = 'grid';
+  public gridStatus: boolean = true;
+  public sidebarStatus: boolean = false;
+  public startSliceSide = 0;
+  public endSliceSide = 1;
+  public startSliceGrid = 0;
+  public subscribeParticipantArray: any;
 
   constructor
   (
@@ -68,6 +77,20 @@ export class VideochatComponent implements OnInit {
         console.log("Micro", this.MicroConnect);
         console.log("Camera", this.CameraConnect);
       })
+  }
+
+  private gridView() {
+    console.log('[Grid View]')
+    this.gridStatus = true;
+    this.sidebarStatus = false;
+    this.startSliceGrid = 0;
+  }
+
+  private sidebarView() {
+    console.log('[Sidebar View]');
+    this.gridStatus = false;
+    this.sidebarStatus = true;
+    this.startSliceGrid = 1;
   }
 
   public muteOrUnmuteMicro() {
@@ -114,13 +137,13 @@ export class VideochatComponent implements OnInit {
     else {
       this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
         this.videoIconName = 'videocam';
-      }).catch(()=>{
-          if(this.isMobile){
-            this.switchDone = !this.switchDone;
-          }
-          else{
-            this.switchDone = false;
-          }
+      }).catch(() => {
+        if (this.isMobile) {
+          this.switchDone = !this.switchDone;
+        }
+        else {
+          this.switchDone = false;
+        }
       })
       if (this.isMobile) {
         this.switchDone = !this.switchDone;
@@ -155,7 +178,30 @@ export class VideochatComponent implements OnInit {
       })
   }
 
+  public changeView() {
+    switch (this.selectedValue) {
+      case "grid":
+        this.gridView();
+        break;
+      case "sidebar":
+        this.sidebarView();
+        break;
+      default:
+        this.gridView();
+    }
+  }
+
+  setNgClassProperty(arrayLength: any) {
+    return {
+      ['grid-' + arrayLength]: this.gridStatus,
+      'sidebar-view': this.sidebarStatus,
+      'grid': this.gridStatus,
+      'sidebar': this.sidebarStatus
+    };
+  }
+
   ngOnInit() {
+
     this.checkConnect();
     this.checkPermissions();
     navigator.mediaDevices.addEventListener('devicechange', () => {
@@ -172,5 +218,16 @@ export class VideochatComponent implements OnInit {
       this.mediaDevice = mediaDevice;
       console.log(this.mediaDevice)
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.warn(changes);
+  }
+
+  ngOnDestroy() {
+    this.subscribeParticipantArray.unsubscribe();
+    if (this.participantArray.length > 1) {
+      this.callService.stopCheckUserMicLevel();
+    }
   }
 }

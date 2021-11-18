@@ -21,6 +21,8 @@ import { VideochatWrapComponent } from './components/videochat-wrap/videochat-wr
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatDialogModule} from "@angular/material/dialog";
 import { DialogWarningComponent } from './components/dialog-warning/dialog-warning.component';
+import {MatSelectModule} from "@angular/material/select";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -58,6 +60,8 @@ import { DialogWarningComponent } from './components/dialog-warning/dialog-warni
     MatButtonModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatSelectModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
