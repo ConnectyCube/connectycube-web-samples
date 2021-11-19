@@ -14,13 +14,11 @@ const UserStream = (props) => {
     isMobile,
     streamNumber,
     fullScreen,
+    isVideo,
   } = props;
   const [isStreamLoaded, setIsStreamLoaded] = useState(false);
   const loaderRef = React.createRef();
   const noImageRef = React.createRef();
-  setTimeout(() => {
-    setIsStreamLoaded((isStreamLoaded) => true);
-  }, 4000);
 
   const videoRef = useCallback(
     (videoElement) => {
@@ -28,7 +26,7 @@ const UserStream = (props) => {
         return;
       }
       videoElement.srcObject = stream;
-
+      setIsStreamLoaded((isStreamLoaded) => true);
       videoElement.onloadedmetadata = function (e) {
         videoElement.play();
       };
@@ -45,7 +43,7 @@ const UserStream = (props) => {
       {!isStreamLoaded && (
         <div ref={loaderRef} className="lds-dual-ring-main"></div>
       )}
-      {isStreamLoaded && (
+      {!isVideo && isStreamLoaded && (
         <div ref={noImageRef} className="img__container">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/OOjs_UI_icon_userAvatar.svg/1200px-OOjs_UI_icon_userAvatar.svg.png"
@@ -78,7 +76,7 @@ const UserStream = (props) => {
         playsInline
         muted={userId === "me"}
         id={`user__cam-${userId}`}
-        className={`user__cam`}
+        className={`user__cam ${isVideo ? "" : "hide"}`}
         preload="yes"
         ref={videoRef}
       ></video>

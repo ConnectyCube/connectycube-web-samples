@@ -32,6 +32,7 @@ export const CallProvider = ({ children }) => {
       bitrate: "0 kbits/sec",
       micLevel: null,
       connectionStatus: "good",
+      isVideo: false,
     },
   ]);
 
@@ -45,6 +46,7 @@ export const CallProvider = ({ children }) => {
       bitrate: "0 kbits/sec",
       micLevel: null,
       connectionStatus: "good",
+      isVideo: false,
     },
   ]);
 
@@ -66,7 +68,6 @@ export const CallProvider = ({ children }) => {
         if (p.name !== "me") {
           try {
             let bitrate = _session.current.getRemoteUserBitrate(p.userId);
-            debugger;
             let micLevel =
               (_session.current.getRemoteUserVolume(p.userId) / MAX_MIC_LEVEL) *
               100;
@@ -103,8 +104,8 @@ export const CallProvider = ({ children }) => {
       audio,
       video,
       options: {
-        muted: true,
-        mirror: true,
+        muted: false,
+        mirror: false,
       },
     };
   };
@@ -203,26 +204,38 @@ export const CallProvider = ({ children }) => {
     ConnectyCube.chat.onSystemMessageListener = (msg) => {
       let camera = null;
       setTimeout(() => {
-        if (msg.userId === participantRef.current[0].userId) {
-          camera = document.getElementById(`user__cam-me`);
-        } else {
-          camera = document.getElementById(`user__cam-${msg.userId}`);
-          debugger;
-        }
-        if (!camera) {
-          setTimeout(() => {
-            oneMore(msg.userId, msg.body);
-          }, 2000);
-        } else {
-          console.table(msg.body, "INFO");
-          if (msg.body === "camera__off") {
-            camera.classList.add("hide");
-          } else if (msg.body === "camera__on") {
-            camera.classList.remove("hide");
-            console.error("Removed hide from ", msg.userId);
-          }
+        if (msg.body === "camera__off") {
+          participantRef.current.find(
+            (p) => p.userId === msg.userId
+          ).isVideo = false;
+          setParticipants([...participantRef.current]);
+        } else if (msg.body === "camera__on") {
+          participantRef.current.find(
+            (p) => p.userId === msg.userId
+          ).isVideo = true;
+          setParticipants([...participantRef.current]);
         }
       }, 1000);
+      // setTimeout(() => {
+      //   if (msg.userId === participantRef.current[0].userId) {
+      //     camera = document.getElementById(`user__cam-me`);
+      //   } else {
+      //     camera = document.getElementById(`user__cam-${msg.userId}`);
+      //   }
+      //   if (!camera) {
+      //     setTimeout(() => {
+      //       oneMore(msg.userId, msg.body);
+      //     }, 2000);
+      //   } else {
+      //     console.table(msg.body, "INFO");
+      //     if (msg.body === "camera__off") {
+      //       camera.classList.add("hide");
+      //     } else if (msg.body === "camera__on") {
+      //       camera.classList.remove("hide");
+      //       console.error("Removed hide from ", msg.userId);
+      //     }
+      //   }
+      // }, 1000);
     };
   };
   const oneMore = (userId, msg) => {
@@ -289,16 +302,6 @@ export const CallProvider = ({ children }) => {
       createCallbacks();
       participantRef.current[0].userId = userId;
 
-      const msg = {
-        body: isVideo ? "camera__on" : "camera__off",
-        extension: {
-          photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
-          name: "Our photos",
-        },
-      };
-
-      ConnectyCube.chat.sendSystemMessage(userId, msg);
-
       setParticipants([...participantRef.current]);
       ConnectyCube.videochatconference
         .getMediaDevices()
@@ -320,7 +323,8 @@ export const CallProvider = ({ children }) => {
             .getUserMedia(devicesVisible)
             .then((localStream) => {
               if (!isVideo) {
-                localStream.addTrack(createDummyVideoTrack());
+                const dt = createDummyVideoTrack();
+                localStream.addTrack(dt);
               }
 
               participantRef.current.filter((p) => p.name === "me")[0].stream =
@@ -344,6 +348,15 @@ export const CallProvider = ({ children }) => {
                 .then(() => {
                   setIsLoaded(true);
                   setDevices(mediaParams);
+                  const msg = {
+                    body: isVideo ? "camera__on" : "camera__off",
+                    extension: {
+                      photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+                      name: "Our photos",
+                    },
+                  };
+
+                  ConnectyCube.chat.sendSystemMessage(userId, msg);
                   resolve(mediaParams);
                 })
                 .catch((error) => {
@@ -401,9 +414,9 @@ export const CallProvider = ({ children }) => {
     const ctx = canvas.getContext("2d");
     ctx.fillRect(0, 0, width, height);
     let stream = canvas.captureStream();
-    console.log("[createDummyVideoTrack] tracks", stream.getTracks());
+    console.log("[createDummyVideoTrack] waflo", stream.getTracks()[0]);
     const videoTrack = Object.assign(stream.getVideoTracks()[0], {
-      enabled: false,
+      enabled: true,
     });
     console.log("[createDummyVideoTrack] videoTrack", videoTrack);
     return videoTrack;

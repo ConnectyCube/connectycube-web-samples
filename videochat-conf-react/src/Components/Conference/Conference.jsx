@@ -148,7 +148,7 @@ const Conference = (props) => {
     speakerUser = usersSortedByMicLevel[usersSortedByMicLevel.length - 1];
 
     usersSortedById = [...props.call.participants].sort((a, b) => {
-      if (a.userId < b.userId && a.userName==='me') {
+      if (a.userId < b.userId && a.userName === "me") {
         return -1;
       }
       if (a.userId > b.userId) {
@@ -163,6 +163,7 @@ const Conference = (props) => {
         usersStreams.push(
           <UserStream
             key={i}
+            isVideo={props.call.participants[i].isVideo}
             streamNumber={i}
             userId={user.name === "me" ? "me" : user.userId}
             userName={user.name}
@@ -179,6 +180,7 @@ const Conference = (props) => {
 
         speakerUser = (
           <UserStream
+            isVideo={props.call.participants[i].isVideo}
             userId={user.name}
             userName={user.name}
             stream={user.stream}
@@ -197,6 +199,7 @@ const Conference = (props) => {
       usersStreams.push(
         <UserStream
           key={i}
+          isVideo={props.call.participants[i].isVideo}
           streamNumber={i}
           userId={user.name === "me" ? "me" : user.userId}
           userName={user.name}
