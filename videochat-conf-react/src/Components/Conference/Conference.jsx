@@ -12,6 +12,7 @@ import { FaMicrophone } from "react-icons/fa";
 import { IoMdVideocam } from "react-icons/io";
 import { MdScreenShare, MdCameraswitch, MdCallEnd } from "react-icons/md";
 import { BsFillChatDotsFill } from "react-icons/bs";
+import ConnectyCube from "connectycube";
 
 const Conference = (props) => {
   const chat = useContext(ChatContext);
@@ -69,25 +70,23 @@ const Conference = (props) => {
       let roomId = history.split("/");
       roomId = atob(roomId[2]);
       AuthService.login(userName).then((user) => {
-        setTimeout(() => {
-          props.call
-            .joinMeeting(
-              user.full_name,
-              roomId,
-              user.id,
-              `user__cam`,
-              isVideo,
-              isAudio
-            )
-            .then((devices) => {
-              chat.joinChat(roomId).then((chat) => {
-                setChatId(chat._id);
-              });
-            })
-            .catch((error) => {
-              console.error(error);
+        props.call
+          .joinMeeting(
+            user.full_name,
+            roomId,
+            user.id,
+            `user__cam`,
+            isVideo,
+            isAudio
+          )
+          .then((devices) => {
+            chat.joinChat(roomId).then((chat) => {
+              setChatId(chat._id);
             });
-        }, 1000);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       });
 
       if (!isAudio) {
@@ -98,7 +97,6 @@ const Conference = (props) => {
 
   useEffect(() => {
     chat.setParticipants(participants);
-    console.error(participants);
   }, [participants]);
 
   let camName = [];
@@ -150,7 +148,7 @@ const Conference = (props) => {
     speakerUser = usersSortedByMicLevel[usersSortedByMicLevel.length - 1];
 
     usersSortedById = [...props.call.participants].sort((a, b) => {
-      if (a.userId < b.userId) {
+      if (a.userId < b.userId && a.userName==='me') {
         return -1;
       }
       if (a.userId > b.userId) {
@@ -227,8 +225,7 @@ const Conference = (props) => {
     e.stopPropagation();
 
     videoRef.current.classList.toggle("mute");
-    let cam = document.getElementById("user__cam-me");
-    cam.classList.toggle("muted");
+
     props.call.toggleVideo();
   };
 

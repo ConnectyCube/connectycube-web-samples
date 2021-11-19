@@ -67,14 +67,15 @@
       overflow-x: hidden;
       background: #282c34;
       & .user__cam-container {
-        max-height: 20%;
+        flex: 0 0 20%;
       }
 
       @media screen and (max-width: 767px) {
         flex-direction: row;
         overflow-y: hidden;
+        overflow-x: scroll;
         & .user__cam-container {
-          flex: 0 1 30%;
+          flex: 0 0 30%;
         }
       }
     }
@@ -86,7 +87,7 @@
     width: 400px;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 20px;
+    bottom: 30px;
     display: flex;
     justify-content: space-around;
     opacity: 1;

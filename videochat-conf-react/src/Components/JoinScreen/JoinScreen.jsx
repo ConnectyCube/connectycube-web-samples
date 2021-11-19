@@ -110,7 +110,6 @@ const JoinScreen = (props) => {
       </div>
 
       <div id="form__info" className="form__info">
-        <div>Enter your name</div>
         <input
           ref={userNameRef}
           type="text"

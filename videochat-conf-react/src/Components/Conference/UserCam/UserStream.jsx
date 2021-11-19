@@ -45,7 +45,7 @@ const UserStream = (props) => {
       {!isStreamLoaded && (
         <div ref={loaderRef} className="lds-dual-ring-main"></div>
       )}
-      {isStreamLoaded && bitrate === "0 kbits/sec" && (
+      {isStreamLoaded && (
         <div ref={noImageRef} className="img__container">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/OOjs_UI_icon_userAvatar.svg/1200px-OOjs_UI_icon_userAvatar.svg.png"
@@ -74,7 +74,6 @@ const UserStream = (props) => {
         bitrate={bitrate}
         connectionStatus={connectionStatus}
       />
-
       <video
         playsInline
         muted={userId === "me"}
@@ -83,7 +82,6 @@ const UserStream = (props) => {
         preload="yes"
         ref={videoRef}
       ></video>
-
       <input
         type="image"
         className={`full__screen ${

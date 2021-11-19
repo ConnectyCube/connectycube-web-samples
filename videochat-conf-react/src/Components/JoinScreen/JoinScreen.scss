@@ -99,11 +99,6 @@
       transition: 0.2s;
       object-fit: contain;
       z-index: 3;
-
-      &.muted {
-        opacity: 0;
-        position: relative;
-      }
     }
   }
 

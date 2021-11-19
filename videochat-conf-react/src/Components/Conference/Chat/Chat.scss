@@ -117,6 +117,7 @@
       position: relative;
       display: flex;
       align-items: center;
+      outline: none;
 
       & textarea {
         width: 100%;
@@ -125,6 +126,7 @@
         padding: 10px 0px 5px 5px;
         flex: 1 1 80%;
         margin-right: 10px;
+        outline: none;
       }
       & button {
         height: 40px;
