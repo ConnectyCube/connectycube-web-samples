@@ -1,4 +1,4 @@
-import {Component, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {State} from "../../reducers";
 import {select, Store} from "@ngrx/store";
 import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
@@ -6,19 +6,18 @@ import {participantSelector} from "../../reducers/participant.selectors";
 import {AuthService} from "../../services/auth.service";
 import {CallService} from "../../services/call.service";
 import {mediaParams} from "../../services/config";
-import {removeAllUsers} from "../../reducers/participant.actions";
+import {removeAllUsers, swapUsers} from "../../reducers/participant.actions";
 import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {PermissionsService} from "../../services/permissions.service";
-import {first, take} from "rxjs/operators";
 
 @Component({
   selector: 'app-videochat',
   templateUrl: './videochat.component.html',
   styleUrls: ['./videochat.component.scss']
 })
-export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
+export class VideochatComponent implements OnInit, OnDestroy {
 
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
   public participantArray$ = this.store$.select(participantSelector);
@@ -39,8 +38,8 @@ export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
   public selectedValue: string = 'grid';
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
-  public startSliceSide = 0;
-  public endSliceSide = 1;
+  public startSliceSide = this.callService.getMaxBitraitUserIndex() - 1;
+  public endSliceSide = this.callService.getMaxBitraitUserIndex();
   public startSliceGrid = 0;
   public subscribeParticipantArray: any;
 
@@ -81,6 +80,7 @@ export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
 
   private gridView() {
     console.log('[Grid View]')
+    this.callService.setCurrentMode('grid');
     this.gridStatus = true;
     this.sidebarStatus = false;
     this.startSliceGrid = 0;
@@ -88,6 +88,7 @@ export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
 
   private sidebarView() {
     console.log('[Sidebar View]');
+    this.callService.setCurrentMode('sidebar');
     this.gridStatus = false;
     this.sidebarStatus = true;
     this.startSliceGrid = 1;
@@ -211,7 +212,7 @@ export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
         console.log(this.mediaDevice)
       });
     })
-    if (mediaParams.video === false) {
+    if (!mediaParams.video) {
       this.videoIconName = 'videocam_off';
     }
     this.callService.getListDevices().then((mediaDevice: any) => {
@@ -220,13 +221,8 @@ export class VideochatComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.warn(changes);
-  }
-
   ngOnDestroy() {
-    this.subscribeParticipantArray.unsubscribe();
-    if (this.participantArray.length > 1) {
+    if (this.callService.getParticipantArrayLength() > 1) {
       this.callService.stopCheckUserMicLevel();
     }
   }

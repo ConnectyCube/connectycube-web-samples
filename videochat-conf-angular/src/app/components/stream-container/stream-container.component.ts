@@ -1,21 +1,17 @@
 import {
-  AfterViewChecked,
-  AfterViewInit,
   Component,
-  DoCheck,
   EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
+  Input, OnChanges,
+  Output, SimpleChanges,
 } from '@angular/core';
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-stream-container',
   templateUrl: './stream-container.component.html',
   styleUrls: ['./stream-container.component.scss']
 })
-export class StreamContainerComponent {
+export class StreamContainerComponent{
 
   @Input() currentUserId: number = 0;
   @Input() currentUserStream: any;
@@ -26,6 +22,7 @@ export class StreamContainerComponent {
   @Output() videoLoaded:EventEmitter<any> = new EventEmitter<any>();
 
   public videoWork: boolean = false;
+  onChanges = new Subject<SimpleChanges>();
 
   showVideo() {
     if(this.currentUserIndex !== 0){

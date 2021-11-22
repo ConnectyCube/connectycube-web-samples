@@ -1,21 +1,20 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {select, Store} from "@ngrx/store";
 import {State} from "./reducers";
-import {selectMeetingIdRouterParam, selectUrl} from "./reducers/route.selectors";
+import {selectMeetingIdRouterParam} from "./reducers/route.selectors";
 import {VideochatComponent} from "./components/videochat/videochat.component";
 import {NavigationEnd, Router} from "@angular/router";
 import {filter} from "rxjs/operators";
 import {UrlService} from "./services/url.service";
 import {removeAllUsers} from "./reducers/participant.actions";
 import {CallService} from "./services/call.service";
-import {LoadingService} from "./services/loading.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnChanges {
 
   @ViewChild('videoElem') public videoElem: VideochatComponent | undefined;
   public isAuthorization = true;
@@ -46,7 +45,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
-    this.IsPrejoin = this.joinUrl.includes('join') ? true : false;
+    this.IsPrejoin = this.joinUrl.includes('join');
 
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd)
@@ -64,6 +63,10 @@ export class AppComponent implements OnInit {
         this.urlService.setPreviousUrl(null);
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.warn("CHANGES", changes);
   }
 
 }

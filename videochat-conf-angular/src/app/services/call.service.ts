@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
-import {addBitrateMicrophone, addUser, removeUser, updateUser} from "../reducers/participant.actions";
+import {addBitrateMicrophone, addUser, removeUser, swapUsers, updateUser} from "../reducers/participant.actions";
 import {constraints, mediaParams} from "./config";
 import {User} from "../reducers/participant.reducer";
 import {participantSelector} from "../reducers/participant.selectors";
@@ -18,7 +18,7 @@ export class CallService {
   ) {
   }
 
-  private UPDATE_STREAM_TIME: number = 3000;
+  private UPDATE_STREAM_TIME: number = 9000;
   private OurSession: any;
   private OurDeviceId: any;
   private OurSharingStatus: any;
@@ -26,6 +26,8 @@ export class CallService {
   private subscribeParticipantArray: any;
   private participantArray: any;
   private participantArray$ = this.store.select(participantSelector);
+  private currentMode: string = 'grid';
+  private maxBitraitUserIndex: any;
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -53,19 +55,26 @@ export class CallService {
       this.store.dispatch(addUser({id: userId, name: userDisplayName, bitrate: 0}));
       console.warn(this.store)
       if (this.subscribeParticipantArray) {
-        this.subscribeParticipantArray.unsubscribe();
         this.stopCheckUserMicLevel();
       }
-      //Get listener to Participants array and get participantArray if change
-      this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
-        this.participantArray = res;
-        console.warn(this.participantArray);
-        this.startCheckUsersMicLevel(this.participantArray, session);
-      });
+
+      this.startCheckUsersMicLevel(session);
+
     };
     ConnectyCube.videochatconference.onParticipantLeftListener
       = (session: any, userId: any) => {
       this.store.dispatch(removeUser({id: userId}));
+      this.stopCheckUserMicLevel();
+      if (this.participantArray.length < 2) {
+        this.currentMode = 'grid';
+      }
+      else {
+        this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
+          this.participantArray = res;
+          console.warn("[PARTICIPANT ARRAY]", this.participantArray);
+          this.startCheckUsersMicLevel(session);
+        });
+      }
     };
     ConnectyCube.videochatconference.onRemoteStreamListener
       = (session: any, userId: any, stream: any) => {
@@ -82,27 +91,73 @@ export class CallService {
     };
   }
 
-  public getUsersMicLevel(parcipantsArray: Array<User>, session: any, store:any) {
-    console.log("[getUsersMicLevel 15s]", parcipantsArray, session);
-    const idBitrateMap:any = [];
-    parcipantsArray.forEach((user: User, index) => {
-      if (index !== 0) {
-        idBitrateMap.push({id:user.id, bitrate: session.getRemoteUserVolume(user.id)});
-      }
-    })
-    console.log(idBitrateMap);
-    console.log(store);
-    store.dispatch(addBitrateMicrophone({arr:idBitrateMap}));
+  public setCurrentMode(mode: string) {
+    this.currentMode = mode;
   }
 
-  public startCheckUsersMicLevel(parcipantsArray: Array<User>, session: any) {
+  public getParticipantArrayLength() {
+    return this.participantArray.length;
+  }
+
+  public getMaxBitraitUserIndex() {
+    if (this.maxBitraitUserIndex) {
+      return this.maxBitraitUserIndex + 1;
+    }
+    else {
+      return 1;
+    }
+  }
+
+  public swapUsers(){
+    const participantArrayWithoutUndefined = this.participantArray
+      .filter((user: User) => user.bitrate !== undefined);
+
+    const maxBitrait = Math.max(...participantArrayWithoutUndefined.map((user: User) => user.bitrate));
+    console.log("Max Bitrait", maxBitrait);
+
+    const userMaxUser = this.participantArray
+      .find((user: User) => user.bitrate === maxBitrait);
+    console.log("User", userMaxUser);
+
+    this.maxBitraitUserIndex = this.participantArray.indexOf(userMaxUser);
+    console.log("Index max bit User", this.maxBitraitUserIndex);
+
+    this.store.dispatch(swapUsers({index: this.maxBitraitUserIndex}));
+  }
+
+  public startCheckUsersMicLevel(session: any) {
     console.log("[StartCheckUsersMic]");
-    this.OurIntervalId = setInterval(this.getUsersMicLevel, this.UPDATE_STREAM_TIME, parcipantsArray, session, this.store);
+    this.OurIntervalId = setInterval(this.getUsersMicLevel.bind(this), this.UPDATE_STREAM_TIME, session);
   }
 
   public stopCheckUserMicLevel() {
     console.log("[StopCheckUsersMic]");
+    this.subscribeParticipantArray.unsubscribe();
     clearInterval(this.OurIntervalId);
+  }
+
+  public getUsersMicLevel(session: any) {
+    //Get listener to Participants array and get participantArray if change
+    this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
+      this.participantArray = res;
+    });
+
+    console.warn("[PARTICIPANT ARRAY]", this.participantArray);
+
+    if (this.currentMode === 'grid') {
+      return;
+    }
+
+    this.swapUsers();
+
+    console.log("[getUsersMicLevel 15s]");
+    const idBitrateMap: Map<number, number> = new Map;
+    this.participantArray.forEach((user: User) => {
+      if (user.bitrate !== undefined) {
+        idBitrateMap.set(user.id, Number(session.getRemoteUserVolume(user.id)));
+      }
+    })
+    this.store.dispatch(addBitrateMicrophone({idBitrateMap: idBitrateMap}));
   }
 
   public SetOurDeviceId(id: any) {

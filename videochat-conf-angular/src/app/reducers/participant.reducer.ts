@@ -1,11 +1,11 @@
 import {createReducer, on} from '@ngrx/store';
-import {addUser, updateUser, removeUser, removeAllUsers, addBitrateMicrophone} from "./participant.actions";
+import {addUser, updateUser, removeUser, removeAllUsers, addBitrateMicrophone, swapUsers} from "./participant.actions";
 
 export interface User {
   id: number,
   name?: string,
   stream?: any,
-  bitrate?: any
+  bitrate?: number
 }
 
 export interface participantState {
@@ -40,20 +40,28 @@ export const participantReducer = createReducer(
       ...state,
       participantArray: []
     })),
-    on(addBitrateMicrophone, (state, {arr}) => ({
+    on(addBitrateMicrophone, (state, {idBitrateMap}) => ({
       ...state,
       participantArray: state.participantArray.map((user: User, index) => {
-        console.warn(arr);
         if (index !== 0) {
           const newUser: User = {...user};
-          newUser.bitrate = arr.find((item:any)=>item.id === user.id).bitrate;
+          newUser.bitrate = idBitrateMap.get(user.id);
+          console.log(newUser.bitrate);
           return newUser;
         }
         else {
           return user;
         }
       })
-    }))
+    })),
+    on(swapUsers, (state, {index}) => {
+      const newArray = [...state.participantArray];
+      [newArray[0],newArray[index]] = [newArray[index],newArray[0]]
+      return {
+        ...state,
+        participantArray: newArray
+      }
+    }),
   )
 ;
 

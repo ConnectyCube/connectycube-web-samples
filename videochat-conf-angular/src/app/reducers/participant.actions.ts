@@ -18,5 +18,9 @@ export const removeAllUsers = createAction(
 );
 export  const addBitrateMicrophone = createAction(
   '[PARTICIPANT] add users bitrate',
-  props<{arr:any}>()
+  props<{idBitrateMap:Map<number,number>}>()
+);
+export const swapUsers = createAction(
+  '[PARTICIPANT] swap users',
+  props<{index:number}>()
 );

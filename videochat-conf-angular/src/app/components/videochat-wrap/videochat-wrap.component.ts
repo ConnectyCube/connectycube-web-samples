@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {LoadingService} from "../../services/loading.service";
 
 @Component({
@@ -6,7 +6,7 @@ import {LoadingService} from "../../services/loading.service";
   templateUrl: './videochat-wrap.component.html',
   styleUrls: ['./videochat-wrap.component.scss']
 })
-export class VideochatWrapComponent implements OnInit {
+export class VideochatWrapComponent implements OnInit,OnChanges {
 
   public showPrejoinScreen = true;
 
@@ -14,6 +14,9 @@ export class VideochatWrapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    console.warn("CHANGES WRAPPER",changes);
   }
 
 }
