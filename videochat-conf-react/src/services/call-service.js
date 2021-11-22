@@ -201,42 +201,41 @@ export const CallProvider = ({ children }) => {
       setDevices({ video: true, audio: true });
     });
 
-    ConnectyCube.chat.onSystemMessageListener = (msg) => {
-      let camera = null;
-      setTimeout(() => {
-        if (msg.body === "camera__off") {
-          participantRef.current.find(
-            (p) => p.userId === msg.userId
-          ).isVideo = false;
-          setParticipants([...participantRef.current]);
-        } else if (msg.body === "camera__on") {
-          participantRef.current.find(
-            (p) => p.userId === msg.userId
-          ).isVideo = true;
-          setParticipants([...participantRef.current]);
-        }
-      }, 1000);
-      // setTimeout(() => {
-      //   if (msg.userId === participantRef.current[0].userId) {
-      //     camera = document.getElementById(`user__cam-me`);
-      //   } else {
-      //     camera = document.getElementById(`user__cam-${msg.userId}`);
-      //   }
-      //   if (!camera) {
-      //     setTimeout(() => {
-      //       oneMore(msg.userId, msg.body);
-      //     }, 2000);
-      //   } else {
-      //     console.table(msg.body, "INFO");
-      //     if (msg.body === "camera__off") {
-      //       camera.classList.add("hide");
-      //     } else if (msg.body === "camera__on") {
-      //       camera.classList.remove("hide");
-      //       console.error("Removed hide from ", msg.userId);
-      //     }
-      //   }
-      // }, 1000);
-    };
+    if (isMobile) {
+      ConnectyCube.chat.onSystemMessageListener = (msg) => {
+        let camera = null;
+        setTimeout(() => {
+          if (msg.body === "camera__off") {
+            participantRef.current.find(
+              (p) => p.userId === msg.userId
+            ).isVideo = false;
+            setParticipants([...participantRef.current]);
+          } else if (msg.body === "camera__on") {
+            participantRef.current.find(
+              (p) => p.userId === msg.userId
+            ).isVideo = true;
+            setParticipants([...participantRef.current]);
+          }
+        }, 6000);
+      };
+    } else {
+      ConnectyCube.chat.onSystemMessageListener = (msg) => {
+        let camera = null;
+        setTimeout(() => {
+          if (msg.body === "camera__off") {
+            participantRef.current.find(
+              (p) => p.userId === msg.userId
+            ).isVideo = false;
+            setParticipants([...participantRef.current]);
+          } else if (msg.body === "camera__on") {
+            participantRef.current.find(
+              (p) => p.userId === msg.userId
+            ).isVideo = true;
+            setParticipants([...participantRef.current]);
+          }
+        }, 2000);
+      };
+    }
   };
   const oneMore = (userId, msg) => {
     let camera = document.getElementById(`user__cam-${userId}`);
@@ -412,9 +411,12 @@ export const CallProvider = ({ children }) => {
       height,
     });
     const ctx = canvas.getContext("2d");
+    setInterval(() => {
+      ctx.fillRect(0, 0, width, height);
+    }, 500);
     ctx.fillRect(0, 0, width, height);
-    let stream = canvas.captureStream();
-    console.log("[createDummyVideoTrack] waflo", stream.getTracks()[0]);
+    let stream = canvas.captureStream(25);
+    console.log("[createDummyVideoTrack]", stream.getTracks()[0]);
     const videoTrack = Object.assign(stream.getVideoTracks()[0], {
       enabled: true,
     });

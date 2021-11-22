@@ -7,7 +7,7 @@ const Chat = (props) => {
   const { messages, chatHide, chat, dialog, participants } = props;
 
   useEffect(() => {
-   //  chat.setParticipants(participants);
+    //  chat.setParticipants(participants);
     chat.getMessages(dialog);
     // eslint-disable-next-line
   }, [messages]);
@@ -56,7 +56,10 @@ const Chat = (props) => {
 
   return (
     <div className="chat__container">
-      <div onClick={chatHide} className="close__btn"></div>
+      <div className="chat__header">
+			<div className="chat__name">Chat</div>
+        <div onClick={chatHide} className="close__btn"></div>
+      </div>
 
       <div className="chat__content">
         <div
