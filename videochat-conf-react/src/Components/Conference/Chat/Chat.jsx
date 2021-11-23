@@ -4,7 +4,7 @@ import Message from "./Message/Message";
 // import { sendMessage } from "../../../services/chat-service";
 
 const Chat = (props) => {
-  const { messages, chatHide, chat, dialog, participants } = props;
+  const { messages, chatHide, chat, dialog } = props;
 
   useEffect(() => {
     //  chat.setParticipants(participants);
@@ -34,10 +34,14 @@ const Chat = (props) => {
     allMessages.push(<Message message={chat.sortedMessages[i]} />);
   }
 
-  const onSendMessage = () => {
+  const onSendMessage = (e) => {
+    e.stopPropagation();
     if (messageRef.current.value.trim()) {
+      messageRef.current.value = messageRef.current.value.replace(
+        /(\r\n|\n|\r)/gm,
+        ""
+      );
       chat.sendMessage(messageRef.current.value, props.dialog);
-
       messageRef.current.value = "";
     }
   };
@@ -48,6 +52,13 @@ const Chat = (props) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault();
       if (messageRef.current.value.trim()) {
+        messageRef.current.value = messageRef.current.value.replace(
+          /(\r\n|\n|\r)/gm,
+          ""
+        );
+
+        messageRef.current.style.height = "30px";
+
         chat.sendMessage(messageRef.current.value, props.dialog);
         messageRef.current.value = "";
       }
@@ -57,7 +68,7 @@ const Chat = (props) => {
   return (
     <div className="chat__container">
       <div className="chat__header">
-			<div className="chat__name">Chat</div>
+        <div className="chat__name">Chat</div>
         <div onClick={chatHide} className="close__btn"></div>
       </div>
 
@@ -79,6 +90,9 @@ const Chat = (props) => {
               ref={messageRef}
               onChange={messageArea}
               onKeyDown={onEnterPress}
+              onClic={(e) => {
+                e.stopPropagation();
+              }}
               required={true}
               placeholder="Enter your message"
             ></textarea>

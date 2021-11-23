@@ -21,7 +21,6 @@ export const ChatProvider = ({ children }) => {
         message
       );
       if (!isiOS()) {
-        let part = chatParticipantsRef.current;
         if (userId !== chatParticipantsRef.current[0].userId) {
           let audio = new Audio(sound);
           audio.play();

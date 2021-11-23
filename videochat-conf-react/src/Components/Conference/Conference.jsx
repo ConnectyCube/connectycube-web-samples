@@ -5,6 +5,8 @@ import AuthService from "../../services/auth-service";
 import react from "react";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
+import { isiOS, detectBrowser } from "../../services/heplers";
+
 import { useHistory } from "react-router";
 import Chat from "./Chat/Chat";
 import ChatContext from "../../services/chat-service";
@@ -12,7 +14,6 @@ import { FaMicrophone } from "react-icons/fa";
 import { IoMdVideocam } from "react-icons/io";
 import { MdScreenShare, MdCameraswitch, MdCallEnd } from "react-icons/md";
 import { BsFillChatDotsFill } from "react-icons/bs";
-import ConnectyCube from "connectycube";
 
 const Conference = (props) => {
   const chat = useContext(ChatContext);
@@ -32,6 +33,7 @@ const Conference = (props) => {
     leaveMeeting,
     isVideoMuted,
     participants,
+    mirror,
   } = props.call;
   let [chatId, setChatId] = useState("");
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
@@ -120,15 +122,21 @@ const Conference = (props) => {
 
   const usersStreams = [];
   const fullScreen = (userId) => {
-    let videoItem = document.getElementById(`user__cam-${userId}`);
-    if (!document.fullscreenElement) {
-      videoItem.requestFullscreen().catch((err) => {
-        alert(
-          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
-        );
-      });
+    let currentElem = document.getElementById(`fullscreen-stream-${userId}`);
+
+    if (currentElem.requestFullscreen) {
+      currentElem.requestFullscreen();
+    } else if (currentElem.mozRequestFullScreen) {
+      /* Firefox */
+      currentElem.mozRequestFullScreen();
+    } else if (currentElem.webkitRequestFullscreen) {
+      /* Chrome, Safari and Opera */
+      currentElem.webkitRequestFullscreen();
+    } else if (currentElem.msRequestFullscreen) {
+      /* IE/Edge */
+      currentElem.msRequestFullscreen();
     } else {
-      document.exitFullscreen();
+      alert(`Error attempting to enable full-screen mode`);
     }
   };
   let speakerUser;
@@ -173,6 +181,7 @@ const Conference = (props) => {
             micLevel={props.call.participants[i].micLevel}
             isMobile={props.call.isMobile}
             connectionStatus={props.call.participants[i].connectionStatus}
+            mirror={mirror}
           />
         );
       } else {
@@ -208,6 +217,7 @@ const Conference = (props) => {
           bitrate={user.bitrate}
           micLevel={user.micLevel}
           isMobile={isMobile}
+          mirror={mirror}
           connectionStatus={props.call.participants[i].connectionStatus}
         />
       );
@@ -241,26 +251,36 @@ const Conference = (props) => {
   const onHideButtons = (e) => {
     let classOfClick = e.currentTarget.className;
     let target = e.target.tagName;
-    if (classOfClick === "conference__container" && target !== "SELECT") {
+    if (
+      classOfClick === "conference__container" &&
+      target !== "TEXTAREA" &&
+      target !== "SELECT"
+    ) {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");
     }
   };
+  const [sharing, setSharing] = useState(false);
 
   const onStartScreenSharing = (e) => {
     e.stopPropagation();
 
-    let screenShareButton = document.getElementById("share__btn");
-    if (screenShareButton.classList.contains(`sharing`)) {
+    if (mirror) {
       props.call.stopSharingScreen();
-      let myCamera = document.getElementById("user__cam-me");
-      myCamera.classList.remove("unmirror");
-      screenShareButton.classList.remove("sharing");
+      //   .then((mirror) => {
+      //     setMirror(mirror);
+      //   })
+      //   .catch((mirror) => {
+      //     setMirror(mirror);
+      //   });
     } else {
       props.call.startScreenSharing();
-      let myCamera = document.getElementById("user__cam-me");
-      myCamera.classList.add("unmirror");
-      screenShareButton.classList.add("sharing");
+      //   .then((mirror) => {
+      //     setMirror(mirror);
+      //   })
+      //   .catch((mirror) => {
+      //     setMirror(mirror);
+      //   });
     }
   };
   const devicesRef = React.createRef();
@@ -334,6 +354,7 @@ const Conference = (props) => {
           <div className="camera__block">
             <select
               className="view__changer"
+              disabled={detectBrowser() === "Safari" || isiOS()}
               onChange={(e) => {
                 e.stopPropagation();
                 props.call.viewChange(e.target.value);
@@ -427,8 +448,10 @@ const Conference = (props) => {
               <button
                 onClick={onStartScreenSharing}
                 id="share__btn"
-                className={`call__btn share__btn ${isMobile ? `hide` : ``}`}
-                disabled={props.call.isMobile ? true : !devices.video}
+                className={`call__btn share__btn ${isMobile ? `hide` : ``} ${
+                  mirror ? "sharing" : ""
+                }`}
+                disabled={props.call.isMobile ? true : false}
               >
                 <MdScreenShare size={32} style={{ fill: `white` }} />
               </button>

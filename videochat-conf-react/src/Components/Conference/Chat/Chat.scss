@@ -11,7 +11,7 @@
   & .chat__header {
     position: absolute;
     top: 10px;
-
+    background: white;
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -127,7 +127,7 @@
 
   & .chat__form {
     width: 100%;
-    padding: 0px 0px 0px 15px;
+    padding: 15px 0px 0px 15px;
 
     & .area__container {
       position: relative;
@@ -138,11 +138,14 @@
       & textarea {
         width: 100%;
         resize: none;
-        border-radius: 25px;
-        padding: 10px 0px 5px 5px;
+        border-radius: 15px;
+        padding: 15px 0px 5px 5px;
         flex: 1 1 80%;
         margin-right: 10px;
+
         outline: none;
+        &::placeholder {
+        }
       }
       & button {
         height: 40px;

@@ -57,6 +57,9 @@
     max-height: 100vh;
     z-index: 3;
     transition: 0.2s;
+    &.true {
+      transform: rotateY(0deg) !important;
+    }
     &.unmirror {
       transform: rotateY(360deg) !important;
     }
@@ -133,4 +136,16 @@
 .text {
   color: white;
   font-size: 90px;
+}
+
+.fullscreen-stream {
+  width: 100%;
+  object-fit: cover;
+  box-sizing: border-box;
+  position: relative;
+  pointer-events: none;
+  height: 100%;
+
+  opacity: 1;
+  max-height: 100vh;
 }

@@ -15,6 +15,7 @@ const UserStream = (props) => {
     streamNumber,
     fullScreen,
     isVideo,
+    mirror,
   } = props;
   const [isStreamLoaded, setIsStreamLoaded] = useState(false);
   const loaderRef = React.createRef();
@@ -72,14 +73,18 @@ const UserStream = (props) => {
         bitrate={bitrate}
         connectionStatus={connectionStatus}
       />
-      <video
-        playsInline
-        muted={userId === "me"}
-        id={`user__cam-${userId}`}
-        className={`user__cam ${isVideo ? "" : "hide"}`}
-        preload="yes"
-        ref={videoRef}
-      ></video>
+      <div id={`fullscreen-stream-${userId}`} className="fullscreen-stream">
+        <video
+          playsInline
+          muted={userId === "me"}
+          id={`user__cam-${userId}`}
+          className={`user__cam ${isVideo ? "" : "hide"} ${
+            userId === "me" ? mirror : false
+          }`}
+          preload="yes"
+          ref={videoRef}
+        ></video>
+      </div>
       <input
         type="image"
         className={`full__screen ${
