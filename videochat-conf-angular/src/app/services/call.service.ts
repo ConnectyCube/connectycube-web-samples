@@ -18,7 +18,7 @@ export class CallService {
   ) {
   }
 
-  private UPDATE_STREAM_TIME: number = 9000;
+  private UPDATE_STREAM_TIME: number = 15000;
   private OurSession: any;
   private OurDeviceId: any;
   private OurSharingStatus: any;
@@ -51,9 +51,8 @@ export class CallService {
       userDisplayName: any,
       isExistingParticipant: any
     ) => {
-      console.warn(this.store);
       this.store.dispatch(addUser({id: userId, name: userDisplayName, bitrate: 0}));
-      console.warn(this.store)
+
       if (this.subscribeParticipantArray) {
         this.stopCheckUserMicLevel();
       }
@@ -65,15 +64,17 @@ export class CallService {
       = (session: any, userId: any) => {
       this.store.dispatch(removeUser({id: userId}));
       this.stopCheckUserMicLevel();
+
+      this.participantArray$.pipe(take(1)).subscribe(res => {
+        this.participantArray = res;
+        console.warn("[PARTICIPANT ARRAY AFTER REMOVE]", this.participantArray);
+      });
+
       if (this.participantArray.length < 2) {
         this.currentMode = 'grid';
       }
       else {
-        this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
-          this.participantArray = res;
-          console.warn("[PARTICIPANT ARRAY]", this.participantArray);
-          this.startCheckUsersMicLevel(session);
-        });
+        this.startCheckUsersMicLevel(session);
       }
     };
     ConnectyCube.videochatconference.onRemoteStreamListener
@@ -99,16 +100,16 @@ export class CallService {
     return this.participantArray.length;
   }
 
-  public getMaxBitraitUserIndex() {
-    if (this.maxBitraitUserIndex) {
-      return this.maxBitraitUserIndex + 1;
-    }
-    else {
-      return 1;
-    }
-  }
+  // public getMaxBitraitUserIndex() {
+  //   if (this.maxBitraitUserIndex) {
+  //     return this.maxBitraitUserIndex + 1;
+  //   }
+  //   else {
+  //     return 1;
+  //   }
+  // }
 
-  public swapUsers(){
+  public swapUsers() {
     const participantArrayWithoutUndefined = this.participantArray
       .filter((user: User) => user.bitrate !== undefined);
 
@@ -148,8 +149,6 @@ export class CallService {
       return;
     }
 
-    this.swapUsers();
-
     console.log("[getUsersMicLevel 15s]");
     const idBitrateMap: Map<number, number> = new Map;
     this.participantArray.forEach((user: User) => {
@@ -158,6 +157,8 @@ export class CallService {
       }
     })
     this.store.dispatch(addBitrateMicrophone({idBitrateMap: idBitrateMap}));
+
+    this.swapUsers();
   }
 
   public SetOurDeviceId(id: any) {

@@ -11,6 +11,8 @@ import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {PermissionsService} from "../../services/permissions.service";
+import {take} from "rxjs/operators";
+import {User} from "../../reducers/participant.reducer";
 
 @Component({
   selector: 'app-videochat',
@@ -38,8 +40,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public selectedValue: string = 'grid';
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
-  public startSliceSide = this.callService.getMaxBitraitUserIndex() - 1;
-  public endSliceSide = this.callService.getMaxBitraitUserIndex();
+  public startSliceSide = 0;
+  public endSliceSide = 1;
   public startSliceGrid = 0;
   public subscribeParticipantArray: any;
 
@@ -84,6 +86,15 @@ export class VideochatComponent implements OnInit, OnDestroy {
     this.gridStatus = true;
     this.sidebarStatus = false;
     this.startSliceGrid = 0;
+    this.participantArray$.pipe(take(1)).subscribe(res => {
+      const participants = res;
+      if (participants.length !== 1) {
+        const index = participants.indexOf(<User>participants
+          .find((user: User) => user.bitrate === undefined));
+        this.store$.dispatch(swapUsers({index}));
+      }
+    });
+
   }
 
   private sidebarView() {
@@ -92,6 +103,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
     this.gridStatus = false;
     this.sidebarStatus = true;
     this.startSliceGrid = 1;
+    this.store$.dispatch(swapUsers({index: 1}))
   }
 
   public muteOrUnmuteMicro() {
@@ -202,6 +214,11 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.participantArray$.subscribe(res => {
+      if (res.length === 1 && this.sidebarStatus) {
+        this.gridView();
+      }
+    })
 
     this.checkConnect();
     this.checkPermissions();

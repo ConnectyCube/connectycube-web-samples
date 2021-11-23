@@ -29,7 +29,7 @@
       [switchDone]="switchDone"
       [currentUserStream]="user.stream"
       [currentUserId]="user.id"
-      [currentUserIndex]="i"
+      [currentUserIndex]="(participantArray$ | async)?.length === 1?i:i+1"
       [currentUserName]="user.name"
     ></app-stream-container>
   </div>
@@ -42,7 +42,7 @@
       [switchDone]="switchDone"
       [currentUserStream]="user.stream"
       [currentUserId]="user.id"
-      [currentUserIndex]="gridStatus?i:i+1"
+      [currentUserIndex]="i"
       [currentUserName]="user.name"
     ></app-stream-container>
   </div>
