@@ -243,22 +243,22 @@ export class VideochatComponent implements OnInit, OnDestroy {
       }
     })
 
-    this.checkConnect();
-    this.checkPermissions();
-    navigator.mediaDevices.addEventListener('devicechange', () => {
-      this.checkConnect();
-      this.callService.getListDevices().then((mediaDevice: any) => {
-        this.mediaDevice = mediaDevice;
-        console.log(this.mediaDevice)
-      });
-    })
+    // this.checkConnect();
+    // this.checkPermissions();
+    // navigator.mediaDevices.addEventListener('devicechange', () => {
+    //   this.checkConnect();
+    //   this.callService.getListDevices().then((mediaDevice: any) => {
+    //     this.mediaDevice = mediaDevice;
+    //     console.log(this.mediaDevice)
+    //   });
+    // })
     if (!mediaParams.video) {
       this.videoIconName = 'videocam_off';
     }
-    this.callService.getListDevices().then((mediaDevice: any) => {
-      this.mediaDevice = mediaDevice;
-      console.log(this.mediaDevice)
-    });
+    // this.callService.getListDevices().then((mediaDevice: any) => {
+    //   this.mediaDevice = mediaDevice;
+    //   console.log(this.mediaDevice)
+    // });
   }
 
   ngOnDestroy() {

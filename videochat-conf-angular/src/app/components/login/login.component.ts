@@ -3,9 +3,7 @@ import {Output, EventEmitter} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../../reducers";
 import {AuthService} from "../../services/auth.service";
-import {CallService} from "../../services/call.service";
 import {appConfig, CREDENTIALS} from "../../services/config";
-import {User} from "../../reducers/participant.reducer";
 import {Router} from "@angular/router";
 
 @Component({
@@ -21,7 +19,6 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private store$: Store<State>,
     private authService: AuthService,
-    private callService: CallService,
   ) {
   }
 
@@ -31,22 +28,5 @@ export class LoginComponent implements OnInit {
 
   public GoToPrejoin(){
     this.router.navigateByUrl("/join/prejoin");
-  }
-
-  public CreateAndJoinToGuestRoom() {
-    const userName = prompt("Input user name", "User");
-
-    if (userName) {
-      this.callService.init();
-
-      this.authService.auth(userName).then((userId) => {
-        const user: User = {id: userId, name: userName};
-
-        this.callService.createMeetingAndJoin(user).then((roomUrl: string) => {
-          this.router.navigateByUrl("/join/" + roomUrl).then(()=>{
-          });
-        })
-      })
-    }
   }
 }

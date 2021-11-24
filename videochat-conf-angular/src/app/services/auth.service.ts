@@ -1,6 +1,5 @@
-import {EventEmitter, Injectable} from '@angular/core';
-import {Store} from "@ngrx/store";
-import {State} from "../reducers";
+import {Injectable} from '@angular/core';
+import {CommonUtilities} from "../utilities/common.utilities";
 
 declare let ConnectyCube: any;
 
@@ -9,28 +8,10 @@ declare let ConnectyCube: any;
 })
 export class AuthService {
 
-  constructor(private store$: Store<State>) {
+  constructor() {
   }
 
-  private static randomLogin(): string {
-    let text = "";
-    let possible = "abcdefghijklmnopqrstuvwxyz";
-
-    for (let i = 0; i < 5; i++) {
-      text += possible[Math.floor(Math.random() * possible.length)];
-    }
-
-    return text;
-  }
-
-  private static hashCode(s: string) {
-    return String(s.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a
-    }, 0));
-  }
-
-  private static login(userProfileLogin: object) {
+  private login(userProfileLogin: object) {
     return ConnectyCube.login(userProfileLogin);
   }
 
@@ -38,15 +19,15 @@ export class AuthService {
     ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
-  public auth(userName: string, JoinBtnClick?: EventEmitter<string>) {
+  public auth(userName: string) {
     return new Promise<number>((resolve, reject) => {
 
       ConnectyCube.createSession().then(() => {
-        const login: string = AuthService.randomLogin() + AuthService.randomLogin();
+        const login: string = CommonUtilities.randomLogin() + CommonUtilities.randomLogin();
 
         const userProfile = {
           login: login,
-          password: AuthService.hashCode(login),
+          password: CommonUtilities.hashCode(login),
           full_name: userName,
         };
         const userProfileLogin = {
@@ -56,12 +37,9 @@ export class AuthService {
 
         ConnectyCube.users.signup(userProfile)
           .then(() => {
-            AuthService.login(userProfileLogin)
+            this.login(userProfileLogin)
               .then((user: any) => {
                 console.log("logging user", user);
-                if (JoinBtnClick) {
-                  JoinBtnClick.emit(userName);
-                }
                 resolve(user.id)
               })
               .catch((error: any) => {
@@ -74,12 +52,9 @@ export class AuthService {
               const IsRegisteredUser: boolean = error.info.errors.base.includes("login must be unique");
 
               if (IsRegisteredUser) {
-                AuthService.login(userProfileLogin)
+                this.login(userProfileLogin)
                   .then((user: any) => {
                     console.log("logging user", user);
-                    if (JoinBtnClick) {
-                      JoinBtnClick.emit(userName);
-                    }
                     resolve(user.id)
                   })
                   .catch((error: any) => {

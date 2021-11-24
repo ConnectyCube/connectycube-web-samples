@@ -44,7 +44,9 @@ export class CallService {
   private createDummyVideoTrack = ({width = 640, height = 480} = {}) => {
     let canvas: any = Object.assign(document.createElement("canvas"), {width, height});
     const ctx = canvas.getContext('2d');
-    ctx.fillRect(0, 0, width, height);
+    setInterval(() => {
+      ctx.fillRect(0, 0, width, height);
+    }, 500);
     let stream = canvas.captureStream();
     console.log("[createDummyVideoTrack] tracks", stream.getTracks());
     const videoTrack = Object.assign(stream.getVideoTracks()[0], {enabled: true});
@@ -71,7 +73,7 @@ export class CallService {
         this.stopCheckUserMicLevel();
       }
 
-      this.startCheckUsersMicLevel(session);
+      this.startCheckUsersMicLevel();
 
     };
     ConnectyCube.videochatconference.onParticipantLeftListener
@@ -88,7 +90,7 @@ export class CallService {
         this.currentMode = 'grid';
       }
       else {
-        this.startCheckUsersMicLevel(session);
+        this.startCheckUsersMicLevel();
       }
     };
     ConnectyCube.videochatconference.onRemoteStreamListener
@@ -124,9 +126,9 @@ export class CallService {
     return this.participantArray.length;
   }
 
-  public startCheckUsersMicLevel(session: any) {
+  public startCheckUsersMicLevel() {
     console.log("[StartCheckUsersMic]");
-    this.OurIntervalId = setInterval(this.getUsersMicLevel.bind(this), this.UPDATE_STREAM_TIME, session);
+    this.OurIntervalId = setInterval(this.getUsersMicLevel.bind(this), this.UPDATE_STREAM_TIME);
   }
 
   public stopCheckUserMicLevel() {
@@ -147,7 +149,8 @@ export class CallService {
     this.store.dispatch(addBitrate({idBitrateMap: idBitrateMap}))
   }
 
-  public getUsersMicLevel(session: any) {
+  public getUsersMicLevel() {
+    const session = this.OurSession;
     //Get listener to Participants array and get participantArray if change
     this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
       this.participantArray = res;
@@ -323,8 +326,6 @@ export class CallService {
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
       this.OurSession = session;
-
-      console.warn(this.OurSession);
 
       const mediaParamsDeviceId = {
         audio: true,

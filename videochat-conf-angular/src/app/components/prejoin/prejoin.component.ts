@@ -14,6 +14,7 @@ import {DialogWarningComponent} from "../dialog-warning/dialog-warning.component
 import {PermissionsService} from "../../services/permissions.service";
 import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
   selector: 'app-prejoin',
@@ -63,7 +64,8 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     private domSanitizer: DomSanitizer,
     public loader: LoadingService,
     public dialog: MatDialog,
-    public permissions: PermissionsService
+    public permissions: PermissionsService,
+    private deviceService: DeviceDetectorService,
   ) {
     this.matIconRegistry.addSvgIcon('videocam',
       this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_white_24dp.svg"));
@@ -107,13 +109,14 @@ export class PrejoinComponent implements OnInit, OnDestroy {
       this.disableVideoBtn = false;
     })
       .catch((error: any) => {
-        if (error.message === 'Permission denied') {
-
-          if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
-            this.ModalOn('Camera and Microphone Denied', this.messageErrorDeniedAll);
-          }
-          else if (this.audioPermission === 'denied') {
-            this.ModalOn('Microphone Denied', this.messageErrorDeniedMicro);
+        if (error.message === 'Permission denied' || error.message.includes("user denied permission")) {
+          if (this.deviceService.os.toLowerCase() !== 'ios' || 'mac') {
+            if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
+              this.ModalOn('Camera and Microphone Denied', this.messageErrorDeniedAll);
+            }
+            else if (this.audioPermission === 'denied') {
+              this.ModalOn('Microphone Denied', this.messageErrorDeniedMicro);
+            }
           }
 
           this.checkDeviceWidth();
@@ -136,7 +139,8 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   }
 
   private offVideo() {
-    this.ourLocalStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+    console.warn(this.ourLocalStream.getVideoTracks())
+    this.ourLocalStream.getVideoTracks().forEach((track: MediaStreamTrack) => track.stop());
   }
 
   private ModalOn(title: string, message: string) {
@@ -201,10 +205,13 @@ export class PrejoinComponent implements OnInit, OnDestroy {
             this.callService.init();
 
             if (userName) {
-              this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
+              this.authService.auth(userName).then((userId) => {
+                alert("Auth")
+                this.JoinBtnClick.emit(userName)
                 const user: User = {id: userId, name: userName};
 
                 this.callService.joinUser(meetId, userId, userName).then(() => {
+                  alert("Join")
                   this.DoorOpen = true;
                 });
 
@@ -222,7 +229,8 @@ export class PrejoinComponent implements OnInit, OnDestroy {
             if (userName.trim()) {
               this.callService.init();
 
-              this.authService.auth(userName, this.JoinBtnClick).then((userId) => {
+              this.authService.auth(userName).then((userId) => {
+                this.JoinBtnClick.emit(userName)
                 const user: User = {id: userId, name: userName};
 
                 this.callService.createMeetingAndJoin(user).then((roomUrl: string) => {
@@ -247,7 +255,14 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.checkPermissions();
+    if (this.deviceService.os.toLowerCase() !== 'ios' || 'mac') {
+      try {
+        this.checkPermissions();
+      }
+      catch {
+        alert("Can not check permissions");
+      }
+    }
     this.onVideo();
 
     //Get previous url

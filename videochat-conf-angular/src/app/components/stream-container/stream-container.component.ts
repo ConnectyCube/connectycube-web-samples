@@ -14,16 +14,16 @@ import {DeviceDetectorService} from "ngx-device-detector";
 })
 export class StreamContainerComponent {
 
-  @Input() currentUserId: number = 0;
-  @Input() currentUserStream: any;
-  @Input() currentUserIndex: number = -1;
-  @Input() currentUserName: string | undefined;
-  @Input() currentShareScreenIconName: string | undefined;
-  @Input() currentUserMicrophoneLevel: number | undefined;
+  @Input() userId: number = 0;
+  @Input() userStream: any;
+  @Input() userIndex: number = -1;
+  @Input() userName: string | undefined;
+  @Input() shareScreenIconName: string | undefined;
+  @Input() userMicrophoneLevel: number | undefined;
   @Input() switchDone: boolean | undefined;
-  @Input() currentModeGrid: boolean = true;
-  @Input() currentUserBitrate: string | undefined;
-  @Input() currentConnectionStatus: string | undefined = 'good';
+  @Input() modeGrid: boolean = true;
+  @Input() userBitrate: string | undefined;
+  @Input() userConnectionStatus: string | undefined = 'good';
   @Output() videoLoaded: EventEmitter<any> = new EventEmitter<any>();
 
   public videoWork: boolean = false;
@@ -34,8 +34,8 @@ export class StreamContainerComponent {
   onChanges = new Subject<SimpleChanges>();
 
   showVideo() {
-    console.warn(this.currentModeGrid);
-    if (this.currentUserIndex === 0 && this.currentModeGrid) {
+    console.warn(this.modeGrid);
+    if (this.userIndex === 0 && this.modeGrid) {
       this.videoWork = false;
     }
     else {

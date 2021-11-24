@@ -1,44 +1,44 @@
 <div class="user-connection" (mouseenter)="statsHide = false" (mouseleave)="statsHide = true">
   <mat-icon
-    [ngClass]="{'good':currentConnectionStatus === 'good' || currentUserBitrate === undefined
-    ,'average':currentConnectionStatus === 'average'}"
+    [ngClass]="{'good':userConnectionStatus === 'good' || userBitrate === undefined
+    ,'average':userConnectionStatus === 'average'}"
     svgIcon="connection">
   </mat-icon>
 </div>
-<mat-icon *ngIf="!(currentUserBitrate === undefined || isMobile || isTablet)"
+<mat-icon *ngIf="!(userBitrate === undefined || isMobile || isTablet)"
           (click)="toFullScreen($event)"
-          [ngClass]="'btn-'+currentUserId"
+          [ngClass]="'btn-'+userId"
           class="fullscreen"
           svgIcon="fullscreen">
 </mat-icon>
-<div class="user-stats user-stats-{{currentUserId}}" [hidden]="statsHide">
+<div class="user-stats user-stats-{{userId}}" [hidden]="statsHide">
   <span>
-    Connection {{currentConnectionStatus || 'good'}} <br>
-    {{currentUserMicrophoneLevel ? 'Volume level ' + currentUserMicrophoneLevel : ''}}
-    <br *ngIf="currentUserMicrophoneLevel">
-    {{currentUserBitrate ? 'Speed ' + currentUserBitrate : ''}}
+    Connection {{userConnectionStatus || 'good'}} <br>
+    {{userMicrophoneLevel ? 'Volume level ' + userMicrophoneLevel : ''}}
+    <br *ngIf="userMicrophoneLevel">
+    {{userBitrate ? 'Speed ' + userBitrate : ''}}
   </span>
 </div>
-<div [ngClass]="videoWork || currentUserMicrophoneLevel === undefined?'':'show-bg-image'" class="user-placeholder">
+<div [ngClass]="videoWork || userMicrophoneLevel === undefined?'':'show-bg-image'" class="user-placeholder">
   <div class="user-image"
        style="background: url(../../../assets/animals/animals_1.jpg)
        center center / contain no-repeat rgb(255, 255, 255);"></div>
 </div>
 <div class="container-full-screen">
-  <video [srcObject]="currentUserStream"
-         [ngClass]="{'mirror':currentShareScreenIconName !== 'stop_screen_share' &&
+  <video [srcObject]="userStream"
+         [ngClass]="{'mirror':shareScreenIconName !== 'stop_screen_share' &&
           !switchDone &&
-           currentUserMicrophoneLevel === undefined}"
+           userMicrophoneLevel === undefined}"
          playsinline
          preload="auto"
          autoplay
-         [muted]="currentUserMicrophoneLevel === undefined"
+         [muted]="userMicrophoneLevel === undefined"
          (canplaythrough)="showVideo()"
          (playing)="unDisableButton()"
-         id="stream-{{currentUserId}}"
+         id="stream-{{userId}}"
          class="videochat-stream"
   ></video>
 </div>
 <div class="display-user-name">
-  <p class="user-name">{{currentUserMicrophoneLevel === undefined ? 'me' : currentUserName}}</p>
+  <p class="user-name">{{userMicrophoneLevel === undefined ? 'me' : userName}}</p>
 </div>

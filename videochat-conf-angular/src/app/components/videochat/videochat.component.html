@@ -29,15 +29,15 @@
       trackBy:trackById
       "
       [className]="'stream'+i"
-      [currentShareScreenIconName]="shareScreenIconName"
+      [shareScreenIconName]="shareScreenIconName"
       [switchDone]="switchDone"
-      [currentUserStream]="user.stream"
-      [currentUserId]="user.id"
-      [currentUserIndex]="(participantArray$ | async)?.length === 1?i:i+1"
-      [currentUserName]="user.name"
-      [currentUserMicrophoneLevel]="user.volumeLevel"
-      [currentUserBitrate]="user.bitrate"
-      [currentConnectionStatus]="user.connectionStatus"
+      [userStream]="user.stream"
+      [userId]="user.id"
+      [userIndex]="(participantArray$ | async)?.length === 1?i:i+1"
+      [userName]="user.name"
+      [userMicrophoneLevel]="user.volumeLevel"
+      [userBitrate]="user.bitrate"
+      [userConnectionStatus]="user.connectionStatus"
     ></app-stream-container>
   </div>
   <div class="users-streams" [ngClass]="setNgClassProperty((participantArray$ | async)?.length)">
@@ -49,16 +49,16 @@
       trackBy:trackById
       "
       [className]="'stream'+i"
-      [currentShareScreenIconName]="shareScreenIconName"
+      [shareScreenIconName]="shareScreenIconName"
       [switchDone]="switchDone"
-      [currentUserStream]="user.stream"
-      [currentUserId]="user.id"
-      [currentUserIndex]="i"
-      [currentUserName]="user.name"
-      [currentUserMicrophoneLevel]="user.volumeLevel"
-      [currentModeGrid]="gridStatus"
-      [currentUserBitrate]="user.bitrate"
-      [currentConnectionStatus]="user.connectionStatus"
+      [userStream]="user.stream"
+      [userId]="user.id"
+      [userIndex]="i"
+      [userName]="user.name"
+      [userMicrophoneLevel]="user.volumeLevel"
+      [modeGrid]="gridStatus"
+      [userBitrate]="user.bitrate"
+      [userConnectionStatus]="user.connectionStatus"
     ></app-stream-container>
   </div>
 </div>
