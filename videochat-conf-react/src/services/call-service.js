@@ -86,7 +86,6 @@ export const CallProvider = ({ children }) => {
           p.bitrate = null;
         }
       });
-
       setParticipants([...participantRef.current]);
     }, 4000);
   }, []);
@@ -418,12 +417,14 @@ export const CallProvider = ({ children }) => {
       resolve();
     });
   };
+
   if (participantRef.current.length > 12) {
     leaveMeeting().then(() => {
       alert("Too much users for this room");
       window.location.pathname = "/";
     });
   }
+
   const speakerStream = (userId) => {
     participantRef.current.filter((p) => {
       if (p.userId === userId) {
@@ -468,8 +469,8 @@ export const CallProvider = ({ children }) => {
     });
 
     return new Promise((resolve, reject) => {
-      let params = { video: true, audio: true };
-      _session.current.getUserMedia(params, true).then(
+      let params = { video: mediaParams, audio: true };
+      _session.current.getUserMedia(mediaParams, true).then(
         (stream) => {
           resolve(stream);
         },

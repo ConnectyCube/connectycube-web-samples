@@ -102,7 +102,7 @@ const Conference = (props) => {
 
   useEffect(() => {
     chat.setParticipants(participants);
-  }, [participants]);
+  }, [participants, chat]); //Chat dependecies maybe can be delete
 
   let camName = [];
   const newDevice = (e) => {
@@ -270,7 +270,6 @@ const Conference = (props) => {
       btns.classList.toggle("hide");
     }
   };
-  const [sharing, setSharing] = useState(false);
 
   const onStartScreenSharing = (e) => {
     e.stopPropagation();

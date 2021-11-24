@@ -2,7 +2,6 @@ import "./UserStream.scss";
 import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
 import { useState } from "react";
-import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { BiMicrophoneOff } from "react-icons/bi";
 import { detectBrowser } from "../../../services/heplers";
 const UserStream = (props) => {
