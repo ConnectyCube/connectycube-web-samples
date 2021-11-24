@@ -30,11 +30,14 @@ const Conference = (props) => {
     isMobile,
     isLoaded,
     messages,
+    isSharing,
+
     leaveMeeting,
     isVideoMuted,
     participants,
     mirror,
   } = props.call;
+
   let [chatId, setChatId] = useState("");
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
@@ -171,6 +174,7 @@ const Conference = (props) => {
         usersStreams.push(
           <UserStream
             key={i}
+            isMicroMuted={props.call.participants[i].isMicroMuted}
             isVideo={props.call.participants[i].isVideo}
             streamNumber={i}
             userId={user.name === "me" ? "me" : user.userId}
@@ -182,6 +186,7 @@ const Conference = (props) => {
             isMobile={props.call.isMobile}
             connectionStatus={props.call.participants[i].connectionStatus}
             mirror={mirror}
+            isSharing={props.call.participants[i].isSharing}
           />
         );
       } else {
@@ -189,11 +194,13 @@ const Conference = (props) => {
 
         speakerUser = (
           <UserStream
+            isMicroMuted={user.isMicroMuted}
             isVideo={props.call.participants[i].isVideo}
             userId={user.name}
             userName={user.name}
             stream={user.stream}
             fullScreen={fullScreen}
+            isSharing={isSharing}
             bitrate={props.call.participants[i].bitrate}
             micLevel={props.call.participants[i].micLevel}
             isMobile={props.call.isMobile}
@@ -205,10 +212,13 @@ const Conference = (props) => {
   } else {
     for (let i = 0; i < props.call.participants.length; i += 1) {
       let user = props.call.participants[i];
+
       usersStreams.push(
         <UserStream
+          isMicroMuted={user.isMicroMuted}
           key={i}
-          isVideo={props.call.participants[i].isVideo}
+          isSharing={user.isSharing}
+          isVideo={user.isVideo}
           streamNumber={i}
           userId={user.name === "me" ? "me" : user.userId}
           userName={user.name}
@@ -218,7 +228,7 @@ const Conference = (props) => {
           micLevel={user.micLevel}
           isMobile={isMobile}
           mirror={mirror}
-          connectionStatus={props.call.participants[i].connectionStatus}
+          connectionStatus={user.connectionStatus}
         />
       );
     }

@@ -42,6 +42,8 @@ const Chat = (props) => {
         ""
       );
       chat.sendMessage(messageRef.current.value, props.dialog);
+      messageRef.current.style.height = "45px";
+
       messageRef.current.value = "";
     }
   };
@@ -57,7 +59,7 @@ const Chat = (props) => {
           ""
         );
 
-        messageRef.current.style.height = "30px";
+        messageRef.current.style.height = "45px";
 
         chat.sendMessage(messageRef.current.value, props.dialog);
         messageRef.current.value = "";

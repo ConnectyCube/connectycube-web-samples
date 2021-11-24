@@ -32,6 +32,8 @@ export const CallProvider = ({ children }) => {
       micLevel: null,
       connectionStatus: "good",
       isVideo: false,
+      isSharing: false,
+      isMicroMuted: false,
     },
   ]);
 
@@ -46,6 +48,8 @@ export const CallProvider = ({ children }) => {
       micLevel: null,
       connectionStatus: "good",
       isVideo: false,
+      isSharing: false,
+      isMicroMuted: false,
     },
   ]);
 
@@ -67,7 +71,9 @@ export const CallProvider = ({ children }) => {
         if (p.name !== "me") {
           try {
             let bitrate = _session.current.getRemoteUserBitrate(p.userId);
-            let micLevel = _session.current.getRemoteUserVolume(p.userId) * 100;
+            let micLevel =
+              (_session.current.getRemoteUserVolume(p.userId) / MAX_MIC_LEVEL) *
+              100;
             if (detectBrowser() === "Safari") {
               let safariBitrate = parseInt(bitrate);
               p.bitrate = Math.round(safariBitrate / 1000) + " kbits/sec";
@@ -115,12 +121,26 @@ export const CallProvider = ({ children }) => {
       isExistingParticipant
     ) => {
       console.log("OnJoin", { userId, userDisplayName, isExistingParticipant });
-      participantRef.current.push({
-        userId,
-        name: userDisplayName,
-        stream: null,
-        connectionStatus: "good",
-      });
+      let user = participantRef.current.find(
+        (participant) => participant.userId === userId
+      );
+      if (!user) {
+        participantRef.current.push({
+          userId,
+          name: userDisplayName,
+          stream: null,
+          connectionStatus: "good",
+        });
+      } else {
+        participantRef.current.map((obj, id) => {
+          if (obj.userId === userId) {
+            obj.name = userDisplayName;
+          }
+          return obj;
+        });
+        const newParticipants = [...participantRef.current];
+        setParticipants(newParticipants);
+      }
       const msg = {
         body: isVideoMutedRef.current ? "camera__off" : "camera__on",
         extension: {
@@ -128,8 +148,18 @@ export const CallProvider = ({ children }) => {
           name: "Our photos",
         },
       };
+      const msg2 = {
+        body: participantRef.current[0].isMicroMuted
+          ? "micro__muted"
+          : "micro__unmuted",
+        extension: {
+          photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+          name: "Our photos",
+        },
+      };
 
       ConnectyCube.chat.sendSystemMessage(userId, msg);
+      ConnectyCube.chat.sendSystemMessage(userId, msg2);
       const newParticipants = [...participantRef.current];
       setParticipants(newParticipants);
     };
@@ -142,6 +172,7 @@ export const CallProvider = ({ children }) => {
       );
       const newParticipants = [...participantRef.current];
       setParticipants(newParticipants);
+      console.table(participantRef.current);
     };
     ConnectyCube.videochatconference.onRemoteStreamListener = (
       session,
@@ -198,39 +229,50 @@ export const CallProvider = ({ children }) => {
       setDevices({ video: true, audio: true });
     });
 
-    if (isMobile) {
-      ConnectyCube.chat.onSystemMessageListener = (msg) => {
-        setTimeout(() => {
-          if (msg.body === "camera__off") {
-            participantRef.current.find(
-              (p) => p.userId === msg.userId
-            ).isVideo = false;
-            setParticipants([...participantRef.current]);
-          } else if (msg.body === "camera__on") {
-            participantRef.current.find(
-              (p) => p.userId === msg.userId
-            ).isVideo = true;
-            setParticipants([...participantRef.current]);
-          }
-        }, 6000);
-      };
-    } else {
-      ConnectyCube.chat.onSystemMessageListener = (msg) => {
-        setTimeout(() => {
-          if (msg.body === "camera__off") {
-            participantRef.current.find(
-              (p) => p.userId === msg.userId
-            ).isVideo = false;
-            setParticipants([...participantRef.current]);
-          } else if (msg.body === "camera__on") {
-            participantRef.current.find(
-              (p) => p.userId === msg.userId
-            ).isVideo = true;
-            setParticipants([...participantRef.current]);
-          }
-        }, 2000);
-      };
-    }
+    ConnectyCube.chat.onSystemMessageListener = (msg) => {
+      let user = participantRef.current.find(
+        (participant) => participant.userId === msg.userId
+      );
+      if (!user) {
+        participantRef.current.push({
+          userId: msg.userId,
+          stream: null,
+          connectionStatus: "good",
+        });
+        setParticipants([...participantRef.current]);
+      }
+      if (msg.extension.sharing === "sharing") {
+        participantRef.current.find(
+          (p) => p.userId === msg.userId
+        ).isSharing = true;
+      } else {
+        participantRef.current.find(
+          (p) => p.userId === msg.userId
+        ).isSharing = false;
+      }
+      if (msg.body === "camera__off") {
+        participantRef.current.find(
+          (p) => p.userId === msg.userId
+        ).isVideo = false;
+        setParticipants([...participantRef.current]);
+      } else if (msg.body === "camera__on") {
+        participantRef.current.find(
+          (p) => p.userId === msg.userId
+        ).isVideo = true;
+        setParticipants([...participantRef.current]);
+      }
+      if (msg.body === "micro__muted") {
+        participantRef.current.find(
+          (p) => p.userId === msg.userId
+        ).isMicroMuted = true;
+        setParticipants([...participantRef.current]);
+      } else if (msg.body === "micro__unmuted") {
+        participantRef.current.find(
+          (p) => p.userId === msg.userId
+        ).isMicroMuted = false;
+        setParticipants([...participantRef.current]);
+      }
+    };
   };
 
   const createAndJoinMeeting = (
@@ -472,9 +514,34 @@ export const CallProvider = ({ children }) => {
   };
 
   const toggleAudio = () => {
-    _session.current.isAudioMuted()
-      ? _session.current.unmuteAudio()
-      : _session.current.muteAudio();
+    if (_session.current.isAudioMuted()) {
+      participantRef.current.forEach((p) => {
+        const userId = p.userId;
+        const msg = {
+          body: "micro__unmuted",
+          extension: {
+            photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+            name: "Our photos",
+          },
+        };
+        ConnectyCube.chat.sendSystemMessage(userId, msg);
+      });
+
+      _session.current.unmuteAudio();
+    } else {
+      participantRef.current.forEach((p) => {
+        const userId = p.userId;
+        const msg = {
+          body: "micro__muted",
+          extension: {
+            photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+            name: "Our photos",
+          },
+        };
+        ConnectyCube.chat.sendSystemMessage(userId, msg);
+      });
+      _session.current.muteAudio();
+    }
 
     return _session.current.isAudioMuted();
   };
@@ -547,8 +614,20 @@ export const CallProvider = ({ children }) => {
   const stopSharingScreen = () => {
     setMirror(false);
     sharingRef.current = false;
+
     participantRef.current[0].isVideo = prevIsVideoRef.current;
     if (prevIsVideoRef.current) {
+      participantRef.current.forEach((p) => {
+        const userId = p.userId;
+        const msg = {
+          body: "camera__on",
+          extension: {
+            sharing: "not-sharing",
+            name: "Our photos",
+          },
+        };
+        ConnectyCube.chat.sendSystemMessage(userId, msg);
+      });
       return _session.current
         .getUserMedia({ video: true, audio: true }, true)
         .then((stream) => {});
@@ -558,7 +637,7 @@ export const CallProvider = ({ children }) => {
         const msg = {
           body: "camera__off",
           extension: {
-            photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+            sharing: "not-sharing",
             name: "Our photos",
           },
         };
@@ -589,20 +668,19 @@ export const CallProvider = ({ children }) => {
         .getDisplayMedia(constraints, true)
         .then((stream) => {
           prevIsVideoRef.current = participantRef.current[0].isVideo;
-          if (!participantRef.current[0].isVideo) {
-            participantRef.current.forEach((p) => {
-              const userId = p.userId;
-              const msg = {
-                body: "camera__on",
-                extension: {
-                  photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
-                  name: "Our photos",
-                },
-              };
 
-              ConnectyCube.chat.sendSystemMessage(userId, msg);
-            });
-          }
+          participantRef.current.forEach((p) => {
+            const userId = p.userId;
+            const msg = {
+              body: "camera__on",
+              extension: {
+                sharing: "sharing",
+                name: "Our photos",
+              },
+            };
+
+            ConnectyCube.chat.sendSystemMessage(userId, msg);
+          });
 
           stream.getVideoTracks()[0].enabled = true;
           setMirror(true);

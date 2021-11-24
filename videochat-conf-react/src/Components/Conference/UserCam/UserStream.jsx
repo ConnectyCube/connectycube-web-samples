@@ -2,6 +2,8 @@ import "./UserStream.scss";
 import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
 import { useState } from "react";
+import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
+import { BiMicrophoneOff } from "react-icons/bi";
 import { detectBrowser } from "../../../services/heplers";
 const UserStream = (props) => {
   const {
@@ -16,11 +18,12 @@ const UserStream = (props) => {
     fullScreen,
     isVideo,
     mirror,
+    isSharing,
+    isMicroMuted,
   } = props;
   const [isStreamLoaded, setIsStreamLoaded] = useState(false);
   const loaderRef = React.createRef();
   const noImageRef = React.createRef();
-
   const videoRef = useCallback(
     (videoElement) => {
       if (!stream || !videoElement) {
@@ -54,25 +57,6 @@ const UserStream = (props) => {
         </div>
       )}
 
-      <div
-        className={`user__stats-btn ${connectionStatus}`}
-        onMouseOver={() => {
-          let stats = document.getElementById(`user__stats-${userId}`);
-          stats.style.opacity = "1";
-          stats.style.display = "block";
-        }}
-        onMouseOut={() => {
-          let stats = document.getElementById(`user__stats-${userId}`);
-          stats.style.opacity = "0";
-          stats.style.display = "none";
-        }}
-      ></div>
-      <UserStats
-        userId={userId}
-        micLevel={micLevel}
-        bitrate={bitrate}
-        connectionStatus={connectionStatus}
-      />
       <div id={`fullscreen-stream-${userId}`} className="fullscreen-stream">
         <video
           playsInline
@@ -80,22 +64,53 @@ const UserStream = (props) => {
           id={`user__cam-${userId}`}
           className={`user__cam ${isVideo ? "" : "hide"} ${
             userId === "me" ? mirror : false
-          }`}
+          } ${isSharing ? "contain" : "cover"} `}
           preload="yes"
           ref={videoRef}
         ></video>
       </div>
-      <input
-        type="image"
-        className={`full__screen ${
-          isMobile || detectBrowser() === "Safari" ? `hide` : ``
-        }`}
-        onClick={() => {
-          fullScreen(userId);
-        }}
-        alt="Full screen button"
-        src="../../img/full-screen.png"
-      />
+      <div className="user__stats-container">
+        <div
+          className={`user__stats-btn ${connectionStatus}`}
+          onMouseOver={() => {
+            let stats = document.getElementById(`user__stats-${userId}`);
+            stats.style.opacity = "1";
+            stats.style.display = "block";
+          }}
+          onMouseOut={() => {
+            let stats = document.getElementById(`user__stats-${userId}`);
+            stats.style.opacity = "0";
+            stats.style.display = "none";
+          }}
+        ></div>
+        <UserStats
+          userId={userId}
+          micLevel={micLevel}
+          bitrate={bitrate}
+          connectionStatus={connectionStatus}
+        />
+        <input
+          type="image"
+          className={`full__screen ${
+            isMobile || detectBrowser() === "Safari" || userId === "me"
+              ? `hide`
+              : ``
+          }`}
+          onClick={() => {
+            fullScreen(userId);
+          }}
+          alt="Full screen button"
+          src="../../img/full-screen.png"
+        />
+        {userId !== "me" && (
+          <span className="micro__status">
+            {isMicroMuted && (
+              <BiMicrophoneOff size={32} style={{ fill: "grey", opacity: 1 }} />
+            )}
+          </span>
+        )}
+      </div>
+
       <span className={`user__name`}>{userName}</span>
     </div>
   );
