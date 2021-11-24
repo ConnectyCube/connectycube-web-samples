@@ -12,6 +12,8 @@ import {LoadingService} from "../../services/loading.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogWarningComponent} from "../dialog-warning/dialog-warning.component";
 import {PermissionsService} from "../../services/permissions.service";
+import {MatIconRegistry} from "@angular/material/icon";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-prejoin',
@@ -57,10 +59,16 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     private router: Router,
     private urlService: UrlService,
     private store$: Store<State>,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer,
     public loader: LoadingService,
     public dialog: MatDialog,
     public permissions: PermissionsService
   ) {
+    this.matIconRegistry.addSvgIcon('videocam',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('videocam_off',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_off_white_24dp.svg"));
   }
 
   private checkPermissions() {

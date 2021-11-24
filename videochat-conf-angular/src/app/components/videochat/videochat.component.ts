@@ -2,17 +2,19 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {State} from "../../reducers";
 import {select, Store} from "@ngrx/store";
 import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
-import {participantSelector} from "../../reducers/participant.selectors";
+import {participantSelector, participantSortSelector} from "../../reducers/participant.selectors";
 import {AuthService} from "../../services/auth.service";
 import {CallService} from "../../services/call.service";
 import {mediaParams} from "../../services/config";
-import {removeAllUsers, swapUsers} from "../../reducers/participant.actions";
+import {removeAllUsers} from "../../reducers/participant.actions";
 import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {PermissionsService} from "../../services/permissions.service";
 import {take} from "rxjs/operators";
 import {User} from "../../reducers/participant.reducer";
+import {MatIconRegistry} from "@angular/material/icon";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-videochat',
@@ -21,8 +23,10 @@ import {User} from "../../reducers/participant.reducer";
 })
 export class VideochatComponent implements OnInit, OnDestroy {
 
+  public gridStatus: boolean = true;
+  public sidebarStatus: boolean = false;
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
-  public participantArray$ = this.store$.select(participantSelector);
+  public participantArray$ = this.store$.select(this.gridStatus ? participantSelector : participantSortSelector);
   public participantArray: any;
   public hideButtons: boolean = false;
   public microphoneIconName: string = 'mic';
@@ -38,8 +42,6 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public CameraConnect = false;
   public videoPermission: any;
   public selectedValue: string = 'grid';
-  public gridStatus: boolean = true;
-  public sidebarStatus: boolean = false;
   public startSliceSide = 0;
   public endSliceSide = 1;
   public startSliceGrid = 0;
@@ -54,7 +56,29 @@ export class VideochatComponent implements OnInit, OnDestroy {
     private callService: CallService,
     private deviceService: DeviceDetectorService,
     private permission: PermissionsService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
   ) {
+    this.matIconRegistry.addSvgIcon('fullscreen',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/fullscreen_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('connection',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/connection.svg"));
+    this.matIconRegistry.addSvgIcon('videocam',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('videocam_off',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_off_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('mic',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/mic_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('mic_off',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/mic_off_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('phone_missed',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/phone_missed_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('switch_video',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/switch_video_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('screen_share',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/screen_share_black_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('stop_screen_share',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/stop_screen_share_black_24dp.svg"));
   }
 
   private checkPermissions() {
@@ -66,6 +90,9 @@ export class VideochatComponent implements OnInit, OnDestroy {
         this.videoPermission = false;
       }
     })
+      .catch(() => {
+        this.videoPermission = 'granted';
+      })
   }
 
   private checkConnect() {
@@ -81,29 +108,25 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   private gridView() {
-    console.log('[Grid View]')
+    console.log('[Grid View]');
+    this.participantArray$ = this.store$.select(participantSelector);
     this.callService.setCurrentMode('grid');
     this.gridStatus = true;
     this.sidebarStatus = false;
     this.startSliceGrid = 0;
-    this.participantArray$.pipe(take(1)).subscribe(res => {
-      const participants = res;
-      if (participants.length !== 1) {
-        const index = participants.indexOf(<User>participants
-          .find((user: User) => user.bitrate === undefined));
-        this.store$.dispatch(swapUsers({index}));
-      }
-    });
-
   }
 
   private sidebarView() {
     console.log('[Sidebar View]');
+    this.participantArray$ = this.store$.select(participantSortSelector);
     this.callService.setCurrentMode('sidebar');
     this.gridStatus = false;
     this.sidebarStatus = true;
     this.startSliceGrid = 1;
-    this.store$.dispatch(swapUsers({index: 1}))
+  }
+
+  trackById(index: number, user: User) {
+    return user.id;
   }
 
   public muteOrUnmuteMicro() {

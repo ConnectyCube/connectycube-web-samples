@@ -16,11 +16,15 @@ export const updateUser = createAction(
 export const removeAllUsers = createAction(
   '[PARTICIPANT] remove all users'
 );
-export const addBitrateMicrophone = createAction(
-  '[PARTICIPANT] add users bitrate',
-  props<{ idBitrateMap: Map<number, number> }>()
+export const addMicrophoneLevel = createAction(
+  '[PARTICIPANT] add users volume levels',
+  props<{ idVolumeLevelMap: Map<number, number> }>()
 );
-export const swapUsers = createAction(
-  '[PARTICIPANT] swap users',
-  props<{ index: number }>()
+export const addBitrate = createAction(
+  '[PARTICIPANT] add users bitrate',
+  props<{ idBitrateMap: Map<number, string> }>()
+);
+export const updateConnectionStatus = createAction(
+  '[PARTICIPANT] update user connection status',
+  props<{id:number,connectionStatus:string}>()
 );

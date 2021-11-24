@@ -175,30 +175,35 @@ app-videochat {
 }
 
 
-app-videochat{
+app-videochat {
   .mat-form-field-appearance-fill .mat-form-field-flex {
     background: #fff;
     opacity: 0.6;
   }
-  .mat-form-field-wrapper{
+
+  .mat-form-field-wrapper {
     margin-bottom: -1.25em;
   }
+
   .mat-form-field-appearance-fill .mat-form-field-flex {
     padding: 15px 10px !important;
   }
+
   .mat-form-field-infix {
     display: flex !important;
     padding: 0 !important;
     border: none;
   }
+
   .mat-select-trigger {
     cursor: pointer;
     position: relative;
     box-sizing: border-box;
-    display: flex!important;
-    align-items: center!important;
-    justify-content: space-between!important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
+
   .mat-select-value {
     display: flex !important;
     width: 100%;
@@ -207,11 +212,17 @@ app-videochat{
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
   .mat-select-arrow-wrapper {
     display: flex !important;
   }
-  mat-select-trigger{
+
+  mat-select-trigger {
     display: flex !important;
     align-items: center !important;
   }
+}
+
+::-webkit-media-controls {
+  display: none !important;
 }

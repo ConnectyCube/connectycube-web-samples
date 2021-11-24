@@ -1,4 +1,25 @@
-<div [ngClass]="videoWork || currentUserIndex === 0?'':'show-bg-image'" class="user-placeholder">
+<div class="user-connection" (mouseenter)="statsHide = false" (mouseleave)="statsHide = true">
+  <mat-icon
+    [ngClass]="{'good':currentConnectionStatus === 'good' || currentUserBitrate === undefined
+    ,'average':currentConnectionStatus === 'average'}"
+    svgIcon="connection">
+  </mat-icon>
+</div>
+<mat-icon *ngIf="!(currentUserBitrate === undefined || isMobile || isTablet)"
+          (click)="toFullScreen($event)"
+          [ngClass]="'btn-'+currentUserId"
+          class="fullscreen"
+          svgIcon="fullscreen">
+</mat-icon>
+<div class="user-stats user-stats-{{currentUserId}}" [hidden]="statsHide">
+  <span>
+    Connection {{currentConnectionStatus || 'good'}} <br>
+    {{currentUserMicrophoneLevel ? 'Volume level ' + currentUserMicrophoneLevel : ''}}
+    <br *ngIf="currentUserMicrophoneLevel">
+    {{currentUserBitrate ? 'Speed ' + currentUserBitrate : ''}}
+  </span>
+</div>
+<div [ngClass]="videoWork || currentUserMicrophoneLevel === undefined?'':'show-bg-image'" class="user-placeholder">
   <div class="user-image"
        style="background: url(../../../assets/animals/animals_1.jpg)
        center center / contain no-repeat rgb(255, 255, 255);"></div>
@@ -7,16 +28,17 @@
   <video [srcObject]="currentUserStream"
          [ngClass]="{'mirror':currentShareScreenIconName !== 'stop_screen_share' &&
           !switchDone &&
-           currentUserIndex===0}"
+           currentUserMicrophoneLevel === undefined}"
+         playsinline
          preload="auto"
          autoplay
-         [muted]="currentUserIndex === 0"
-         (loadeddata)="showVideo()"
+         [muted]="currentUserMicrophoneLevel === undefined"
+         (canplaythrough)="showVideo()"
          (playing)="unDisableButton()"
          id="stream-{{currentUserId}}"
          class="videochat-stream"
   ></video>
 </div>
 <div class="display-user-name">
-  <p class="user-name">{{currentUserIndex === 0 ? 'me' : currentUserName}}</p>
+  <p class="user-name">{{currentUserMicrophoneLevel === undefined ? 'me' : currentUserName}}</p>
 </div>

@@ -1,10 +1,17 @@
 import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
-import {addBitrateMicrophone, addUser, removeUser, swapUsers, updateUser} from "../reducers/participant.actions";
+import {
+  addBitrate,
+  addMicrophoneLevel,
+  addUser,
+  removeUser,
+  updateConnectionStatus,
+  updateUser
+} from "../reducers/participant.actions";
 import {constraints, mediaParams} from "./config";
 import {User} from "../reducers/participant.reducer";
-import {participantSelector} from "../reducers/participant.selectors";
+import {participantSelector, participantSortSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 
 declare let ConnectyCube: any;
@@ -18,16 +25,17 @@ export class CallService {
   ) {
   }
 
-  private UPDATE_STREAM_TIME: number = 15000;
+  private UPDATE_STREAM_TIME: number = 4000;
+  private CONNECTION_UPDATE_STATUS_TIME = 30 * 1000;
   private OurSession: any;
   private OurDeviceId: any;
   private OurSharingStatus: any;
   private OurIntervalId: any;
   private subscribeParticipantArray: any;
   private participantArray: any;
-  private participantArray$ = this.store.select(participantSelector);
   private currentMode: string = 'grid';
-  private maxBitraitUserIndex: any;
+  private participantArray$ = this.store.select(participantSelector);
+  private slowLinkTimers: any = {};
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -47,11 +55,17 @@ export class CallService {
   public init() {
     ConnectyCube.videochatconference.onParticipantJoinedListener = (
       session: any,
-      userId: any,
-      userDisplayName: any,
+      userId: number,
+      userDisplayName: string,
       isExistingParticipant: any
     ) => {
-      this.store.dispatch(addUser({id: userId, name: userDisplayName, bitrate: 0}));
+      this.store.dispatch(addUser({
+        id: userId,
+        name: userDisplayName,
+        volumeLevel: 0,
+        bitrate: '',
+        connectionStatus: 'good'
+      }));
 
       if (this.subscribeParticipantArray) {
         this.stopCheckUserMicLevel();
@@ -61,7 +75,7 @@ export class CallService {
 
     };
     ConnectyCube.videochatconference.onParticipantLeftListener
-      = (session: any, userId: any) => {
+      = (session: any, userId: number) => {
       this.store.dispatch(removeUser({id: userId}));
       this.stopCheckUserMicLevel();
 
@@ -78,11 +92,21 @@ export class CallService {
       }
     };
     ConnectyCube.videochatconference.onRemoteStreamListener
-      = (session: any, userId: any, stream: any) => {
+      = (session: any, userId: number, stream: any) => {
       this.store.dispatch(updateUser({id: userId, stream: stream}));
     };
     ConnectyCube.videochatconference.onSlowLinkListener
-      = (session: any, userId: any, uplink: any, nacks: any) => {
+      = (session: any, userId: number, uplink: any, nacks: any) => {
+      this.store.dispatch(updateConnectionStatus({id: userId, connectionStatus: 'average'}));
+
+      const timerId = this.slowLinkTimers[userId];
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+
+      this.slowLinkTimers[userId] = setTimeout(() => {
+        this.store.dispatch(updateConnectionStatus({id: userId, connectionStatus: 'good'}))
+      }, this.CONNECTION_UPDATE_STATUS_TIME);
     };
     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener
       = (session: any, userId: any, iceState: any) => {
@@ -100,32 +124,6 @@ export class CallService {
     return this.participantArray.length;
   }
 
-  // public getMaxBitraitUserIndex() {
-  //   if (this.maxBitraitUserIndex) {
-  //     return this.maxBitraitUserIndex + 1;
-  //   }
-  //   else {
-  //     return 1;
-  //   }
-  // }
-
-  public swapUsers() {
-    const participantArrayWithoutUndefined = this.participantArray
-      .filter((user: User) => user.bitrate !== undefined);
-
-    const maxBitrait = Math.max(...participantArrayWithoutUndefined.map((user: User) => user.bitrate));
-    console.log("Max Bitrait", maxBitrait);
-
-    const userMaxUser = this.participantArray
-      .find((user: User) => user.bitrate === maxBitrait);
-    console.log("User", userMaxUser);
-
-    this.maxBitraitUserIndex = this.participantArray.indexOf(userMaxUser);
-    console.log("Index max bit User", this.maxBitraitUserIndex);
-
-    this.store.dispatch(swapUsers({index: this.maxBitraitUserIndex}));
-  }
-
   public startCheckUsersMicLevel(session: any) {
     console.log("[StartCheckUsersMic]");
     this.OurIntervalId = setInterval(this.getUsersMicLevel.bind(this), this.UPDATE_STREAM_TIME, session);
@@ -137,6 +135,18 @@ export class CallService {
     clearInterval(this.OurIntervalId);
   }
 
+  public getUsersBitrate(session: any) {
+    const idBitrateMap: Map<number, string> = new Map;
+    console.warn(this.participantArray);
+    this.participantArray.forEach((user: User) => {
+      if (user.bitrate !== undefined) {
+        idBitrateMap.set(user.id, session.getRemoteUserBitrate(user.id));
+      }
+    })
+    console.warn('Bitrate', idBitrateMap);
+    this.store.dispatch(addBitrate({idBitrateMap: idBitrateMap}))
+  }
+
   public getUsersMicLevel(session: any) {
     //Get listener to Participants array and get participantArray if change
     this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
@@ -145,20 +155,20 @@ export class CallService {
 
     console.warn("[PARTICIPANT ARRAY]", this.participantArray);
 
+    this.getUsersBitrate(session);
+
     if (this.currentMode === 'grid') {
       return;
     }
 
     console.log("[getUsersMicLevel 15s]");
-    const idBitrateMap: Map<number, number> = new Map;
+    const idVolumeLevelMap: Map<number, number> = new Map;
     this.participantArray.forEach((user: User) => {
-      if (user.bitrate !== undefined) {
-        idBitrateMap.set(user.id, Number(session.getRemoteUserVolume(user.id)));
+      if (user.volumeLevel !== undefined) {
+        idVolumeLevelMap.set(user.id, Number(session.getRemoteUserVolume(user.id)));
       }
     })
-    this.store.dispatch(addBitrateMicrophone({idBitrateMap: idBitrateMap}));
-
-    this.swapUsers();
+    this.store.dispatch(addMicrophoneLevel({idVolumeLevelMap: idVolumeLevelMap}));
   }
 
   public SetOurDeviceId(id: any) {

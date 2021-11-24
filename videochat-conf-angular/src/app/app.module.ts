@@ -23,6 +23,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import { DialogWarningComponent } from './components/dialog-warning/dialog-warning.component';
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule} from "@angular/forms";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import {FormsModule} from "@angular/forms";
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSelectModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

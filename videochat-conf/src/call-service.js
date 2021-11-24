@@ -245,7 +245,7 @@ class CallService {
 
       functionBefore: (instance) => {
         const user_id = window.ConnectyCubeActiveUserStatId;
-        if (this.currentUserID !== user_id && !this.usersStatsList[user_id].bitrate) {
+        if (this.currentUserID !== user_id && !this.usersStatsList[user_id].volumeLevel) {
           instance.content(
             `<ul>
               <li>Connection: N/A</li>
@@ -259,7 +259,7 @@ class CallService {
           instance.content(
             `<ul>
               <li>Connection: ${this.usersStatsList[user_id].connection}</li>
-              <li>Bitrate: ${this.usersStatsList[user_id].bitrate}</li>
+              <li>Bitrate: ${this.usersStatsList[user_id].volumeLevel}</li>
               <li>Mic level: ${volume.toFixed(2)}%</li>
             </ul>`
           )

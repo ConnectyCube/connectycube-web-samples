@@ -1,11 +1,21 @@
 import {createReducer, on} from '@ngrx/store';
-import {addUser, updateUser, removeUser, removeAllUsers, addBitrateMicrophone, swapUsers} from "./participant.actions";
+import {
+  addUser,
+  updateUser,
+  removeUser,
+  removeAllUsers,
+  addMicrophoneLevel,
+  addBitrate,
+  updateConnectionStatus
+} from "./participant.actions";
 
 export interface User {
   id: number,
   name?: string,
   stream?: any,
-  bitrate?: number
+  volumeLevel?: number,
+  bitrate?: string,
+  connectionStatus?: string
 }
 
 export interface participantState {
@@ -18,9 +28,9 @@ export const initialState: participantState = {
 
 export const participantReducer = createReducer(
     initialState,
-    on(addUser, (state, {id, name, stream, bitrate}) => ({
+    on(addUser, (state, {id, name, stream, volumeLevel, bitrate, connectionStatus}) => ({
       ...state,
-      participantArray: state.participantArray.concat([{id, name, stream, bitrate}])
+      participantArray: state.participantArray.concat([{id, name, stream, volumeLevel, bitrate, connectionStatus}])
     })),
     on(removeUser, (state, {id}) => ({
       ...state,
@@ -40,13 +50,13 @@ export const participantReducer = createReducer(
       ...state,
       participantArray: []
     })),
-    on(addBitrateMicrophone, (state, {idBitrateMap}) => ({
+    on(addMicrophoneLevel, (state, {idVolumeLevelMap}) => ({
       ...state,
-      participantArray: state.participantArray.map((user: User, index) => {
-        if (index !== 0) {
+      participantArray: state.participantArray.map((user: User, index: number) => {
+        if (user.volumeLevel !== undefined) {
           const newUser: User = {...user};
-          newUser.bitrate = idBitrateMap.get(user.id);
-          console.log(newUser.bitrate);
+          newUser.volumeLevel = idVolumeLevelMap.get(user.id);
+          console.log(`User-${index} volume: `, newUser.volumeLevel);
           return newUser;
         }
         else {
@@ -54,14 +64,32 @@ export const participantReducer = createReducer(
         }
       })
     })),
-    on(swapUsers, (state, {index}) => {
-      const newArray = [...state.participantArray];
-      [newArray[0],newArray[index]] = [newArray[index],newArray[0]]
-      return {
-        ...state,
-        participantArray: newArray
-      }
-    }),
+    on(addBitrate, (state, {idBitrateMap}) => ({
+      ...state,
+      participantArray: state.participantArray.map((user: User, index: number) => {
+        console.log(idBitrateMap)
+        if (user.bitrate !== undefined) {
+          const newUser: User = {...user};
+          newUser.bitrate = idBitrateMap.get(user.id);
+          console.log(`User-${index} bitrate: `, newUser.bitrate);
+          return newUser;
+        }
+        else {
+          return user;
+        }
+      })
+    })),
+    on(updateConnectionStatus, (state, {id, connectionStatus}) => ({
+      ...state,
+      participantArray: state.participantArray.map((user: User) => {
+        if (user.id === id) {
+          const newUser = {...user};
+          newUser.connectionStatus = connectionStatus;
+          return newUser;
+        }
+        return user;
+      })
+    }))
   )
 ;
 

@@ -9,22 +9,22 @@ export class PermissionsService {
   }
 
   public checkAudioPermission() {
-    return navigator.permissions.query({name: 'microphone'})
-      .then((permissionObj) => {
-        return permissionObj.state;
-      })
-      .catch((error: any) => {
-        console.log("Microphone permissions Error!", error);
-      })
+      return navigator.permissions.query({name: 'microphone'})
+        .then((permissionObj) => {
+          return permissionObj.state;
+        })
+        .catch((error: any) => {
+          console.log("Microphone permissions Error!", error);
+        })
   }
 
   public checkVideoPermission() {
-    return navigator.permissions.query({name: 'camera'})
-      .then((permissionObj) => {
-        return permissionObj.state;
-      })
-      .catch((error: any) => {
-        console.log("Camera permissions Error!", error);
-      })
+      return navigator.permissions.query({name: 'camera'})
+        .then((permissionObj) => {
+          return permissionObj.state;
+        })
+        .catch((error: any) => {
+          console.log("Camera permissions Error!", error);
+        })
   }
 }

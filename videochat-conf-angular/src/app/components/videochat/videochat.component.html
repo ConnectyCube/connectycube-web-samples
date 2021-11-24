@@ -23,7 +23,11 @@
   <div class="speaker-stream" *ngIf="sidebarStatus">
     <app-stream-container
       (videoLoaded)="ChangeDisable($event)"
-      *ngFor="let user of (participantArray$ | async | slice:startSliceSide:endSliceSide);index as i;"
+      *ngFor="
+      let user of (participantArray$ | async | slice:startSliceSide:endSliceSide);
+      index as i;
+      trackBy:trackById
+      "
       [className]="'stream'+i"
       [currentShareScreenIconName]="shareScreenIconName"
       [switchDone]="switchDone"
@@ -31,12 +35,19 @@
       [currentUserId]="user.id"
       [currentUserIndex]="(participantArray$ | async)?.length === 1?i:i+1"
       [currentUserName]="user.name"
+      [currentUserMicrophoneLevel]="user.volumeLevel"
+      [currentUserBitrate]="user.bitrate"
+      [currentConnectionStatus]="user.connectionStatus"
     ></app-stream-container>
   </div>
   <div class="users-streams" [ngClass]="setNgClassProperty((participantArray$ | async)?.length)">
     <app-stream-container
       (videoLoaded)="ChangeDisable($event)"
-      *ngFor="let user of (participantArray$ | async | slice:startSliceGrid);index as i;"
+      *ngFor="
+      let user of (participantArray$ | async | slice:startSliceGrid);
+      index as i;
+      trackBy:trackById
+      "
       [className]="'stream'+i"
       [currentShareScreenIconName]="shareScreenIconName"
       [switchDone]="switchDone"
@@ -44,6 +55,10 @@
       [currentUserId]="user.id"
       [currentUserIndex]="i"
       [currentUserName]="user.name"
+      [currentUserMicrophoneLevel]="user.volumeLevel"
+      [currentModeGrid]="gridStatus"
+      [currentUserBitrate]="user.bitrate"
+      [currentConnectionStatus]="user.connectionStatus"
     ></app-stream-container>
   </div>
 </div>
@@ -64,25 +79,25 @@
           color="primary"
           class="videochat-button"
           aria-label="Mute Microphone">
-    <mat-icon>{{microphoneIconName}}</mat-icon>
+    <mat-icon [svgIcon]="microphoneIconName"></mat-icon>
   </button>
   <button [disabled]="DisableButton || !CameraConnect || videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
           mat-fab class="videochat-button"
           aria-label="Mute Video">
-    <mat-icon>{{videoIconName}}</mat-icon>
+    <mat-icon [svgIcon]="videoIconName"></mat-icon>
   </button>
   <button (click)="stopCall()"
           id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
-    <mat-icon>phone_missed</mat-icon>
+    <mat-icon svgIcon="phone_missed"></mat-icon>
   </button>
   <button [disabled]="DisableButton || mediaDevice.length < 2 || !CameraConnect || videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">
-    <mat-icon>switch_video</mat-icon>
+    <mat-icon svgIcon="switch_video"></mat-icon>
   </button>
   <button [disabled]="isMobile || isTablet" (click)="shareScreen()"
           id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
-    <mat-icon>{{shareScreenIconName}}</mat-icon>
+    <mat-icon [svgIcon]="shareScreenIconName"></mat-icon>
   </button>
 </div>
