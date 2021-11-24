@@ -140,14 +140,14 @@ export const CallProvider = ({ children }) => {
         const newParticipants = [...participantRef.current];
         setParticipants(newParticipants);
       }
-      const msg = {
+      const isVideoMuted = {
         body: isVideoMutedRef.current ? "camera__off" : "camera__on",
         extension: {
           photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
           name: "Our photos",
         },
       };
-      const msg2 = {
+      const microStatus = {
         body: participantRef.current[0].isMicroMuted
           ? "micro__muted"
           : "micro__unmuted",
@@ -156,9 +156,17 @@ export const CallProvider = ({ children }) => {
           name: "Our photos",
         },
       };
+      const sharingStatus = {
+        body: participantRef.current[0].isSharing ? "sharing" : "not-sharing",
+        extension: {
+          photo_uid: "7cafb6030d3e4348ba49cab24c0cf10800",
+          name: "Our photos",
+        },
+      };
 
-      ConnectyCube.chat.sendSystemMessage(userId, msg);
-      ConnectyCube.chat.sendSystemMessage(userId, msg2);
+      ConnectyCube.chat.sendSystemMessage(userId, sharingStatus);
+      ConnectyCube.chat.sendSystemMessage(userId, microStatus);
+      ConnectyCube.chat.sendSystemMessage(userId, isVideoMuted);
       const newParticipants = [...participantRef.current];
       setParticipants(newParticipants);
     };
@@ -240,11 +248,14 @@ export const CallProvider = ({ children }) => {
         });
         setParticipants([...participantRef.current]);
       }
-      if (msg.extension.sharing === "sharing") {
+      if (msg.extension.sharing === "sharing" || msg.body === "sharing") {
         participantRef.current.find(
           (p) => p.userId === msg.userId
         ).isSharing = true;
-      } else {
+      } else if (
+        msg.extension.sharing === "not-sharing" ||
+        msg.body === "not-sharing"
+      ) {
         participantRef.current.find(
           (p) => p.userId === msg.userId
         ).isSharing = false;
