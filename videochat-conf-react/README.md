@@ -24,11 +24,6 @@ ConnectyCube Conference Calling API documentation - [https://developers.connecty
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_conf_sample_login.png" width="720" alt="Conference Call code sample demo image login screen">
-</p>
-
-
-<p align="center">
 <img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720"   alt="Conference Call code sample demo image active call screen">
 </p>
 
