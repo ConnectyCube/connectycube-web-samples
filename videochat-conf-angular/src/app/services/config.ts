@@ -1,12 +1,14 @@
+import {environment} from "../../environments/environment";
+
 export const CREDENTIALS = {
-  appId: 5574,
-  authKey: "TZU3fqTqdJPzhDB",
-  authSecret: "hacNUHLEbOtXHYJ",
+  appId: Number(environment.APP_ID),
+  authKey: environment.AUTH_KEY,
+  authSecret: environment.AUTH_SECRET,
 };
 
 export const appConfig = {
   debug: {mode: 1},
-  conference: {server: 'wss://janus.connectycube.com:8989'},
+  conference: {server: environment.SERVER},
 }
 
 export const mediaParams = {
