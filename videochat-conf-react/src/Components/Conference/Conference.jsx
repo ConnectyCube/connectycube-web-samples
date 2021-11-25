@@ -5,6 +5,8 @@ import AuthService from "../../services/auth-service";
 import react from "react";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
+import { isiOS, detectBrowser } from "../../services/heplers";
+
 import { useHistory } from "react-router";
 import Chat from "./Chat/Chat";
 import ChatContext from "../../services/chat-service";
@@ -16,21 +18,26 @@ import { BsFillChatDotsFill } from "react-icons/bs";
 const Conference = (props) => {
   const chat = useContext(ChatContext);
   let href = useHistory();
+  chat.chatCallbaks();
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [audioOff, setAudioOff] = useState("");
-
   const {
+    isCreator,
     toggleVideo,
     toggleAudio,
     devices,
     isMobile,
     isLoaded,
     messages,
+    isSharing,
+
     leaveMeeting,
     isVideoMuted,
     participants,
+    mirror,
   } = props.call;
+
   let [chatId, setChatId] = useState("");
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
@@ -47,7 +54,7 @@ const Conference = (props) => {
             isAudio
           )
           .then((state) => {
-            chat.joinChat(state.meetingId).then((chat) => {
+            chat.joinChat(state.meetingId, participants).then((chat) => {
               setChatId(chat._id);
             });
             const confRoomIdHash = btoa(state.meetingId);
@@ -68,25 +75,23 @@ const Conference = (props) => {
       let roomId = history.split("/");
       roomId = atob(roomId[2]);
       AuthService.login(userName).then((user) => {
-        setTimeout(() => {
-          props.call
-            .joinMeeting(
-              user.full_name,
-              roomId,
-              user.id,
-              `user__cam`,
-              isVideo,
-              isAudio
-            )
-            .then((devices) => {
-              chat.joinChat(roomId).then((chat) => {
-                setChatId(chat._id);
-              });
-            })
-            .catch((error) => {
-              console.error(error);
+        props.call
+          .joinMeeting(
+            user.full_name,
+            roomId,
+            user.id,
+            `user__cam`,
+            isVideo,
+            isAudio
+          )
+          .then((devices) => {
+            chat.joinChat(roomId).then((chat) => {
+              setChatId(chat._id);
             });
-        }, 1000);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       });
 
       if (!isAudio) {
@@ -94,6 +99,10 @@ const Conference = (props) => {
       }
     }
   };
+
+  useEffect(() => {
+    chat.setParticipants(participants);
+  }, [participants, chat]); //Chat dependecies maybe can be delete
 
   let camName = [];
   const newDevice = (e) => {
@@ -116,39 +125,27 @@ const Conference = (props) => {
 
   const usersStreams = [];
   const fullScreen = (userId) => {
-    let videoItem = document.getElementById(`user__cam-${userId}`);
-    if (!document.fullscreenElement) {
-      videoItem.requestFullscreen().catch((err) => {
-        alert(
-          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
-        );
-      });
+    let currentElem = document.getElementById(`fullscreen-stream-${userId}`);
+
+    if (currentElem.requestFullscreen) {
+      currentElem.requestFullscreen();
+    } else if (currentElem.mozRequestFullScreen) {
+      /* Firefox */
+      currentElem.mozRequestFullScreen();
+    } else if (currentElem.webkitRequestFullscreen) {
+      /* Chrome, Safari and Opera */
+      currentElem.webkitRequestFullscreen();
+    } else if (currentElem.msRequestFullscreen) {
+      /* IE/Edge */
+      currentElem.msRequestFullscreen();
     } else {
-      document.exitFullscreen();
+      alert(`Error attempting to enable full-screen mode`);
     }
   };
   let speakerUser;
   let usersSortedById;
-  if (props.call.view === "grid") {
-    for (let i = 0; i < props.call.participants.length; i += 1) {
-      let user = props.call.participants[i];
-      usersStreams.push(
-        <UserStream
-          key={i}
-          streamNumber={i}
-          userId={user.name === "me" ? "me" : user.userId}
-          userName={user.name}
-          stream={user.stream}
-          fullScreen={fullScreen}
-          bitrate={user.bitrate}
-          micLevel={user.micLevel}
-          isMobile={isMobile}
-          connectionStatus={props.call.participants[i].connectionStatus}
-        />
-      );
-    }
-  } else {
-    let usersSortedByMicLevel = props.call.participants.sort((a, b) => {
+  if (props.call.view === "sidebar" && participants.length > 1) {
+    let usersSortedByMicLevel = [...props.call.participants].sort((a, b) => {
       if (a.micLevel < b.micLevel) {
         return -1;
       }
@@ -157,11 +154,12 @@ const Conference = (props) => {
       }
       return 0;
     });
+    console.table(usersSortedByMicLevel);
 
     speakerUser = usersSortedByMicLevel[usersSortedByMicLevel.length - 1];
 
-    usersSortedById = props.call.participants.sort((a, b) => {
-      if (a.userId < b.userId) {
+    usersSortedById = [...props.call.participants].sort((a, b) => {
+      if (a.userId < b.userId && a.userName === "me") {
         return -1;
       }
       if (a.userId > b.userId) {
@@ -176,6 +174,8 @@ const Conference = (props) => {
         usersStreams.push(
           <UserStream
             key={i}
+            isMicroMuted={props.call.participants[i].isMicroMuted}
+            isVideo={props.call.participants[i].isVideo}
             streamNumber={i}
             userId={user.name === "me" ? "me" : user.userId}
             userName={user.name}
@@ -185,6 +185,8 @@ const Conference = (props) => {
             micLevel={props.call.participants[i].micLevel}
             isMobile={props.call.isMobile}
             connectionStatus={props.call.participants[i].connectionStatus}
+            mirror={mirror}
+            isSharing={props.call.participants[i].isSharing}
           />
         );
       } else {
@@ -192,10 +194,13 @@ const Conference = (props) => {
 
         speakerUser = (
           <UserStream
+            isMicroMuted={user.isMicroMuted}
+            isVideo={props.call.participants[i].isVideo}
             userId={user.name}
             userName={user.name}
             stream={user.stream}
             fullScreen={fullScreen}
+            isSharing={isSharing}
             bitrate={props.call.participants[i].bitrate}
             micLevel={props.call.participants[i].micLevel}
             isMobile={props.call.isMobile}
@@ -203,6 +208,29 @@ const Conference = (props) => {
           />
         );
       }
+    }
+  } else {
+    for (let i = 0; i < props.call.participants.length; i += 1) {
+      let user = props.call.participants[i];
+
+      usersStreams.push(
+        <UserStream
+          isMicroMuted={user.isMicroMuted}
+          key={i}
+          isSharing={user.isSharing}
+          isVideo={user.isVideo}
+          streamNumber={i}
+          userId={user.name === "me" ? "me" : user.userId}
+          userName={user.name}
+          stream={user.stream}
+          fullScreen={fullScreen}
+          bitrate={user.bitrate}
+          micLevel={user.micLevel}
+          isMobile={isMobile}
+          mirror={mirror}
+          connectionStatus={user.connectionStatus}
+        />
+      );
     }
   }
   const containerRef = react.createRef();
@@ -220,8 +248,7 @@ const Conference = (props) => {
     e.stopPropagation();
 
     videoRef.current.classList.toggle("mute");
-    let cam = document.getElementById("user__cam-me");
-    cam.classList.toggle("muted");
+
     props.call.toggleVideo();
   };
 
@@ -234,8 +261,11 @@ const Conference = (props) => {
   const onHideButtons = (e) => {
     let classOfClick = e.currentTarget.className;
     let target = e.target.tagName;
-    debugger;
-    if (classOfClick === "conference__container" && target !== "SELECT") {
+    if (
+      classOfClick === "conference__container" &&
+      target !== "TEXTAREA" &&
+      target !== "SELECT"
+    ) {
       let btns = buttonsRef.current;
       btns.classList.toggle("hide");
     }
@@ -244,17 +274,22 @@ const Conference = (props) => {
   const onStartScreenSharing = (e) => {
     e.stopPropagation();
 
-    let screenShareButton = document.getElementById("share__btn");
-    if (screenShareButton.classList.contains(`sharing`)) {
+    if (mirror) {
       props.call.stopSharingScreen();
-      let myCamera = document.getElementById("user__cam-me");
-      myCamera.classList.remove("unmirror");
-      screenShareButton.classList.remove("sharing");
+      //   .then((mirror) => {
+      //     setMirror(mirror);
+      //   })
+      //   .catch((mirror) => {
+      //     setMirror(mirror);
+      //   });
     } else {
       props.call.startScreenSharing();
-      let myCamera = document.getElementById("user__cam-me");
-      myCamera.classList.add("unmirror");
-      screenShareButton.classList.add("sharing");
+      //   .then((mirror) => {
+      //     setMirror(mirror);
+      //   })
+      //   .catch((mirror) => {
+      //     setMirror(mirror);
+      //   });
     }
   };
   const devicesRef = React.createRef();
@@ -328,6 +363,7 @@ const Conference = (props) => {
           <div className="camera__block">
             <select
               className="view__changer"
+              disabled={detectBrowser() === "Safari" || isiOS()}
               onChange={(e) => {
                 e.stopPropagation();
                 props.call.viewChange(e.target.value);
@@ -336,14 +372,22 @@ const Conference = (props) => {
               <option value="grid">Grid</option>
               <option value="sidebar">Speaker view</option>
             </select>
-            <div className={`streams_container ${props.call.view}`}>
+            <div
+              className={`streams_container ${
+                participants.length > 1 ? props.call.view : "grid"
+              }`}
+            >
               {props.call.view === "sidebar" && (
                 <div className={"speaker-stream"} id="speakerStream">
                   {speakerUser}
                 </div>
               )}
               <div
-                className={`users__cams ${props.call.view} ${props.call.view}-${props.call.participants.length}`}
+                className={`users__cams ${
+                  participants.length > 1 ? props.call.view : "grid"
+                } ${participants.length > 1 ? props.call.view : "grid"}-${
+                  props.call.participants.length
+                }`}
               >
                 {usersStreams}
               </div>
@@ -413,15 +457,17 @@ const Conference = (props) => {
               <button
                 onClick={onStartScreenSharing}
                 id="share__btn"
-                className={`call__btn share__btn ${isMobile ? `hide` : ``}`}
-                disabled={props.call.isMobile ? true : !devices.video}
+                className={`call__btn share__btn ${isMobile ? `hide` : ``} ${
+                  mirror ? "sharing" : ""
+                }`}
+                disabled={props.call.isMobile ? true : false}
               >
                 <MdScreenShare size={32} style={{ fill: `white` }} />
               </button>
               <button
                 onClick={onRecording}
                 id="record__button"
-                className="record__button"
+                className={`record__button ${isCreator}`}
               ></button>
             </div>
           </div>

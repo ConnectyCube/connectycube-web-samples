@@ -71,7 +71,6 @@ export const ChatProvider = ({ children }) => {
   };
 
   const getMessages = (chat_id) => {
-    chatCallbaks();
     const params = {
       chat_dialog_id: chat_id,
       sort_desc: "date_sent",
@@ -157,6 +156,7 @@ export const ChatProvider = ({ children }) => {
         getMessages,
         joinChat,
         setParticipants,
+        chatCallbaks,
       }}
     >
       {children}

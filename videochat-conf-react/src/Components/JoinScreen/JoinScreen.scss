@@ -8,7 +8,6 @@
 
   & .form__info {
     display: flex;
-    opacity: 0;
     transition: 0.2s ease-in-out;
     flex-direction: column;
     justify-content: center;
@@ -99,11 +98,6 @@
       transition: 0.2s;
       object-fit: contain;
       z-index: 3;
-
-      &.muted {
-        opacity: 0;
-        position: relative;
-      }
     }
   }
 
@@ -120,30 +114,33 @@
 .micro__btn {
   background-color: rgb(112, 112, 252);
 }
+.call__btn {
+  &.video__btn-prejoin {
+    background-color: rgb(112, 112, 252);
+    cursor: pointer;
 
-.video__btn-prejoin {
-  background-color: rgb(112, 112, 252);
-  cursor: pointer;
-  &:hover {
-    opacity: 0.95 !important;
-  }
-  &:disabled {
-    background-color: #004000;
-    opacity: 0.5;
-    cursor: not-allowed;
-    &:hover {
-      opacity: 0.5;
+    &.mute {
+      &::after {
+        content: "";
+        position: absolute;
+        height: 100%;
+        width: 3px;
+        background-color: white;
+        left: 50%;
+        z-index: 20;
+        transform: rotateZ(40deg);
+      }
     }
-
-    &::after {
-      content: "";
-      position: absolute;
-      height: 90%;
-      width: 3px;
-      background-color: white;
-      left: 50%;
-      z-index: 20;
-      transform: rotateZ(-45deg);
+    &:hover {
+      opacity: 0.95 !important;
+    }
+    &:disabled {
+      background-color: rgba(112, 112, 252, 0.418);
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover {
+        opacity: 0.5;
+      }
     }
   }
 }
@@ -233,8 +230,6 @@
     }
 
     & .form__info {
-      padding-top: 0;
-
       & input {
         width: 85%;
       }
