@@ -51,7 +51,7 @@ const JoinScreen = (props) => {
     e.preventDefault();
   };
   const login = () => {
-    userNameRef.current.value
+    userNameRef.current.value.trim()
       ? onPrejoinFinish(userNameRef.current.value, isVideo, true)
       : alert("Enter your name");
   };
@@ -110,7 +110,6 @@ const JoinScreen = (props) => {
       </div>
 
       <div id="form__info" className="form__info">
-        <div>Enter your name</div>
         <input
           ref={userNameRef}
           type="text"

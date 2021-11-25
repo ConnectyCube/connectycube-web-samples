@@ -5,36 +5,57 @@
   width: 100%;
   transition: 1s ease-in-out;
   border: 1px solid whitesmoke;
+  background: #282c34;
+  & .user__stats-container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    top: 10px;
+    left: 10px;
+  }
+  & .micro__status {
+    position: relative;
 
+    align-self: center;
+    width: 37px;
+    z-index: 30;
+    opacity: 0.9;
+    background: white;
+    border-radius: 25px;
+  }
   & .img__container {
     display: flex;
     position: absolute;
-    height: 50%;
-    width: 50%;
+    height: 100%;
+    width: 100%;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    z-index: 3;
+    z-index: 2;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    background-color: #282c34;
+    overflow: hidden;
     &.hide {
       display: none;
     }
   }
   & .no-image {
-    width: 70%;
+    width: 40%;
     background-color: white;
     border-radius: 50%;
   }
 
   & .full__screen {
-    position: absolute;
-    top: 60px;
-    left: 10px;
+    position: relative;
     width: 40px;
     height: 40px;
     z-index: 5;
+    margin-bottom: 10px;
     &.hide {
       display: none;
     }
@@ -44,18 +65,28 @@
   }
   & .user__cam {
     width: 100%;
-    object-fit: cover;
     box-sizing: border-box;
     position: relative;
     pointer-events: none;
     height: 100%;
-
     opacity: 1;
     max-height: 100vh;
-    z-index: 4;
+    z-index: 3;
     transition: 0.2s;
+    &.cover {
+      object-fit: cover;
+    }
+    &.contain {
+      object-fit: contain;
+    }
+    &.true {
+      transform: rotateY(0deg) !important;
+    }
     &.unmirror {
       transform: rotateY(360deg) !important;
+    }
+    &.hide {
+      opacity: 0;
     }
   }
 
@@ -76,9 +107,9 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  position: absolute;
-  top: 10px;
-  left: 10px;
+  position: relative;
+  margin-bottom: 10px;
+
   z-index: 5;
   background: url("/images/signal.png") no-repeat center;
   background-size: 20px;
@@ -127,4 +158,16 @@
 .text {
   color: white;
   font-size: 90px;
+}
+
+.fullscreen-stream {
+  width: 100%;
+  object-fit: cover;
+  box-sizing: border-box;
+  position: relative;
+  pointer-events: none;
+  height: 100%;
+
+  opacity: 1;
+  max-height: 100vh;
 }

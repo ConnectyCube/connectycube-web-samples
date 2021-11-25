@@ -7,7 +7,6 @@ class AuthService {
     this.init();
   }
 
- 
   init = () => {
     const credentials = {
       appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
@@ -35,14 +34,7 @@ class AuthService {
     ConnectyCube.init(credentials, appConfig);
   };
   connectToChat = (chatCredentials) => {
-    ConnectyCube.chat
-      .connect(chatCredentials)
-      .then(() => {
-        console.log("Connected", `chatConnection`);
-      })
-      .catch((error) => {
-        console.log(`Failed connection due to ${error}`);
-      });
+    return ConnectyCube.chat.connect(chatCredentials);
   };
   login(userName) {
     return new Promise((resolve, reject) => {
@@ -62,9 +54,9 @@ class AuthService {
                   userId: user.id,
                   password: userCredentials.password,
                 };
-                this.connectToChat(chatCredentials);
-               
-                resolve(user, session);
+                this.connectToChat(chatCredentials).then(() => {
+                  resolve(user);
+                });
               })
               .catch((error) => {
                 console.log(error);
@@ -94,9 +86,10 @@ class AuthService {
                       userId: user.id,
                       password: userCredentials.password,
                     };
-                    this.connectToChat(chatCredentials);
 
-                    resolve(user);
+                    this.connectToChat(chatCredentials).then(() => {
+                      resolve(user);
+                    });
                   })
                   .catch((error) => {});
               })

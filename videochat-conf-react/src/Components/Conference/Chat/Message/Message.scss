@@ -36,6 +36,7 @@
     }
     & .message__text {
       padding-top: 5px;
+      white-space: pre-line;
     }
     & .message__name {
       font-size: 0.85rem !important;
