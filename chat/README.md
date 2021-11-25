@@ -49,4 +49,4 @@ Prepare environment for React and:
 
 ## Can't build yourself?
 
-Got troubles with building React code sample? Just create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-web-samples/issues) - we will create the sample for you. For FREE!
+Got troubles with building code sample? Create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-web-samples/issues)
