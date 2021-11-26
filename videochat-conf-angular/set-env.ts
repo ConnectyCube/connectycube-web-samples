@@ -1,5 +1,7 @@
-const { writeFile } = require('fs');
-const { argv } = require('yargs');
+const fs = require('fs');
+const path = require('path');
+const {writeFile} = require('fs');
+const {argv} = require('yargs');
 // read environment variables from .env file
 require('dotenv').config();
 // read the command line arguments passed with yargs
@@ -19,10 +21,14 @@ export const environment = {
    SERVER: "${process.env.SERVER}",
 };
 `;
+fs.promises.mkdir(path.dirname(targetPath), {recursive: true})
+  .then(()=>{
+    fs.promises.writeFile(targetPath, environmentFileContent, function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(`Wrote variables to ${targetPath}`);
+    })
+  })
 // write the content to the respective file
-writeFile(targetPath, environmentFileContent, function (err:any) {
-  if (err) {
-    console.log(err);
-  }
-  console.log(`Wrote variables to ${targetPath}`);
-});
+
