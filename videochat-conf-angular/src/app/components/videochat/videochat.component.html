@@ -38,6 +38,7 @@
       [userMicrophoneLevel]="user.volumeLevel"
       [userBitrate]="user.bitrate"
       [userConnectionStatus]="user.connectionStatus"
+      [userVideoStatus]="user.videoStatus"
     ></app-stream-container>
   </div>
   <div class="users-streams" [ngClass]="setNgClassProperty((participantArray$ | async)?.length)">
@@ -59,6 +60,7 @@
       [modeGrid]="gridStatus"
       [userBitrate]="user.bitrate"
       [userConnectionStatus]="user.connectionStatus"
+      [userVideoStatus]="user.videoStatus"
     ></app-stream-container>
   </div>
 </div>
@@ -90,7 +92,7 @@
           id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
     <mat-icon svgIcon="phone_missed"></mat-icon>
   </button>
-  <button [disabled]="DisableButton || mediaDevice.length < 2 || !CameraConnect || videoPermission"
+  <button [disabled]="DisableButton || (mediaDevice?.length < 2 || !this.isIOS) || !CameraConnect || videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">

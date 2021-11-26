@@ -226,3 +226,6 @@ app-videochat {
 ::-webkit-media-controls {
   display: none !important;
 }
+.media-controls.mac.fullscreen > .controls-bar{
+  display: none !important;
+}

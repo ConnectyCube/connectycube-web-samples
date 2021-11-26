@@ -26,5 +26,9 @@ export const addBitrate = createAction(
 );
 export const updateConnectionStatus = createAction(
   '[PARTICIPANT] update user connection status',
-  props<{id:number,connectionStatus:string}>()
+  props<{ id: number, connectionStatus: string }>()
+);
+export const updateVideoStatus = createAction(
+  '[PARTICIPANT] update user video status',
+  props<{ id: number, videoStatus: boolean }>()
 );

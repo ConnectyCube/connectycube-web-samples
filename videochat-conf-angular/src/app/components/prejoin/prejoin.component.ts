@@ -7,7 +7,7 @@ import {UrlService} from "../../services/url.service";
 import {select, Store} from "@ngrx/store";
 import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
 import {State} from "../../reducers";
-import {appConfig, CREDENTIALS, mediaParams} from "../../services/config";
+import {appConfig, constraints, CREDENTIALS, mediaParams} from "../../services/config";
 import {LoadingService} from "../../services/loading.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogWarningComponent} from "../dialog-warning/dialog-warning.component";
@@ -15,6 +15,7 @@ import {PermissionsService} from "../../services/permissions.service";
 import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {updateVideoStatus} from "../../reducers/participant.actions";
 
 @Component({
   selector: 'app-prejoin',
@@ -74,11 +75,44 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   }
 
   private checkPermissions() {
-    this.permissions.checkAudioPermission().then((perm: any) => {
-      this.audioPermission = perm;
-    })
-    this.permissions.checkVideoPermission().then((perm: any) => {
-      this.videoPermission = perm;
+    return new Promise<void>((resolve, reject) => {
+      if (this.deviceService.browser === "Safari") {
+        if (navigator.mediaDevices !== undefined) {
+          navigator.mediaDevices.getUserMedia({audio: true})
+            .then((stream: any) => {
+              console.log("AUDIO GRANTED")
+              this.audioPermission = "granted";
+            })
+            .catch((error: any) => {
+              console.log("AUDIO DENIED")
+              this.audioPermission = "denied";
+            })
+          navigator.mediaDevices.getUserMedia({video: true})
+            .then((stream: any) => {
+              console.log("VIDEO GRANTED")
+              this.videoPermission = "granted";
+              resolve();
+            })
+            .catch((error: any) => {
+              console.log("VIDEO DENIED")
+              this.videoPermission = "denied";
+              resolve();
+            })
+        }
+        else {
+          console.log("navigator undefined")
+          reject();
+        }
+      }
+      else {
+        this.permissions.checkAudioPermission().then((perm: any) => {
+          this.audioPermission = perm;
+        })
+        this.permissions.checkVideoPermission().then((perm: any) => {
+          this.videoPermission = perm;
+          resolve();
+        })
+      }
     })
   }
 
@@ -92,9 +126,13 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   }
 
   private onVideo() {
+    console.log("onVideo =>")
     this.loader.show();
     this.disableVideoBtn = true;
-    this.callService.getLocalUserVideo().then((localStream) => {
+
+    navigator.mediaDevices.getUserMedia(constraints).then((localStream) => {
+
+      console.warn("Local Stream", localStream);
 
       this.callService.SetOurDeviceId(localStream.getVideoTracks()[0].getSettings().deviceId);
 
@@ -109,32 +147,29 @@ export class PrejoinComponent implements OnInit, OnDestroy {
       this.disableVideoBtn = false;
     })
       .catch((error: any) => {
-        if (error.message === 'Permission denied' || error.message.includes("user denied permission")) {
-          if (this.deviceService.os.toLowerCase() !== 'ios' || 'mac') {
-            if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
-              this.ModalOn('Camera and Microphone Denied', this.messageErrorDeniedAll);
-            }
-            else if (this.audioPermission === 'denied') {
-              this.ModalOn('Microphone Denied', this.messageErrorDeniedMicro);
-            }
+        console.log("onVideo Error!", error);
+        if (error.message === 'Permission denied' ||
+          error.message.includes("user denied permission") ||
+          error.message.includes("The request is not allowed") ||
+          error.message.includes("Invalid constraint")) {
+          console.log("onVideo permission Denied =>")
+
+          if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
+            this.ModalOn('Camera and Microphone Denied', this.messageErrorDeniedAll);
+          }
+          else if (this.audioPermission === 'denied') {
+            this.ModalOn('Microphone Denied', this.messageErrorDeniedMicro);
           }
 
-          this.checkDeviceWidth();
-
-          this.videoIconName = 'videocam_off';
-          this.loader.hide();
         }
         else if (error.message === 'Requested device not found') {
+          console.log("onVideo Requested device not found =>")
           this.ModalOn('Camera or Microphone Not Found', this.messageErrorDevice);
-
-          this.checkDeviceWidth();
-
-          this.videoIconName = 'videocam_off';
-          this.loader.hide();
         }
-        else {
-          console.log("OnVideo Error!", error);
-        }
+        this.checkDeviceWidth();
+
+        this.videoIconName = 'videocam_off';
+        this.loader.hide();
       });
   }
 
@@ -166,6 +201,7 @@ export class PrejoinComponent implements OnInit, OnDestroy {
 
       navigator.mediaDevices.enumerateDevices()
         .then((dev: any) => {
+          console.log("Join Devices", dev);
           const InputDevice = dev.filter((device: any) => device.kind.includes('input'))
           console.log(InputDevice);
           this.MicroConnect = InputDevice.some((device: any) => device.kind === "audioinput");
@@ -206,15 +242,17 @@ export class PrejoinComponent implements OnInit, OnDestroy {
 
             if (userName) {
               this.authService.auth(userName).then((userId) => {
-                alert("Auth")
                 this.JoinBtnClick.emit(userName)
                 const user: User = {id: userId, name: userName};
 
                 this.callService.joinUser(meetId, userId, userName).then(() => {
-                  alert("Join")
                   this.DoorOpen = true;
+                }).catch((error: any) => {
+                  console.log("PreJoin JoinUser Error", error);
                 });
 
+              }).catch((error: any) => {
+                console.log("PreJoin Auth Error", error);
               })
             }
             else {
@@ -247,6 +285,10 @@ export class PrejoinComponent implements OnInit, OnDestroy {
             }
           }
         })
+        .catch((error: any) => {
+          console.log("join error!", error);
+          alert(error.message);
+        })
     }
     else {
       this.userName.nativeElement.value = '';
@@ -255,15 +297,17 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.deviceService.os.toLowerCase() !== 'ios' || 'mac') {
-      try {
-        this.checkPermissions();
-      }
-      catch {
-        alert("Can not check permissions");
-      }
+    console.warn(this.deviceService.browser)
+    try {
+      this.checkPermissions().then(() => {
+        console.log(this.audioPermission)
+        console.log(this.videoPermission)
+        this.onVideo();
+      });
     }
-    this.onVideo();
+    catch {
+      console.log("Can not check permissions");
+    }
 
     //Get previous url
     this.urlService.previousUrl$

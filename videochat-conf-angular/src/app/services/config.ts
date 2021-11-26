@@ -17,11 +17,6 @@ export const mediaParams = {
 };
 
 export const constraints = {
-  video: {
-    width: 1920,
-    height: 1080,
-    frameRate: {ideal: 25, max: 30},
-  },
+  video: true,
   audio: true,
 };
-

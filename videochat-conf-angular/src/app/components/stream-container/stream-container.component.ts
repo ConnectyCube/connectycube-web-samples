@@ -1,18 +1,23 @@
 import {
   Component, ElementRef,
   EventEmitter,
-  Input, OnChanges,
+  Input, OnChanges, OnInit,
   Output, SimpleChanges,
 } from '@angular/core';
 import {Subject} from "rxjs";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {CommonUtilities} from "../../utilities/common.utilities";
+import {Store} from "@ngrx/store";
+import {State} from "../../reducers";
+import {updateVideoStatus} from "../../reducers/participant.actions";
+import {mediaParams} from "../../services/config";
 
 @Component({
   selector: 'app-stream-container',
   templateUrl: './stream-container.component.html',
   styleUrls: ['./stream-container.component.scss']
 })
-export class StreamContainerComponent {
+export class StreamContainerComponent implements OnInit {
 
   @Input() userId: number = 0;
   @Input() userStream: any;
@@ -24,22 +29,32 @@ export class StreamContainerComponent {
   @Input() modeGrid: boolean = true;
   @Input() userBitrate: string | undefined;
   @Input() userConnectionStatus: string | undefined = 'good';
+  @Input() userVideoStatus: boolean | undefined;
   @Output() videoLoaded: EventEmitter<any> = new EventEmitter<any>();
 
   public videoWork: boolean = false;
   public statsHide: boolean = true;
   public isMobile = this.deviceService.isMobile();
   public isTablet = this.deviceService.isTablet();
+  public bgImageNum: number = 1;
 
   onChanges = new Subject<SimpleChanges>();
 
+  randomNumber(min: number, max: number) {
+    return Math.trunc(Math.random() * (max - min) + min);
+  }
+
   showVideo() {
     console.warn(this.modeGrid);
-    if (this.userIndex === 0 && this.modeGrid) {
-      this.videoWork = false;
+    console.warn("userVideoStatus", this.userVideoStatus)
+    if (!mediaParams.video) {
+      this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+      console.warn("userVideoStatus TRUE", this.userVideoStatus)
+      mediaParams.video = true;
     }
-    else {
-      this.videoWork = true;
+    else if (mediaParams.video) {
+      this.store$.dispatch(updateVideoStatus({id: this.userId, videoStatus: true}));
+      console.warn("userVideoStatus TRUE", this.userVideoStatus)
     }
   }
 
@@ -65,8 +80,12 @@ export class StreamContainerComponent {
   constructor(
     private elementRef: ElementRef,
     private deviceService: DeviceDetectorService,
+    private store$: Store<State>,
   ) {
   }
 
+  ngOnInit() {
+    this.bgImageNum = this.randomNumber(1, 10)
+  }
 
 }

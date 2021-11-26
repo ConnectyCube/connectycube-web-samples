@@ -17,3 +17,4 @@ export class CommonUtilities {
     }, 0));
   }
 }
+

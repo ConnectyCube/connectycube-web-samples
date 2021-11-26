@@ -7,7 +7,7 @@ import {
   addUser,
   removeUser,
   updateConnectionStatus,
-  updateUser
+  updateUser, updateVideoStatus
 } from "../reducers/participant.actions";
 import {constraints, mediaParams} from "./config";
 import {User} from "../reducers/participant.reducer";
@@ -25,7 +25,7 @@ export class CallService {
   ) {
   }
 
-  private UPDATE_STREAM_TIME: number = 4000;
+  private UPDATE_STREAM_TIME: number = 9000;
   private CONNECTION_UPDATE_STATUS_TIME = 30 * 1000;
   private OurSession: any;
   private OurDeviceId: any;
@@ -44,6 +44,7 @@ export class CallService {
   private createDummyVideoTrack = ({width = 640, height = 480} = {}) => {
     let canvas: any = Object.assign(document.createElement("canvas"), {width, height});
     const ctx = canvas.getContext('2d');
+    ctx.fillRect(0, 0, width, height);
     setInterval(() => {
       ctx.fillRect(0, 0, width, height);
     }, 500);
@@ -66,7 +67,8 @@ export class CallService {
         name: userDisplayName,
         volumeLevel: 0,
         bitrate: '',
-        connectionStatus: 'good'
+        connectionStatus: 'good',
+        videoStatus: false
       }));
 
       if (this.subscribeParticipantArray) {
@@ -118,12 +120,16 @@ export class CallService {
     };
   }
 
+  public updateUserVideoStatus(id: number, status: boolean) {
+    this.store.dispatch(updateVideoStatus({id: id, videoStatus: status}));
+  }
+
   public setCurrentMode(mode: string) {
     this.currentMode = mode;
   }
 
   public getParticipantArrayLength() {
-    return this.participantArray.length;
+    return this.participantArray?.length;
   }
 
   public startCheckUsersMicLevel() {
@@ -179,16 +185,17 @@ export class CallService {
   }
 
   public muteOrUnmuteMicro() {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       try {
         const session = this.OurSession;
         if (session.isAudioMuted()) {
           session.unmuteAudio();
+          resolve("mic");
         }
         else {
           session.muteAudio();
+          resolve("mic_off");
         }
-        resolve();
       }
       catch (error: any) {
         console.log("MuteOrUnmuteMicro Error!", error);
@@ -208,21 +215,31 @@ export class CallService {
 
         const session = this.OurSession;
 
-        console.log(videoWork)
+        console.log("Video work status", videoWork)
+
+        // session.localStream.addTrack(this.createDummyVideoTrack()) /*IOS FIX*/
 
         if (!videoWork) {
+          console.warn("IF St", session.localStream.getVideoTracks())
+          // session.localStream.getVideoTracks()[0].stop();
           session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
-              this.store.dispatch(updateUser({id: 77777, stream: stream}));
-              console.log("IF", stream.getVideoTracks());
+              /*this.store.dispatch(updateUser({id: 77777, stream: stream}));
+              console.log("IF", stream.getVideoTracks());*/
+              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             })
         }
         else {
+          console.warn("ELSE St", session.localStream.getVideoTracks())
+          // session.localStream.getVideoTracks()[0].stop();
           session.getUserMedia({audio: true}, true)
             .then((stream: any) => {
               stream.addTrack(this.createDummyVideoTrack());
+              /*stream.addTrack(this.createDummyVideoTrack());
+              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
               this.store.dispatch(updateUser({id: 77777, stream: stream}));
-              console.log("ELSE", stream.getVideoTracks());
+              console.log("ELSE", stream.getVideoTracks());*/
+              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
             })
         }
 
@@ -274,7 +291,7 @@ export class CallService {
     })
   }
 
-  public stopSharingScreen(deviceID?: string) {
+  public stopSharingScreen(deviceID?: string, videoPermission?: boolean) {
     if (deviceID) {
       this.OurDeviceId = deviceID;
     }
@@ -287,6 +304,12 @@ export class CallService {
       .then((stream: any) => {
         this.store.dispatch(updateUser({id: 77777, stream: stream}));
         this.OurSharingStatus = false;
+      })
+      .catch(() => {
+        if (videoPermission) {
+          session.getUserMedia({audio: true}, true);
+          this.OurSharingStatus = false;
+        }
       })
   }
 
@@ -301,11 +324,13 @@ export class CallService {
         session
           .getDisplayMedia(constraints, true)
           .then((localDesktopStream: any) => {
+            console.warn("ShareSTREAM", localDesktopStream)
             this.store.dispatch(updateUser({id: 77777, stream: localDesktopStream}));
             this.OurSharingStatus = true;
             resolve(localDesktopStream);
           })
           .catch((error: any) => {
+            console.log('Share Permission error', error)
             if (error.message.includes('Permission denied')) {
               reject();
             }
@@ -342,8 +367,11 @@ export class CallService {
           console.log(mediaParams);
           if (!mediaParams.video) {
             stream.addTrack(this.createDummyVideoTrack());
+            this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream, videoStatus: false}));
           }
-          this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream}));
+          else {
+            this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream, videoStatus: true}));
+          }
 
           session.join(confRoomId, userId, userDisplayName);
 

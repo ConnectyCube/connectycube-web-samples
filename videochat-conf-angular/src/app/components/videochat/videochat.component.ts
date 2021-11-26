@@ -6,7 +6,7 @@ import {participantSelector, participantSortSelector} from "../../reducers/parti
 import {AuthService} from "../../services/auth.service";
 import {CallService} from "../../services/call.service";
 import {mediaParams} from "../../services/config";
-import {removeAllUsers} from "../../reducers/participant.actions";
+import {removeAllUsers, updateVideoStatus} from "../../reducers/participant.actions";
 import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
@@ -23,6 +23,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class VideochatComponent implements OnInit, OnDestroy {
 
+  public isIOS = this.deviceService.browser !== "Safari";
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
@@ -38,8 +39,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public shareScreenIconName = 'screen_share';
   public isMobile = this.deviceService.isMobile();
   public isTablet = this.deviceService.isTablet();
-  public MicroConnect = false;
-  public CameraConnect = false;
+  public MicroConnect: any;
+  public CameraConnect: any;
   public videoPermission: any;
   public selectedValue: string = 'grid';
   public startSliceSide = 0;
@@ -82,17 +83,33 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   private checkPermissions() {
-    this.permission.checkVideoPermission().then((perm: any) => {
-      if (perm === 'denied') {
-        this.videoPermission = true;
+    console.warn(this.videoPermission)
+    if (this.isIOS) {
+      if (navigator.mediaDevices !== undefined) {
+        navigator.mediaDevices.getUserMedia({video: true})
+          .then((stream: any) => {
+            console.log("VIDEO GRANTED")
+            this.videoPermission = "granted";
+          })
+          .catch((error: any) => {
+            console.log("VIDEO DENIED")
+            this.videoPermission = "denied";
+          })
       }
-      else if (perm === 'granted') {
-        this.videoPermission = false;
-      }
-    })
-      .catch(() => {
-        this.videoPermission = 'granted';
+    }
+    else {
+      this.permission.checkVideoPermission().then((perm: any) => {
+        if (perm === 'denied') {
+          this.videoPermission = true;
+        }
+        else if (perm === 'granted') {
+          this.videoPermission = false;
+        }
       })
+        .catch(() => {
+          this.videoPermission = 'granted';
+        })
+    }
   }
 
   private checkConnect() {
@@ -130,13 +147,14 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   public muteOrUnmuteMicro() {
-    this.callService.muteOrUnmuteMicro().then(() => {
-      this.microphoneIconName = this.microphoneIconName === 'mic' ? 'mic_off' : 'mic';
+    this.callService.muteOrUnmuteMicro().then((microphoneIconName) => {
+      this.microphoneIconName = microphoneIconName;
     });
   }
 
   public muteOrUnmuteVideo() {
     if (this.shareScreenIconName === 'stop_screen_share') {
+      console.log("SCREEN SHARE IF", this.shareScreenIconName)
       this.callService.stopSharingScreen();
       this.shareScreenIconName = 'screen_share';
       if (this.videoIconName === 'videocam_off') {
@@ -144,6 +162,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
       }
     }
     else {
+      console.log("VIDEO ELSE", this.shareScreenIconName)
       this.callService.muteOrUnmuteVideo(this.videoIconName === 'videocam').then(() => {
         this.videoIconName = this.videoIconName === 'videocam' ? 'videocam_off' : 'videocam';
       })
@@ -169,9 +188,13 @@ export class VideochatComponent implements OnInit, OnDestroy {
     if (this.shareScreenIconName === 'stop_screen_share') {
       this.callService.stopSharingScreen(deviceId);
       this.shareScreenIconName = 'screen_share';
+      if (this.videoIconName = 'videocam_off') {
+        this.videoIconName = 'videocam';
+      }
     }
     else {
       this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
+        this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
         this.videoIconName = 'videocam';
       }).catch(() => {
         if (this.isMobile) {
@@ -190,11 +213,20 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public shareScreen() {
     this.callService.shareScreen()
       .then((localDesktopStream: any) => {
+        console.warn(localDesktopStream);
+        if (this.videoIconName === 'videocam_off') {
+          this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+        }
         localDesktopStream.getVideoTracks()[0]
           .addEventListener("ended", () => {
-            if (this.videoIconName === 'videocam_off') {
+            if (this.videoIconName === 'videocam_off' && !this.videoPermission) {
               this.videoIconName = 'videocam';
+              this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             }
+            else if (this.videoPermission) {
+              this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+            }
+
             this.callService.stopSharingScreen();
             this.shareScreenIconName = 'screen_share';
           });
@@ -205,10 +237,14 @@ export class VideochatComponent implements OnInit, OnDestroy {
           console.log(error)
         }
         else {
-          if (this.videoIconName === 'videocam_off') {
+          if (this.videoIconName === 'videocam_off' && !this.videoPermission) {
+            this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             this.videoIconName = 'videocam';
           }
-          this.callService.stopSharingScreen();
+          else if (this.videoPermission) {
+            this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+          }
+          this.callService.stopSharingScreen('', this.videoPermission);
           this.shareScreenIconName = 'screen_share';
         }
       })
@@ -244,7 +280,10 @@ export class VideochatComponent implements OnInit, OnDestroy {
     })
 
     this.checkConnect();
+    console.warn(this.isIOS);
+
     this.checkPermissions();
+
     navigator.mediaDevices.addEventListener('devicechange', () => {
       this.checkConnect();
       this.callService.getListDevices().then((mediaDevice: any) => {

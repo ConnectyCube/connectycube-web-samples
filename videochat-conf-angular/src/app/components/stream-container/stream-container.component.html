@@ -19,10 +19,11 @@
     {{userBitrate ? 'Speed ' + userBitrate : ''}}
   </span>
 </div>
-<div [ngClass]="videoWork || userMicrophoneLevel === undefined?'':'show-bg-image'" class="user-placeholder">
+<div [ngClass]="userVideoStatus?'':'show-bg-image'" class="user-placeholder">
   <div class="user-image"
-       style="background: url(../../../assets/animals/animals_1.jpg)
-       center center / contain no-repeat rgb(255, 255, 255);"></div>
+       [style.background]="'url(../../../assets/animals/animals_'+bgImageNum
+       +'.jpg) center center / contain no-repeat rgb(255, 255, 255)'"
+  ></div>
 </div>
 <div class="container-full-screen">
   <video [srcObject]="userStream"
@@ -33,8 +34,8 @@
          preload="auto"
          autoplay
          [muted]="userMicrophoneLevel === undefined"
-         (canplaythrough)="showVideo()"
-         (playing)="unDisableButton()"
+         (loadeddata)="showVideo()"
+         (canplaythrough)="unDisableButton()"
          id="stream-{{userId}}"
          class="videochat-stream"
   ></video>

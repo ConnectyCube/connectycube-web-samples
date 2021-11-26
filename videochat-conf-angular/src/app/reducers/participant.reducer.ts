@@ -6,7 +6,7 @@ import {
   removeAllUsers,
   addMicrophoneLevel,
   addBitrate,
-  updateConnectionStatus
+  updateConnectionStatus, updateVideoStatus
 } from "./participant.actions";
 
 export interface User {
@@ -15,7 +15,8 @@ export interface User {
   stream?: any,
   volumeLevel?: number,
   bitrate?: string,
-  connectionStatus?: string
+  connectionStatus?: string,
+  videoStatus?: boolean,
 }
 
 export interface participantState {
@@ -28,9 +29,12 @@ export const initialState: participantState = {
 
 export const participantReducer = createReducer(
     initialState,
-    on(addUser, (state, {id, name, stream, volumeLevel, bitrate, connectionStatus}) => ({
+    on(addUser, (state, {id, name, stream, volumeLevel, bitrate, connectionStatus, videoStatus}) => ({
       ...state,
-      participantArray: state.participantArray.concat([{id, name, stream, volumeLevel, bitrate, connectionStatus}])
+      participantArray: state.participantArray.concat([{
+        id, name, stream, volumeLevel,
+        bitrate, connectionStatus, videoStatus
+      }])
     })),
     on(removeUser, (state, {id}) => ({
       ...state,
@@ -85,6 +89,18 @@ export const participantReducer = createReducer(
         if (user.id === id) {
           const newUser = {...user};
           newUser.connectionStatus = connectionStatus;
+          return newUser;
+        }
+        return user;
+      })
+    })),
+    on(updateVideoStatus, (state, {id, videoStatus}) => ({
+      ...state,
+      participantArray: state.participantArray.map((user: User) => {
+        if (user.id === id) {
+          console.warn("updateVideoStatus__REDUX")
+          const newUser = {...user};
+          newUser.videoStatus = videoStatus;
           return newUser;
         }
         return user;
