@@ -1,27 +1,40 @@
-# VideochatConfAngular
+# Conference Call code sample for Angular for ConnectyCube platform
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.5.
+This README introduces [ConnectyCube](https://connectycube.com) Conference Calling code sample for Web
 
-## Development server
+Project contains the following features implemented:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- User authorization
+- PreJoin screen
+- Video calls up to 12 users
+- Mute/unmute microphone
+- Mute/unmute video
+- Switch camera
+- Share screen
+- Chat
+- Grid / Speaker view
+- Recording
 
-## Code scaffolding
+## Documentation
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
 
-## Build
+ConnectyCube Conference Calling API documentation - [https://developers.connectycube.com/js/videocalling-conference](https://developers.connectycube.com/js/videocalling-conference)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Screenshots
 
-## Running unit tests
+<p align="center">
+<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720"   alt="Conference Call code sample demo image active call screen">
+</p>
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Build your own VideoChat app
 
-## Running end-to-end tests
+To make the sample works for your own app, please do the following:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+1.  Register new account at `https://connectycube.com/signup/`. Then go to Admin panel, create Application and  put Application credentials from 'Overview' page into `.env` file (you need to create it from `.env.example`):
+2.  Install node modules - `npm install`
+3.  Run `npm run start` and open `https://localhost:4200`
 
-## Further help
+## Can't build yourself?
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Got troubles with building code sample? Create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-web-samples/issues)
