@@ -11,7 +11,7 @@ import {
 } from "../reducers/participant.actions";
 import {constraints, mediaParams} from "./config";
 import {User} from "../reducers/participant.reducer";
-import {participantSelector, participantSortSelector} from "../reducers/participant.selectors";
+import {participantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 
 declare let ConnectyCube: any;
@@ -36,6 +36,7 @@ export class CallService {
   private currentMode: string = 'grid';
   private participantArray$ = this.store.select(participantSelector);
   private slowLinkTimers: any = {};
+  private videoPermission: any;
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -217,32 +218,21 @@ export class CallService {
 
         console.log("Video work status", videoWork)
 
-        // session.localStream.addTrack(this.createDummyVideoTrack()) /*IOS FIX*/
-
         if (!videoWork) {
           console.warn("IF St", session.localStream.getVideoTracks())
-          // session.localStream.getVideoTracks()[0].stop();
           session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
-              /*this.store.dispatch(updateUser({id: 77777, stream: stream}));
-              console.log("IF", stream.getVideoTracks());*/
               this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             })
         }
         else {
           console.warn("ELSE St", session.localStream.getVideoTracks())
-          // session.localStream.getVideoTracks()[0].stop();
           session.getUserMedia({audio: true}, true)
             .then((stream: any) => {
               stream.addTrack(this.createDummyVideoTrack());
-              /*stream.addTrack(this.createDummyVideoTrack());
-              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
-              this.store.dispatch(updateUser({id: 77777, stream: stream}));
-              console.log("ELSE", stream.getVideoTracks());*/
               this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
             })
         }
-
 
         console.log("LOCAL STREAM", session.localStream.getVideoTracks());
         resolve();
@@ -343,10 +333,6 @@ export class CallService {
     })
   }
 
-  public getLocalUserVideo() {
-    return navigator.mediaDevices.getUserMedia(constraints);
-  }
-
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
@@ -364,6 +350,7 @@ export class CallService {
 
       session.getUserMedia(params)
         .then((stream: any) => {
+          this.videoPermission = true;
           console.log(mediaParams);
           if (!mediaParams.video) {
             stream.addTrack(this.createDummyVideoTrack());
@@ -378,6 +365,7 @@ export class CallService {
           resolve(CallService.generateMeetRoomURL(confRoomId));
         })
         .catch((error: any) => {
+          this.videoPermission = false;
           console.log("Local stream Error!", error);
           reject();
         })

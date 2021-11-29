@@ -83,7 +83,7 @@
           aria-label="Mute Microphone">
     <mat-icon [svgIcon]="microphoneIconName"></mat-icon>
   </button>
-  <button [disabled]="DisableButton || !CameraConnect || videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
+  <button [disabled]="DisableButton || !CameraConnect || !videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
           mat-fab class="videochat-button"
           aria-label="Mute Video">
     <mat-icon [svgIcon]="videoIconName"></mat-icon>
@@ -92,7 +92,7 @@
           id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
     <mat-icon svgIcon="phone_missed"></mat-icon>
   </button>
-  <button [disabled]="DisableButton || (mediaDevice?.length < 2 || !this.isIOS) || !CameraConnect || videoPermission"
+  <button [disabled]="DisableButton || mediaDevice?.length < 2 || !CameraConnect || !videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">

@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     this.authService.init(CREDENTIALS, appConfig)
   }
 
-  public GoToPrejoin(){
+  public GoToPrejoin() {
     this.router.navigateByUrl("/join/prejoin");
   }
 }

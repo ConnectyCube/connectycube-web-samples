@@ -24,7 +24,7 @@ export const environment = {
 };
 `;
 fs.promises.mkdir(path.dirname(prodPath), {recursive: true})
-  .then(()=>{
+  .then(() => {
     fs.promises.writeFile(prodPath, environmentFileContent, function (err: any) {
       if (err) {
         console.log(err);
@@ -33,7 +33,7 @@ fs.promises.mkdir(path.dirname(prodPath), {recursive: true})
     })
   })
 fs.promises.mkdir(path.dirname(devPath), {recursive: true})
-  .then(()=>{
+  .then(() => {
     fs.promises.writeFile(devPath, environmentFileContent, function (err: any) {
       if (err) {
         console.log(err);

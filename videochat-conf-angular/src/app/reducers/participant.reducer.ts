@@ -17,11 +17,13 @@ export interface User {
   bitrate?: string,
   connectionStatus?: string,
   videoStatus?: boolean,
+  videoPermission?: boolean,
 }
 
 export interface participantState {
   participantArray: Array<User>;
 }
+
 
 export const initialState: participantState = {
   participantArray: []

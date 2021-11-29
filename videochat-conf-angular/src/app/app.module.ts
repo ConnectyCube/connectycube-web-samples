@@ -17,13 +17,13 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {PrejoinComponent} from './components/prejoin/prejoin.component';
-import { VideochatWrapComponent } from './components/videochat-wrap/videochat-wrap.component';
+import {VideochatWrapComponent} from './components/videochat-wrap/videochat-wrap.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatDialogModule} from "@angular/material/dialog";
-import { DialogWarningComponent } from './components/dialog-warning/dialog-warning.component';
+import {DialogWarningComponent} from './components/dialog-warning/dialog-warning.component';
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule} from "@angular/forms";
-import { HttpClientModule } from "@angular/common/http";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [

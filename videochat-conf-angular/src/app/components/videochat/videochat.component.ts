@@ -10,11 +10,10 @@ import {removeAllUsers, updateVideoStatus} from "../../reducers/participant.acti
 import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
-import {PermissionsService} from "../../services/permissions.service";
-import {take} from "rxjs/operators";
 import {User} from "../../reducers/participant.reducer";
 import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
+import {interfaceSelector} from "../../reducers/interface.selectors";
 
 @Component({
   selector: 'app-videochat',
@@ -23,7 +22,6 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class VideochatComponent implements OnInit, OnDestroy {
 
-  public isIOS = this.deviceService.browser !== "Safari";
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
@@ -41,6 +39,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public isTablet = this.deviceService.isTablet();
   public MicroConnect: any;
   public CameraConnect: any;
+  public Interface$ = this.store$.select(interfaceSelector);
   public videoPermission: any;
   public selectedValue: string = 'grid';
   public startSliceSide = 0;
@@ -56,7 +55,6 @@ export class VideochatComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private callService: CallService,
     private deviceService: DeviceDetectorService,
-    private permission: PermissionsService,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
   ) {
@@ -82,40 +80,10 @@ export class VideochatComponent implements OnInit, OnDestroy {
       this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/stop_screen_share_black_24dp.svg"));
   }
 
-  private checkPermissions() {
-    console.warn(this.videoPermission)
-    if (this.isIOS) {
-      if (navigator.mediaDevices !== undefined) {
-        navigator.mediaDevices.getUserMedia({video: true})
-          .then((stream: any) => {
-            console.log("VIDEO GRANTED")
-            this.videoPermission = "granted";
-          })
-          .catch((error: any) => {
-            console.log("VIDEO DENIED")
-            this.videoPermission = "denied";
-          })
-      }
-    }
-    else {
-      this.permission.checkVideoPermission().then((perm: any) => {
-        if (perm === 'denied') {
-          this.videoPermission = true;
-        }
-        else if (perm === 'granted') {
-          this.videoPermission = false;
-        }
-      })
-        .catch(() => {
-          this.videoPermission = 'granted';
-        })
-    }
-  }
-
   private checkConnect() {
     navigator.mediaDevices.enumerateDevices()
       .then((dev: any) => {
-        const InputDevice = dev.filter((device: any) => device.kind.includes('input'))
+        const InputDevice = dev.filter((device: any) => device.kind.includes('input'));
         console.log(InputDevice);
         this.MicroConnect = InputDevice.some((device: any) => device.kind === "audioinput");
         this.CameraConnect = InputDevice.some((device: any) => device.kind === "videoinput");
@@ -180,6 +148,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   public ChangeDisable(disable: boolean) {
+    console.log("DISABLE", disable);
     this.DisableButton = disable;
   }
 
@@ -188,7 +157,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
     if (this.shareScreenIconName === 'stop_screen_share') {
       this.callService.stopSharingScreen(deviceId);
       this.shareScreenIconName = 'screen_share';
-      if (this.videoIconName = 'videocam_off') {
+      if (this.videoIconName === 'videocam_off') {
         this.videoIconName = 'videocam';
       }
     }
@@ -278,11 +247,13 @@ export class VideochatComponent implements OnInit, OnDestroy {
         this.gridView();
       }
     })
+    this.Interface$.subscribe(res => {
+      this.videoPermission = res.videoPermission;
+    })
 
     this.checkConnect();
-    console.warn(this.isIOS);
 
-    this.checkPermissions();
+    console.log("VIDEO PERM", this.videoPermission);
 
     navigator.mediaDevices.addEventListener('devicechange', () => {
       this.checkConnect();

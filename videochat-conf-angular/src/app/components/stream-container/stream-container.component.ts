@@ -1,12 +1,11 @@
 import {
   Component, ElementRef,
   EventEmitter,
-  Input, OnChanges, OnInit,
+  Input, OnInit,
   Output, SimpleChanges,
 } from '@angular/core';
 import {Subject} from "rxjs";
 import {DeviceDetectorService} from "ngx-device-detector";
-import {CommonUtilities} from "../../utilities/common.utilities";
 import {Store} from "@ngrx/store";
 import {State} from "../../reducers";
 import {updateVideoStatus} from "../../reducers/participant.actions";
@@ -86,6 +85,8 @@ export class StreamContainerComponent implements OnInit {
 
   ngOnInit() {
     this.bgImageNum = this.randomNumber(1, 10)
+
+    console.warn(this.userStream);
   }
 
 }

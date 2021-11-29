@@ -1,4 +1,4 @@
-import { getSelectors } from '@ngrx/router-store';
+import {getSelectors} from '@ngrx/router-store';
 
 export const {
   selectCurrentRoute, // select the current route
