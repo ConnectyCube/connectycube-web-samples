@@ -20,11 +20,14 @@
 }
 
 .container-full-screen {
+  position: relative;
   width: 100%;
   height: 100%;
 }
 
 .videochat-stream {
+  position: relative;
+  z-index: 3;
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -96,4 +99,3 @@
   z-index: 5;
   background: #C3002F;
 }
-

@@ -20,6 +20,7 @@
 <div (click)="hideButtons=!hideButtons; switchVideoActive = false" [attr.data-meetId]="meetingId$ | async"
      class="videochat-streams"
      [ngClass]="{'grid-view':gridStatus, 'sidebar-view':sidebarStatus}">
+  <mat-progress-spinner *ngIf="loading$ | async" [mode]="'indeterminate'"></mat-progress-spinner>
   <div class="speaker-stream" *ngIf="sidebarStatus">
     <app-stream-container
       (videoLoaded)="ChangeDisable($event)"

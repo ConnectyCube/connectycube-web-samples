@@ -10,6 +10,7 @@ import {Store} from "@ngrx/store";
 import {State} from "../../reducers";
 import {updateVideoStatus} from "../../reducers/participant.actions";
 import {mediaParams} from "../../services/config";
+import {LoadingService} from "../../services/loading.service";
 
 @Component({
   selector: 'app-stream-container',
@@ -39,6 +40,13 @@ export class StreamContainerComponent implements OnInit {
 
   onChanges = new Subject<SimpleChanges>();
 
+  constructor(
+    private elementRef: ElementRef,
+    private deviceService: DeviceDetectorService,
+    private store$: Store<State>,
+  ) {
+  }
+
   randomNumber(min: number, max: number) {
     return Math.trunc(Math.random() * (max - min) + min);
   }
@@ -48,7 +56,7 @@ export class StreamContainerComponent implements OnInit {
     console.warn("userVideoStatus", this.userVideoStatus)
     if (!mediaParams.video) {
       this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
-      console.warn("userVideoStatus TRUE", this.userVideoStatus)
+      console.warn("userVideoStatus FAlSE", this.userVideoStatus)
       mediaParams.video = true;
     }
     else if (mediaParams.video) {
@@ -74,13 +82,6 @@ export class StreamContainerComponent implements OnInit {
     else if (videoTag.webkitRequestFullscreen) {
       videoTag.webkitRequestFullscreen({navigationUI: "hide"});
     }
-  }
-
-  constructor(
-    private elementRef: ElementRef,
-    private deviceService: DeviceDetectorService,
-    private store$: Store<State>,
-  ) {
   }
 
   ngOnInit() {

@@ -219,18 +219,18 @@ export class CallService {
         console.log("Video work status", videoWork)
 
         if (!videoWork) {
+          this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
           console.warn("IF St", session.localStream.getVideoTracks())
           session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
-              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             })
         }
         else {
+          this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
           console.warn("ELSE St", session.localStream.getVideoTracks())
           session.getUserMedia({audio: true}, true)
             .then((stream: any) => {
               stream.addTrack(this.createDummyVideoTrack());
-              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
             })
         }
 
@@ -249,6 +249,7 @@ export class CallService {
   }
 
   public getListDevices() {
+    console.log();
     return ConnectyCube.videochatconference
       .getMediaDevices(ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO);
   }

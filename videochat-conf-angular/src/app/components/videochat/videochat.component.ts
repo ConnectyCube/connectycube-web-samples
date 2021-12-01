@@ -14,6 +14,7 @@ import {User} from "../../reducers/participant.reducer";
 import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
 import {interfaceSelector} from "../../reducers/interface.selectors";
+import {LoadingService} from "../../services/loading.service";
 
 @Component({
   selector: 'app-videochat',
@@ -46,6 +47,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public endSliceSide = 1;
   public startSliceGrid = 0;
   public subscribeParticipantArray: any;
+  public loading$ = this.loader.loading$;
 
   constructor
   (
@@ -56,7 +58,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
     private callService: CallService,
     private deviceService: DeviceDetectorService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    public loader: LoadingService,
   ) {
     this.matIconRegistry.addSvgIcon('fullscreen',
       this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/fullscreen_white_24dp.svg"));
@@ -148,12 +151,14 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   public ChangeDisable(disable: boolean) {
+    this.loader.hide();
     console.log("DISABLE", disable);
     this.DisableButton = disable;
   }
 
   public switchCamera(event: any) {
     const deviceId = event.target.name;
+    this.switchVideoActive = false;
     if (this.shareScreenIconName === 'stop_screen_share') {
       this.callService.stopSharingScreen(deviceId);
       this.shareScreenIconName = 'screen_share';
@@ -188,11 +193,11 @@ export class VideochatComponent implements OnInit, OnDestroy {
         }
         localDesktopStream.getVideoTracks()[0]
           .addEventListener("ended", () => {
-            if (this.videoIconName === 'videocam_off' && !this.videoPermission) {
+            if (this.videoIconName === 'videocam_off' && this.videoPermission) {
               this.videoIconName = 'videocam';
               this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             }
-            else if (this.videoPermission) {
+            else if (!this.videoPermission) {
               this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
             }
 
@@ -206,11 +211,11 @@ export class VideochatComponent implements OnInit, OnDestroy {
           console.log(error)
         }
         else {
-          if (this.videoIconName === 'videocam_off' && !this.videoPermission) {
+          if (this.videoIconName === 'videocam_off' && this.videoPermission) {
             this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             this.videoIconName = 'videocam';
           }
-          else if (this.videoPermission) {
+          else if (!this.videoPermission) {
             this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
           }
           this.callService.stopSharingScreen('', this.videoPermission);
@@ -242,6 +247,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loader.show();
+
     this.participantArray$.subscribe(res => {
       if (res.length === 1 && this.sidebarStatus) {
         this.gridView();

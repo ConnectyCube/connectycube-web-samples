@@ -10,6 +10,7 @@ app-stream-container {
   height: 100%;
   width: 100%;
   position: relative;
+  z-index: 5;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -95,6 +96,14 @@ app-stream-container {
   position: absolute;
   right: 10px;
   z-index: 10;
+}
+
+mat-progress-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
 }
 
 
