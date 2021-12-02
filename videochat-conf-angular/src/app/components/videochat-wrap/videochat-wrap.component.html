@@ -1,3 +1,4 @@
 <app-prejoin (JoinBtnClick)="showPrejoinScreen = !showPrejoinScreen;"
              *ngIf="showPrejoinScreen"></app-prejoin>
 <app-videochat *ngIf="!showPrejoinScreen"></app-videochat>
+<app-chat (click)="toggleControlButtons($event)" *ngIf="!showPrejoinScreen" [hidden]="!chatStatus"></app-chat>

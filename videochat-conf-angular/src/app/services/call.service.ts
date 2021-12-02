@@ -13,6 +13,7 @@ import {constraints, mediaParams} from "./config";
 import {User} from "../reducers/participant.reducer";
 import {participantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
+import {addDialogId} from "../reducers/dialog.actions";
 
 declare let ConnectyCube: any;
 
@@ -351,7 +352,6 @@ export class CallService {
 
       session.getUserMedia(params)
         .then((stream: any) => {
-          this.videoPermission = true;
           console.log(mediaParams);
           if (!mediaParams.video) {
             stream.addTrack(this.createDummyVideoTrack());
@@ -366,7 +366,6 @@ export class CallService {
           resolve(CallService.generateMeetRoomURL(confRoomId));
         })
         .catch((error: any) => {
-          this.videoPermission = false;
           console.log("Local stream Error!", error);
           reject();
         })
@@ -385,11 +384,15 @@ export class CallService {
           {id: user.id}
         ],
         record: false,
-        chat: false
+        chat: true
       };
+
 
       ConnectyCube.meeting.create(params)
         .then((meeting: any) => {
+          const chatId = meeting.chat_dialog_id;
+          console.warn(chatId);
+          this.store.dispatch(addDialogId({dialogId: chatId}));
           return meeting._id;
         })
         .then((confRoomId: string) => {

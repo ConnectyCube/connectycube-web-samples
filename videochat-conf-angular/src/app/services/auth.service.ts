@@ -19,15 +19,26 @@ export class AuthService {
     ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
+  private connectToChat(userCredentials: any) {
+    ConnectyCube.chat.connect(userCredentials)
+      .then(() => {
+        console.log("Connect To Chat");
+      })
+      .catch((error: any) => {
+        console.error("Connect to chat Error!", error);
+      })
+  }
+
   public auth(userName: string) {
-    return new Promise<number>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
 
       ConnectyCube.createSession().then(() => {
         const login: string = CommonUtilities.randomLogin() + CommonUtilities.randomLogin();
+        const password: string = CommonUtilities.hashCode(login);
 
         const userProfile = {
           login: login,
-          password: CommonUtilities.hashCode(login),
+          password: password,
           full_name: userName,
         };
         const userProfileLogin = {
@@ -40,6 +51,7 @@ export class AuthService {
             this.login(userProfileLogin)
               .then((user: any) => {
                 console.log("logging user", user);
+                this.connectToChat({userId: user.id, password: password});
                 resolve(user.id)
               })
               .catch((error: any) => {
@@ -55,6 +67,7 @@ export class AuthService {
                 this.login(userProfileLogin)
                   .then((user: any) => {
                     console.log("logging user", user);
+                    this.connectToChat({userId: user.id, password: password});
                     resolve(user.id)
                   })
                   .catch((error: any) => {

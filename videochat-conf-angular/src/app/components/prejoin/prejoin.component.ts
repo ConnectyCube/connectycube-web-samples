@@ -14,6 +14,8 @@ import {DialogWarningComponent} from "../dialog-warning/dialog-warning.component
 import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
 import {addAudioPermission, addVideoPermission} from "../../reducers/interface.actions";
+import {ChatService} from "../../services/chat.service";
+import {addDialogId} from "../../reducers/dialog.actions";
 
 @Component({
   selector: 'app-prejoin',
@@ -53,6 +55,7 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private callService: CallService,
+    private chatService: ChatService,
     private router: Router,
     private urlService: UrlService,
     private store$: Store<State>,
@@ -105,6 +108,7 @@ export class PrejoinComponent implements OnInit, OnDestroy {
 
   private onVideo() {
     console.log("onVideo =>")
+    this.loader.hide();
     this.loader.show();
     this.disableVideoBtn = true;
 
@@ -220,10 +224,19 @@ export class PrejoinComponent implements OnInit, OnDestroy {
 
             this.authService.init(CREDENTIALS, appConfig)
             this.callService.init();
+            this.chatService.init();
 
             if (userName.trim()) {
               this.JoinBtnClick.emit()
-              this.authService.auth(userName).then((userId) => {
+              this.authService.auth(userName).then((userId: any) => {
+
+                this.chatService.subscribeToDialog(meetId).then((dialog: any) => {
+                  console.warn(dialog._id);
+                  this.store$.dispatch(addDialogId({dialogId: dialog._id}));
+                  this.chatService.getDialogHistory(dialog._id).then((dialog: any) => {
+                    console.table("History", dialog.items);
+                  })
+                })
 
                 this.callService.joinUser(meetId, userId, userName).then((obj: any) => {
                   this.DoorOpen = true;
@@ -248,11 +261,12 @@ export class PrejoinComponent implements OnInit, OnDestroy {
           else {
             console.log("=> Create room and join");
             if (userName.trim()) {
-              this.JoinBtnClick.emit()
+              this.JoinBtnClick.emit();
               this.callService.init();
+              this.chatService.init();
 
               this.authService.auth(userName).then((userId) => {
-                const user: User = {id: userId, name: userName};
+                const user = {id: userId, name: userName};
 
                 this.callService.createMeetingAndJoin(user).then((roomUrl: string) => {
                   this.router.navigateByUrl("/join/" + roomUrl).then(() => {
@@ -280,6 +294,7 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loader.show();
     //Get previous url
     this.urlService.previousUrl$
       .subscribe((previousUrl: string) => {

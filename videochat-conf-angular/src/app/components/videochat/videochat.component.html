@@ -17,7 +17,8 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
-<div (click)="hideButtons=!hideButtons; switchVideoActive = false" [attr.data-meetId]="meetingId$ | async"
+<div (click)="toggleControlButtons()" [attr.data-meetId]="meetingId$ | async"
+     (mouseleave)="switchVideoActive = false"
      class="videochat-streams"
      [ngClass]="{'grid-view':gridStatus, 'sidebar-view':sidebarStatus}">
   <mat-progress-spinner *ngIf="loading$ | async" [mode]="'indeterminate'"></mat-progress-spinner>
@@ -82,25 +83,30 @@
           color="primary"
           class="videochat-button"
           aria-label="Mute Microphone">
-    <mat-icon [svgIcon]="microphoneIconName"></mat-icon>
+    <mat-icon>{{microphoneIconName}}</mat-icon>
   </button>
   <button [disabled]="DisableButton || !CameraConnect || !videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
           mat-fab class="videochat-button"
           aria-label="Mute Video">
-    <mat-icon [svgIcon]="videoIconName"></mat-icon>
+    <mat-icon>{{videoIconName}}</mat-icon>
+  </button>
+  <button (click)="toggleChat()"
+          [disabled]="DisableButton"
+    id="toggle-chat" mat-fab class="videochat-button" aria-label="toggle chat">
+    <mat-icon>question_answer</mat-icon>
   </button>
   <button (click)="stopCall()"
           id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
-    <mat-icon svgIcon="phone_missed"></mat-icon>
+    <mat-icon>phone_missed</mat-icon>
   </button>
   <button [disabled]="DisableButton || mediaDevice?.length < 2 || !CameraConnect || !videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">
-    <mat-icon svgIcon="switch_video"></mat-icon>
+    <mat-icon>switch_video</mat-icon>
   </button>
-  <button [disabled]="isMobile || isTablet" (click)="shareScreen()"
+  <button [disabled]="DisableButton || isMobile || isTablet" (click)="shareScreen()"
           id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
-    <mat-icon [svgIcon]="shareScreenIconName"></mat-icon>
+    <mat-icon>{{shareScreenIconName}}</mat-icon>
   </button>
 </div>

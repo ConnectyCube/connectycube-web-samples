@@ -152,6 +152,19 @@ app-login {
   z-index: 2;
 }
 
+app-videochat-wrap{
+  display: flex;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  flex-direction: row;
+}
+
+app-prejoin{
+  width: 100%;
+  height: 100%;
+}
+
 app-videochat {
   display: flex;
   flex: 1 1 100%;
@@ -161,7 +174,6 @@ app-videochat {
   flex-direction: column;
   align-items: center;
 }
-
 .unmirror {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
@@ -229,4 +241,13 @@ app-videochat {
 
 .media-controls.mac.fullscreen > .controls-bar {
   display: none !important;
+}
+
+@media screen and (max-width: 991px){
+  app-chat{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 300;
+  }
 }

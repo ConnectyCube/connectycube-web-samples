@@ -10,7 +10,6 @@ import {Store} from "@ngrx/store";
 import {State} from "../../reducers";
 import {updateVideoStatus} from "../../reducers/participant.actions";
 import {mediaParams} from "../../services/config";
-import {LoadingService} from "../../services/loading.service";
 
 @Component({
   selector: 'app-stream-container',

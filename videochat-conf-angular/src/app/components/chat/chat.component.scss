@@ -1,0 +1,135 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 360px;
+  position: relative;
+  background: url(../../../assets/chat_bg.jpg);
+  background-size: cover;
+}
+
+.chat-header {
+  display: flex;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  background: #1693c7cc;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-title {
+  color: #f0e6e5f5;
+  font-size: 24px;
+  margin: 0;
+}
+
+.chat-close-btn {
+  color: #f0e6e5f5;
+  background: transparent;
+}
+
+.mat-icon {
+  transform: scale(1.25);
+}
+
+.chat-content {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.messages-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-self: flex-start;
+  padding: 7px 10px;
+}
+
+.chat-form {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+}
+
+.send-container {
+  display: flex;
+  align-items: center;
+}
+
+.message-area {
+  width: 100%;
+  resize: none;
+  border-radius: 15px;
+  flex: 1 1 80%;
+  padding: 10px;
+}
+
+.send-message-btn {
+  background: transparent;
+  color: #2087b2;
+  height: 40px;
+  width: 40px;
+}
+
+.message {
+  border-radius: 1.15rem;
+  line-height: 1.25;
+  max-width: 75%;
+  padding: 0.2rem 0.875rem;
+  position: relative;
+  word-wrap: break-word;
+  position: relative;
+  min-width: 150px;
+
+  &:not(:last-child){
+    margin-bottom: 30px;
+  }
+
+  &.me {
+    align-self: flex-end;
+    background-color: #248bf5;
+    color: #fff !important;
+  }
+  &.them{
+    align-self: flex-start;
+    background-color: #e5e5ea;
+    color: #000;
+  }
+}
+
+.message-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: black;
+  max-width: 50px;
+
+  &.me {
+    left: 100%;
+  }
+}
+
+.message-text {
+  padding-top: 5px;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.message-time {
+  font-size: 14px;
+  font-weight: normal;
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  color: black;
+}
+
+@media screen and (max-width: 991px) {
+  .chat-container {
+    width: 100%;
+  }
+}

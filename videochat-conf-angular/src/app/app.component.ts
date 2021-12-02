@@ -8,6 +8,9 @@ import {filter} from "rxjs/operators";
 import {UrlService} from "./services/url.service";
 import {removeAllUsers} from "./reducers/participant.actions";
 import {CallService} from "./services/call.service";
+import {addChatOpenStatus} from "./reducers/interface.actions";
+import {MatIconRegistry} from "@angular/material/icon";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
@@ -30,7 +33,13 @@ export class AppComponent implements OnInit, OnChanges {
     private router: Router,
     private urlService: UrlService,
     private callService: CallService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer,
   ) {
+    this.matIconRegistry.addSvgIcon('fullscreen',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/fullscreen_white_24dp.svg"));
+    this.matIconRegistry.addSvgIcon('connection',
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/connection.svg"));
 
     router.events
       .subscribe((event: any) => {
@@ -44,6 +53,8 @@ export class AppComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
+    this.store$.dispatch(addChatOpenStatus({chatOpenStatus: false}));
 
     this.IsPrejoin = this.joinUrl.includes('join');
 

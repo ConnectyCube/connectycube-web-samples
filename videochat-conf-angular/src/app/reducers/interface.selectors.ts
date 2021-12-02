@@ -8,3 +8,15 @@ export const interfaceSelector = createSelector(
   featureSelector,
   state => state.interfaceObject
 )
+export const chatStatusSelector = createSelector(
+  interfaceSelector,
+  state => state.chatOpenStatus
+)
+export const controlButtonsStatusSelector = createSelector(
+  interfaceSelector,
+  state => state.controlButtonsStatus
+)
+export const switchVideoStatusSelector = createSelector(
+  interfaceSelector,
+  state => state.switchVideoStatus
+)

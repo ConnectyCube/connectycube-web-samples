@@ -11,10 +11,15 @@ import {Router} from "@angular/router";
 import {UrlService} from "../../services/url.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {User} from "../../reducers/participant.reducer";
-import {MatIconRegistry} from "@angular/material/icon";
-import {DomSanitizer} from "@angular/platform-browser";
-import {interfaceSelector} from "../../reducers/interface.selectors";
+import {
+  chatStatusSelector,
+  controlButtonsStatusSelector,
+  interfaceSelector,
+  switchVideoStatusSelector
+} from "../../reducers/interface.selectors";
 import {LoadingService} from "../../services/loading.service";
+import {addChatOpenStatus, addControlButtonsStatus, addSwitchVideoStatus} from "../../reducers/interface.actions";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-videochat',
@@ -57,30 +62,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private callService: CallService,
     private deviceService: DeviceDetectorService,
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
     public loader: LoadingService,
   ) {
-    this.matIconRegistry.addSvgIcon('fullscreen',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/fullscreen_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('connection',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/connection.svg"));
-    this.matIconRegistry.addSvgIcon('videocam',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('videocam_off',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/videocam_off_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('mic',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/mic_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('mic_off',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/mic_off_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('phone_missed',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/phone_missed_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('switch_video',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/switch_video_white_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('screen_share',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/screen_share_black_24dp.svg"));
-    this.matIconRegistry.addSvgIcon('stop_screen_share',
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets//icons/stop_screen_share_black_24dp.svg"));
   }
 
   private checkConnect() {
@@ -246,8 +229,43 @@ export class VideochatComponent implements OnInit, OnDestroy {
     };
   }
 
+  toggleChat() {
+    this.store$.select(chatStatusSelector).pipe(take(1)).subscribe(chatOpenStatus => {
+      if (chatOpenStatus !== undefined) {
+        chatOpenStatus = !chatOpenStatus;
+        this.store$.dispatch(addChatOpenStatus({chatOpenStatus}))
+      }
+    })
+  }
+
+  public toggleControlButtons() {
+    this.store$.dispatch(addSwitchVideoStatus({switchVideoStatus: false}));
+    this.store$.select(controlButtonsStatusSelector).pipe(take(1))
+      .subscribe(controlButtonsStatus => {
+        if (controlButtonsStatus !== undefined) {
+          controlButtonsStatus = !controlButtonsStatus;
+          this.store$.dispatch(addControlButtonsStatus({controlButtonsStatus}))
+        }
+      })
+  }
+
   ngOnInit() {
     this.loader.show();
+
+    this.store$.dispatch(addControlButtonsStatus({controlButtonsStatus: true}));
+    this.store$.dispatch(addSwitchVideoStatus({switchVideoStatus: false}));
+    this.store$.select(controlButtonsStatusSelector).subscribe(controlButtonsStatus => {
+      if (controlButtonsStatus !== undefined) {
+        controlButtonsStatus = !controlButtonsStatus;
+        this.hideButtons = controlButtonsStatus;
+      }
+    })
+    this.store$.select(switchVideoStatusSelector).subscribe(switchVideoStatus => {
+      if (switchVideoStatus !== undefined) {
+        this.switchVideoActive = switchVideoStatus;
+      }
+    })
+
 
     this.participantArray$.subscribe(res => {
       if (res.length === 1 && this.sidebarStatus) {

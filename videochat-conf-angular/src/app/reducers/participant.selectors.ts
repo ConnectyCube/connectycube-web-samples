@@ -19,3 +19,7 @@ export const participantSortSelector = createSelector(
     }
   })
 )
+export const findParticipantSelector = createSelector(
+  featureSelector,
+  (state: any, props: any) => state.participantArray.find((user: User) => user.id === props.userId)
+)

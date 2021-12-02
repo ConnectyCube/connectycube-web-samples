@@ -3,7 +3,7 @@
     <button (click)="muteOrUnmuteVideo()" [disabled]="disableVideoBtn"
             id="mute-video-user" mat-fab class="videochat-button"
             aria-label="Mute Video">
-      <mat-icon [svgIcon]="videoIconName"></mat-icon>
+      <mat-icon>{{videoIconName}}</mat-icon>
     </button>
     <video playsinline autoplay muted id="user-video" #videoElement class="user-video mirror" preload="auto"></video>
     <mat-progress-spinner *ngIf="loading$ | async" [mode]="'indeterminate'"></mat-progress-spinner>

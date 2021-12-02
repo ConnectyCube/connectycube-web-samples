@@ -24,6 +24,7 @@ import {DialogWarningComponent} from './components/dialog-warning/dialog-warning
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
+import { ChatComponent } from './components/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import {HttpClientModule} from "@angular/common/http";
     PrejoinComponent,
     VideochatWrapComponent,
     DialogWarningComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,
