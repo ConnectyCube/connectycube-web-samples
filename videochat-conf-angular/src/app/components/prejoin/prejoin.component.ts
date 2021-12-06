@@ -15,7 +15,11 @@ import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
 import {addAudioPermission, addVideoPermission} from "../../reducers/interface.actions";
 import {ChatService} from "../../services/chat.service";
-import {addDialogId} from "../../reducers/dialog.actions";
+import {addDialogHistory, addDialogId, addMessage} from "../../reducers/dialog.actions";
+import {Message} from "../../reducers/dialog.reducer";
+import {findParticipantSelector} from "../../reducers/participant.selectors";
+import {take} from "rxjs/operators";
+import {dialogMessagesSelector} from "../../reducers/dialog.selectors";
 
 @Component({
   selector: 'app-prejoin',
@@ -233,9 +237,10 @@ export class PrejoinComponent implements OnInit, OnDestroy {
                 this.chatService.subscribeToDialog(meetId).then((dialog: any) => {
                   console.warn(dialog._id);
                   this.store$.dispatch(addDialogId({dialogId: dialog._id}));
-                  this.chatService.getDialogHistory(dialog._id).then((dialog: any) => {
-                    console.table("History", dialog.items);
-                  })
+                  this.chatService.getDialogHistory(dialog._id).then((dialogMessages:Array<Message>)=>{
+                    console.warn(dialogMessages);
+                    this.store$.dispatch(addDialogHistory({dialogMessages}));
+                  });
                 })
 
                 this.callService.joinUser(meetId, userId, userName).then((obj: any) => {

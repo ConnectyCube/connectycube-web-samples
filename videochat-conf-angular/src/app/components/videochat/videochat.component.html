@@ -70,6 +70,7 @@
   <div id="user-device"
        class="user-device"
        [ngClass]="switchVideoActive ? 'active':''"
+       (mouseenter)="switchVideoActive = true"
        (mouseleave)="switchVideoActive = false"
   >
     <input *ngFor="let dev of mediaDevice"
@@ -101,6 +102,7 @@
   </button>
   <button [disabled]="DisableButton || mediaDevice?.length < 2 || !CameraConnect || !videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
+          (mouseleave)="switchVideoActive = false"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">
     <mat-icon>switch_video</mat-icon>

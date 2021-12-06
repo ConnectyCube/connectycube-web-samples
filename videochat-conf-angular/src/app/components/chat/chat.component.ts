@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {State} from "../../reducers";
 import {Store} from "@ngrx/store";
 import {chatStatusSelector} from "../../reducers/interface.selectors";
@@ -13,15 +13,20 @@ import {addMessage} from "../../reducers/dialog.actions";
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
 
   @ViewChild('messageArea') messageArea: any;
+  @ViewChild('messageContainer') messageContainer: any;
   public dialogMessages$ = this.store$.select(dialogMessagesSelector);
 
   constructor(
     private store$: Store<State>,
     private chatService: ChatService,
   ) {
+  }
+
+  private ScrollBottom() {
+    this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
   }
 
   public closeChat() {
@@ -51,7 +56,12 @@ export class ChatComponent implements OnInit {
     }
   }
 
+
   ngOnInit(): void {
+  }
+
+  ngAfterViewChecked() {
+    this.ScrollBottom();
   }
 
 }

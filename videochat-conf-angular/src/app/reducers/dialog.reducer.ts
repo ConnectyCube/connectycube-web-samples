@@ -1,5 +1,5 @@
 import {createReducer, on} from "@ngrx/store";
-import {addDialogId, addMessage} from "./dialog.actions";
+import {addDialogHistory, addDialogId, addMessage} from "./dialog.actions";
 import {concat} from "rxjs";
 
 export interface dialogState {
@@ -13,6 +13,7 @@ export interface Message {
   message_name?: string,
   message_text: string,
   message_time: string,
+  statusUndefined?:boolean,
 }
 
 export const initialState: dialogState = {
@@ -33,6 +34,13 @@ export const dialogReducer = createReducer(
     dialog: {
       dialogId: state.dialog.dialogId,
       dialogMessages: state.dialog.dialogMessages.concat([{message_name, message_text, message_time}])
+    }
+  })),
+  on(addDialogHistory, (state, {dialogMessages})=>({
+    ...state,
+    dialog: {
+      dialogId: state.dialog.dialogId,
+      dialogMessages: dialogMessages
     }
   }))
 )

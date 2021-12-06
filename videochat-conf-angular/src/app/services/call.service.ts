@@ -355,10 +355,22 @@ export class CallService {
           console.log(mediaParams);
           if (!mediaParams.video) {
             stream.addTrack(this.createDummyVideoTrack());
-            this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream, videoStatus: false}));
+            this.store.dispatch(addUser({
+              me: true,
+              id: userId,
+              name: userDisplayName,
+              stream: stream,
+              videoStatus: false
+            }));
           }
           else {
-            this.store.dispatch(addUser({id: 77777, name: userDisplayName, stream: stream, videoStatus: true}));
+            this.store.dispatch(addUser({
+              me: true,
+              id: userId,
+              name: userDisplayName,
+              stream: stream,
+              videoStatus: true
+            }));
           }
 
           session.join(confRoomId, userId, userDisplayName);

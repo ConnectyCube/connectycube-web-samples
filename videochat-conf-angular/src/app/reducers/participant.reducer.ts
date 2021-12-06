@@ -10,6 +10,7 @@ import {
 } from "./participant.actions";
 
 export interface User {
+  me?: boolean
   id: number,
   name?: string,
   stream?: any,
@@ -31,10 +32,10 @@ export const initialState: participantState = {
 
 export const participantReducer = createReducer(
     initialState,
-    on(addUser, (state, {id, name, stream, volumeLevel, bitrate, connectionStatus, videoStatus}) => ({
+    on(addUser, (state, {me, id, name, stream, volumeLevel, bitrate, connectionStatus, videoStatus}) => ({
       ...state,
       participantArray: state.participantArray.concat([{
-        id, name, stream, volumeLevel,
+        me, id, name, stream, volumeLevel,
         bitrate, connectionStatus, videoStatus
       }])
     })),
@@ -44,12 +45,19 @@ export const participantReducer = createReducer(
     })),
     on(updateUser, (state, {id, stream}) => ({
         ...state,
-        participantArray: state.participantArray.map((item) => {
-          if (item.id === id) {
-            return {...item, stream};
-          }
-          return item;
-        })
+        participantArray: id === 77777 ?
+          state.participantArray.map((item) => {
+            if (item.me) {
+              return {...item, stream};
+            }
+            return item;
+          })
+          : state.participantArray.map((item) => {
+            if (item.id === id) {
+              return {...item, stream};
+            }
+            return item;
+          })
       })
     ),
     on(removeAllUsers, (state) => ({
@@ -98,7 +106,17 @@ export const participantReducer = createReducer(
     })),
     on(updateVideoStatus, (state, {id, videoStatus}) => ({
       ...state,
-      participantArray: state.participantArray.map((user: User) => {
+      participantArray: id===77777?
+        state.participantArray.map((user: User) => {
+          if (user.me) {
+            console.warn("updateVideoStatus__REDUX")
+            const newUser = {...user};
+            newUser.videoStatus = videoStatus;
+            return newUser;
+          }
+          return user;
+        })
+        :state.participantArray.map((user: User) => {
         if (user.id === id) {
           console.warn("updateVideoStatus__REDUX")
           const newUser = {...user};

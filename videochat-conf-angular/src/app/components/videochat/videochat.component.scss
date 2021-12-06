@@ -44,10 +44,11 @@ app-stream-container {
   }
 
   .user-device {
+    display: flex;
     opacity: 0;
+    visibility: hidden;
     position: absolute;
     right: 0;
-    display: flex;
     flex-direction: column;
     bottom: 110%;
     padding: 10px 20px;
@@ -60,6 +61,7 @@ app-stream-container {
 
   .user-device.active {
     opacity: 1;
+    visibility: initial;
   }
 
   .device-btn {

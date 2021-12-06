@@ -41,10 +41,33 @@ export class AuthService {
           password: password,
           full_name: userName,
         };
+        const userLocalStorage = {
+          login: localStorage.getItem('login'),
+          password: localStorage.getItem('password'),
+          full_name: localStorage.getItem('userName'),
+        };
         const userProfileLogin = {
           login: userProfile.login,
           password: userProfile.password
         }
+
+        if(userName === localStorage.getItem('userName')){
+          this.login(userLocalStorage)
+            .then((user: any) => {
+              console.log("logging user", user);
+              this.connectToChat({userId: user.id, password: password});
+              resolve(user.id)
+            })
+            .catch((error: any) => {
+              console.log('LoginError!', error);
+              reject();
+            })
+          return;
+        }
+
+        localStorage.setItem('login',login)
+        localStorage.setItem('password', password)
+        localStorage.setItem('userName', userName)
 
         ConnectyCube.users.signup(userProfile)
           .then(() => {

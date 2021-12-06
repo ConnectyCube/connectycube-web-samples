@@ -1,19 +1,20 @@
 <div class="chat-container">
   <div class="chat-header">
-    <h3 class="chat-title">In-call messages</h3>
     <button class="chat-close-btn" (click)="closeChat()">
-      <mat-icon>close</mat-icon>
+      <mat-icon>keyboard_backspace</mat-icon>
     </button>
+    <h3 class="chat-title">TeaTalk Chat</h3>
   </div>
   <div class="chat-content">
-    <div class="messages-container">
+    <div class="messages-container" #messageContainer>
       <div *ngFor="let message of dialogMessages$ | async"
            [ngClass]="message.message_name?'them':'me'"
            class="message">
         <span class="message-name" [ngClass]="message.message_name?'them':'me'">
           {{message.message_name}}
         </span>
-        <p class="message-text">{{message.message_text}}</p>
+        <p class="message-text">{{message.message_text}}
+          <span style="display: inline-block; width: 35px; height: 5px"></span></p>
         <p class="message-time">{{message.message_time}}</p>
       </div>
     </div>
