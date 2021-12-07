@@ -3,7 +3,7 @@
     <button class="chat-close-btn" (click)="closeChat()">
       <mat-icon>keyboard_backspace</mat-icon>
     </button>
-    <h3 class="chat-title">TeaTalk Chat</h3>
+    <h3 class="chat-title">Chat</h3>
   </div>
   <div class="chat-content">
     <div class="messages-container" #messageContainer>
@@ -20,7 +20,7 @@
     </div>
     <form action="#" class="chat-form">
       <div class="send-container">
-        <textarea (keydown.enter)="sendMessage()" #messageArea class="message-area"
+        <textarea maxlength="500" (keydown.enter)="sendMessage()" #messageArea class="message-area"
                   name="Message"
                   id="message-area"
                   placeholder="Enter your message"

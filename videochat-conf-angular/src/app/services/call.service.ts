@@ -37,7 +37,7 @@ export class CallService {
   private currentMode: string = 'grid';
   private participantArray$ = this.store.select(participantSelector);
   private slowLinkTimers: any = {};
-  private videoPermission: any;
+  private meetId:string = '';
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -405,6 +405,7 @@ export class CallService {
           const chatId = meeting.chat_dialog_id;
           console.warn(chatId);
           this.store.dispatch(addDialogId({dialogId: chatId}));
+          this.meetId = meeting._id;
           return meeting._id;
         })
         .then((confRoomId: string) => {
@@ -418,4 +419,36 @@ export class CallService {
         });
     })
   }
+
+  public recordingStart(){
+    if(this.meetId){
+      return ConnectyCube.meeting
+        .update(this.meetId, { record: true })
+        .then((meeting:any) => {
+          const msg = {
+            body: "dialog/START_RECORD"
+          };
+          ConnectyCube.chat.sendSystemMessage(-77777, msg);
+        })
+        .catch((error:any) => {
+          console.error("Recording Start",error);
+        });
+    }
+  }
+  public recordingStop(){
+    if(this.meetId){
+      return ConnectyCube.meeting
+        .update(this.meetId, { record: false })
+        .then((meeting:any) => {
+          const msg = {
+            body: "dialog/STOP_RECORD"
+          };
+          ConnectyCube.chat.sendSystemMessage(-77777, msg);
+        })
+        .catch((error:any) => {
+          console.error("Recording Stop",error);
+        });
+    }
+  }
+
 }

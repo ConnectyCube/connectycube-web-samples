@@ -102,6 +102,15 @@ app-stream-container {
     color: black;
   }
 }
+#record{
+  background: #dc143c;
+  border: 6px solid #fff;
+  mat-icon{
+    width: 36px;
+    height: 36px;
+    font-size: 36px;
+  }
+}
 
 .change-view {
   position: absolute;

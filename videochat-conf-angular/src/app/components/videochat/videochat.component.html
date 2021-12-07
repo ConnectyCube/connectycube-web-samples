@@ -111,4 +111,8 @@
           id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
     <mat-icon>{{shareScreenIconName}}</mat-icon>
   </button>
+  <button [style.background]="recordBtnBg" [disabled]="DisableButton" (click)="recording()"
+          id="record" mat-fab class="videochat-button" aria-label="Record">
+    <mat-icon [style.color]="recordIconBg" >{{recordIconName}}</mat-icon>
+  </button>
 </div>

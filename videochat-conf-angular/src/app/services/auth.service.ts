@@ -55,7 +55,7 @@ export class AuthService {
           this.login(userLocalStorage)
             .then((user: any) => {
               console.log("logging user", user);
-              this.connectToChat({userId: user.id, password: password});
+              this.connectToChat({userId: user.id, password: userLocalStorage.password});
               resolve(user.id)
             })
             .catch((error: any) => {

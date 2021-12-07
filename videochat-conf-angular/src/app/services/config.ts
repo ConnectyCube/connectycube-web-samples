@@ -9,6 +9,10 @@ export const CREDENTIALS = {
 export const appConfig = {
   debug: {mode: 1},
   conference: {server: environment.SERVER},
+  endpoints: {
+    api: environment.API_ENDPOINT,
+    chat: environment.CHAT_ENDPOINT
+  }
 }
 
 export const mediaParams = {

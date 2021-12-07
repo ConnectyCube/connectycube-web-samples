@@ -21,6 +21,8 @@ export const environment = {
    AUTH_KEY: "${process.env.AUTH_KEY}",
    AUTH_SECRET: "${process.env.AUTH_SECRET}",
    SERVER: "${process.env.SERVER}",
+   CHAT_ENDPOINT: "${process.env.CHAT_ENDPOINT}",
+   API_ENDPOINT: "${process.env.API_ENDPOINT}"
 };
 `;
 fs.promises.mkdir(path.dirname(prodPath), {recursive: true})

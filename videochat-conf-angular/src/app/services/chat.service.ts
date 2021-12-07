@@ -4,7 +4,6 @@ import {Store} from "@ngrx/store";
 import {findParticipantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 import {addMessage} from "../reducers/dialog.actions";
-import {Message} from "../reducers/dialog.reducer";
 
 declare let ConnectyCube: any;
 
@@ -36,7 +35,7 @@ export class ChatService {
               if (unFindedUsers.indexOf(item.sender_id) === -1) {
                 unFindedUsers.push(item.sender_id);
               }
-              message.statusUndefined = true;
+              message.IsUndefinedUserDetails = true;
               message.userId = item.sender_id;
             }
           })
@@ -64,10 +63,10 @@ export class ChatService {
 
             for(let i = 0; i<messages.length;i++){
               // console.log("GO FOR",messages[i])
-              if(messages[i].statusUndefined && messages[i].userId === id){
+              if(messages[i].IsUndefinedUserDetails && messages[i].userId === id){
 
                 messages[i].message_name = fullName;
-                delete messages[i].statusUndefined;
+                delete messages[i].IsUndefinedUserDetails;
                 delete messages[i].userId;
               }
             }
@@ -86,6 +85,8 @@ export class ChatService {
       this.store$.select(findParticipantSelector, {userId}).pipe(take(1))
         .subscribe(user => {
           if (!user.me) {
+            const sound = new Audio("../../assets/sounds/notification.mp3");
+            sound.play();
             console.warn("[ConnectyCube.chat.onMessageListener] callback:", userId, message);
             const message_name: string = user.name;
             const message_text: string = message.body;
@@ -95,6 +96,9 @@ export class ChatService {
           }
         })
     }
+    ConnectyCube.chat.onSystemMessageListener = (msg:any) => {
+
+    };
   }
 
   public getDialogHistory(chat_id: string) {

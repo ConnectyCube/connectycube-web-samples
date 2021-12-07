@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {State} from "../../reducers";
 import {select, Store} from "@ngrx/store";
 import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
@@ -26,7 +26,7 @@ import {take} from "rxjs/operators";
   templateUrl: './videochat.component.html',
   styleUrls: ['./videochat.component.scss']
 })
-export class VideochatComponent implements OnInit, OnDestroy {
+export class VideochatComponent implements OnInit, OnDestroy{
 
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
@@ -41,6 +41,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public switchVideoActive: boolean = false;
   public switchDone: boolean = false
   public shareScreenIconName = 'screen_share';
+  public recordIconName = '';
   public isMobile = this.deviceService.isMobile();
   public isTablet = this.deviceService.isTablet();
   public MicroConnect: any;
@@ -53,6 +54,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public startSliceGrid = 0;
   public subscribeParticipantArray: any;
   public loading$ = this.loader.loading$;
+  public recordBtnBg:any;
+  public recordIconBg:any;
 
   constructor
   (
@@ -247,6 +250,22 @@ export class VideochatComponent implements OnInit, OnDestroy {
           this.store$.dispatch(addControlButtonsStatus({controlButtonsStatus}))
         }
       })
+  }
+
+  public recording() {
+    if(!this.recordIconName){
+      this.callService.recordingStart().then(()=>{
+        this.recordIconBg = '#dc143c';
+        this.recordBtnBg = '#2c2c2e';
+        this.recordIconName = 'stop';
+      })
+    }
+    else{
+      this.callService.recordingStop().then(()=>{
+        this.recordBtnBg = '#dc143c';
+        this.recordIconName = '';
+      })
+    }
   }
 
   ngOnInit() {
