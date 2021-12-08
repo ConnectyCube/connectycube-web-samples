@@ -20,6 +20,7 @@ import {
 import {LoadingService} from "../../services/loading.service";
 import {addChatOpenStatus, addControlButtonsStatus, addSwitchVideoStatus} from "../../reducers/interface.actions";
 import {take} from "rxjs/operators";
+import {ChatService} from "../../services/chat.service";
 
 @Component({
   selector: 'app-videochat',
@@ -66,6 +67,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
     private store$: Store<State>,
     private authService: AuthService,
     private callService: CallService,
+    private chatService: ChatService,
     private deviceService: DeviceDetectorService,
     public loader: LoadingService,
   ) {
@@ -157,6 +159,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
     else {
       this.callService.switchCamera(deviceId, this.videoIconName).then(() => {
         this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+
         this.videoIconName = 'videocam';
       }).catch(() => {
         if (this.isMobile) {
@@ -176,18 +179,36 @@ export class VideochatComponent implements OnInit, OnDestroy {
     this.callService.shareScreen()
       .then((localDesktopStream: any) => {
         console.warn(localDesktopStream);
-        if (this.videoIconName === 'videocam_off') {
-          this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
-        }
+
+        this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: 'share'}));
+
         localDesktopStream.getVideoTracks()[0]
           .addEventListener("ended", () => {
-            if (this.videoIconName === 'videocam_off' && this.videoPermission) {
-              this.videoIconName = 'videocam';
-              this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
-            }
-            else if (!this.videoPermission) {
+
+            if (this.videoPermission === false) {
               this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+
+              this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+                res.forEach((user: User) => {
+                  if (!user.me) {
+                    this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
+                  }
+                })
+              })
             }
+            else{
+              this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+              this.videoIconName = 'videocam';
+
+              this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+                res.forEach((user: User) => {
+                  if (!user.me) {
+                    this.chatService.sendSystemMsg("SHARE_OFF", user.id);
+                  }
+                })
+              })
+            }
+
 
             this.callService.stopSharingScreen();
             this.shareScreenIconName = 'screen_share';
@@ -202,9 +223,25 @@ export class VideochatComponent implements OnInit, OnDestroy {
           if (this.videoIconName === 'videocam_off' && this.videoPermission) {
             this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
             this.videoIconName = 'videocam';
+
+            this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+              res.forEach((user: User) => {
+                if (!user.me) {
+                  this.chatService.sendSystemMsg("SHARE_OFF", user.id);
+                }
+              })
+            })
           }
-          else if (!this.videoPermission) {
+          else if (this.videoPermission === false) {
             this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+
+            this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+              res.forEach((user: User) => {
+                if (!user.me) {
+                  this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
+                }
+              })
+            })
           }
           this.callService.stopSharingScreen('', this.videoPermission);
           this.shareScreenIconName = 'screen_share';

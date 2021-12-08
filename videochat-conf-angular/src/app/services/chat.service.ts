@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
 import {State} from "../reducers";
 import {Store} from "@ngrx/store";
-import {findParticipantSelector} from "../reducers/participant.selectors";
+import {findParticipantSelector, participantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 import {addMessage} from "../reducers/dialog.actions";
 import {addRecordingStatus} from "../reducers/interface.actions";
+import {addUser, updateVideoStatus} from "../reducers/participant.actions";
+import {User} from "../reducers/participant.reducer";
 
 declare let ConnectyCube: any;
 
@@ -107,6 +109,46 @@ export class ChatService {
         case "dialog/STOP_RECORD":
           this.store$.dispatch(addRecordingStatus({isRecording: false}));
           break;
+        case "VIDEO_ON":
+          console.warn("CASE ON")
+          this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+            if (res.some((user: User) => user.id === msg.userId)) {
+              this.store$.dispatch(updateVideoStatus({id: msg.userId, videoStatus: true}))
+            }
+            else {
+              this.store$.dispatch(addUser({
+                id: msg.userId,
+                volumeLevel: 0,
+                bitrate: '',
+                connectionStatus: 'good',
+                videoStatus: true
+              }));
+            }
+          })
+          break;
+        case "VIDEO_OFF":
+          console.warn("CASE OFF")
+          this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+            if (res.some((user: User) => user.id === msg.userId)) {
+              this.store$.dispatch(updateVideoStatus({id: msg.userId, videoStatus: false}));
+            }
+            else {
+              this.store$.dispatch(addUser({
+                id: msg.userId,
+                volumeLevel: 0,
+                bitrate: '',
+                connectionStatus: 'good',
+                videoStatus: false
+              }));
+            }
+          })
+          break;
+        case "SHARE_ON":
+          this.store$.dispatch(updateVideoStatus({id: msg.userId, videoStatus: 'share'}));
+          break;
+        case "SHARE_OFF":
+          this.store$.dispatch(updateVideoStatus({id: msg.userId, videoStatus: true}));
+          break;
       }
     };
   }
@@ -152,6 +194,14 @@ export class ChatService {
       },
     };
     ConnectyCube.chat.send(dialogId, message);
+  }
+
+  public sendSystemMsg(command: string, userId: number) {
+    const msg = {
+      body: command,
+      extension: {},
+    };
+    ConnectyCube.chat.sendSystemMessage(userId, msg);
   }
 
 }

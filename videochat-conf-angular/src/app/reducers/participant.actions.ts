@@ -30,5 +30,9 @@ export const updateConnectionStatus = createAction(
 );
 export const updateVideoStatus = createAction(
   '[PARTICIPANT] update user video status',
-  props<{ id: number, videoStatus: boolean }>()
+  props<{ id: number, videoStatus: boolean | string }>()
+);
+export const updateName = createAction(
+  '[PARTICIPANT] update user name',
+  props<{ id: number, name: string }>()
 );

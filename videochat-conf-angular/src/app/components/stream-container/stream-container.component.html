@@ -31,6 +31,7 @@
          [ngClass]="{'mirror':shareScreenIconName !== 'stop_screen_share' &&
           !switchDone &&
            userMicrophoneLevel === undefined}"
+         [style.object-fit]="userVideoStatus==='share'?'contain':'cover'"
          playsinline
          preload="auto"
          autoplay

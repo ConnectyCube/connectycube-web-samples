@@ -6,7 +6,7 @@ import {
   addMicrophoneLevel,
   addUser,
   removeUser,
-  updateConnectionStatus,
+  updateConnectionStatus, updateName,
   updateUser, updateVideoStatus
 } from "../reducers/participant.actions";
 import {constraints, mediaParams} from "./config";
@@ -15,6 +15,7 @@ import {participantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 import {addDialogId} from "../reducers/dialog.actions";
 import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
+import {ChatService} from "./chat.service";
 
 declare let ConnectyCube: any;
 
@@ -23,7 +24,8 @@ declare let ConnectyCube: any;
 })
 export class CallService {
   constructor(
-    private store: Store<State>
+    private store: Store<State>,
+    private chatService: ChatService,
   ) {
   }
 
@@ -66,14 +68,30 @@ export class CallService {
       userDisplayName: string,
       isExistingParticipant: any
     ) => {
-      this.store.dispatch(addUser({
-        id: userId,
-        name: userDisplayName,
-        volumeLevel: 0,
-        bitrate: '',
-        connectionStatus: 'good',
-        videoStatus: false
-      }));
+      this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
+        if (res.some((user: User) => user.id === userId)) {
+          this.store.dispatch(updateName({id: userId, name: userDisplayName}))
+        }
+        else {
+          this.store.dispatch(addUser({
+            id: userId,
+            name: userDisplayName,
+            volumeLevel: 0,
+            bitrate: '',
+            connectionStatus: 'good',
+            videoStatus: false
+          }));
+        }
+      })
+
+      console.warn("[onParticipantJoinedListener]")
+
+      if (!mediaParams.video) {
+        this.chatService.sendSystemMsg("VIDEO_OFF", userId);
+      }
+      else {
+        this.chatService.sendSystemMsg("VIDEO_ON", userId);
+      }
 
       if (this.subscribeParticipantArray) {
         this.stopCheckUserMicLevel();
@@ -226,6 +244,13 @@ export class CallService {
           console.warn("IF St", session.localStream.getVideoTracks())
           session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
+              this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
+                res.forEach((user: User) => {
+                  if(!user.me){
+                    this.chatService.sendSystemMsg("VIDEO_ON", user.id);
+                  }
+                })
+              })
             })
         }
         else {
@@ -234,6 +259,14 @@ export class CallService {
           session.getUserMedia({audio: true}, true)
             .then((stream: any) => {
               stream.addTrack(this.createDummyVideoTrack());
+
+              this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
+                res.forEach((user: User) => {
+                  if(!user.me){
+                    this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
+                  }
+                })
+              })
             })
         }
 
@@ -278,6 +311,13 @@ export class CallService {
             resolve();
           }
           this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
+          this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
+            res.forEach((user: User) => {
+              if(!user.me){
+                this.chatService.sendSystemMsg("VIDEO_ON", user.id);
+              }
+            })
+          })
         })
         .catch((error: any) => {
           console.log("Switch camera Error!", error);
@@ -297,11 +337,13 @@ export class CallService {
     session.getUserMedia(mediaParamsDeviceId, true)
       .then((stream: any) => {
         this.store.dispatch(updateUser({id: 77777, stream: stream}));
+
         this.OurSharingStatus = false;
       })
       .catch(() => {
-        if (videoPermission) {
+        if (videoPermission === false) {
           session.getUserMedia({audio: true}, true);
+
           this.OurSharingStatus = false;
         }
       })
@@ -320,6 +362,15 @@ export class CallService {
           .then((localDesktopStream: any) => {
             console.warn("ShareSTREAM", localDesktopStream)
             this.store.dispatch(updateUser({id: 77777, stream: localDesktopStream}));
+
+            this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
+              res.forEach((user: User) => {
+                if(!user.me){
+                  this.chatService.sendSystemMsg("SHARE_ON", user.id);
+                }
+              })
+            })
+
             this.OurSharingStatus = true;
             resolve(localDesktopStream);
           })
@@ -443,11 +494,7 @@ export class CallService {
           this.store.select(participantSelector).pipe(take(1)).subscribe(participantArr => {
             participantArr.forEach((user: User) => {
               if (user.id !== this.hostId) {
-                const msg = {
-                  body: "dialog/START_RECORD",
-                  extension: {},
-                };
-                ConnectyCube.chat.sendSystemMessage(user.id, msg);
+                this.chatService.sendSystemMsg("dialog/START_RECORD", user.id);
               }
             })
           })
@@ -467,11 +514,7 @@ export class CallService {
           this.store.select(participantSelector).pipe(take(1)).subscribe(participantArr => {
             participantArr.forEach((user: User) => {
               if (user.id !== this.hostId) {
-                const msg = {
-                  body: "dialog/STOP_RECORD",
-                  extension: {},
-                };
-                ConnectyCube.chat.sendSystemMessage(user.id, msg);
+                this.chatService.sendSystemMsg("dialog/STOP_RECORD", user.id);
               }
             })
           })

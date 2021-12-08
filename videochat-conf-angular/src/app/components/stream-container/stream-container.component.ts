@@ -28,7 +28,7 @@ export class StreamContainerComponent implements OnInit {
   @Input() modeGrid: boolean = true;
   @Input() userBitrate: string | undefined;
   @Input() userConnectionStatus: string | undefined = 'good';
-  @Input() userVideoStatus: boolean | undefined;
+  @Input() userVideoStatus: boolean | string | undefined;
   @Output() videoLoaded: EventEmitter<any> = new EventEmitter<any>();
 
   public videoWork: boolean = false;
@@ -51,17 +51,17 @@ export class StreamContainerComponent implements OnInit {
   }
 
   showVideo() {
-    console.warn(this.modeGrid);
-    console.warn("userVideoStatus", this.userVideoStatus)
-    if (!mediaParams.video) {
-      this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
-      console.warn("userVideoStatus FAlSE", this.userVideoStatus)
-      mediaParams.video = true;
-    }
-    else if (mediaParams.video) {
-      this.store$.dispatch(updateVideoStatus({id: this.userId, videoStatus: true}));
-      console.warn("userVideoStatus TRUE", this.userVideoStatus)
-    }
+    // console.warn(this.modeGrid);
+    // console.warn("userVideoStatus", this.userVideoStatus)
+    // if (!mediaParams.video) {
+    //   this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+    //   console.warn("userVideoStatus FAlSE", this.userVideoStatus)
+    //   mediaParams.video = true;
+    // }
+    // else if (mediaParams.video) {
+    //   this.store$.dispatch(updateVideoStatus({id: this.userId, videoStatus: true}));
+    //   console.warn("userVideoStatus TRUE", this.userVideoStatus)
+    // }
   }
 
   unDisableButton() {

@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   private connectToChat(userCredentials: any) {
-    ConnectyCube.chat.connect(userCredentials)
+    return ConnectyCube.chat.connect(userCredentials)
       .then(() => {
         console.log("Connect To Chat");
       })
@@ -60,8 +60,11 @@ export class AuthService {
                   .update({full_name:userName});
               }
               console.log("logging user", user);
-              this.connectToChat({userId: user.id, password: userLocalStorage.password});
-              resolve(user.id)
+              this.connectToChat({userId: user.id, password: userLocalStorage.password})
+                .then(()=>{
+                  resolve(user.id)
+                });
+
             })
             .catch((error: any) => {
               console.log('LoginError!', error);
@@ -79,8 +82,10 @@ export class AuthService {
             this.login(userProfileLogin)
               .then((user: any) => {
                 console.log("logging user", user);
-                this.connectToChat({userId: user.id, password: password});
-                resolve(user.id)
+                this.connectToChat({userId: user.id, password: password})
+                  .then(()=>{
+                    resolve(user.id)
+                  });
               })
               .catch((error: any) => {
                 console.log('LoginError!', error);
@@ -95,8 +100,10 @@ export class AuthService {
                 this.login(userProfileLogin)
                   .then((user: any) => {
                     console.log("logging user", user);
-                    this.connectToChat({userId: user.id, password: password});
-                    resolve(user.id)
+                    this.connectToChat({userId: user.id, password: password})
+                      .then(()=>{
+                        resolve(user.id)
+                      });
                   })
                   .catch((error: any) => {
                     console.log('LoginError!', error);
