@@ -14,6 +14,7 @@ import {User} from "../reducers/participant.reducer";
 import {participantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 import {addDialogId} from "../reducers/dialog.actions";
+import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
 
 declare let ConnectyCube: any;
 
@@ -37,7 +38,8 @@ export class CallService {
   private currentMode: string = 'grid';
   private participantArray$ = this.store.select(participantSelector);
   private slowLinkTimers: any = {};
-  private meetId:string = '';
+  private meetId: string = '';
+  private hostId: any;
 
   private static generateMeetRoomURL(confRoomId: string): string {
     return btoa(confRoomId);
@@ -340,6 +342,7 @@ export class CallService {
       const session = this.createSession();
       this.OurSession = session;
 
+
       const mediaParamsDeviceId = {
         audio: true,
         video: {deviceId: this.OurDeviceId}
@@ -373,7 +376,18 @@ export class CallService {
             }));
           }
 
-          session.join(confRoomId, userId, userDisplayName);
+          ConnectyCube.meeting.get({_id: confRoomId})
+            .then((meeting: any) => {
+              this.meetId = meeting._id;
+              this.hostId = meeting.host_id;
+              if (userId === meeting.host_id) {
+                this.store.dispatch(addShowRecordButtonStatus({showRecordButtonStatus: true}));
+              }
+              else {
+                this.store.dispatch(addShowRecordButtonStatus({showRecordButtonStatus: false}));
+              }
+              session.join(confRoomId, userId, userDisplayName);
+            })
 
           resolve(CallService.generateMeetRoomURL(confRoomId));
         })
@@ -402,10 +416,10 @@ export class CallService {
 
       ConnectyCube.meeting.create(params)
         .then((meeting: any) => {
+          console.warn(meeting);
           const chatId = meeting.chat_dialog_id;
           console.warn(chatId);
           this.store.dispatch(addDialogId({dialogId: chatId}));
-          this.meetId = meeting._id;
           return meeting._id;
         })
         .then((confRoomId: string) => {
@@ -420,33 +434,50 @@ export class CallService {
     })
   }
 
-  public recordingStart(){
-    if(this.meetId){
+  public recordingStart() {
+    if (this.meetId) {
       return ConnectyCube.meeting
-        .update(this.meetId, { record: true })
-        .then((meeting:any) => {
-          const msg = {
-            body: "dialog/START_RECORD"
-          };
-          ConnectyCube.chat.sendSystemMessage(-77777, msg);
+        .update(this.meetId, {record: true})
+        .then((meeting: any) => {
+          this.store.dispatch(addRecordingStatus({isRecording: true}));
+          this.store.select(participantSelector).pipe(take(1)).subscribe(participantArr => {
+            participantArr.forEach((user: User) => {
+              if (user.id !== this.hostId) {
+                const msg = {
+                  body: "dialog/START_RECORD",
+                  extension: {},
+                };
+                ConnectyCube.chat.sendSystemMessage(user.id, msg);
+              }
+            })
+          })
         })
-        .catch((error:any) => {
-          console.error("Recording Start",error);
+        .catch((error: any) => {
+          console.error("Recording Start", error);
         });
     }
   }
-  public recordingStop(){
-    if(this.meetId){
+
+  public recordingStop() {
+    if (this.meetId) {
       return ConnectyCube.meeting
-        .update(this.meetId, { record: false })
-        .then((meeting:any) => {
-          const msg = {
-            body: "dialog/STOP_RECORD"
-          };
-          ConnectyCube.chat.sendSystemMessage(-77777, msg);
+        .update(this.meetId, {record: false})
+        .then((meeting: any) => {
+          this.store.dispatch(addRecordingStatus({isRecording: false}));
+          this.store.select(participantSelector).pipe(take(1)).subscribe(participantArr => {
+            participantArr.forEach((user: User) => {
+              if (user.id !== this.hostId) {
+                const msg = {
+                  body: "dialog/STOP_RECORD",
+                  extension: {},
+                };
+                ConnectyCube.chat.sendSystemMessage(user.id, msg);
+              }
+            })
+          })
         })
-        .catch((error:any) => {
-          console.error("Recording Stop",error);
+        .catch((error: any) => {
+          console.error("Recording Stop", error);
         });
     }
   }

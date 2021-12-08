@@ -17,6 +17,10 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
+<div *ngIf="isRecording" class="rec-container">
+  <mat-icon class="rec-icon">circle</mat-icon>
+  <p class="rec-text">REC</p>
+</div>
 <div (click)="toggleControlButtons()" [attr.data-meetId]="meetingId$ | async"
      (mouseleave)="switchVideoActive = false"
      class="videochat-streams"
@@ -93,7 +97,7 @@
   </button>
   <button (click)="toggleChat()"
           [disabled]="DisableButton"
-    id="toggle-chat" mat-fab class="videochat-button" aria-label="toggle chat">
+          id="toggle-chat" mat-fab class="videochat-button" aria-label="toggle chat">
     <mat-icon>question_answer</mat-icon>
   </button>
   <button (click)="stopCall()"
@@ -111,8 +115,8 @@
           id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
     <mat-icon>{{shareScreenIconName}}</mat-icon>
   </button>
-  <button [style.background]="recordBtnBg" [disabled]="DisableButton" (click)="recording()"
+  <button *ngIf="(showRecord | async)" [style.background]="recordBtnBg" [disabled]="DisableButton" (click)="recording()"
           id="record" mat-fab class="videochat-button" aria-label="Record">
-    <mat-icon [style.color]="recordIconBg" >{{recordIconName}}</mat-icon>
+    <mat-icon [style.color]="recordIconBg">{{recordIconName}}</mat-icon>
   </button>
 </div>

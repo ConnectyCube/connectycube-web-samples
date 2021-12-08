@@ -51,9 +51,14 @@ export class AuthService {
           password: userProfile.password
         }
 
-        if(userName === localStorage.getItem('userName')){
+        if(localStorage.getItem('userName')){
           this.login(userLocalStorage)
             .then((user: any) => {
+              if(userName !== localStorage.getItem('userName')){
+                localStorage.setItem('userName', userName);
+                ConnectyCube.users
+                  .update({full_name:userName});
+              }
               console.log("logging user", user);
               this.connectToChat({userId: user.id, password: userLocalStorage.password});
               resolve(user.id)

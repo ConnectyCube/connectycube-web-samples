@@ -14,7 +14,7 @@ import {User} from "../../reducers/participant.reducer";
 import {
   chatStatusSelector,
   controlButtonsStatusSelector,
-  interfaceSelector,
+  interfaceSelector, showRecordButtonStatusSelector,
   switchVideoStatusSelector
 } from "../../reducers/interface.selectors";
 import {LoadingService} from "../../services/loading.service";
@@ -26,7 +26,7 @@ import {take} from "rxjs/operators";
   templateUrl: './videochat.component.html',
   styleUrls: ['./videochat.component.scss']
 })
-export class VideochatComponent implements OnInit, OnDestroy{
+export class VideochatComponent implements OnInit, OnDestroy {
 
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
@@ -48,14 +48,16 @@ export class VideochatComponent implements OnInit, OnDestroy{
   public CameraConnect: any;
   public Interface$ = this.store$.select(interfaceSelector);
   public videoPermission: any;
+  public isRecording: any;
   public selectedValue: string = 'grid';
   public startSliceSide = 0;
   public endSliceSide = 1;
   public startSliceGrid = 0;
   public subscribeParticipantArray: any;
   public loading$ = this.loader.loading$;
-  public recordBtnBg:any;
-  public recordIconBg:any;
+  public recordBtnBg: any;
+  public recordIconBg: any;
+  public showRecord = this.store$.select(showRecordButtonStatusSelector);
 
   constructor
   (
@@ -253,15 +255,15 @@ export class VideochatComponent implements OnInit, OnDestroy{
   }
 
   public recording() {
-    if(!this.recordIconName){
-      this.callService.recordingStart().then(()=>{
+    if (!this.recordIconName) {
+      this.callService.recordingStart().then(() => {
         this.recordIconBg = '#dc143c';
         this.recordBtnBg = '#2c2c2e';
         this.recordIconName = 'stop';
       })
     }
-    else{
-      this.callService.recordingStop().then(()=>{
+    else {
+      this.callService.recordingStop().then(() => {
         this.recordBtnBg = '#dc143c';
         this.recordIconName = '';
       })
@@ -293,6 +295,11 @@ export class VideochatComponent implements OnInit, OnDestroy{
     })
     this.Interface$.subscribe(res => {
       this.videoPermission = res.videoPermission;
+    })
+    this.Interface$.subscribe(res => {
+      if (res.isRecording !== undefined) {
+        this.isRecording = res.isRecording;
+      }
     })
 
     this.checkConnect();

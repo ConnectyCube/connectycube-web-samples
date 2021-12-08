@@ -4,6 +4,7 @@ import {Store} from "@ngrx/store";
 import {findParticipantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
 import {addMessage} from "../reducers/dialog.actions";
+import {addRecordingStatus} from "../reducers/interface.actions";
 
 declare let ConnectyCube: any;
 
@@ -16,11 +17,11 @@ export class ChatService {
   }
 
   private processMessages(messagesInput: any) {
-    return new Promise<any>((resolve,reject)=>{
+    return new Promise<any>((resolve, reject) => {
       const unFindedUsers: any = [];
 
       const messages = messagesInput.map((item: any) => {
-        const message:any = {message_name: '', message_text: '', message_time: ''};
+        const message: any = {message_name: '', message_text: '', message_time: ''};
         // console.log("message item", item)
         message.message_text = item.message;
         message.message_time = new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
@@ -41,10 +42,10 @@ export class ChatService {
           })
         return message;
       })
-      console.log("messages",messages);
-      console.log("unFindedUsers",unFindedUsers);
+      console.log("messages", messages);
+      console.log("unFindedUsers", unFindedUsers);
 
-      if(unFindedUsers.length > 0){
+      if (unFindedUsers.length > 0) {
         console.warn("[unFindedUsers.length > 0]")
         const params = {
           filter: {
@@ -53,17 +54,17 @@ export class ChatService {
             value: unFindedUsers,
           },
         };
-        ConnectyCube.users.get(params).then((dialog:any)=>{
-          dialog.items.forEach((User:any)=>{
+        ConnectyCube.users.get(params).then((dialog: any) => {
+          dialog.items.forEach((User: any) => {
 
             const fullName = User.user.full_name;
             const id = User.user.id;
 
             // console.warn("GO forEAch",fullName,id)
 
-            for(let i = 0; i<messages.length;i++){
+            for (let i = 0; i < messages.length; i++) {
               // console.log("GO FOR",messages[i])
-              if(messages[i].IsUndefinedUserDetails && messages[i].userId === id){
+              if (messages[i].IsUndefinedUserDetails && messages[i].userId === id) {
 
                 messages[i].message_name = fullName;
                 delete messages[i].IsUndefinedUserDetails;
@@ -74,7 +75,7 @@ export class ChatService {
           resolve(messages.reverse());
         })
       }
-      else{
+      else {
         resolve(messages.reverse());
       }
     })
@@ -96,8 +97,17 @@ export class ChatService {
           }
         })
     }
-    ConnectyCube.chat.onSystemMessageListener = (msg:any) => {
-
+    ConnectyCube.chat.onSystemMessageListener = (msg: any) => {
+      const command = msg.body;
+      console.warn("[Command]", command);
+      switch (command) {
+        case "dialog/START_RECORD":
+          this.store$.dispatch(addRecordingStatus({isRecording: true}));
+          break;
+        case "dialog/STOP_RECORD":
+          this.store$.dispatch(addRecordingStatus({isRecording: false}));
+          break;
+      }
     };
   }
 

@@ -126,6 +126,28 @@ mat-progress-spinner {
   z-index: 4;
 }
 
+.rec-container{
+  display: flex;
+  background: red;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  z-index: 10;
+  padding: 5px;
+  border-radius: 5px;
+}
+.rec-icon{
+  color: #ffffff;
+}
+.rec-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
 @media screen and (max-width: 576px) {
   #videochat-buttons-container{
     .videochat-button {

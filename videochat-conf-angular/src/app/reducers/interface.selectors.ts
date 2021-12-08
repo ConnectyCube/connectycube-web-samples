@@ -20,3 +20,11 @@ export const switchVideoStatusSelector = createSelector(
   interfaceSelector,
   state => state.switchVideoStatus
 )
+export const showRecordButtonStatusSelector = createSelector(
+  interfaceSelector,
+  state => state.showRecordButtonStatus
+)
+export const isRecordingSelector = createSelector(
+  interfaceSelector,
+  state => state.isRecording
+)

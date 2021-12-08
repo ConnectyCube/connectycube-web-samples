@@ -2,7 +2,7 @@ import {createReducer, on} from '@ngrx/store';
 import {
   addAudioPermission,
   addChatOpenStatus,
-  addControlButtonsStatus,
+  addControlButtonsStatus, addRecordingStatus, addShowRecordButtonStatus,
   addSwitchVideoStatus,
   addVideoPermission
 } from "./interface.actions";
@@ -16,6 +16,8 @@ export interface interfaceState {
     chatOpenStatus?: boolean,
     controlButtonsStatus?: boolean,
     switchVideoStatus?: boolean,
+    showRecordButtonStatus?: boolean,
+    isRecording?: boolean,
   }
 }
 
@@ -44,5 +46,13 @@ export const interfaceReducer = createReducer(
   on(addSwitchVideoStatus, (state, {switchVideoStatus}) => ({
     ...state,
     interfaceObject: {...state.interfaceObject, switchVideoStatus}
+  })),
+  on(addShowRecordButtonStatus, (state, {showRecordButtonStatus}) => ({
+    ...state,
+    interfaceObject: {...state.interfaceObject, showRecordButtonStatus}
+  })),
+  on(addRecordingStatus, (state, {isRecording}) => ({
+    ...state,
+    interfaceObject: {...state.interfaceObject, isRecording}
   }))
 )
