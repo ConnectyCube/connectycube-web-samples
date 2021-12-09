@@ -103,6 +103,40 @@ export class VideochatComponent implements OnInit, OnDestroy {
     this.startSliceGrid = 1;
   }
 
+  private stopSharing() {
+    if (this.videoPermission === false) {
+      this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
+
+      this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+        res.forEach((user: User) => {
+          if (!user.me) {
+            this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
+          }
+        })
+      })
+
+      this.callService.stopSharingScreen('',false);
+      this.shareScreenIconName = 'screen_share';
+      return;
+    }
+    else {
+      this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+      this.videoIconName = 'videocam';
+
+      this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+        res.forEach((user: User) => {
+          if (!user.me) {
+            this.chatService.sendSystemMsg("SHARE_OFF", user.id);
+          }
+        })
+      })
+    }
+
+
+    this.callService.stopSharingScreen();
+    this.shareScreenIconName = 'screen_share';
+  }
+
   trackById(index: number, user: User) {
     return user.id;
   }
@@ -117,6 +151,16 @@ export class VideochatComponent implements OnInit, OnDestroy {
     if (this.shareScreenIconName === 'stop_screen_share') {
       console.log("SCREEN SHARE IF", this.shareScreenIconName)
       this.callService.stopSharingScreen();
+
+      this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+      this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+        res.forEach((user: User) => {
+          if (!user.me) {
+            this.chatService.sendSystemMsg("SHARE_OFF", user.id);
+          }
+        })
+      })
+
       this.shareScreenIconName = 'screen_share';
       if (this.videoIconName === 'videocam_off') {
         this.videoIconName = 'videocam';
@@ -151,6 +195,16 @@ export class VideochatComponent implements OnInit, OnDestroy {
     this.switchVideoActive = false;
     if (this.shareScreenIconName === 'stop_screen_share') {
       this.callService.stopSharingScreen(deviceId);
+
+      this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+      this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
+        res.forEach((user: User) => {
+          if (!user.me) {
+            this.chatService.sendSystemMsg("SHARE_OFF", user.id);
+          }
+        })
+      })
+
       this.shareScreenIconName = 'screen_share';
       if (this.videoIconName === 'videocam_off') {
         this.videoIconName = 'videocam';
@@ -180,71 +234,25 @@ export class VideochatComponent implements OnInit, OnDestroy {
       .then((localDesktopStream: any) => {
         console.warn(localDesktopStream);
 
+        console.log("Then Videochat Component")
+
         this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: 'share'}));
 
         localDesktopStream.getVideoTracks()[0]
           .addEventListener("ended", () => {
-
-            if (this.videoPermission === false) {
-              this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
-
-              this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
-                res.forEach((user: User) => {
-                  if (!user.me) {
-                    this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
-                  }
-                })
-              })
-            }
-            else{
-              this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
-              this.videoIconName = 'videocam';
-
-              this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
-                res.forEach((user: User) => {
-                  if (!user.me) {
-                    this.chatService.sendSystemMsg("SHARE_OFF", user.id);
-                  }
-                })
-              })
-            }
-
-
-            this.callService.stopSharingScreen();
-            this.shareScreenIconName = 'screen_share';
+            this.stopSharing();
           });
+
         this.shareScreenIconName = 'stop_screen_share';
       })
       .catch((error: any) => {
+        console.log("Catch Videochat Component")
         if (error) {
           console.log(error)
         }
         else {
-          if (this.videoIconName === 'videocam_off' && this.videoPermission) {
-            this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
-            this.videoIconName = 'videocam';
-
-            this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
-              res.forEach((user: User) => {
-                if (!user.me) {
-                  this.chatService.sendSystemMsg("SHARE_OFF", user.id);
-                }
-              })
-            })
-          }
-          else if (this.videoPermission === false) {
-            this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
-
-            this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {
-              res.forEach((user: User) => {
-                if (!user.me) {
-                  this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
-                }
-              })
-            })
-          }
-          this.callService.stopSharingScreen('', this.videoPermission);
-          this.shareScreenIconName = 'screen_share';
+          console.log("Catch ELSE Videochat Component")
+          this.stopSharing();
         }
       })
   }

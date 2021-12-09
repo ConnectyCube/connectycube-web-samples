@@ -16,6 +16,7 @@ import {take} from "rxjs/operators";
 import {addDialogId} from "../reducers/dialog.actions";
 import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
 import {ChatService} from "./chat.service";
+import {interfaceSelector, isRecordingSelector} from "../reducers/interface.selectors";
 
 declare let ConnectyCube: any;
 
@@ -86,12 +87,30 @@ export class CallService {
 
       console.warn("[onParticipantJoinedListener]")
 
-      if (!mediaParams.video) {
-        this.chatService.sendSystemMsg("VIDEO_OFF", userId);
-      }
-      else {
-        this.chatService.sendSystemMsg("VIDEO_ON", userId);
-      }
+      this.store.select(isRecordingSelector).pipe(take(1)).subscribe(res=>{
+        if(res !== undefined){
+          if(res){
+            this.chatService.sendSystemMsg("dialog/START_RECORD", userId);
+          }
+          else{
+            this.chatService.sendSystemMsg("dialog/STOP_RECORD", userId);
+          }
+        }
+      })
+
+      this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
+        const userMe: any = res.find((user: User) => user.me === true);
+        if (userMe.videoStatus === 'share') {
+          this.chatService.sendSystemMsg("SHARE_ON", userId);
+        }
+        else if (userMe.videoStatus === true) {
+          this.chatService.sendSystemMsg("VIDEO_ON", userId);
+        }
+        else {
+          this.chatService.sendSystemMsg("VIDEO_OFF", userId);
+        }
+      })
+
 
       if (this.subscribeParticipantArray) {
         this.stopCheckUserMicLevel();
@@ -246,7 +265,7 @@ export class CallService {
             .then((stream: any) => {
               this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
                 res.forEach((user: User) => {
-                  if(!user.me){
+                  if (!user.me) {
                     this.chatService.sendSystemMsg("VIDEO_ON", user.id);
                   }
                 })
@@ -262,7 +281,7 @@ export class CallService {
 
               this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
                 res.forEach((user: User) => {
-                  if(!user.me){
+                  if (!user.me) {
                     this.chatService.sendSystemMsg("VIDEO_OFF", user.id);
                   }
                 })
@@ -313,7 +332,7 @@ export class CallService {
           this.store.dispatch(updateUser({id: 77777, stream: updatedLocaStream}));
           this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
             res.forEach((user: User) => {
-              if(!user.me){
+              if (!user.me) {
                 this.chatService.sendSystemMsg("VIDEO_ON", user.id);
               }
             })
@@ -336,13 +355,18 @@ export class CallService {
     const session = this.OurSession;
     session.getUserMedia(mediaParamsDeviceId, true)
       .then((stream: any) => {
+        console.log("STOP SHARE GET USER MEDIA")
         this.store.dispatch(updateUser({id: 77777, stream: stream}));
 
         this.OurSharingStatus = false;
       })
       .catch(() => {
+        console.log("STOP SHARE CATCH GET USER MEDIA", videoPermission)
         if (videoPermission === false) {
-          session.getUserMedia({audio: true}, true);
+          console.log("STOP SHARE CATCH IF")
+          session.getUserMedia({audio: true}, true).then((stream: any) => {
+            stream.addTrack(this.createDummyVideoTrack());
+          });
 
           this.OurSharingStatus = false;
         }
@@ -353,6 +377,7 @@ export class CallService {
     return new Promise<any>((resolve, reject) => {
       const shareStatus = this.OurSharingStatus;
       if (shareStatus) {
+        console.log("REJECT")
         reject();
       }
       else {
@@ -361,11 +386,14 @@ export class CallService {
           .getDisplayMedia(constraints, true)
           .then((localDesktopStream: any) => {
             console.warn("ShareSTREAM", localDesktopStream)
+            localDesktopStream.getTracks().forEach((tr: any) => {
+              console.log(tr);
+            })
             this.store.dispatch(updateUser({id: 77777, stream: localDesktopStream}));
 
             this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
               res.forEach((user: User) => {
-                if(!user.me){
+                if (!user.me) {
                   this.chatService.sendSystemMsg("SHARE_ON", user.id);
                 }
               })
