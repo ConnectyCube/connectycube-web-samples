@@ -23,16 +23,16 @@ export class ChatService {
       const unFindedUsers: any = [];
 
       const messages = messagesInput.map((item: any) => {
-        const message: any = {message_name: '', message_text: '', message_time: ''};
+        const message: any = {senderName: '', body: '', time: ''};
         // console.log("message item", item)
-        message.message_text = item.message;
-        message.message_time = new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
+        message.body = item.message;
+        message.time = new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
         this.store$.select(findParticipantSelector, {userId: item.sender_id}).pipe(take(1))
           .subscribe(user => {
             // console.log("message user", user)
             if (user) {
-              message.message_name = user.me ? '' : user.name;
+              message.senderName = user.me ? '' : user.name;
             }
             else {
               if (unFindedUsers.indexOf(item.sender_id) === -1) {
@@ -68,7 +68,7 @@ export class ChatService {
               // console.log("GO FOR",messages[i])
               if (messages[i].IsUndefinedUserDetails && messages[i].userId === id) {
 
-                messages[i].message_name = fullName;
+                messages[i].senderName = fullName;
                 delete messages[i].IsUndefinedUserDetails;
                 delete messages[i].userId;
               }
@@ -91,11 +91,11 @@ export class ChatService {
             const sound = new Audio("../../assets/sounds/notification.mp3");
             sound.play();
             console.warn("[ConnectyCube.chat.onMessageListener] callback:", userId, message);
-            const message_name: string = user.name;
-            const message_text: string = message.body;
-            const message_time = new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
+            const senderName: string = user.name;
+            const body: string = message.body;
+            const time = new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
-            this.store$.dispatch(addMessage({message_name, message_text, message_time}))
+            this.store$.dispatch(addMessage({senderName, body: body, time: time}))
           }
         })
     }

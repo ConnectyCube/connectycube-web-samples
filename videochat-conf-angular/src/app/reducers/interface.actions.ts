@@ -22,9 +22,9 @@ export const addSwitchVideoStatus = createAction(
 )
 export const addShowRecordButtonStatus = createAction(
   '[INTERFACE] add show record button status',
-  props<{showRecordButtonStatus: boolean }>()
+  props<{ showRecordButtonStatus: boolean }>()
 )
 export const addRecordingStatus = createAction(
   '[INTERFACE] add recording status',
-  props<{isRecording: boolean }>()
+  props<{ isRecording: boolean }>()
 )

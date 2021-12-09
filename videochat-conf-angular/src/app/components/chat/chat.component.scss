@@ -92,7 +92,6 @@
   padding: 8px 10px;
   position: relative;
   word-wrap: break-word;
-  position: relative;
   min-width: 150px;
 
   &:not(:last-child) {
@@ -116,10 +115,11 @@
   }
 }
 
-.message.me + .message.them{
+.message.me + .message.them {
   margin-top: 16px;
 }
-.message.them + .message.me{
+
+.message.them + .message.me {
   margin-top: 16px;
 }
 

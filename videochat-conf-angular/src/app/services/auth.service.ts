@@ -51,17 +51,17 @@ export class AuthService {
           password: userProfile.password
         }
 
-        if(localStorage.getItem('userName')){
+        if (localStorage.getItem('userName')) {
           this.login(userLocalStorage)
             .then((user: any) => {
-              if(userName !== localStorage.getItem('userName')){
+              if (userName !== localStorage.getItem('userName')) {
                 localStorage.setItem('userName', userName);
                 ConnectyCube.users
-                  .update({full_name:userName});
+                  .update({full_name: userName});
               }
               console.log("logging user", user);
               this.connectToChat({userId: user.id, password: userLocalStorage.password})
-                .then(()=>{
+                .then(() => {
                   resolve(user.id)
                 });
 
@@ -73,7 +73,7 @@ export class AuthService {
           return;
         }
 
-        localStorage.setItem('login',login)
+        localStorage.setItem('login', login)
         localStorage.setItem('password', password)
         localStorage.setItem('userName', userName)
 
@@ -83,7 +83,7 @@ export class AuthService {
               .then((user: any) => {
                 console.log("logging user", user);
                 this.connectToChat({userId: user.id, password: password})
-                  .then(()=>{
+                  .then(() => {
                     resolve(user.id)
                   });
               })
@@ -101,7 +101,7 @@ export class AuthService {
                   .then((user: any) => {
                     console.log("logging user", user);
                     this.connectToChat({userId: user.id, password: password})
-                      .then(()=>{
+                      .then(() => {
                         resolve(user.id)
                       });
                   })

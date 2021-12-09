@@ -1,4 +1,4 @@
-import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {State} from "../../reducers";
 import {Store} from "@ngrx/store";
 import {chatStatusSelector, controlButtonsStatusSelector} from "../../reducers/interface.selectors";

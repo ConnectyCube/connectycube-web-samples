@@ -88,10 +88,12 @@ app-stream-container {
 #switch-video {
   background-color: #ffd640e8;
 }
-#toggle-chat{
+
+#toggle-chat {
   background-color: #166CC7;
 }
-#stop-call{
+
+#stop-call {
   background-color: #C3002F;
 }
 
@@ -102,10 +104,12 @@ app-stream-container {
     color: black;
   }
 }
-#record{
+
+#record {
   background: #dc143c;
   border: 6px solid #fff;
-  mat-icon{
+
+  mat-icon {
     width: 36px;
     height: 36px;
     font-size: 36px;
@@ -126,7 +130,7 @@ mat-progress-spinner {
   z-index: 4;
 }
 
-.rec-container{
+.rec-container {
   display: flex;
   background: red;
   align-items: center;
@@ -138,9 +142,11 @@ mat-progress-spinner {
   padding: 5px;
   border-radius: 5px;
 }
-.rec-icon{
+
+.rec-icon {
   color: #ffffff;
 }
+
 .rec-text {
   color: #ffffff;
   font-size: 24px;
@@ -149,7 +155,7 @@ mat-progress-spinner {
 }
 
 @media screen and (max-width: 576px) {
-  #videochat-buttons-container{
+  #videochat-buttons-container {
     .videochat-button {
       display: flex;
       align-items: center;

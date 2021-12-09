@@ -8,14 +8,14 @@
   <div class="chat-content">
     <div class="messages-container" #messageContainer>
       <div *ngFor="let message of dialogMessages$ | async"
-           [ngClass]="message.message_name?'them':'me'"
+           [ngClass]="message.senderName?'them':'me'"
            class="message">
-        <span class="message-name" [ngClass]="message.message_name?'them':'me'">
-          {{message.message_name}}
+        <span class="message-name" [ngClass]="message.senderName?'them':'me'">
+          {{message.senderName}}
         </span>
-        <p class="message-text">{{message.message_text}}
+        <p class="message-text">{{message.body}}
           <span style="display: inline-block; width: 35px; height: 5px"></span></p>
-        <p class="message-time">{{message.message_time}}</p>
+        <p class="message-time">{{message.time}}</p>
       </div>
     </div>
     <form action="#" class="chat-form">

@@ -13,10 +13,10 @@ import {constraints, mediaParams} from "./config";
 import {User} from "../reducers/participant.reducer";
 import {participantSelector} from "../reducers/participant.selectors";
 import {take} from "rxjs/operators";
-import {addDialogId} from "../reducers/dialog.actions";
+import {setActiveDialogId} from "../reducers/dialog.actions";
 import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
 import {ChatService} from "./chat.service";
-import {interfaceSelector, isRecordingSelector} from "../reducers/interface.selectors";
+import {isRecordingSelector} from "../reducers/interface.selectors";
 
 declare let ConnectyCube: any;
 
@@ -87,12 +87,12 @@ export class CallService {
 
       console.warn("[onParticipantJoinedListener]")
 
-      this.store.select(isRecordingSelector).pipe(take(1)).subscribe(res=>{
-        if(res !== undefined){
-          if(res){
+      this.store.select(isRecordingSelector).pipe(take(1)).subscribe(res => {
+        if (res !== undefined) {
+          if (res) {
             this.chatService.sendSystemMsg("dialog/START_RECORD", userId);
           }
-          else{
+          else {
             this.chatService.sendSystemMsg("dialog/STOP_RECORD", userId);
           }
         }
@@ -498,7 +498,7 @@ export class CallService {
           console.warn(meeting);
           const chatId = meeting.chat_dialog_id;
           console.warn(chatId);
-          this.store.dispatch(addDialogId({dialogId: chatId}));
+          this.store.dispatch(setActiveDialogId({dialogId: chatId}));
           return meeting._id;
         })
         .then((confRoomId: string) => {

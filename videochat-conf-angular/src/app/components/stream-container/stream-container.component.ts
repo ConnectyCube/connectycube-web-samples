@@ -6,10 +6,6 @@ import {
 } from '@angular/core';
 import {Subject} from "rxjs";
 import {DeviceDetectorService} from "ngx-device-detector";
-import {Store} from "@ngrx/store";
-import {State} from "../../reducers";
-import {updateVideoStatus} from "../../reducers/participant.actions";
-import {mediaParams} from "../../services/config";
 
 @Component({
   selector: 'app-stream-container',
@@ -42,26 +38,11 @@ export class StreamContainerComponent implements OnInit {
   constructor(
     private elementRef: ElementRef,
     private deviceService: DeviceDetectorService,
-    private store$: Store<State>,
   ) {
   }
 
   randomNumber(min: number, max: number) {
     return Math.trunc(Math.random() * (max - min) + min);
-  }
-
-  showVideo() {
-    // console.warn(this.modeGrid);
-    // console.warn("userVideoStatus", this.userVideoStatus)
-    // if (!mediaParams.video) {
-    //   this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
-    //   console.warn("userVideoStatus FAlSE", this.userVideoStatus)
-    //   mediaParams.video = true;
-    // }
-    // else if (mediaParams.video) {
-    //   this.store$.dispatch(updateVideoStatus({id: this.userId, videoStatus: true}));
-    //   console.warn("userVideoStatus TRUE", this.userVideoStatus)
-    // }
   }
 
   unDisableButton() {

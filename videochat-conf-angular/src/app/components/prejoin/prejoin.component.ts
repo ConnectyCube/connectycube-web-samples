@@ -15,11 +15,8 @@ import {MatIconRegistry} from "@angular/material/icon";
 import {DomSanitizer} from "@angular/platform-browser";
 import {addAudioPermission, addVideoPermission} from "../../reducers/interface.actions";
 import {ChatService} from "../../services/chat.service";
-import {addDialogHistory, addDialogId, addMessage} from "../../reducers/dialog.actions";
+import {addMessages, setActiveDialogId, addMessage} from "../../reducers/dialog.actions";
 import {Message} from "../../reducers/dialog.reducer";
-import {findParticipantSelector} from "../../reducers/participant.selectors";
-import {take} from "rxjs/operators";
-import {dialogMessagesSelector} from "../../reducers/dialog.selectors";
 
 @Component({
   selector: 'app-prejoin',
@@ -31,8 +28,8 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   private ourLocalStream: any;
   private audioPermission: string = '';
   private videoPermission: string = '';
-  private MicroConnect = false;
-  private CameraConnect = false;
+  private isMicrophoneAvailable = false;
+  private isCameraAvailable = false;
   private DoorOpen = true;
   private messageErrorDeniedAll = `You not allow permission to use your camera and microphone,
            please necessarily give permission for use your microphone,
@@ -108,6 +105,19 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     else {
       this.videoTag.nativeElement.style.width = `${window.innerWidth * 0.5}px`;
     }
+  }
+
+  private checkMediaDevices() {
+    return navigator.mediaDevices.enumerateDevices()
+      .then((dev: any) => {
+        console.log("Join Devices", dev);
+        const InputDevice = dev.filter((device: any) => device.kind.includes('input'));
+        console.log(InputDevice);
+        this.isMicrophoneAvailable = InputDevice.some((device: any) => device.kind === "audioinput");
+        this.isCameraAvailable = InputDevice.some((device: any) => device.kind === "videoinput");
+        console.log("Micro", this.isMicrophoneAvailable);
+        console.log("Camera", this.isCameraAvailable);
+      })
   }
 
   private onVideo() {
@@ -186,22 +196,14 @@ export class PrejoinComponent implements OnInit, OnDestroy {
     if (this.DoorOpen) {
       this.DoorOpen = false;
 
-      navigator.mediaDevices.enumerateDevices()
-        .then((dev: any) => {
-          console.log("Join Devices", dev);
-          const InputDevice = dev.filter((device: any) => device.kind.includes('input'));
-          console.log(InputDevice);
-          this.MicroConnect = InputDevice.some((device: any) => device.kind === "audioinput");
-          this.CameraConnect = InputDevice.some((device: any) => device.kind === "videoinput");
-          console.log("Micro", this.MicroConnect);
-          console.log("Camera", this.CameraConnect);
-        })
+
+      this.checkMediaDevices()
         .then(() => {
           const userName = this.userName.nativeElement.value;
           const meetId = atob(this.meetId);
 
-          if (!this.MicroConnect || this.audioPermission === 'denied') {
-            if (!this.MicroConnect) {
+          if (!this.isMicrophoneAvailable || this.audioPermission === 'denied') {
+            if (!this.isMicrophoneAvailable) {
               this.ModalOn('Microphone Not Found', this.messageErrorDeviceMicro);
             }
             else if (this.audioPermission === 'denied' && this.videoPermission === 'denied') {
@@ -214,6 +216,7 @@ export class PrejoinComponent implements OnInit, OnDestroy {
             this.DoorOpen = true;
             return;
           }
+
           else if (this.videoIconName === 'videocam_off') {
             mediaParams.video = false;
           }
@@ -236,10 +239,10 @@ export class PrejoinComponent implements OnInit, OnDestroy {
 
                 this.chatService.subscribeToDialog(meetId).then((dialog: any) => {
                   console.warn(dialog._id);
-                  this.store$.dispatch(addDialogId({dialogId: dialog._id}));
-                  this.chatService.getDialogHistory(dialog._id).then((dialogMessages:Array<Message>)=>{
+                  this.store$.dispatch(setActiveDialogId({dialogId: dialog._id}));
+                  this.chatService.getDialogHistory(dialog._id).then((dialogMessages: Array<Message>) => {
                     console.warn(dialogMessages);
-                    this.store$.dispatch(addDialogHistory({dialogMessages}));
+                    this.store$.dispatch(addMessages({dialogMessages}));
                   });
                 })
 

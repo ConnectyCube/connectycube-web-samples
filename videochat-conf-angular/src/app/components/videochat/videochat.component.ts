@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {State} from "../../reducers";
 import {select, Store} from "@ngrx/store";
 import {selectMeetingIdRouterParam} from "../../reducers/route.selectors";
@@ -115,7 +115,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
         })
       })
 
-      this.callService.stopSharingScreen('',false);
+      this.callService.stopSharingScreen('', false);
       this.shareScreenIconName = 'screen_share';
       return;
     }

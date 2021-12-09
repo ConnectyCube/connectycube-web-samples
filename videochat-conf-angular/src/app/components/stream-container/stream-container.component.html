@@ -36,7 +36,6 @@
          preload="auto"
          autoplay
          [muted]="userMicrophoneLevel === undefined"
-         (loadeddata)="showVideo()"
          (canplaythrough)="unDisableButton()"
          id="stream-{{userId}}"
          class="videochat-stream"
