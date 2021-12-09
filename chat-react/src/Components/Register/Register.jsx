@@ -1,46 +1,45 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "./Login.scss";
+import "./Register.scss";
 import logo from "../../images/logo.png";
 import Auth from "../../services/auth-service";
-import { useHistory } from "react-router";
 
-const Login = () => {
-  const history = useHistory();
-
-  const login = () => {
+const Register = () => {
+  const register = () => {
     const login = userLogin.current.value;
     const password = userPassword.current.value;
-    Auth.login(login, password)
+    const name = userName.current.value;
+    Auth.register(login, password, name)
       .then(() => {
-        alert("User logged in ");
-        history.push("/home");
+        alert("User registrated ");
       })
       .catch(() => {
-        alert("No such user");
+        alert("Problems");
       });
   };
   const userLogin = React.createRef();
   const userPassword = React.createRef();
+  const userName = React.createRef();
   return (
-    <div className="login__container">
+    <div className="register__container">
       <div className="img__container">
         <img src={logo} alt="Logo" className="logo__img" />
       </div>
-      <form action="#" className="login__form">
+      <form action="#" className="register__form">
+        <input ref={userName} type="text" placeholder="Name" />
         <input ref={userLogin} type="text" placeholder="Login" />
         <input ref={userPassword} type="password" placeholder="Password" />
-        <button type="button" onClick={login}>
-          Login
+        <button type="button" onClick={register}>
+          Register
         </button>
       </form>
       <div className="signup__block">
-        <p>Don't have an account?</p>
+        <p>Already have an account?</p>
 
-        <NavLink to="signup">Sign up</NavLink>
+        <NavLink to="/">Login</NavLink>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;

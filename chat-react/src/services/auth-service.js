@@ -33,6 +33,7 @@ class AuthService {
     };
     ConnectyCube.init(credentials, appConfig);
   };
+
   login = (login, password) => {
     const userCredentials = { login: login, password: password };
     return new Promise((resolve, reject) => {
@@ -41,17 +42,43 @@ class AuthService {
           ConnectyCube.login(userCredentials)
             .then((user) => {
               alert("Logged in");
+              resolve();
             })
             .catch((error) => {
-              alert("Logged in");
+              alert("Error while logging");
+              reject();
             });
-          resolve();
         })
         .catch((error) => {
           reject();
         });
     });
   };
+
+  register = (login, password, name) => {
+    return new Promise((resolve, reject) => {
+      const userCredentials = {
+        login: login,
+        password: password,
+        full_name: name,
+      };
+      ConnectyCube.createSession().then((session) => {
+        ConnectyCube.users
+          .signup(userCredentials)
+          .then((user) => {
+            alert("Registred");
+            console.log("REGISTRATED");
+          })
+          .catch((error) => {
+            error.info.errors.password
+              ? alert(error.info.errors.password)
+              : alert(error.info.errors.login);
+            console.log(error.info.errors);
+          });
+      });
+    });
+  };
+
   connectToChat = (chatCredentials) => {
     ConnectyCube.chat
       .connect(chatCredentials)
