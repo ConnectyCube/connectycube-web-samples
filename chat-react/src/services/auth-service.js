@@ -1,5 +1,5 @@
 import ConnectyCube from "connectycube";
-import CryptoJS from "crypto-js";
+//import CryptoJS from "crypto-js";
 
 class AuthService {
   arr = [];
@@ -40,27 +40,41 @@ class AuthService {
         .then((session) => {
           ConnectyCube.login(userCredentials)
             .then((user) => {
+              resolve({ userInfo: user, password: password });
               alert("Logged in");
             })
             .catch((error) => {
               alert("Logged in");
             });
-          resolve();
         })
         .catch((error) => {
           reject();
         });
     });
   };
-  connectToChat = (chatCredentials) => {
-    ConnectyCube.chat
-      .connect(chatCredentials)
-      .then(() => {
-        console.log("Connected", `chatConnection`);
-      })
-      .catch((error) => {
-        console.log(`Failed connection due to ${error}`);
+
+  signup = (userName, login, password) => {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.createSession().then((session) => {
+        const userProfile = {
+          login: login,
+          full_name: userName,
+          password: password,
+        };
+
+        ConnectyCube.users
+          .signup(userProfile)
+          .then((user) => {
+            console.log("User Registrated");
+            console.table(user);
+            resolve();
+          })
+          .catch((error) => {
+            console.log(error);
+            reject();
+          });
       });
+    });
   };
 }
 

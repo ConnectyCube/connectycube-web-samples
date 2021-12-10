@@ -1,0 +1,16 @@
+.chat__block {
+  display: flex;
+  & .user__info {
+    & .user__img-container {
+      & .user__img {
+        object-fit: cover;
+
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+      }
+    }
+  }
+  & .last__mesage-time {
+  }
+}

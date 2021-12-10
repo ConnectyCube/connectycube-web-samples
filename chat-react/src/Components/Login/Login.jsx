@@ -3,15 +3,24 @@ import { NavLink } from "react-router-dom";
 import "./Login.scss";
 import logo from "../../images/logo.png";
 import Auth from "../../services/auth-service";
+import { useHistory } from "react-router";
+const Login = (props) => {
+  debugger;
+  const history = useHistory();
 
-const Login = () => {
   const login = () => {
     const login = userLogin.current.value;
     const password = userPassword.current.value;
-    debugger;
     Auth.login(login, password)
-      .then(() => {
-        alert("User logged in ");
+      .then((userCredentials) => {
+        debugger;
+        let chatCredentials = {
+          userId: userCredentials.userInfo.id,
+          password: userCredentials.password,
+        };
+        debugger;
+        props.chat.connectToChat(chatCredentials);
+        history.push("/home");
       })
       .catch(() => {
         alert("No such user");
