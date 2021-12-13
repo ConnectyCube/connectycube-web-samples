@@ -9,7 +9,6 @@
     <div class="messages-container" #messageContainer>
       <cdk-virtual-scroll-viewport
         #viewport
-        customVirtualScrollStrategy
         itemSize="items"
       >
         <div #messages *cdkVirtualFor="let message of dialogMessages$ | async"
