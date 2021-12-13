@@ -6,7 +6,9 @@ The following code samples are available:
 
 - [P2P Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat) - [LIVE demo](https://connectycube.github.io/connectycube-web-samples/videochat/dist)
 
-- [Conference Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo - TeaTalk](https://teatalk.connectycube.com)
+- [Conference Calling (React) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf-react)
+
+- [Conference Calling (vanilla JS) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo - TeaTalk](https://teatalk.connectycube.com)
 
 - [Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat)
 
@@ -23,7 +25,7 @@ All the samples use ConnectyCube SDK. The following tech integration documentati
 
 ## Have an issue?
 
-Got troubles with integration? Just create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-web-samples/issues) - we will create the sample for you. For FREE!
+Got troubles with integration? Create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-web-samples/issues)
 
 ## License
 

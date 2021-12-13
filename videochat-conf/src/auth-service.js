@@ -16,7 +16,7 @@ class AuthService {
   createSession(user) {
     return ConnectyCube.createSession(user)
   }
-
+  parseJoinRoom = 
   login = user => {
     return new Promise((resolve, reject) => {
       this.$loader.classList.remove("hidden");

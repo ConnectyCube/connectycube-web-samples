@@ -1,0 +1,278 @@
+@import "./ConferenceFlex.scss";
+.stats {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.conference__container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  & .camera__block {
+    position: relative;
+    flex: 1 1 100%;
+  }
+
+  @media screen and (max-width: 767px) {
+    & .chat__block {
+      width: 100%;
+      position: absolute;
+      height: 100%;
+      z-index: 9;
+    }
+  }
+}
+.conference {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  & .view__changer {
+    position: absolute !important;
+    z-index: 6;
+    top: 10px;
+    right: 5px;
+    height: 40px;
+  }
+  .streams_container {
+    height: 100%;
+    width: 100%;
+
+    &.sidebar {
+      display: flex;
+      height: 100%;
+      & .speaker-stream {
+        flex-basis: 80%;
+        height: 100%;
+      }
+    }
+  }
+
+  & .users__cams {
+    &.grid {
+      display: grid;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: #282c34;
+    }
+    &.sidebar {
+      flex-basis: 20%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background: #282c34;
+      & .user__cam-container {
+        flex: 0 0 20%;
+      }
+
+      @media screen and (max-width: 767px) {
+        flex-direction: row;
+        overflow-y: hidden;
+        overflow-x: scroll;
+        & .user__cam-container {
+          flex: 0 0 30%;
+        }
+      }
+    }
+  }
+
+  & .user__buttons {
+    position: absolute;
+    z-index: 8;
+    width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    display: flex;
+    justify-content: space-around;
+    opacity: 1;
+    transition: 0.2s ease-in-out;
+
+    & > button {
+      cursor: pointer;
+    }
+    &.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    & .user__devices {
+      position: absolute;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+      bottom: 50px;
+
+      display: flex;
+
+      flex-direction: column;
+      right: 0;
+
+      &.active {
+        visibility: visible;
+        opacity: 1;
+        padding: 10px 20px;
+        background-color: white;
+      }
+    }
+  }
+  & .call__btn {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 0;
+    transition: 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    & img {
+      width: 32px;
+      height: 32px;
+    }
+    &:hover {
+      opacity: 0.75;
+    }
+    &.mute,
+    &.true {
+      &::after {
+        content: "";
+        position: absolute;
+        height: 90%;
+        width: 3px;
+        background-color: white;
+        left: 50%;
+        z-index: 20;
+        transform: rotateZ(-45deg);
+      }
+    }
+  }
+  & .micro__btn {
+    background-color: rgb(112, 112, 252);
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  & .video__btn {
+    background-color: #2aaa8a;
+    &:disabled {
+      background-color: #2aaa8a;
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+  }
+  & .end__btn {
+    background-color: rgb(231, 80, 80);
+  }
+  & .switch__btn {
+    background-color: #2aaa8a;
+    &:disabled {
+      background-color: #8e8f5a;
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+  }
+  & .share__btn {
+    background: #008cba;
+    transition: 0.4s ease-in-out;
+
+    &.hide {
+      display: none;
+    }
+    &.sharing {
+      opacity: 0.4;
+    }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+}
+
+.record__button {
+  display: none;
+  position: relative;
+  outline: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  &.creator {
+    display: block;
+  }
+  &::after {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    background: crimson;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+    border-radius: 50%;
+    transition: 0.3s ease-in-out;
+  }
+  &::before {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    background: rgb(44, 44, 46);
+    border: 1px solid rgb(44, 44, 46);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+    border-radius: 50%;
+  }
+  &.recording {
+    &::after {
+      width: 50%;
+      height: 50%;
+      border-radius: 20%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+@media screen and(max-width:767px) {
+  .sidebar {
+    flex-direction: column;
+
+    & .user__cam-container {
+      max-height: 100% !important;
+    }
+  }
+}
+.chat__button {
+  padding: 0px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border: 0;
+  background: #008cba;
+  box-sizing: border-box;
+}
+.bi-chat {
+  border-radius: 50%;
+  object-fit: contain;
+  min-height: 35px;
+  min-width: 35px;
+  background: grey;
+  color: white;
+}
