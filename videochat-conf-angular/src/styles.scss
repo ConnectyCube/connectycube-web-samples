@@ -3,3 +3,274 @@
   font: 400 15px/1 "Open Sans", sans-serif;
 
 }
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800&subset=latin,latin-ext);
+
+/** RESET */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  /* min-height: 640px;
+  min-width: 320px; */
+  font: 400 15px/1 "Open Sans", sans-serif;
+  color: #808080;
+}
+
+body {
+  background-color: white;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:active {
+  border-style: none;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rotate {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  touch-action: none;
+}
+
+app-login {
+  position: relative;
+  z-index: 2;
+}
+
+app-videochat-wrap{
+  display: flex;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  flex-direction: row;
+}
+
+app-prejoin{
+  width: 100%;
+  height: 100%;
+}
+
+app-videochat {
+  display: flex;
+  flex: 1 1 100%;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+}
+.unmirror {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.mirror {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+
+app-videochat {
+  .mat-form-field-appearance-fill .mat-form-field-flex {
+    background: #fff;
+    opacity: 0.6;
+  }
+
+  .mat-form-field-wrapper {
+    margin-bottom: -1.25em;
+  }
+
+  .mat-form-field-appearance-fill .mat-form-field-flex {
+    padding: 15px 10px !important;
+  }
+
+  .mat-form-field-infix {
+    display: flex !important;
+    padding: 0 !important;
+    border: none;
+  }
+
+  .mat-select-trigger {
+    cursor: pointer;
+    position: relative;
+    box-sizing: border-box;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .mat-select-value {
+    display: flex !important;
+    width: 100%;
+    max-width: initial !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mat-select-arrow-wrapper {
+    display: flex !important;
+  }
+
+  mat-select-trigger {
+    display: flex !important;
+    align-items: center !important;
+  }
+}
+
+::-webkit-media-controls {
+  display: none !important;
+}
+
+.media-controls.mac.fullscreen > .controls-bar {
+  display: none !important;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media screen and (max-width: 991px){
+  app-chat{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 300;
+  }
+}
+

@@ -29,3 +29,10 @@ build
 
 #vscode
 .vscode
+
+#env
+.env
+
+#environment
+environment.ts
+environment.prod.ts

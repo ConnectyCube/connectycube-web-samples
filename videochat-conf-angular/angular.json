@@ -31,22 +31,23 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js"]
+            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js","./src/adapter/adapter-latest.js"]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "150kb",
+                  "maximumError": "150kb"
                 }
               ],
               "fileReplacements": [
@@ -99,9 +100,10 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js"]
+            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js","./src/adapter/adapter-latest.js"]
           }
         }
       }

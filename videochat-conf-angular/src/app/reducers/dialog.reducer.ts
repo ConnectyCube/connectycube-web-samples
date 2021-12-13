@@ -1,0 +1,46 @@
+import {createReducer, on} from "@ngrx/store";
+import {addMessages, setActiveDialogId, addMessage} from "./dialog.actions";
+import {concat} from "rxjs";
+
+export interface dialogState {
+  dialog: {
+    dialogId: string,
+    dialogMessages: Array<Message>
+  }
+}
+
+export interface Message {
+  senderName?: string,
+  body: string,
+  time: string,
+  statusUndefined?: boolean,
+}
+
+export const initialState: dialogState = {
+  dialog: {
+    dialogId: '',
+    dialogMessages: []
+  }
+}
+
+export const dialogReducer = createReducer(
+  initialState,
+  on(setActiveDialogId, (state, {dialogId}) => ({
+    ...state,
+    dialog: {...state.dialog, dialogId}
+  })),
+  on(addMessage, (state, {senderName, body, time}) => ({
+    ...state,
+    dialog: {
+      dialogId: state.dialog.dialogId,
+      dialogMessages: state.dialog.dialogMessages.concat([{senderName, body, time}])
+    }
+  })),
+  on(addMessages, (state, {dialogMessages}) => ({
+    ...state,
+    dialog: {
+      dialogId: state.dialog.dialogId,
+      dialogMessages: dialogMessages
+    }
+  }))
+)

@@ -3,25 +3,36 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "config": "ts-node set-env.ts",
+    "start": "npm run config -- --environment=dev && ng serve",
+    "build": "npm run config -- --environment=prod && ng build",
+    "watch": "npm run config && ng build --watch --configuration development",
+    "test": "npm run config && ng test"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.0",
+    "@angular/cdk": "^12.2.12",
     "@angular/common": "~12.2.0",
     "@angular/compiler": "~12.2.0",
     "@angular/core": "~12.2.0",
     "@angular/forms": "~12.2.0",
+    "@angular/material": "^12.2.12",
     "@angular/platform-browser": "~12.2.0",
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "@coderafiki/connectycube-ts": "^0.0.30",
+    "@ngrx/effects": "^12.5.1",
+    "@ngrx/router-store": "^12.5.1",
+    "@ngrx/store": "^12.5.1",
+    "@ngrx/store-devtools": "^12.5.1",
+    "colors": "^1.1.2",
     "connectycube": "^3.14.0",
+    "dotenv": "^5.0.0",
+    "ngx-device-detector": "^2.1.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
+    "yargs": "^17.2.1",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -36,6 +47,7 @@
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "ts-node": "~5.0.1",
     "typescript": "~4.3.5"
   }
 }

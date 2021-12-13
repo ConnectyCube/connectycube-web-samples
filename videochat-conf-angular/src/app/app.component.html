@@ -1,1 +1,5 @@
-<app-login></app-login>
+<router-outlet *ngIf="(meetingId$ | async)"></router-outlet>
+<app-login (JoinBtnClick)="isAuthorization=!isAuthorization"
+           *ngIf="!(meetingId$ | async)"
+></app-login>
+
