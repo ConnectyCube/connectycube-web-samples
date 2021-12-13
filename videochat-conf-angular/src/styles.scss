@@ -140,11 +140,13 @@ button:disabled {
 
 html, body {
   height: 100%;
+  overflow: hidden;
 }
 
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  touch-action: none;
 }
 
 app-login {

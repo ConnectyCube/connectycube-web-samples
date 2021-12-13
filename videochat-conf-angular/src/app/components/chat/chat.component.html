@@ -29,12 +29,12 @@
     </div>
     <form action="#" class="chat-form">
       <div class="send-container">
-        <textarea maxlength="500" (keydown.enter)="sendMessage()" #messageArea class="message-area"
+        <textarea maxlength="500" (keydown.enter)="sendMessage($event)" #messageArea class="message-area"
                   name="Message"
                   id="message-area"
                   placeholder="Enter your message"
         ></textarea>
-        <button (click)="sendMessage()" class="send-message-btn">
+        <button (click)="sendMessage($event)" class="send-message-btn">
           <mat-icon>send</mat-icon>
         </button>
       </div>

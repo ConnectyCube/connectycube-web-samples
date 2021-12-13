@@ -52,7 +52,8 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked {
     this.store$.dispatch(addChatOpenStatus({chatOpenStatus: false}));
   }
 
-  public sendMessage() {
+  public sendMessage(e:any) {
+    e.preventDefault();
     const msg = this.messageArea?.nativeElement.value.trim();
     if (msg) {
       console.log(msg);
