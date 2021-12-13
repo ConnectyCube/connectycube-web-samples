@@ -11,5 +11,5 @@ export const dialogIdSelector = createSelector(
 );
 export const dialogMessagesSelector = createSelector(
   featureSelector,
-  state => state.dialog.dialogMessages
+  state => [...state.dialog.dialogMessages].reverse()
 );

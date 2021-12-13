@@ -14,10 +14,10 @@
 </mat-icon>
 <div class="user-stats user-stats-{{userId}}" [hidden]="statsHide">
   <span>
-    Connection {{userConnectionStatus || 'good'}} <br>
-    {{userMicrophoneLevel ? 'Volume level ' + userMicrophoneLevel : ''}}
+    Connection: {{userConnectionStatus || 'good'}} <br>
+    {{userMicrophoneLevel !== undefined ? 'Microphone level: ' + userMicrophoneLevel + '%' : ''}}
     <br *ngIf="userMicrophoneLevel">
-    {{userBitrate ? 'Speed ' + userBitrate : ''}}
+    {{userBitrate ? 'Bitrate: ' + userBitrate : ''}}
   </span>
 </div>
 <div [ngClass]="userVideoStatus?'':'show-bg-image'" class="user-placeholder">

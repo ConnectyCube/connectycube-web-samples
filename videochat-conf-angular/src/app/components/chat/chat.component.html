@@ -7,15 +7,24 @@
   </div>
   <div class="chat-content">
     <div class="messages-container" #messageContainer>
-      <div *ngFor="let message of dialogMessages$ | async"
-           [ngClass]="message.senderName?'them':'me'"
-           class="message">
+      <cdk-virtual-scroll-viewport
+        #viewport
+        customVirtualScrollStrategy
+        itemSize="items"
+      >
+        <div #messages *cdkVirtualFor="let message of dialogMessages$ | async"
+             [ngClass]="message.senderName?'them':'me'"
+             class="message">
         <span class="message-name" [ngClass]="message.senderName?'them':'me'">
           {{message.senderName}}
         </span>
-        <p class="message-text">{{message.body}}
-          <span style="display: inline-block; width: 35px; height: 5px"></span></p>
-        <p class="message-time">{{message.time}}</p>
+          <p class="message-text">{{message.body}}
+            <span style="display: inline-block; width: 35px; height: 5px"></span></p>
+          <p class="message-time">{{message.time}}</p>
+        </div>
+      </cdk-virtual-scroll-viewport>
+      <div #scrollBar id="scroll-bar">
+        <div #scrollBarContent></div>
       </div>
     </div>
     <form action="#" class="chat-form">

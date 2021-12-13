@@ -30,7 +30,8 @@ export class CallService {
   ) {
   }
 
-  private UPDATE_STREAM_TIME: number = 9000;
+  private UPDATE_STREAM_TIME: number = 4000;
+  private MAX_VOLUME_VALUE: number = 22000;
   private CONNECTION_UPDATE_STATUS_TIME = 30 * 1000;
   private OurSession: any;
   private OurDeviceId: any;
@@ -121,7 +122,7 @@ export class CallService {
     };
     ConnectyCube.videochatconference.onParticipantLeftListener
       = (session: any, userId: number) => {
-      this.store.dispatch(removeUser({id: userId}));
+      this.store.dispatch(removeUser({id: Number(userId)}));
       this.stopCheckUserMicLevel();
 
       this.participantArray$.pipe(take(1)).subscribe(res => {
@@ -207,15 +208,12 @@ export class CallService {
 
     this.getUsersBitrate(session);
 
-    if (this.currentMode === 'grid') {
-      return;
-    }
-
-    console.log("[getUsersMicLevel 15s]");
+    console.log("[getUsersMicLevel 4s]");
     const idVolumeLevelMap: Map<number, number> = new Map;
     this.participantArray.forEach((user: User) => {
       if (user.volumeLevel !== undefined) {
-        idVolumeLevelMap.set(user.id, Number(session.getRemoteUserVolume(user.id)));
+        idVolumeLevelMap.set(user.id,
+          Math.round((Number(session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100));
       }
     })
     this.store.dispatch(addMicrophoneLevel({idVolumeLevelMap: idVolumeLevelMap}));
@@ -300,6 +298,7 @@ export class CallService {
   }
 
   public stopCall() {
+    this.stopCheckUserMicLevel();
     return this.OurSession.leave();
   }
 

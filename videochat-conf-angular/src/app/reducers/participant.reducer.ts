@@ -40,7 +40,9 @@ export const participantReducer = createReducer(
     })),
     on(removeUser, (state, {id}) => ({
       ...state,
-      participantArray: state.participantArray.filter(item => item.id !== id)
+      participantArray: state.participantArray.filter(item => {
+        return item.id !== id;
+      })
     })),
     on(updateUser, (state, {id, stream}) => ({
         ...state,

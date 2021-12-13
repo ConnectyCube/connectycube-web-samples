@@ -25,6 +25,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import { ChatComponent } from './components/chat/chat.component';
+import {ScrollingModule} from "@angular/cdk/scrolling";
 
 @NgModule({
   declarations: [
@@ -37,36 +38,37 @@ import { ChatComponent } from './components/chat/chat.component';
     DialogWarningComponent,
     ChatComponent,
   ],
-  imports: [
-    BrowserModule,
-    RouterModule.forRoot([
-        {
-          path: '',
-          component: LoginComponent
-        },
-        {
-          path: 'join/:hashCode',
-          component: VideochatWrapComponent,
-        },
-      ],
-      {
-        preloadingStrategy: PreloadAllModules
-      }),
-    StoreModule.forRoot(reducers, {
-      metaReducers
-    }),
-    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
-    EffectsModule.forRoot([AppEffects]),
-    StoreRouterConnectingModule.forRoot(),
-    BrowserAnimationsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatDialogModule,
-    MatSelectModule,
-    FormsModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        RouterModule.forRoot([
+                {
+                    path: '',
+                    component: LoginComponent
+                },
+                {
+                    path: 'join/:hashCode',
+                    component: VideochatWrapComponent,
+                },
+            ],
+            {
+                preloadingStrategy: PreloadAllModules
+            }),
+        StoreModule.forRoot(reducers, {
+            metaReducers
+        }),
+        StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
+        EffectsModule.forRoot([AppEffects]),
+        StoreRouterConnectingModule.forRoot(),
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
+        MatSelectModule,
+        FormsModule,
+        HttpClientModule,
+        ScrollingModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
