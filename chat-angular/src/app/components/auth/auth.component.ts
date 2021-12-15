@@ -18,7 +18,6 @@ export class AuthComponent implements OnInit {
   }
 
   public authForm = this.fb.group({
-    name: new FormControl(''),
     login: new FormControl(''),
     password: new FormControl('')
   })
@@ -49,10 +48,19 @@ export class AuthComponent implements OnInit {
 
   public toggleAuthStatus() {
     if (this.authStatus === 'Log in') {
+      this.authForm = this.fb.group({
+        name: new FormControl(''),
+        login: new FormControl(''),
+        password: new FormControl('')
+      })
       this.authStatus = 'Sign up';
       this.authStatusText = 'Sign in';
     }
     else {
+      this.authForm = this.fb.group({
+        login: new FormControl(''),
+        password: new FormControl('')
+      })
       this.authStatus = 'Log in';
       this.authStatusText = 'Sign up';
     }
