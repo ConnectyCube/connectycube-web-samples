@@ -212,8 +212,11 @@ export class CallService {
     const idVolumeLevelMap: Map<number, number> = new Map;
     this.participantArray.forEach((user: User) => {
       if (user.volumeLevel !== undefined) {
-        idVolumeLevelMap.set(user.id,
-          Math.round((Number(session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100));
+        let level = Math.trunc((Number(session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100);
+        if (level < 6) {
+          level = 0;
+        }
+        idVolumeLevelMap.set(user.id, level);
       }
     })
     this.store.dispatch(addMicrophoneLevel({idVolumeLevelMap: idVolumeLevelMap}));
