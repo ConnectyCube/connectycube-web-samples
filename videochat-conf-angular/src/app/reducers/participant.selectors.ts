@@ -10,14 +10,21 @@ export const participantSelector = createSelector(
 )
 export const participantSortSelector = createSelector(
   participantSelector,
-  state => [...state].sort((user1: User, user2: User) => {
-    if (user1.volumeLevel === undefined || user2.volumeLevel === undefined) {
-      return -1;
+  state => {
+    if([...state].some((user:User)=>user.volumeLevel !== 0)){
+      return [...state].sort((user1: User, user2: User) => {
+        if (user1.volumeLevel === undefined || user2.volumeLevel === undefined) {
+          return -1;
+        }
+        else {
+          return user2.volumeLevel - user1.volumeLevel;
+        }
+      })
     }
-    else {
-      return user2.volumeLevel - user1.volumeLevel;
+    else{
+      return state;
     }
-  })
+  }
 )
 export const findParticipantSelector = createSelector(
   featureSelector,
