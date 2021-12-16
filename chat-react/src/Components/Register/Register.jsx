@@ -1,10 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import "./Register.scss";
+import { useHistory } from "react-router";
 import logo from "../../images/logo.png";
 import Auth from "../../services/auth-service";
 
 const Register = () => {
+  const history = useHistory();
   const register = () => {
     const login = userLogin.current.value;
     const password = userPassword.current.value;
@@ -12,6 +14,7 @@ const Register = () => {
     Auth.register(login, password, name)
       .then(() => {
         alert("User registrated ");
+        history.push("/home");
       })
       .catch(() => {
         alert("Problems");

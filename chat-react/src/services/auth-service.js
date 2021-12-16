@@ -1,10 +1,11 @@
 import ConnectyCube from "connectycube";
-import CryptoJS from "crypto-js";
+// import CryptoJS from "crypto-js";
 
 class AuthService {
   arr = [];
   constructor() {
     this.init();
+    this.wasLogged();
   }
 
   init = () => {
@@ -33,6 +34,11 @@ class AuthService {
     };
     ConnectyCube.init(credentials, appConfig);
   };
+  wasLogged() {
+    if (localStorage.password) {
+      this.login(localStorage.login, localStorage.password);
+    }
+  }
 
   login = (login, password) => {
     const userCredentials = { login: login, password: password };
@@ -41,6 +47,9 @@ class AuthService {
         .then((session) => {
           ConnectyCube.login(userCredentials)
             .then((user) => {
+              localStorage.setItem("login", login);
+              localStorage.setItem("password", password);
+
               alert("Logged in");
               resolve();
             })
@@ -66,14 +75,19 @@ class AuthService {
         ConnectyCube.users
           .signup(userCredentials)
           .then((user) => {
+            localStorage.setItem({ login: login, password: password });
             alert("Registred");
+            resolve();
             console.log("REGISTRATED");
           })
           .catch((error) => {
             error.info.errors.password
               ? alert(error.info.errors.password)
-              : alert(error.info.errors.login);
+              : error.info.errors.login
+              ? alert(error.info.errors.login)
+              : alert(error.info.errors.base);
             console.log(error.info.errors);
+            reject();
           });
       });
     });

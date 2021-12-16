@@ -6,7 +6,7 @@ const CallContext = createContext();
 export default CallContext;
 
 export const CallProvider = ({ children }) => {
-  const meetingIsRecording = useRef(true);
+  const meetingIsRecording = useRef(false);
   const [view, setView] = useState("grid");
   const [preJoinScreen] = useState(false);
   const [choosedCam, setChoosedCam] = useState();
@@ -715,7 +715,9 @@ export const CallProvider = ({ children }) => {
       meetingIsRecording.current = true;
       ConnectyCube.meeting
         .update(meetingId.current, { record: true })
-        .then((meeting) => {})
+        .then((meeting) => {
+          debugger;
+        })
         .catch((error) => {
           console.log(error);
         });
