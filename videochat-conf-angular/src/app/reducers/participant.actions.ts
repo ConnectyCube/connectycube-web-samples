@@ -20,6 +20,10 @@ export const addMicrophoneLevel = createAction(
   '[PARTICIPANT] add users volume levels',
   props<{ idVolumeLevelMap: Map<number, number> }>()
 );
+export const addActiveSpeaker = createAction(
+  '[PARTICIPANT] add active user',
+  props<{ id: number }>()
+);
 export const addBitrate = createAction(
   '[PARTICIPANT] add users bitrate',
   props<{ idBitrateMap: Map<number, string> }>()

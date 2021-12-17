@@ -11,19 +11,22 @@ export const participantSelector = createSelector(
 export const participantSortSelector = createSelector(
   participantSelector,
   state => {
-    if([...state].some((user:User)=>user.volumeLevel !== 0)){
-      return [...state].sort((user1: User, user2: User) => {
-        if (user1.volumeLevel === undefined || user2.volumeLevel === undefined) {
-          return -1;
-        }
-        else {
-          return user2.volumeLevel - user1.volumeLevel;
-        }
-      })
+    const newState = [...state].sort((user1: User, user2: User) => {
+      if (user1.volumeLevel === undefined || user2.volumeLevel === undefined) {
+        return -1;
+      }
+      else {
+        return user2.volumeLevel - user1.volumeLevel;
+      }
+    })
+    const deleteIndex = newState.indexOf(<User>newState.find((user: User) => user.isActiveSpeaker));
+
+    if (deleteIndex !== -1) {
+      const deleteUser = newState.splice(deleteIndex, 1);
+      console.warn("DELETE USER", deleteUser);
+      return [...deleteUser, ...newState];
     }
-    else{
-      return state;
-    }
+    return newState;
   }
 )
 export const findParticipantSelector = createSelector(

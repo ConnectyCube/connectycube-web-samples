@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
 import {
+  addActiveSpeaker,
   addBitrate,
   addMicrophoneLevel,
   addUser,
@@ -61,6 +62,15 @@ export class CallService {
     const videoTrack = Object.assign(stream.getVideoTracks()[0], {enabled: true});
     console.log("[createDummyVideoTrack] videoTrack", videoTrack);
     return videoTrack;
+  }
+
+  private getByValue(map: Map<number, number>, searchValue: number) {
+    for (let [key, value] of map.entries()) {
+      if (value === searchValue){
+        return key;
+      }
+    }
+    return -1;
   }
 
   public init() {
@@ -219,6 +229,12 @@ export class CallService {
         idVolumeLevelMap.set(user.id, level);
       }
     })
+
+    let maxVolume = Math.max(...idVolumeLevelMap.values());
+    if (maxVolume !== 0) {
+      this.store.dispatch(addActiveSpeaker({id: this.getByValue(idVolumeLevelMap, maxVolume)}));
+    }
+
     this.store.dispatch(addMicrophoneLevel({idVolumeLevelMap: idVolumeLevelMap}));
   }
 
