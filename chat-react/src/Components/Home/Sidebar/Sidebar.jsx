@@ -1,7 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Chats from "./Chats/Chats";
 import "./Sidebar.scss";
-const Sidebar = () => {
+import ConnectyCube from "connectycube";
+import react from "react";
+import { debug } from "connectycube/lib/cubeConfig";
+const Sidebar = (props) => {
+  const idRef = React.createRef();
+  const { dialogs, connect } = props;
+
+  useEffect(() => {
+    connect({
+      userId: localStorage.userId,
+      password: JSON.parse(localStorage.token),
+    });
+  }, []);
+
+  const newChat = () => {
+    const params = {
+      type: 3,
+      occupants_ids: [idRef.current.value],
+    };
+    ConnectyCube.chat.dialog
+      .create(params)
+      .then((dialog) => {})
+      .catch((error) => {});
+  };
+  let chats;
+  if (dialogs) {
+    chats = dialogs.map((s) => {
+      return <Chats userInfo={s} />;
+    });
+  }
+
   return (
     <div className="sidebar__container">
       <div className="sidebar__header sidebar-header">
@@ -19,14 +49,18 @@ const Sidebar = () => {
         </div>
       </div>
       <div className="sidebar-add__newchat">NEW CHAT</div>
+      <div className="sidebar-search__container"></div>
+      <form className="new-chat__form" action="" method="POST">
+        <span>Start new chat</span>
+      </form>
+      <button onClick={newChat}>NEW CHAT</button>
       <input
+        ref={idRef}
         type="text"
         className="sidebar-search__chat"
         placeholder="Search chats"
-      />
-      <div className="sidebar-chats__container">
-        <Chats />
-      </div>
+      ></input>
+      <div className="sidebar-chats__container">{chats}</div>
     </div>
   );
 };

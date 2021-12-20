@@ -1,5 +1,10 @@
 .chat__block {
   display: flex;
+  width: 90%;
+  margin: 0 auto;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
   & .user__info {
     & .user__img-container {
       & .user__img {

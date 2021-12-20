@@ -1,4 +1,4 @@
-import { Route } from "react-router";
+import { Redirect, Route } from "react-router";
 import "./App.css";
 import Login from "./Components/Login/Login";
 import SignUp from "./Components/SignUp/SignUp";
@@ -9,17 +9,16 @@ import React, { useContext } from "react";
 
 function App() {
   const chat = useContext(ChatContext);
-  debugger;
   return (
     <div className="wrapper">
       <Route exact path="/">
-        <Login chat={chat} />
+        {localStorage.token ? <Redirect to="/home" /> : <Login chat={chat} />}
       </Route>
       <Route exact path="/signup">
         <SignUp chat={chat} />
       </Route>
       <Route exact path="/home">
-        <Home chat={chat} />
+        {!localStorage.token ? <Redirect to="/" /> : <Home chat={chat} />}
       </Route>
     </div>
   );

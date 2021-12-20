@@ -21,6 +21,16 @@
   flex: 0 0 25%;
   background-color: #2c3e50;
 
+  & .new-chat__form {
+    position: absolute;
+    left: 63%;
+    top: 50%;
+    width: 50%;
+    height: 600px;
+    background-color: blanchedalmond;
+    transform: translate(-50%, -50%);
+  }
+
   & .sidebar-header {
     display: flex;
     padding: 20px 10px;
@@ -64,6 +74,9 @@
       background-color: #5e7286;
     }
   }
+  & .sidebar-search__container {
+    padding-bottom: 20px;
+  }
   & .sidebar-search__chat {
     width: 90%;
     border: none;
@@ -84,6 +97,10 @@
 @media screen and (max-width: 992px) {
   .sidebar__container {
     flex: 0 0 35%;
+    .new-chat__form {
+      width: 40%;
+      left: 67%;
+    }
   }
 }
 @media (max-width: 767px) {

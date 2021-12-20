@@ -1,6 +1,9 @@
 import React from "react";
 import "./Chats.scss";
-const Chats = () => {
+import ConnectyCube from "connectycube";
+const Chats = (props) => {
+  const { userInfo } = props;
+
   return (
     <div className="chat__block">
       <div className="user__info">
@@ -11,9 +14,17 @@ const Chats = () => {
             className="user__img"
           />
         </div>
-        <span>NAME</span>
       </div>
-      <span className="last__mesage-time">14:30</span>
+      <div className="user__info-main">
+        <p className="chat__username">{userInfo.name}</p>
+        <p className="chat__user-status">Offline</p>
+      </div>
+      <span>
+        {userInfo.unread_messages_count > 0
+          ? userInfo.unread_messages_count
+          : ""}
+      </span>
+      {/* <span className="last__mesage-time">14:30</span> */}
     </div>
   );
 };

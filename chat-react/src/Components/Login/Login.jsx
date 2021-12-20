@@ -5,7 +5,6 @@ import logo from "../../images/logo.png";
 import Auth from "../../services/auth-service";
 import { useHistory } from "react-router";
 const Login = (props) => {
-  debugger;
   const history = useHistory();
 
   const login = () => {
@@ -13,16 +12,15 @@ const Login = (props) => {
     const password = userPassword.current.value;
     Auth.login(login, password)
       .then((userCredentials) => {
-        debugger;
         let chatCredentials = {
           userId: userCredentials.userInfo.id,
-          password: userCredentials.password,
+          password: { token: userCredentials.password },
         };
-        debugger;
         props.chat.connectToChat(chatCredentials);
         history.push("/home");
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         alert("No such user");
       });
   };
