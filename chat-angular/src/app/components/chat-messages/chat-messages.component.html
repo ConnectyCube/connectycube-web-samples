@@ -1,0 +1,47 @@
+<div class="chat__right-panel">
+  <div class="header">
+    <div class="user">
+      <div class="user__avatar">
+        <p>LL</p>
+      </div>
+      <div class="user__info">
+        <p class="user__fullname">Full Nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
+        <small class="user__status">Typing...</small>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="messages-container" #messageContainer>
+      <cdk-virtual-scroll-viewport
+        #viewport
+        itemSize="items"
+      >
+        <div #messages *cdkVirtualFor="let message of messages"
+             [ngClass]="message.senderName?'them':'me'"
+             class="message">
+        <span class="message-name" [ngClass]="message.senderName?'them':'me'">
+          {{message.senderName}}
+        </span>
+          <p class="message-text">{{message.body}}
+            <span style="display: inline-block; width: 35px; height: 5px"></span></p>
+          <p class="message-time">{{message.time}}</p>
+        </div>
+      </cdk-virtual-scroll-viewport>
+      <div #scrollBar id="scroll-bar">
+        <div #scrollBarContent></div>
+      </div>
+    </div>
+    <form action="#" class="chat-form">
+      <div class="send-container">
+        <textarea maxlength="500" class="message-area"
+                  name="Message"
+                  id="message-area"
+                  placeholder="Enter your message"
+        ></textarea>
+        <button class="send-message-btn">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

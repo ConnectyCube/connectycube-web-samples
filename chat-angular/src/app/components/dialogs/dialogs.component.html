@@ -1,0 +1,55 @@
+<div class="chat__left-panel">
+  <div class="user-profile">
+    <div class="user-profile__info">
+      <div class="user-profile__avatar">
+        <p>WW</p>
+      </div>
+      <p class="user-profile__fullname">full name</p>
+    </div>
+    <button (click)="moreHandler()" type="button" class="user-profile__setting-btn">
+      <mat-icon>{{moreIcon}}</mat-icon>
+    </button>
+    <div [ngClass]="moreIcon==='expand_less'?'active':''" class="more">
+      <ul class="more-list">
+        <li class="more-list__item">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </li>
+        <li class="more-list__item">
+          <mat-icon>settings</mat-icon>
+          Settings
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="dialog">
+    <form action="#" class="dialog__search">
+      <mat-icon class="search__icon">search</mat-icon>
+      <input type="text" placeholder="Search">
+      <button type="button" class="dialog__add" (click)="addDialogEvent($event)">
+        <mat-icon class="add__icon">person_add</mat-icon>
+      </button>
+    </form>
+
+    <ul class="dialog__list">
+      <cdk-virtual-scroll-viewport
+        #viewport
+        itemSize="73"
+      >
+        <li *cdkVirtualFor="let dialog of dialogArray" class="dialog__list-item">
+          <a href="#" (click)="dialogHandler($event)">
+            <div class="item-badge">4</div>
+            <div class="item-avatar">
+              <p>KO</p>
+            </div>
+            <div class="item-info">
+              <h4 class="item-name">Krak {{dialog}} Olaaaaaaaaaaaa</h4>
+              <small class="item-last-message">Somethingggggggggggggggggggggggggggggggggggggggggggggg</small>
+              <small class="item-time">08.12.2021 11:49 AM</small>
+            </div>
+          </a>
+        </li>
+      </cdk-virtual-scroll-viewport>
+    </ul>
+  </div>
+</div>
