@@ -27,6 +27,7 @@
     "@ngrx/store-devtools": "^13.0.2",
     "connectycube": "^3.14.0",
     "dotenv": "^5.0.0",
+    "ngx-device-detector": "^3.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

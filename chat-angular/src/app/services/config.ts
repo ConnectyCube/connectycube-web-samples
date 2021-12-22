@@ -14,3 +14,15 @@ export const appConfig = {
     chat: environment.CHAT_ENDPOINT
   }
 }
+
+export interface Message {
+  senderName?: string,
+  body: string,
+  time: string,
+  statusUndefined?: boolean,
+}
+
+export interface ItemsHeight {
+  items: Array<number>,
+  itemsTotalHeight: number
+}

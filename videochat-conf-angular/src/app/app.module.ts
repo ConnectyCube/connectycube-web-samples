@@ -24,12 +24,14 @@ import {DialogWarningComponent} from './components/dialog-warning/dialog-warning
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
-import { ChatComponent } from './components/chat/chat.component';
+import {ChatComponent} from './components/chat/chat.component';
 import {ScrollingModule} from "@angular/cdk/scrolling";
+import {CustomVirtualScrollDirective} from "../../../chat-angular/src/app/services/custom-virtual-scroll-strategy-directive";
 
 @NgModule({
   declarations: [
     AppComponent,
+    CustomVirtualScrollDirective,
     LoginComponent,
     VideochatComponent,
     StreamContainerComponent,
@@ -38,37 +40,37 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
     DialogWarningComponent,
     ChatComponent,
   ],
-    imports: [
-        BrowserModule,
-        RouterModule.forRoot([
-                {
-                    path: '',
-                    component: LoginComponent
-                },
-                {
-                    path: 'join/:hashCode',
-                    component: VideochatWrapComponent,
-                },
-            ],
-            {
-                preloadingStrategy: PreloadAllModules
-            }),
-        StoreModule.forRoot(reducers, {
-            metaReducers
-        }),
-        StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
-        EffectsModule.forRoot([AppEffects]),
-        StoreRouterConnectingModule.forRoot(),
-        BrowserAnimationsModule,
-        MatIconModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-        MatDialogModule,
-        MatSelectModule,
-        FormsModule,
-        HttpClientModule,
-        ScrollingModule
-    ],
+  imports: [
+    BrowserModule,
+    RouterModule.forRoot([
+        {
+          path: '',
+          component: LoginComponent
+        },
+        {
+          path: 'join/:hashCode',
+          component: VideochatWrapComponent,
+        },
+      ],
+      {
+        preloadingStrategy: PreloadAllModules
+      }),
+    StoreModule.forRoot(reducers, {
+      metaReducers
+    }),
+    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
+    EffectsModule.forRoot([AppEffects]),
+    StoreRouterConnectingModule.forRoot(),
+    BrowserAnimationsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatSelectModule,
+    FormsModule,
+    HttpClientModule,
+    ScrollingModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

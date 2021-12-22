@@ -22,6 +22,9 @@ import {CommonModule} from "@angular/common";
 import { DialogsComponent } from './components/dialogs/dialogs.component';
 import { ChatMessagesComponent } from './components/chat-messages/chat-messages.component';
 import {ScrollingModule} from "@angular/cdk/scrolling";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatButtonModule} from "@angular/material/button";
+import {CustomVirtualScrollDirective} from "./directives/custom-virtual-scroll-strategy-directive";
 
 @NgModule({
   declarations: [
@@ -29,7 +32,8 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
     AuthComponent,
     ChatComponent,
     DialogsComponent,
-    ChatMessagesComponent
+    ChatMessagesComponent,
+    CustomVirtualScrollDirective,
   ],
   imports: [
     BrowserModule,
@@ -51,7 +55,9 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
     CommonModule,
     CommonModule,
     CommonModule,
-    CommonModule
+    CommonModule,
+    MatTooltipModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

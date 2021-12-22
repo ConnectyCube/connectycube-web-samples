@@ -5,26 +5,31 @@
         <p>LL</p>
       </div>
       <div class="user__info">
-        <p class="user__fullname">Full Nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
+        <p class="user__fullname">Full
+          Nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
         <small class="user__status">Typing...</small>
       </div>
     </div>
   </div>
   <div class="body">
-    <div class="messages-container" #messageContainer>
+    <div class="messages-container" #messagesContainer>
       <cdk-virtual-scroll-viewport
         #viewport
-        itemSize="items"
+        customVirtualScrollStrategy
+        [itemHeights]="items"
       >
-        <div #messages *cdkVirtualFor="let message of messages"
+        <div #messageContainer *cdkVirtualFor="let message of messages.reverse()"
              [ngClass]="message.senderName?'them':'me'"
-             class="message">
+             class="message-container">
+          <div [ngClass]="message.senderName?'them':'me'"
+               class="message">
         <span class="message-name" [ngClass]="message.senderName?'them':'me'">
-          {{message.senderName}}
+          {{isGroupChat ? message.senderName : ''}}
         </span>
-          <p class="message-text">{{message.body}}
-            <span style="display: inline-block; width: 35px; height: 5px"></span></p>
-          <p class="message-time">{{message.time}}</p>
+            <p class="message-text">{{message.body}}
+              <span style="display: inline-block; width: 35px; height: 5px"></span></p>
+            <p class="message-time">{{message.time}}</p>
+          </div>
         </div>
       </cdk-virtual-scroll-viewport>
       <div #scrollBar id="scroll-bar">
@@ -33,12 +38,24 @@
     </div>
     <form action="#" class="chat-form">
       <div class="send-container">
-        <textarea maxlength="500" class="message-area"
-                  name="Message"
-                  id="message-area"
-                  placeholder="Enter your message"
+        <textarea
+          #areaElement
+          (keydown.enter)="sendMessage($event,'area')"
+          (keydown.pageDown)="pageUpDown($event)"
+          (keydown.pageUp)="pageUpDown($event)"
+          maxlength="20000" class="message-area"
+          name="Message"
+          id="message-area"
+          placeholder="Enter your message"
         ></textarea>
-        <button class="send-message-btn">
+        <button
+          type="button"
+          (click)="sendMessage($event, 'button')"
+          mat-mini-fab color="primary"
+          matTooltip="Send message"
+          matTooltipShowDelay="500"
+          matTooltipClass="tooltip"
+          class="send-message-btn">
           <mat-icon>send</mat-icon>
         </button>
       </div>

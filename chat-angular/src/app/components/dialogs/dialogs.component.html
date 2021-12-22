@@ -26,7 +26,12 @@
     <form action="#" class="dialog__search">
       <mat-icon class="search__icon">search</mat-icon>
       <input type="text" placeholder="Search">
-      <button type="button" class="dialog__add" (click)="addDialogEvent($event)">
+      <button
+        matTooltip="Add dialog"
+        matTooltipPosition="above"
+        matTooltipShowDelay="500"
+        matTooltipClass="tooltip"
+        type="button" class="dialog__add" (click)="addDialogEvent($event)">
         <mat-icon class="add__icon">person_add</mat-icon>
       </button>
     </form>

@@ -191,3 +191,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 cdk-virtual-scroll-viewport > div{
   max-width: 100% !important;
 }
+
+.tooltip{
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
