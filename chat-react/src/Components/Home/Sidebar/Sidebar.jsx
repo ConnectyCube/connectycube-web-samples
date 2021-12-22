@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Chats from "./Chats/Chats";
 import "./Sidebar.scss";
 import ConnectyCube from "connectycube";
 import react from "react";
 import { debug } from "connectycube/lib/cubeConfig";
+import NewChat from "./NewChat/NewChat";
 const Sidebar = (props) => {
   const idRef = React.createRef();
   const { dialogs, connect } = props;
-
+  const [newChatForm, setNewChatForm] = useState(false);
   useEffect(() => {
     connect({
       userId: localStorage.userId,
@@ -15,15 +16,11 @@ const Sidebar = (props) => {
     });
   }, []);
 
-  const newChat = () => {
-    const params = {
-      type: 3,
-      occupants_ids: [idRef.current.value],
-    };
-    ConnectyCube.chat.dialog
-      .create(params)
-      .then((dialog) => {})
-      .catch((error) => {});
+  const newChatOpen = () => {
+    setNewChatForm(true);
+  };
+  const newChatClose = () => {
+    setNewChatForm(false);
   };
   let chats;
   if (dialogs) {
@@ -48,12 +45,12 @@ const Sidebar = (props) => {
           </div>
         </div>
       </div>
-      <div className="sidebar-add__newchat">NEW CHAT</div>
+      <div onClick={newChatOpen} className="sidebar-add__newchat">
+        NEW CHAT
+      </div>
       <div className="sidebar-search__container"></div>
-      <form className="new-chat__form" action="" method="POST">
-        <span>Start new chat</span>
-      </form>
-      <button onClick={newChat}>NEW CHAT</button>
+      {newChatForm && <NewChat close={newChatClose} />}
+
       <input
         ref={idRef}
         type="text"

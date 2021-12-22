@@ -45,9 +45,11 @@ class AuthService {
     if (localStorage.token) {
       let token = JSON.parse(localStorage.token);
       let creationDate = new Date(token.timestamp);
+      let creationDay = creationDate.getDay();
       let creationHour = creationDate.getHours();
-      let now = new Date().getHours();
-      if (now - creationHour >= 2) {
+      let nowHour = new Date().getHours();
+      let nowDay = new Date().getDay();
+      if (nowHour - creationHour >= 1 || nowDay !== creationDay) {
         localStorage.removeItem("token");
         defLogin();
       } else {

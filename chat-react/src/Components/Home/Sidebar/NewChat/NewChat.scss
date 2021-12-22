@@ -1,0 +1,63 @@
+.new-chat__form {
+	position: absolute;
+	left: 63%;
+	top: 50%;
+	width: 50%;
+	height: 600px;
+	background-color: #2c3e50;
+	display: flex;
+	flex-direction: column;
+	transform: translate(-50%, -50%);
+	border-radius: 20px;
+	& .close__btn {
+		position: absolute;
+		right: 10px;
+		top: 10px;
+		width: 40px !important;
+		height: 40px !important;
+	}
+
+	& .found__users {
+		overflow: scroll;
+	}
+
+	& .found__users {
+		width: 100% !important;
+		margin: 0 !important;
+	}
+
+	& h1 {
+		font-size: 20px;
+		color: white;
+		padding-bottom: 30px;
+		padding-top: 40px;
+	}
+
+	& .find__user-container {
+		display: flex;
+		padding: 0px 15px;
+		margin-bottom: 10px;
+		margin: 10px auto;
+
+		& input {
+			border: none;
+			padding: 10px 10px;
+			background: white;
+			border-radius: 30px;
+			margin-right: 10px;
+			& [type="text"] {
+				height: 24px;
+				font-size: 15px;
+				padding-left: 25px;
+			}
+			&::placeholder {
+				color: white;
+			}
+		}
+
+		& .find__user-btn {
+			border-radius: 30px;
+			border: none;
+		}
+	}
+}
