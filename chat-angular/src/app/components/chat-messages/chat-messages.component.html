@@ -15,8 +15,7 @@
     <div class="messages-container" #messagesContainer>
       <cdk-virtual-scroll-viewport
         #viewport
-        customVirtualScrollStrategy
-        [itemHeights]="items"
+        itemSize="items"
       >
         <div #messageContainer *cdkVirtualFor="let message of messages.reverse()"
              [ngClass]="message.senderName?'them':'me'"

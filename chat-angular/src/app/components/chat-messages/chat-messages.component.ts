@@ -46,6 +46,14 @@ export class ChatMessagesComponent implements OnInit {
     return testHeight;
   }
 
+  private scrollTrack() {
+    const vsScrolled = this.virtualScroll.measureScrollOffset('top');
+
+    this.scrollBar.nativeElement.scrollTop =
+      this.itemsTotalHeight -
+      (vsScrolled + this.scrollBar.nativeElement.clientHeight);
+  }
+
   private measureMessages(messages: Array<Message>): ItemsHeight {
     const PADDING_MES: number = 18;
     const MAX_INDEX: number = messages.length - 1;
@@ -59,23 +67,21 @@ export class ChatMessagesComponent implements OnInit {
       maxWidth = Math.round(maxWidth * 100) / 100;
       msgHeight = this.measureText(msg.body, maxWidth) + PADDING_MES;
       if (msg.senderName) {
+        if (this.isGroupChat) {
+          msgHeight += 19
+        }
         if (index < MAX_INDEX) {
-          msgHeight += this.messages[index + 1].senderName ? 16 : 8;
+          // msgHeight += this.messages[index + 1].senderName ? 8 : 16;
         }
       }
       else {
         if (index < MAX_INDEX) {
-          msgHeight += this.messages[index + 1].senderName ? 8 : 16;
+          // msgHeight += this.messages[index + 1].senderName ? 16 : 8;
         }
-      }
-
-      if (this.isGroupChat && msg.senderName) {
-        msgHeight += 19
       }
 
       itemsArray.push(msgHeight);
       heightSum += msgHeight;
-
     })
 
     return {items: itemsArray, itemsTotalHeight: heightSum};
@@ -106,6 +112,8 @@ export class ChatMessagesComponent implements OnInit {
           this.itemsTotalHeight = itemsheight.itemsTotalHeight;
           this.scrollBarContent.nativeElement.style.height =
             this.itemsTotalHeight + 'px';
+          this.virtualScroll.scrollToOffset(0);
+          this.scrollTrack();
         }
         else {
           return;
@@ -120,6 +128,8 @@ export class ChatMessagesComponent implements OnInit {
         this.itemsTotalHeight = itemsheight.itemsTotalHeight;
         this.scrollBarContent.nativeElement.style.height =
           this.itemsTotalHeight + 'px';
+        this.virtualScroll.scrollToOffset(0);
+        this.scrollTrack();
       }
     }
     this.areaElement.nativeElement.value = '';
@@ -135,11 +145,7 @@ export class ChatMessagesComponent implements OnInit {
 
     this.virtualScroll.elementScrolled().subscribe((event) => {
       if (!this.isScrollBarPressed) {
-        const vsScrolled = this.virtualScroll.measureScrollOffset('top');
-
-        this.scrollBar.nativeElement.scrollTop =
-          this.itemsTotalHeight -
-          (vsScrolled + this.scrollBar.nativeElement.clientHeight);
+        this.scrollTrack();
       }
     });
 
