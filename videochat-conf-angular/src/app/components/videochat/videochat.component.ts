@@ -104,7 +104,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
   }
 
   private stopSharing() {
-    if (this.videoPermission === false) {
+    if (this.videoPermission === false || this.videoIconName === 'videocam_off') {
       this.store$.dispatch(updateVideoStatus({id: 77777, videoStatus: false}));
 
       this.store$.select(participantSelector).pipe(take(1)).subscribe(res => {

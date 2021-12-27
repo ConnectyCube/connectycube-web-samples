@@ -371,6 +371,15 @@ export class CallService {
       video: {deviceId: this.OurDeviceId}
     }
     const session = this.OurSession;
+    if (videoPermission === false) {
+      console.log("STOP SHARE CATCH IF")
+      session.getUserMedia({audio: true}, true).then((stream: any) => {
+        stream.addTrack(this.createDummyVideoTrack());
+      });
+
+      this.OurSharingStatus = false;
+      return;
+    }
     session.getUserMedia(mediaParamsDeviceId, true)
       .then((stream: any) => {
         console.log("STOP SHARE GET USER MEDIA")
@@ -380,14 +389,6 @@ export class CallService {
       })
       .catch(() => {
         console.log("STOP SHARE CATCH GET USER MEDIA", videoPermission)
-        if (videoPermission === false) {
-          console.log("STOP SHARE CATCH IF")
-          session.getUserMedia({audio: true}, true).then((stream: any) => {
-            stream.addTrack(this.createDummyVideoTrack());
-          });
-
-          this.OurSharingStatus = false;
-        }
       })
   }
 
