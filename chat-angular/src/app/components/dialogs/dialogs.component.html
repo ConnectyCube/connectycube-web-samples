@@ -2,16 +2,16 @@
   <div class="user-profile">
     <div class="user-profile__info">
       <div class="user-profile__avatar">
-        <p>WW</p>
+        <p>{{avatar}}</p>
       </div>
-      <p class="user-profile__fullname">full name</p>
+      <p class="user-profile__fullname">{{fullName}}</p>
     </div>
     <button (click)="moreHandler()" type="button" class="user-profile__setting-btn">
       <mat-icon>{{moreIcon}}</mat-icon>
     </button>
     <div [ngClass]="moreIcon==='expand_less'?'active':''" class="more">
       <ul class="more-list">
-        <li class="more-list__item">
+        <li (click)="logout()" class="more-list__item">
           <mat-icon>logout</mat-icon>
           Logout
         </li>

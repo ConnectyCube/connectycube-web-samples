@@ -1,0 +1,25 @@
+div {
+  overflow: hidden;
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end;
+}
+
+mat-icon {
+  display: flex;
+  width: 100%;
+  height: 190px;
+  font-size: 170px;
+  justify-content: center;
+  padding: 0;
+  align-items: center;
+  margin: 0 auto;
+}
+
+p {
+  font-size: 24px;
+  text-align: center;
+  font-weight: bold;
+  margin: 0;
+}

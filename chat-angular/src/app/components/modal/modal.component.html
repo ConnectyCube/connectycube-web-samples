@@ -1,0 +1,8 @@
+<div mat-dialog-content>
+  <mat-icon [ngStyle]="{'color': data.icon === 'error'? '#DD0031': 'green'}">{{data.icon}}</mat-icon>
+  <p>{{data.message}}</p>
+  <div mat-dialog-actions>
+    <button mat-button mat-dialog-close>OK</button>
+  </div>
+</div>
+

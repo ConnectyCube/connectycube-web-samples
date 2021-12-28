@@ -26,12 +26,10 @@ import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {ChatComponent} from './components/chat/chat.component';
 import {ScrollingModule} from "@angular/cdk/scrolling";
-import {CustomVirtualScrollDirective} from "../../../chat-angular/src/app/services/custom-virtual-scroll-strategy-directive";
 
 @NgModule({
   declarations: [
     AppComponent,
-    CustomVirtualScrollDirective,
     LoginComponent,
     VideochatComponent,
     StreamContainerComponent,

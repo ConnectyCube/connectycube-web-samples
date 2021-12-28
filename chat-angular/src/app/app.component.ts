@@ -1,18 +1,32 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
+import {AuthService} from "./services/auth.service";
+import {appConfig, CREDENTIALS} from "./services/config";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
 
-  constructor(private router:Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {
   }
 
   ngOnInit() {
-    this.router.navigateByUrl('/chat');
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(<string>localStorage.getItem('user'));
+
+    if (token) {
+      this.authService.autoLogin(token);
+      this.router.navigateByUrl('/chat');
+    }
+    else {
+      this.router.navigateByUrl('/auth')
+    }
   }
 
 }

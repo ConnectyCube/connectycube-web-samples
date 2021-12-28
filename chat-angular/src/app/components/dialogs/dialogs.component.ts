@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-dialogs',
@@ -13,11 +14,17 @@ export class DialogsComponent implements OnInit {
   public prevLiActiveElem: Element | null = null;
   public isScrollBarPressed = false;
   public moreIcon = 'expand_more';
+  public fullName = JSON.parse(<string>localStorage.getItem('user')).full_name || 'full name';
+  public avatar = JSON.parse(<string>localStorage.getItem('user')).avatar || this.fullName.slice(0, 2).toUpperCase();
 
-  constructor() {
+  constructor(private authService: AuthService) {
     for (let i = 0; i < 25; i++) {
       this.dialogArray[i] = i;
     }
+  }
+
+  public logout() {
+    this.authService.logout();
   }
 
   public addDialogEvent(e: MouseEvent) {

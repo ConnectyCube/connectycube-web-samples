@@ -1,4 +1,7 @@
 import {Injectable} from '@angular/core';
+import {appConfig} from "./config";
+import {environment} from "../../environments/environment";
+import {Router} from "@angular/router";
 
 declare let ConnectyCube: any;
 
@@ -7,44 +10,90 @@ declare let ConnectyCube: any;
 })
 export class AuthService {
 
-  constructor() {
+  constructor(private router: Router,) {
   }
 
-  public login(login: string, password: string, isLogin?: boolean) {
-    const userProfileLogin = {
-      login: login,
-      password: password
-    }
+  public connectToChat(id: number, password: string) {
+    const userCredentials = {
+      userId: id,
+      password: password,
+    };
 
-    if (isLogin) {
-      return ConnectyCube.createSession().then(() => {
-        return ConnectyCube.login(userProfileLogin);
+    return ConnectyCube.chat.connect(userCredentials);
+  }
+
+  public autoLogin(token: string) {
+    const credentials = {
+      appId: Number(environment.APP_ID),
+      token: token
+    }
+    const appConfigToken = {
+      ...appConfig, on: {
+        sessionExpired: (handleResponse: any, retry: any) => {
+          this.logout();
+        },
+      }
+    };
+    const id: number = JSON.parse(<string>localStorage.getItem('user')).id;
+
+    this.init(credentials, appConfigToken);
+    this.connectToChat(id, token);
+  }
+
+  public logout() {
+    ConnectyCube.logout()
+      .then(() => {
+        this.router.navigateByUrl("/auth");
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       })
-    }
-    else {
-      return ConnectyCube.login(userProfileLogin);
-    }
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }
 
+  public login(login: string, password: string, isOnlyLogin: boolean) {
+    return new Promise<void>((resolve, reject) => {
+      const userProfileLogin = {
+        login: login,
+        password: password
+      }
+
+      if (isOnlyLogin) {
+        ConnectyCube.createSession().then((session: any) => {
+          localStorage.setItem('token', session.token);
+
+          ConnectyCube.login(userProfileLogin).then((u: any) => {
+            localStorage.setItem('user', JSON.stringify(u));
+            this.connectToChat(u.id, password);
+            resolve();
+          })
+            .catch((error: any) => {
+              reject(error);
+            });
+        })
+      }
+      else {
+        ConnectyCube.login(userProfileLogin).then((u: any) => {
+          localStorage.setItem('user', JSON.stringify(u));
+          this.connectToChat(u.id, password);
+          resolve();
+        })
+          .catch((error: any) => {
+            reject(error);
+          });
+      }
+    })
   }
 
   public init(CREDENTIALS: object, appConfig: object) {
     ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
-  private connectToChat(userCredentials: any) {
-    return ConnectyCube.chat.connect(userCredentials)
-      .then(() => {
-        console.log("Connect To Chat");
-      })
-      .catch((error: any) => {
-        console.error("Connect to chat Error!", error);
-      })
-  }
-
   public auth(userName: string, login: string, password: string) {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
 
-      ConnectyCube.createSession().then(() => {
+      ConnectyCube.createSession().then((session: any) => {
 
         const userProfile = {
           login: login,
@@ -52,20 +101,23 @@ export class AuthService {
           full_name: userName,
         };
 
+        localStorage.setItem('token', session.token);
+
         ConnectyCube.users.signup(userProfile)
           .then(() => {
-            this.login(login, password)
+            this.login(login, password, false)
               .then((user: any) => {
                 console.log("Logging user", user);
+                resolve();
               })
               .catch((error: any) => {
                 console.error('Logging Error!', error);
-                reject();
+                reject(error);
               })
           })
           .catch((error: any) => {
             console.log("Sign up", error);
-            reject();
+            reject(error);
           })
 
       });
