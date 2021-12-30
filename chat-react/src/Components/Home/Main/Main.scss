@@ -2,4 +2,54 @@
   background-color: white;
   height: 100%;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  & form {
+    display: flex;
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+    padding-bottom: 10px;
+    & .send-btn {
+      border: none;
+      font-family: "Roboto";
+      padding: 0px 15px;
+      background-color: dodgerblue;
+      color: white;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    & .message__area {
+      height: 50px;
+      border: 1px solid #d9d9d9;
+      font-size: 16px;
+      font-family: "Roboto";
+      &::placeholder {
+        font-size: 16px;
+        font-family: inherit;
+      }
+    }
+  }
+  & .main__header {
+    flex: 0 1 9.4%;
+    background-color: black;
+  }
+  & .messages__container {
+    flex: 0 1 100%;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    background-color: white;
+    & .messages {
+      display: flex;
+      padding: 40px;
+      flex-direction: column;
+    }
+  }
+  & .message__area {
+    width: 100%;
+    resize: none;
+  }
 }

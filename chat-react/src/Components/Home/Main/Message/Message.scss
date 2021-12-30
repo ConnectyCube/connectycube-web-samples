@@ -1,0 +1,19 @@
+.message {
+  padding: 15px 20px;
+  background-color: #eaeaeb !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  & .message-user__name {
+    font-weight: 600;
+  }
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
+  &.my {
+    align-self: flex-end;
+  }
+  &.opponent {
+    align-self: flex-start;
+  }
+}

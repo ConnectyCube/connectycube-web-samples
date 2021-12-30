@@ -16,15 +16,15 @@ class AuthService {
         },
       },
       endpoints: {
-        api: `apiaxia-dev.connectycube.com`,
-        chat: `chataxia-dev.connectycube.com`,
+        api: `api.connectycube.com`,
+        chat: `chat.connectycube.com`,
       },
     };
     const defLogin = () => {
       const credentials = {
-        appId: 1783,
-        authKey: "EukGfBLUX5rvRVf",
-        authSecret: "fJdkrThH-ebp6gV",
+        appId: 5497,
+        authKey: "BxHxMLzGJjQsLAL",
+        authSecret: "cXmO7AaYQK5BQ-t",
         chat: {
           streamManagement: {
             enable: true,
@@ -36,7 +36,7 @@ class AuthService {
     };
     const tokenLogin = (token) => {
       const CREDENTIALS = {
-        appId: 1783,
+        appId: 5497,
         token: token.token,
       };
       ConnectyCube.init(CREDENTIALS, appConfig);
@@ -77,11 +77,8 @@ class AuthService {
           ConnectyCube.login(userCredentials)
             .then((user) => {
               resolve({ userInfo: user, password: password });
-              alert("Logged in");
             })
-            .catch((error) => {
-              alert("Logged in");
-            });
+            .catch((error) => {});
         })
         .catch((error) => {
           reject();

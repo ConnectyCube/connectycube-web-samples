@@ -1,15 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import "./NewChat.scss";
 import ConnectyCube from "connectycube";
 import { AiOutlineClose } from "react-icons/ai";
+
+import { FaSearch } from "react-icons/fa";
+import FoundUser from "./FoundUser/FoundUser";
 const NewChat = (props) => {
-  const { close } = props;
+  const { close, getChats } = props;
   const userRef = React.createRef();
-  const users = useRef([]);
+
   const [foundedUsers, setFoundedUsers] = useState([]);
+
   const findUser = () => {
     return new Promise((resolve, reject) => {
-      let login = userRef.current.value;
+      const users = [];
       const searchParams = {
         full_name: userRef.current.value,
         per_page: 100,
@@ -20,68 +24,51 @@ const NewChat = (props) => {
         .get(searchParams)
         .then((result) => {
           result.items.forEach((element) => {
-            users.current.push(element.user);
+            users.push(element.user);
           });
 
           ConnectyCube.users
             .get(searchLogin)
             .then((result) => {
-              users.current.unshift(result.user);
-              resolve(users.current);
+              users.unshift(result.user);
+              resolve(users);
             })
             .catch((error) => {
-              resolve(users.current);
+              resolve(users);
             });
         })
         .catch((error) => {});
     });
   };
-  const newChat = () => {
-    const params = {
-      type: 3,
-      //occupants_ids: [idRef.current.value],
-    };
-    ConnectyCube.chat.dialog
-      .create(params)
-      .then((dialog) => {})
-      .catch((error) => {});
+
+  const finding = (e) => {
+    e.preventDefault();
+
+    findUser()
+      .then((users) => {
+        setFoundedUsers(() => {
+          let array = users.map((e) => {
+            return <FoundUser close={close} getChats={getChats} userInfo={e} />;
+          });
+          return array;
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("NOT FETCHED");
+      });
   };
+
   return (
-    <form className="new-chat__form" action="" method="POST">
+    <form onSubmit={finding} className="new-chat__form" action="" method="POST">
       <div className="close__btn" onClick={close}>
         <AiOutlineClose color="white" fontSize="1.5em" />
       </div>
       <h1>Start new chat</h1>
       <div className="find__user-container">
-        <input
-          ref={userRef}
-          type="text"
-          placeholder="Enter user login to find him"
-        />
-        <button
-          type="button"
-          className="find__user-btn"
-          onClick={() => {
-            findUser()
-              .then((users) => {
-                setFoundedUsers(() => {
-                  let array = users.map((e) => {
-                    return (
-                      <div className="found__user">
-                        <p>{e.full_name}</p>
-                        <span>{e.login}</span>
-                      </div>
-                    );
-                  });
-                  return array;
-                });
-              })
-              .catch(() => {
-                alert("NOT FETCHED");
-              });
-          }}
-        >
-          Find user
+        <input ref={userRef} type="text" placeholder="Enter user name" />
+        <button type="button" className="find__user-btn" onClick={finding}>
+          <FaSearch />
         </button>
       </div>
 

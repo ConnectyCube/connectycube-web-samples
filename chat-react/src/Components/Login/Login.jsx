@@ -24,6 +24,14 @@ const Login = (props) => {
         alert("No such user");
       });
   };
+
+  const onEnterPress = (e) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+
+      login();
+    }
+  };
   const userLogin = React.createRef();
   const userPassword = React.createRef();
   return (
@@ -31,9 +39,9 @@ const Login = (props) => {
       <div className="img__container">
         <img src={logo} alt="Logo" className="logo__img" />
       </div>
-      <form action="#" className="login__form">
+      <form action="#" className="login__form" onKeyDown={onEnterPress}>
         <input ref={userLogin} type="text" placeholder="Login" />
-        <input ref={userPassword} type="text" placeholder="Password" />
+        <input ref={userPassword} type="password" placeholder="Password" />
         <button type="button" onClick={login}>
           Login
         </button>

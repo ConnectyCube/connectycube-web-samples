@@ -2,10 +2,28 @@
   display: flex;
   width: 90%;
   margin: 0 auto;
-  justify-content: space-between;
+
   align-items: center;
   margin-bottom: 20px;
   & .user__info {
+    & .user__no-img {
+      display: flex;
+      text-transform: uppercase;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      justify-content: center;
+      background-color: royalblue;
+
+      align-items: center;
+
+      & .name {
+        font-weight: 700;
+        color: royalblue;
+        -webkit-filter: invert(100%);
+        filter: invert(100%);
+      }
+    }
     & .user__img-container {
       & .user__img {
         object-fit: cover;
@@ -15,6 +33,10 @@
         border-radius: 50%;
       }
     }
+  }
+  & .user__info-main {
+    padding-left: 20px;
+    color: white;
   }
   & .last__mesage-time {
   }

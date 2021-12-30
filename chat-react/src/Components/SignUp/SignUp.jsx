@@ -7,7 +7,8 @@ import { useHistory } from "react-router";
 
 const SignUp = () => {
   const history = useHistory();
-  const signup = () => {
+
+  const signUp = () => {
     const userName = userNameRef.current.value;
     const login = userLoginRef.current.value;
     const password = userPasswordRef.current.value;
@@ -22,6 +23,14 @@ const SignUp = () => {
         console.log(error);
       });
   };
+
+  const onEnterPress = (e) => {
+  
+    if (e.keyCode === 13 && e.shiftKey === false) {
+		e.preventDefault();
+      signUp();
+    }
+  };
   const userNameRef = React.createRef();
   const userLoginRef = React.createRef();
   const userPasswordRef = React.createRef();
@@ -30,11 +39,11 @@ const SignUp = () => {
       <div className="img__container">
         <img src={logo} alt="Logo" className="logo__img" />
       </div>
-      <form action="#" className="signup__form">
+      <form action="#" className="signup__form" onKeyDown={onEnterPress}>
         <input ref={userNameRef} type="text" placeholder="Name" />
         <input ref={userLoginRef} type="text" placeholder="Login" />
-        <input ref={userPasswordRef} type="text" placeholder="Password" />
-        <button type="button" onClick={signup}>
+        <input ref={userPasswordRef} type="password" placeholder="Password" />
+        <button type="button" onClick={signUp}>
           Registrate
         </button>
       </form>

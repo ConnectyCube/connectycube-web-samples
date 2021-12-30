@@ -4,15 +4,36 @@ import Main from "./Main/Main";
 import Sidebar from "./Sidebar/Sidebar";
 
 const Home = (props) => {
-  const { dialogs, connectToChat } = props.chat;
+  const {
+    dialogs,
+    connectToChat,
+    getChats,
+    chosenDialog,
+    setDialog,
+    getMessages,
+    messages,
+    addMessage,
+    sendMessage,
+  } = props.chat;
   return (
     <div className="home__container">
       <Sidebar
         className="sidebar__block"
         dialogs={dialogs}
         connect={connectToChat}
+        getChats={getChats}
+        setDialog={setDialog}
+		  chosenDialog={chosenDialog}
       />
-      <Main className="main__block" />
+      <Main
+        className="main__block"
+        getMessages={getMessages}
+        messages={messages}
+        dialogs={dialogs}
+        sendMessage={sendMessage}
+        addMessage={addMessage}
+        chosenDialog={chosenDialog}
+      />
     </div>
   );
 };
