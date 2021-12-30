@@ -59,7 +59,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked {
       console.log(msg);
 
       const message_text: string = msg;
-      const message_time = new Date().toLocaleTimeString().slice(0, 5);
+      const message_time = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString().slice(0, 5);
 
       this.store$.dispatch(addMessage({time: message_time, body: message_text}))
 
