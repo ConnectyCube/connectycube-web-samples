@@ -29,6 +29,9 @@ import {ChatService} from "../../services/chat.service";
 })
 export class VideochatComponent implements OnInit, OnDestroy {
 
+  public isIOS = this.deviceService.os.toLowerCase() === 'ios';
+  public isMac = this.deviceService.os.toLowerCase() === 'mac';
+  public isSafari = this.deviceService.browser.toLowerCase() === 'safari';
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));

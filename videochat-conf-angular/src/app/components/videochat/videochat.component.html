@@ -11,7 +11,7 @@
       <mat-icon>view_module</mat-icon>
       Grid View
     </mat-option>
-    <mat-option [disabled]="(participantArray$ | async)?.length === 1" value="sidebar">
+    <mat-option [disabled]="(participantArray$ | async)?.length === 1 || isIOS || isMac || isSafari" value="sidebar">
       <mat-icon>view_sidebar</mat-icon>
       Speaker View
     </mat-option>
@@ -84,38 +84,59 @@
            class="device-btn"
            type="button">
   </div>
-  <button [disabled]="DisableButton || !MicroConnect" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab
+  <button matTooltip="Mute/Unmute Microphone"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    [disabled]="DisableButton || !MicroConnect" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab
           color="primary"
           class="videochat-button"
           aria-label="Mute Microphone">
     <mat-icon>{{microphoneIconName}}</mat-icon>
   </button>
-  <button [disabled]="DisableButton || !CameraConnect || !videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
+  <button matTooltip="Mute/Unmute Camera"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    [disabled]="DisableButton || !CameraConnect || !videoPermission" (click)="muteOrUnmuteVideo()" id="mute-video"
           mat-fab class="videochat-button"
           aria-label="Mute Video">
     <mat-icon>{{videoIconName}}</mat-icon>
   </button>
-  <button (click)="toggleChat()"
+  <button matTooltip="Toggle Chat"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    (click)="toggleChat()"
           [disabled]="DisableButton"
           id="toggle-chat" mat-fab class="videochat-button" aria-label="toggle chat">
     <mat-icon>question_answer</mat-icon>
   </button>
-  <button (click)="stopCall()"
+  <button matTooltip="Stop Call"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    (click)="stopCall()"
           id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
     <mat-icon>phone_missed</mat-icon>
   </button>
-  <button [disabled]="DisableButton || mediaDevice?.length < 2 || !CameraConnect || !videoPermission"
+  <button matTooltip="Switch Camera"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    [disabled]="DisableButton || mediaDevice?.length < 2 || !CameraConnect || !videoPermission"
           (click)="switchVideoActive = !switchVideoActive"
           (mouseleave)="switchVideoActive = false"
           id="switch-video" mat-fab
           class="videochat-button" aria-label="Switch Video">
     <mat-icon>switch_video</mat-icon>
   </button>
-  <button [disabled]="DisableButton || isMobile || isTablet" (click)="shareScreen()"
+  <button matTooltip="Share Screen"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    [disabled]="DisableButton || isMobile || isTablet" (click)="shareScreen()"
           id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
     <mat-icon>{{shareScreenIconName}}</mat-icon>
   </button>
-  <button *ngIf="(showRecord | async)" [style.background]="recordBtnBg" [disabled]="DisableButton" (click)="recording()"
+  <button matTooltip="Recording"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+    *ngIf="(showRecord | async)" [style.background]="recordBtnBg" [disabled]="DisableButton" (click)="recording()"
           id="record" mat-fab class="videochat-button" aria-label="Record">
     <mat-icon [style.color]="recordIconBg">{{recordIconName}}</mat-icon>
   </button>

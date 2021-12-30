@@ -26,7 +26,7 @@ export class ChatService {
         const message: any = {senderName: '', body: '', time: ''};
         // console.log("message item", item)
         message.body = item.message;
-        message.time = new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
+        message.time = new Date(item.date_sent * 1000).toLocaleDateString() + ' ' + new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
         this.store$.select(findParticipantSelector, {userId: item.sender_id}).pipe(take(1))
           .subscribe(user => {
@@ -93,7 +93,8 @@ export class ChatService {
             console.warn("[ConnectyCube.chat.onMessageListener] callback:", userId, message);
             const senderName: string = user.name;
             const body: string = message.body;
-            const time = new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
+            const time = new Date(message.extension.date_sent * 1000).toLocaleDateString() + ' ' +
+              new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
             this.store$.dispatch(addMessage({senderName, body: body, time: time}))
           }

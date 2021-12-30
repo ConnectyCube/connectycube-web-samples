@@ -12,7 +12,7 @@
   class="fullscreen"
   svgIcon="fullscreen">
 </mat-icon>
-<div class="user-stats user-stats-{{userId}}" [hidden]="statsHide">
+<div class="user-stats user-stats-{{userId}}" [hidden]="isMobile || isTablet? true: statsHide">
   <span>
     Connection: {{userConnectionStatus || 'good'}} <br>
     {{userMicrophoneLevel !== undefined ? 'Microphone level: ' + userMicrophoneLevel + '%' : ''}}
