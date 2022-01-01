@@ -19,17 +19,19 @@ export const participantSortSelector = createSelector(
         return user2.volumeLevel - user1.volumeLevel;
       }
     })
-    const deleteIndexSpeaker = newState.indexOf(<User>newState.find((user: User) => user.isActiveSpeaker));
-    const deleteIndexOur = newState.indexOf(<User>newState.find((user: User) => user.me));
-    const deleteUserOur = newState.splice(deleteIndexOur, 1);
+    const indexSpeaker = newState.indexOf(<User>newState.find((user: User) => user.isActiveSpeaker));
 
-    if (deleteIndexSpeaker !== -1) {
-      const deleteUserSpeaker = newState.splice(deleteIndexSpeaker, 1);
-      console.warn("DELETE USER", deleteUserSpeaker);
-      return [...deleteUserSpeaker, ...deleteUserOur, ...newState];
+    if (indexSpeaker !== -1) {
+      const deleteUserSpeaker = newState.splice(indexSpeaker, 1);
+
+      const indexMe = newState.indexOf(<User>newState.find((user: User) => user.me));
+      const deleteUserMe = newState.splice(indexMe, 1);
+      return [...deleteUserSpeaker, ...deleteUserMe, ...newState];
     }
     else {
-      return [newState[0], ...deleteUserOur, ...newState];
+      const indexMe = newState.indexOf(<User>newState.find((user: User) => user.me));
+      [newState[1], newState[indexMe]] = [newState[indexMe], newState[1]];
+      return newState
     }
   }
 )

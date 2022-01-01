@@ -30,7 +30,6 @@ import {ChatService} from "../../services/chat.service";
 export class VideochatComponent implements OnInit, OnDestroy {
 
   public isIOS = this.deviceService.os.toLowerCase() === 'ios';
-  public isMac = this.deviceService.os.toLowerCase() === 'mac';
   public isSafari = this.deviceService.browser.toLowerCase() === 'safari';
   public gridStatus: boolean = true;
   public sidebarStatus: boolean = false;
@@ -62,6 +61,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
   public recordBtnBg: any;
   public recordIconBg: any;
   public showRecord = this.store$.select(showRecordButtonStatusSelector);
+  public disableVideoBtn: any;
 
   constructor
   (
@@ -150,7 +150,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
     });
   }
 
-  public muteOrUnmuteVideo() {
+  public muteOrUnmuteVideo(e:any) {
     if (this.shareScreenIconName === 'stop_screen_share') {
       console.log("SCREEN SHARE IF", this.shareScreenIconName)
       this.callService.stopSharingScreen();
@@ -171,7 +171,10 @@ export class VideochatComponent implements OnInit, OnDestroy {
     }
     else {
       console.log("VIDEO ELSE", this.shareScreenIconName)
-      this.callService.muteOrUnmuteVideo(this.videoIconName === 'videocam').then(() => {
+      const btn = e.target.closest('.videochat-button');
+      btn.disabled = true;
+      this.callService.muteOrUnmuteVideo(this.videoIconName === 'videocam').then((res) => {
+        btn.disabled = res;
         this.videoIconName = this.videoIconName === 'videocam' ? 'videocam_off' : 'videocam';
       })
     }

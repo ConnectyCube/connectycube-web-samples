@@ -5,13 +5,16 @@
     svgIcon="connection">
   </mat-icon>
 </div>
-<mat-icon
-  *ngIf="!(userBitrate === undefined || isMobile || isTablet)"
-  (click)="toFullScreen($event)"
-  [ngClass]="'btn-'+userId"
-  class="fullscreen"
-  svgIcon="fullscreen">
-</mat-icon>
+<button class="user-fullscreen"
+        *ngIf="!(userBitrate === undefined || isMobile || isTablet)"
+        (click)="toFullScreen($event)"
+        [disabled]="!userVideoStatus"
+        [ngClass]="'btn-'+userId">
+  <mat-icon
+    class="fullscreen"
+    svgIcon="fullscreen">
+  </mat-icon>
+</button>
 <div class="user-stats user-stats-{{userId}}" [hidden]="isMobile || isTablet? true: statsHide">
   <span>
     Connection: {{userConnectionStatus || 'good'}} <br>
