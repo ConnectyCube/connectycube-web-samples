@@ -15,7 +15,6 @@ export const ChatProvider = ({ children }) => {
 
   const chatCallbaks = () => {
     ConnectyCube.chat.onMessageListener = (userId, message) => {
-      debugger;
       console.log(
         "[ConnectyCube.chat.onMessageListener] callback:",
         userId,
@@ -75,7 +74,6 @@ export const ChatProvider = ({ children }) => {
     setMessages([...messagesRef.current]);
   };
   const sendMessage = (dialog, message, opponentId) => {
-    debugger;
     const messageToSend = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: message,

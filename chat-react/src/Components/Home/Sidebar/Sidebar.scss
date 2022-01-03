@@ -7,7 +7,7 @@
 .sidebar-header__button:before,
 .sidebar-header__button:after,
 .sidebar-header__button div {
-  background: #fff;
+  background: #000;
   content: "";
   display: block;
   height: 3px;
@@ -19,12 +19,12 @@
 .sidebar__container {
   flex: 0 0 25%;
 
-  background-color: rgba(33, 33, 33, 1);
-  & .sidebar-chats__container {
-    height: 80%;
-    position: relative;
+  background-color: #fffdfd;
+  border-right: 1px solid #c4c2c2;
 
-    overflow-y: scroll;
+  & .sidebar-chats__container {
+    height: 77%;
+    position: relative;
     padding-top: 20px;
   }
   & .sidebar-header {
@@ -37,7 +37,7 @@
     display: flex;
     align-items: center;
     & .sidebar-user__name {
-      color: white;
+      color: black;
       font-size: 16px;
       padding-right: 20px;
     }

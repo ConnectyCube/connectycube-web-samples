@@ -32,7 +32,7 @@ const Main = (props) => {
       for (let i = 0; i < sortedMessages.length; i++) {
         setAllMessages(() => {
           return sortedMessages.map((e) => {
-            return <Message message={e} dialogInfo={dialog} />;
+            return <Message key={e.index} message={e} dialogInfo={dialog} />;
           });
         });
       }
@@ -41,11 +41,9 @@ const Main = (props) => {
   }, [messages]);
 
   const onSendMessage = (e) => {
-    const opponentId =
-      chosenDialog.occupants_ids[0] === chosenDialog.user_id
-        ? chosenDialog.occupants_ids[0]
-        : chosenDialog.occupants_ids[1];
-    debugger;
+    const opponentId = dialog.occupants_ids.filter(
+      (id) => id !== chosenDialog.user_id
+    )[0];
     if (messageRef.current.value.trim()) {
       messageRef.current.value = messageRef.current.value.replace(
         /(\r\n|\n|\r)/gm,
@@ -91,7 +89,7 @@ const Main = (props) => {
       <div className="main__header">CHAT</div>
       <div className="messages__container">
         {dialog && <div className="messages">{allMessages}</div>}
-        {!dialog && <div>Choose a chat</div>}
+        {!dialog && <div className="choose__chat">Choose a chat</div>}
       </div>
       {dialog && (
         <form action="#" method="GET" onKeyDown={onEnterPress}>

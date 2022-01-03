@@ -5,11 +5,13 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  overflow: hidden;
   & form {
     display: flex;
     position: relative;
     width: 90%;
     margin: 0 auto;
+    padding-top: 20px;
     padding-bottom: 10px;
     & .send-btn {
       border: none;
@@ -33,12 +35,17 @@
     }
   }
   & .main__header {
-    flex: 0 1 9.4%;
-    background-color: black;
+    flex: 0 1 11.5%;
+    background-color: white;
+    margin-left: 15px;
+    padding-top: 4%;
+    border-bottom: 1px solid #c0c0c0;
   }
   & .messages__container {
     flex: 0 1 100%;
+    overflow-x: hidden;
     width: 100%;
+    position: relative;
     height: 100%;
     overflow-y: scroll;
     background-color: white;
@@ -46,6 +53,13 @@
       display: flex;
       padding: 40px;
       flex-direction: column;
+    }
+
+    & .choose__chat {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   }
   & .message__area {

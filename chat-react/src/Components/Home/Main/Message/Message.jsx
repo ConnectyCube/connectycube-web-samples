@@ -15,7 +15,7 @@ const Message = (props) => {
           ? "You"
           : dialogInfo.name}
       </span>
-      {message.message}
+      <p>{message.message}</p>
     </div>
   );
 };

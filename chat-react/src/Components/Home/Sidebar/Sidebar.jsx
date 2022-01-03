@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Chats from "./Chats/Chats";
 import "./Sidebar.scss";
 import NewChat from "./NewChat/NewChat";
+import { Virtuoso } from "react-virtuoso";
+
 const Sidebar = (props) => {
   const idRef = React.createRef();
   const { dialogs, connect, getChats, setDialog, chosenDialog } = props;
@@ -22,13 +24,13 @@ const Sidebar = (props) => {
   };
   let chats;
 
-  if (dialogs) {
-    chats = dialogs.map((s) => {
-      return (
-        <Chats userInfo={s} setDialog={setDialog} chosenDialog={chosenDialog} />
-      );
-    });
-  }
+  //   if (dialogs) {
+  //     chats = dialogs.map((s) => {
+  //       return (
+
+  //       );
+  //     });
+  //   }
 
   return (
     <div className="sidebar__container">
@@ -37,7 +39,7 @@ const Sidebar = (props) => {
           <div></div>
         </div>
         <div className="sidebar-user__info">
-          <span className="sidebar-user__name">UserName</span>
+          <span className="sidebar-user__name">{localStorage.login}</span>
           <div className="sidebar-img__container">
             <img
               src="https://www.pixsy.com/wp-content/uploads/2021/04/ben-sweet-2LowviVHZ-E-unsplash-1.jpeg"
@@ -58,7 +60,26 @@ const Sidebar = (props) => {
         className="sidebar-search__chat"
         placeholder="Search chats"
       ></input>
-      <div className="sidebar-chats__container">{chats}</div>
+      {dialogs && (
+        <div className="sidebar-chats__container">
+          <Virtuoso
+            data={dialogs}
+            onLoad={() => {
+              console.warn("LOADING CHATS");
+            }}
+            itemContent={(index, data) => {
+              console.log(index);
+              return (
+                <Chats
+                  userInfo={data}
+                  setDialog={setDialog}
+                  chosenDialog={chosenDialog}
+                />
+              );
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

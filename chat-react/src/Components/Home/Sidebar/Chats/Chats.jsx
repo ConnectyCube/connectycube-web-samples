@@ -3,10 +3,8 @@ import "./Chats.scss";
 import ConnectyCube from "connectycube";
 const Chats = (props) => {
   const { userInfo, setDialog, chosenDialog } = props;
-  debugger;
   try {
     if (userInfo._id === chosenDialog._id) {
-      debugger;
     }
   } catch {}
 
