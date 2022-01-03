@@ -26,3 +26,13 @@ export interface ItemsHeight {
   items: Array<number>,
   itemsTotalHeight: number
 }
+
+export interface Dialog {
+  id: string,
+  name: string,
+  photo: string | null,
+  lastMessage: string | null,
+  lastMessageDate: number | null,
+  unreadMessage: number,
+  createAt: string,
+}

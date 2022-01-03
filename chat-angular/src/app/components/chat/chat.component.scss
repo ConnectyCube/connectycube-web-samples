@@ -14,8 +14,13 @@
     height: 100%;
     width: calc(100% - 336px);
   }
-}
 
+  app-dialog-creat {
+    display: flex;
+    height: 100%;
+    width: calc(100% - 336px);
+  }
+}
 
 
 @media screen and (min-width: 768px) and(max-width: 960px) {
@@ -25,6 +30,9 @@
   app-chat-messages {
     width: calc(100% - 280px);
   }
+  app-dialog-creat {
+    width: calc(100% - 280px);
+  }
 }
 
 @media screen and (max-width: 767px) {
@@ -32,6 +40,10 @@
     min-width: 100%;
   }
   app-chat-messages {
+    display: none !important;
+    width: 100% !important;
+  }
+  app-dialog-creat {
     display: none !important;
     width: 100% !important;
   }

@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {Store} from "@ngrx/store";
+import {chatCreatorStatusSelector} from "../../reducers/interface.selectors";
 
 @Component({
   selector: 'app-chat',
@@ -7,11 +9,10 @@ import {Component, OnInit} from '@angular/core';
 })
 export class ChatComponent implements OnInit {
 
+  public isChatCreate$ = this.store$.select(chatCreatorStatusSelector);
 
-
-  constructor() {
+  constructor(private store$: Store) {
   }
-
 
 
   ngOnInit(): void {

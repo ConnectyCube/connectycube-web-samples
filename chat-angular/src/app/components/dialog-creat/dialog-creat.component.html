@@ -1,0 +1,27 @@
+<div class="create-wrap">
+  <div class="create-header">
+    <h1 class="header-title" mat-dialog-title>Start Group Chat</h1>
+    <button class="create-close" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-dialog-content class="mat-typography">
+    <h2 class="content-title">Group chat info</h2>
+    <form [formGroup]="CreateForm" (ngSubmit)="onSubmitSearch()" action="#" class="create-form">
+      <div class="form-header">
+        <button matTooltip="Add group chat avatar" matTooltipClass="tooltip" type="button" class="add-photo">
+          <mat-icon>add_a_photo</mat-icon>
+        </button>
+        <div class="search-container">
+          <input required minlength="4" placeholder="Dialog name" type="text" class="search-participants"
+                 formControlName="name">
+          <small class="search-form-error"
+                 *ngIf="getErrors('name')?.errors?.required || getErrors('name')?.errors?.minlength">
+            {{getErrors('name')?.errors?.minlength ?
+            '* dialog name length must be longer then 4' : '* dialog name is required'}}
+          </small>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+</div>

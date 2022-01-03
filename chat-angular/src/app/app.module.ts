@@ -14,11 +14,10 @@ import {AppEffects} from './app.effects';
 import {StoreRouterConnectingModule} from '@ngrx/router-store';
 import {RouterModule} from "@angular/router";
 import {ChatComponent} from './components/chat/chat.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatIconModule} from "@angular/material/icon";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
-import {CommonModule} from "@angular/common";
 import {DialogsComponent} from './components/dialogs/dialogs.component';
 import {ChatMessagesComponent} from './components/chat-messages/chat-messages.component';
 import {ScrollingModule} from "@angular/cdk/scrolling";
@@ -27,6 +26,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {CustomVirtualScrollDirective} from "./directives/custom-virtual-scroll-strategy-directive";
 import {MatDialogModule} from '@angular/material/dialog';
 import { ModalComponent } from './components/modal/modal.component';
+import { DialogCreatComponent } from './components/dialog-creat/dialog-creat.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +37,7 @@ import { ModalComponent } from './components/modal/modal.component';
     ChatMessagesComponent,
     CustomVirtualScrollDirective,
     ModalComponent,
+    DialogCreatComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,18 +54,11 @@ import { ModalComponent } from './components/modal/modal.component';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    CommonModule,
     ScrollingModule,
-    CommonModule,
-    CommonModule,
-    CommonModule,
-    CommonModule,
     MatTooltipModule,
     MatButtonModule,
     MatDialogModule,
-    CommonModule,
-    CommonModule,
-    CommonModule
+    NoopAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

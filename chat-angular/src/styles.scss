@@ -149,8 +149,14 @@ body {
   touch-action: none;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 
 .mat-focused .mat-form-field-label {
@@ -188,14 +194,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background: rgba(136, 136, 136, 0.75);
 }
 
-cdk-virtual-scroll-viewport > div{
+cdk-virtual-scroll-viewport > div {
   max-width: 100% !important;
 }
 
-.tooltip{
+.tooltip {
   background: #000;
   color: #fff;
   font-size: 12px;
   font-weight: 500;
+}
+
+.create-dialog .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
 }
 

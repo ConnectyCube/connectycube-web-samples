@@ -30,13 +30,15 @@ export class AuthService {
     const appConfigToken = {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
-          this.logout();
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
         },
       }
     };
     const id: number = JSON.parse(<string>localStorage.getItem('user')).id;
 
     this.init(credentials, appConfigToken);
+    ConnectyCube.users.get({})
     this.connectToChat(id, token);
   }
 
@@ -87,7 +89,7 @@ export class AuthService {
   }
 
   public init(CREDENTIALS: object, appConfig: object) {
-    ConnectyCube.init(CREDENTIALS, appConfig);
+    return ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
   public auth(userName: string, login: string, password: string) {
