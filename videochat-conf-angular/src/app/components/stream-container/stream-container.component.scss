@@ -88,14 +88,19 @@
   }
 }
 
+.user-fullscreen {
+  position: absolute;
+  padding: 0;
+  top: 50px;
+  left: 10px;
+  background: transparent;
+  z-index: 5;
+}
+
 .fullscreen {
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  position: absolute;
   padding: 5px;
-  top: 50px;
-  left: 10px;
-  z-index: 5;
   background: #C3002F;
 }

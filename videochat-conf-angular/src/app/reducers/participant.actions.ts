@@ -40,3 +40,8 @@ export const updateName = createAction(
   '[PARTICIPANT] update user name',
   props<{ id: number, name: string }>()
 );
+
+export const addImageNum = createAction(
+  '[PARTICIPANT] add user image number',
+  props<{ id: number, imageNum: number }>()
+)

@@ -264,7 +264,7 @@ export class CallService {
 
 
   public muteOrUnmuteVideo(videoWork: boolean) {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       try {
         const mediaParamsDeviceId = {
           audio: true,
@@ -276,10 +276,11 @@ export class CallService {
         console.log("Video work status", videoWork)
 
         if (!videoWork) {
-          this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
           console.warn("IF St", session.localStream.getVideoTracks())
           session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
+              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+              resolve(false);
               this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
                 res.forEach((user: User) => {
                   if (!user.me) {
@@ -295,7 +296,7 @@ export class CallService {
           session.getUserMedia({audio: true}, true)
             .then((stream: any) => {
               stream.addTrack(this.createDummyVideoTrack());
-
+              resolve(false);
               this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
                 res.forEach((user: User) => {
                   if (!user.me) {
@@ -307,7 +308,6 @@ export class CallService {
         }
 
         console.log("LOCAL STREAM", session.localStream.getVideoTracks());
-        resolve();
       }
       catch (error: any) {
         console.log("MuteOrUnmuteVideo Error!", error);

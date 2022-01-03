@@ -6,7 +6,7 @@ import {
   removeAllUsers,
   addMicrophoneLevel,
   addBitrate,
-  updateConnectionStatus, updateVideoStatus, updateName, addActiveSpeaker
+  updateConnectionStatus, updateVideoStatus, updateName, addActiveSpeaker, addImageNum
 } from "./participant.actions";
 
 export interface User {
@@ -18,7 +18,8 @@ export interface User {
   bitrate?: string,
   connectionStatus?: string,
   videoStatus?: boolean | string,
-  isActiveSpeaker?: boolean
+  isActiveSpeaker?: boolean,
+  imageNum?: number
 }
 
 export interface participantState {
@@ -144,6 +145,15 @@ export const participantReducer = createReducer(
           const newUser = {...user};
           newUser.name = name;
           return newUser;
+        }
+        return user;
+      })
+    })),
+    on(addImageNum, (state, {id, imageNum}) => ({
+      ...state,
+      participantArray: state.participantArray.map((user: User) => {
+        if (user.id === id) {
+          return {...user, imageNum};
         }
         return user;
       })
