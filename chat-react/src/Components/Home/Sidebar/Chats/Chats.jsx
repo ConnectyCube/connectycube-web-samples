@@ -10,17 +10,6 @@ const Chats = (props) => {
 
   const retrieveChat = () => {
     setDialog(userInfo);
-    const dialogId = userInfo._id;
-    const params = {
-      chat_dialog_id: dialogId,
-      sort_desc: "date_sent",
-      limit: 100,
-      skip: 0,
-    };
-    ConnectyCube.chat.message
-      .list(params)
-      .then((messages) => {})
-      .catch((error) => {});
   };
   return (
     <div className="chat__block" onClick={retrieveChat}>

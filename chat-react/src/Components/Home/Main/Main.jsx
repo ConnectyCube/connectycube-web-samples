@@ -12,14 +12,18 @@ const Main = (props) => {
   const messageRef = React.createRef();
   const [allMessages, setAllMessages] = useState();
   useEffect(() => {
+    setAllMessages();
     if (dialog) {
       getMessages(dialog)
         .then(() => {})
-        .catch(() => {});
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }, [dialog]);
   useEffect(() => {
     if (messages) {
+      debugger;
       let sortedMessages = messages.sort((a, b) => {
         if (a.date_sent < b.date_sent) {
           return -1;
@@ -36,7 +40,8 @@ const Main = (props) => {
           });
         });
       }
-      console.log(allMessages);
+    } else {
+      alert("NO MESSAGES");
     }
   }, [messages]);
 
@@ -88,7 +93,11 @@ const Main = (props) => {
     <div className="main__container">
       <div className="main__header">CHAT</div>
       <div className="messages__container">
-        {dialog && <div className="messages">{allMessages}</div>}
+        {dialog && (
+          <div className="messages">
+            {allMessages ? allMessages : "NO MESSAGES YET"}
+          </div>
+        )}
         {!dialog && <div className="choose__chat">Choose a chat</div>}
       </div>
       {dialog && (

@@ -112,12 +112,12 @@ export const ChatProvider = ({ children }) => {
           .list(params)
           .then((messages) => {
             messagesRef.current = [];
-
             messages.items.map((e) => {
               messagesRef.current.push(e);
             });
             setMessages([...messagesRef.current]);
-            resolve();
+
+            resolve(messages);
           })
           .catch((error) => {
             reject();
