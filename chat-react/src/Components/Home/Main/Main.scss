@@ -36,9 +36,9 @@
   }
   & .main__header {
     flex: 0 1 11.5%;
+    position: relative;
     background-color: white;
     margin-left: 15px;
-    padding-top: 4%;
     border-bottom: 1px solid #c0c0c0;
   }
   & .messages__container {
@@ -51,7 +51,7 @@
     background-color: white;
     & .messages {
       display: flex;
-      padding: 40px;
+      padding: 55px;
       flex-direction: column;
     }
 

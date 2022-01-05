@@ -1,14 +1,12 @@
 import React from "react";
 import "./Main.scss";
-import ConnectyCube from "connectycube";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Message from "./Message/Message";
+import UserInfo from "./UserInfo/UserInfo";
 
 const Main = (props) => {
-  const { sendMessage, chosenDialog, getMessages, messages, addMessage } =
-    props;
+  const { sendMessage, chosenDialog, getMessages, messages } = props;
   const dialog = chosenDialog;
-
   const messageRef = React.createRef();
   const [allMessages, setAllMessages] = useState();
   useEffect(() => {
@@ -23,7 +21,6 @@ const Main = (props) => {
   }, [dialog]);
   useEffect(() => {
     if (messages) {
-      debugger;
       let sortedMessages = messages.sort((a, b) => {
         if (a.date_sent < b.date_sent) {
           return -1;
@@ -40,14 +37,12 @@ const Main = (props) => {
           });
         });
       }
-    } else {
-      alert("NO MESSAGES");
     }
   }, [messages]);
 
   const onSendMessage = (e) => {
     const opponentId = dialog.occupants_ids.filter(
-      (id) => id !== chosenDialog.user_id
+      (id) => id !== parseInt(localStorage.userId)
     )[0];
     if (messageRef.current.value.trim()) {
       messageRef.current.value = messageRef.current.value.replace(
@@ -91,7 +86,10 @@ const Main = (props) => {
   };
   return (
     <div className="main__container">
-      <div className="main__header">CHAT</div>
+      <div className="main__header">
+        {dialog && <UserInfo userInfo={dialog} />}
+        {!dialog && <h1>Chats</h1>}
+      </div>
       <div className="messages__container">
         {dialog && (
           <div className="messages">

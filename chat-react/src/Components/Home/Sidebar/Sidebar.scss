@@ -18,14 +18,16 @@
 
 .sidebar__container {
   flex: 0 0 25%;
-
+  display: flex;
+  flex-direction: column;
   background-color: #fffdfd;
   border-right: 1px solid #c4c2c2;
 
   & .sidebar-chats__container {
-    height: 77%;
     position: relative;
+    cursor: pointer;
     padding-top: 20px;
+    overflow-y: scroll;
   }
   & .sidebar-header {
     display: flex;
@@ -57,8 +59,9 @@
   }
   & .sidebar-add__newchat {
     padding: 10px 0px;
-    background-color: #32465a;
-    color: white;
+    background-color: #7fb7f1;
+    color: black;
+    font-weight: 600;
     cursor: pointer;
     border-top: 1px solid snow;
     border-bottom: 1px solid snow;
@@ -68,7 +71,7 @@
     transition: 0.3s ease-in-out;
 
     &:hover {
-      background-color: #5e7286;
+      background-color: #aacff5;
     }
   }
   & .sidebar-search__container {
@@ -76,17 +79,18 @@
   }
   & .sidebar-search__chat {
     width: 90%;
-    border: none;
+    align-self: center;
+    border: 1px solid #cfcfcf;
     padding: 10px 10px;
-    background: #5e7286;
-    border-radius: 25px;
+    background: transparent;
+    border-radius: 10px;
     & [type="text"] {
       height: 24px;
       font-size: 15px;
       padding-left: 25px;
     }
     &::placeholder {
-      color: white;
+      color: #939393;
     }
   }
 }

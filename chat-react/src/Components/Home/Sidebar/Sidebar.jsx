@@ -13,8 +13,21 @@ const Sidebar = (props) => {
       userId: localStorage.userId,
       password: JSON.parse(localStorage.token),
     });
+
     //eslint-disable-next-line
   }, []);
+  let chats;
+  if (dialogs) {
+    chats = dialogs.map((dialog) => {
+      return (
+        <Chats
+          userInfo={dialog}
+          setDialog={setDialog}
+          chosenDialog={chosenDialog}
+        />
+      );
+    });
+  }
 
   const newChatOpen = () => {
     setNewChatForm(true);
@@ -22,15 +35,6 @@ const Sidebar = (props) => {
   const newChatClose = () => {
     setNewChatForm(false);
   };
-  let chats;
-
-  //   if (dialogs) {
-  //     chats = dialogs.map((s) => {
-  //       return (
-
-  //       );
-  //     });
-  //   }
 
   return (
     <div className="sidebar__container">
@@ -51,35 +55,15 @@ const Sidebar = (props) => {
       <div onClick={newChatOpen} className="sidebar-add__newchat">
         Start new chat
       </div>
-      <div className="sidebar-search__container"></div>
       {newChatForm && <NewChat getChats={getChats} close={newChatClose} />}
 
       <input
         ref={idRef}
         type="text"
         className="sidebar-search__chat"
-        placeholder="Search chats"
+        placeholder="Search..."
       ></input>
-      {dialogs && (
-        <div className="sidebar-chats__container">
-          <Virtuoso
-            data={dialogs}
-            onLoad={() => {
-              console.warn("LOADING CHATS");
-            }}
-            itemContent={(index, data) => {
-              console.log(index);
-              return (
-                <Chats
-                  userInfo={data}
-                  setDialog={setDialog}
-                  chosenDialog={chosenDialog}
-                />
-              );
-            }}
-          />
-        </div>
-      )}
+      {dialogs && <div className="sidebar-chats__container">{chats}</div>}
     </div>
   );
 };

@@ -12,19 +12,19 @@ class AuthService {
       debug: {
         mode: 1,
         conference: {
-          server: "wss://janus.connectycube:8989",
+          server: process.env.REACT_APP_CONNECTYCUBE_MULTIPARTY_SERVER_ENDPOINT,
         },
       },
       endpoints: {
-        api: `api.connectycube.com`,
-        chat: `chat.connectycube.com`,
+        api: process.env.REACT_APP_CONNECTYCUBE_API_ENDPOINT,
+        chat: process.env.REACT_APP_CONNECTYCUBE_CHAT_ENDPOINT,
       },
     };
     const defLogin = () => {
       const credentials = {
-        appId: 5497,
-        authKey: "BxHxMLzGJjQsLAL",
-        authSecret: "cXmO7AaYQK5BQ-t",
+        appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
+        authKey: process.env.REACT_APP_CONNECTYCUBE_APP_AUTH_KEY,
+        authSecret: process.env.REACT_APP_CONNECTYCUBE_APP_SECRET,
         chat: {
           streamManagement: {
             enable: true,
@@ -36,13 +36,13 @@ class AuthService {
     };
     const tokenLogin = (token) => {
       const CREDENTIALS = {
-        appId: 5497,
+        appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
         token: token.token,
       };
       ConnectyCube.init(CREDENTIALS, appConfig);
     };
 
-    if (localStorage.token) {
+    if (localStorage.token && localStorage.login && localStorage.userId) {
       let token = JSON.parse(localStorage.token);
       let creationDate = new Date(token.timestamp);
       let creationDay = creationDate.getDay();
@@ -78,7 +78,9 @@ class AuthService {
             .then((user) => {
               resolve({ userInfo: user, password: password });
             })
-            .catch((error) => {});
+            .catch((error) => {
+              localStorage.removeItem("token");
+            });
         })
         .catch((error) => {
           reject();

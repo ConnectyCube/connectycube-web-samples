@@ -12,7 +12,6 @@ const Home = (props) => {
     setDialog,
     getMessages,
     messages,
-    addMessage,
     sendMessage,
   } = props.chat;
   return (
@@ -31,7 +30,6 @@ const Home = (props) => {
         messages={messages}
         dialogs={dialogs}
         sendMessage={sendMessage}
-        addMessage={addMessage}
         chosenDialog={chosenDialog}
       />
     </div>

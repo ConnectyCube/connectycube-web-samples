@@ -12,7 +12,7 @@ export const ChatProvider = ({ children }) => {
   const [dialogs, setDialogs] = useState();
   const messagesRef = useRef([]);
   const [messages, setMessages] = useState();
-
+  const [chatStory, setChatStory] = useState();
   const chatCallbaks = () => {
     ConnectyCube.chat.onMessageListener = (userId, message) => {
       console.log(
@@ -20,6 +20,8 @@ export const ChatProvider = ({ children }) => {
         userId,
         message
       );
+
+      addMessageToStore(message);
       // if (!isiOS()) {
       //   if (userId !== chatParticipantsRef.current[0].userId) {
       //     let audio = new Audio(sound);
@@ -69,11 +71,20 @@ export const ChatProvider = ({ children }) => {
     setChosenDialog(dialog);
   };
 
-  const addMessage = (e) => {
-    messagesRef.current.push(e);
+  const addMessageToStore = (e) => {
+    if (typeof e === "object") {
+      messagesRef.current.push(e);
+    } else {
+      messagesRef.current.push({
+        message: e,
+        sender_id: parseInt(localStorage.userId),
+        timestamp: new Date().getTime(),
+      });
+    }
     setMessages([...messagesRef.current]);
   };
   const sendMessage = (dialog, message, opponentId) => {
+    addMessageToStore(message);
     const messageToSend = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: message,
@@ -85,18 +96,6 @@ export const ChatProvider = ({ children }) => {
     };
 
     ConnectyCube.chat.send(opponentId, messageToSend);
-
-    // ...
-
-    ConnectyCube.chat.onMessageListener = onMessage;
-
-    function onMessage(userId, message) {
-      console.log(
-        "[ConnectyCube.chat.onMessageListener] callback:",
-        userId,
-        message
-      );
-    }
   };
   const getMessages = (dialog) => {
     return new Promise((resolve, reject) => {
@@ -114,6 +113,7 @@ export const ChatProvider = ({ children }) => {
             messagesRef.current = [];
             messages.items.map((e) => {
               messagesRef.current.push(e);
+              return 0;
             });
             setMessages([...messagesRef.current]);
 
@@ -136,7 +136,6 @@ export const ChatProvider = ({ children }) => {
         setDialog,
         getMessages,
         messages,
-        addMessage,
         sendMessage,
       }}
     >

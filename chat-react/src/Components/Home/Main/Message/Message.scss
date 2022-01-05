@@ -1,10 +1,17 @@
 .message {
-  padding: 15px 20px;
+  padding: 15px 20px 20px 10px;
   background-color: #eaeaeb !important;
   display: flex;
+  text-align: left;
   flex-direction: column;
   align-items: flex-start;
   max-width: 80%;
+  position: relative;
+
+  & .message__avatar {
+    width: 60px;
+    height: 60px;
+  }
   & p {
     word-wrap: break-word;
     width: 100%;
@@ -17,8 +24,25 @@
   }
   &.my {
     align-self: flex-end;
+    & .user__img {
+      // position: absolute;
+      // width: 50px;
+      // height: 50px;
+
+      // left: -52px;
+      // top: 9%;
+      display: none;
+    }
   }
   &.opponent {
     align-self: flex-start;
+    & .user__img {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+
+      left: -52px;
+      top: 9%;
+    }
   }
 }
