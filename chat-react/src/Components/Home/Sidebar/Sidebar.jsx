@@ -39,9 +39,9 @@ const Sidebar = (props) => {
   return (
     <div className="sidebar__container">
       <div className="sidebar__header sidebar-header">
-        <div className="sidebar-header__button">
+        {/* <div className="sidebar-header__button">
           <div></div>
-        </div>
+        </div> */}
         <div className="sidebar-user__info">
           <span className="sidebar-user__name">{localStorage.login}</span>
           <div className="sidebar-img__container">

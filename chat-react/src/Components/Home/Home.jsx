@@ -22,7 +22,7 @@ const Home = (props) => {
         connect={connectToChat}
         getChats={getChats}
         setDialog={setDialog}
-		  chosenDialog={chosenDialog}
+        chosenDialog={chosenDialog}
       />
       <Main
         className="main__block"

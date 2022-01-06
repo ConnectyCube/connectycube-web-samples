@@ -3,39 +3,44 @@ import "./Main.scss";
 import { useEffect, useState } from "react";
 import Message from "./Message/Message";
 import UserInfo from "./UserInfo/UserInfo";
+import { animateScroll } from "react-scroll";
 
 const Main = (props) => {
   const { sendMessage, chosenDialog, getMessages, messages } = props;
   const dialog = chosenDialog;
   const messageRef = React.createRef();
+  const messagesRef = React.createRef();
   const [allMessages, setAllMessages] = useState();
   useEffect(() => {
     setAllMessages();
     if (dialog) {
       getMessages(dialog)
-        .then(() => {})
+        .then((messages) => {})
         .catch((error) => {
           console.error(error);
         });
     }
   }, [dialog]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [allMessages]);
+
+  const scrollToBottom = () => {
+    animateScroll.scrollToBottom({
+      containerId: messagesRef.current.id,
+    });
+  };
   useEffect(() => {
     if (messages) {
-      let sortedMessages = messages.sort((a, b) => {
-        if (a.date_sent < b.date_sent) {
-          return -1;
-        }
-        if (a.date_sent > b.date_sent) {
-          return 1;
-        }
-        return 0;
-      });
-      for (let i = 0; i < sortedMessages.length; i++) {
-        setAllMessages(() => {
-          return sortedMessages.map((e) => {
-            return <Message key={e.index} message={e} dialogInfo={dialog} />;
+      if (messages[chosenDialog._id]) {
+        for (let i = 0; i < messages[chosenDialog._id].length; i++) {
+          setAllMessages(() => {
+            return messages[chosenDialog._id].map((e) => {
+              return <Message key={e.index} message={e} dialogInfo={dialog} />;
+            });
           });
-        });
+        }
       }
     }
   }, [messages]);
@@ -53,46 +58,28 @@ const Main = (props) => {
       messageRef.current.style.height = "45px";
       messageRef.current.value = "";
     }
-
-    //  const message = {
-    //    type: dialog.type === 3 ? "chat" : "groupchat",
-    //    body: messageRef.current.value,
-    //    extension: {
-    //      save_to_history: 1,
-    //      dialog_id: dialog._id,
-    //    },
-    //    markable: 1,
-    //  };
-
-    //  message.id = ConnectyCube.chat.send(opponentId, message);
-
-    //  // ...
-
-    //  ConnectyCube.chat.onMessageListener = onMessage;
-
-    //  function onMessage(userId, message) {
-    //    console.log(
-    //      "[ConnectyCube.chat.onMessageListener] callback:",
-    //      userId,
-    //      message
-    //    );
-    //  }
   };
+
   const onEnterPress = (e) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault();
       onSendMessage();
     }
   };
+
   return (
     <div className="main__container">
       <div className="main__header">
         {dialog && <UserInfo userInfo={dialog} />}
-        {!dialog && <h1>Chats</h1>}
+        {!dialog && <div className="header-none">Chats</div>}
       </div>
-      <div className="messages__container">
+      <div
+        id="messages__container"
+        className="messages__container"
+        ref={messagesRef}
+      >
         {dialog && (
-          <div className="messages">
+          <div id="messages" className="messages">
             {allMessages ? allMessages : "NO MESSAGES YET"}
           </div>
         )}

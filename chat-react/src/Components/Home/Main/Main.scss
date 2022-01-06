@@ -40,6 +40,17 @@
     background-color: white;
     margin-left: 15px;
     border-bottom: 1px solid #c0c0c0;
+
+    & .header-none {
+      width: 100%;
+      font-weight: 600;
+      font-size: 30px;
+      height: 100%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
   & .messages__container {
     flex: 0 1 100%;

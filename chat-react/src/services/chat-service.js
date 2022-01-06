@@ -10,7 +10,9 @@ export const ChatProvider = ({ children }) => {
   const chatsRef = useRef();
   const [chosenDialog, setChosenDialog] = useState();
   const [dialogs, setDialogs] = useState();
-  const messagesRef = useRef([]);
+  //   const messagesRef = useRef([]);
+  const messagesRef = useRef({});
+
   const [messages, setMessages] = useState();
   const [chatStory, setChatStory] = useState();
   const chatCallbaks = () => {
@@ -71,20 +73,21 @@ export const ChatProvider = ({ children }) => {
     setChosenDialog(dialog);
   };
 
-  const addMessageToStore = (e) => {
+  const addMessageToStore = (message, dialogId) => {
     if (typeof e === "object") {
-      messagesRef.current.push(e);
+      messagesRef.current[dialogId].push(message);
     } else {
-      messagesRef.current.push({
-        message: e,
+      messagesRef.current[dialogId].push({
+        message: message,
         sender_id: parseInt(localStorage.userId),
         timestamp: new Date().getTime(),
       });
     }
-    setMessages([...messagesRef.current]);
+    setMessages({ ...messagesRef.current });
   };
   const sendMessage = (dialog, message, opponentId) => {
-    addMessageToStore(message);
+    debugger;
+    addMessageToStore(message, dialog._id);
     const messageToSend = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: message,
@@ -99,29 +102,36 @@ export const ChatProvider = ({ children }) => {
   };
   const getMessages = (dialog) => {
     return new Promise((resolve, reject) => {
+      let key = dialog._id;
       if (chosenDialog) {
-        const dialogId = dialog._id;
-        const params = {
-          chat_dialog_id: dialogId,
-          sort_desc: "date_sent",
-          limit: 100,
-          skip: 0,
-        };
-        ConnectyCube.chat.message
-          .list(params)
-          .then((messages) => {
-            messagesRef.current = [];
-            messages.items.map((e) => {
-              messagesRef.current.push(e);
-              return 0;
-            });
-            setMessages([...messagesRef.current]);
+        if (messagesRef.current[key] === undefined) {
+          const dialogId = dialog._id;
+          const params = {
+            chat_dialog_id: dialogId,
+            sort_desc: "date_sent",
+            limit: 100,
+            skip: 0,
+          };
+          ConnectyCube.chat.message
+            .list(params)
+            .then((messages) => {
+              // messagesRef.current = [];
+              messagesRef.current[key] = new Array();
+              messages.items.map((e) => {
+                messagesRef.current[key].unshift(e);
+                return 0;
+              });
+              setMessages({ ...messagesRef.current });
 
-            resolve(messages);
-          })
-          .catch((error) => {
-            reject();
-          });
+              resolve(messages);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject();
+            });
+        } else {
+          setMessages({ ...messagesRef.current });
+        }
       }
     });
   };
