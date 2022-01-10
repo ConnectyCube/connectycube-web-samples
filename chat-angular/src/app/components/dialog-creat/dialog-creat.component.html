@@ -1,27 +1,63 @@
 <div class="create-wrap">
   <div class="create-header">
     <h1 class="header-title" mat-dialog-title>Start Group Chat</h1>
-    <button class="create-close" mat-dialog-close>
+    <button class="create-close" mat-dialog-close="">
       <mat-icon>close</mat-icon>
     </button>
   </div>
-  <mat-dialog-content class="mat-typography">
+  <div class="create-body">
     <h2 class="content-title">Group chat info</h2>
-    <form [formGroup]="CreateForm" (ngSubmit)="onSubmitSearch()" action="#" class="create-form">
+    <form [formGroup]="CreateForm" action="#" class="create-form">
       <div class="form-header">
-        <button matTooltip="Add group chat avatar" matTooltipClass="tooltip" type="button" class="add-photo">
-          <mat-icon>add_a_photo</mat-icon>
-        </button>
-        <div class="search-container">
-          <input required minlength="4" placeholder="Dialog name" type="text" class="search-participants"
-                 formControlName="name">
-          <small class="search-form-error"
-                 *ngIf="getErrors('name')?.errors?.required || getErrors('name')?.errors?.minlength">
-            {{getErrors('name')?.errors?.minlength ?
-            '* dialog name length must be longer then 4' : '* dialog name is required'}}
-          </small>
+        <div class="form-group">
+          <button matTooltip="Add group chat avatar" matTooltipClass="tooltip" type="button" class="add-photo">
+            <mat-icon>add_a_photo</mat-icon>
+          </button>
+          <div class="info-form">
+            <input required minlength="4" placeholder="Dialog name" type="text" class="dialog-input dialog-name"
+                   formControlName="name">
+            <small class="info-form-error"
+                   *ngIf="getErrors('name')?.errors?.required || getErrors('name')?.errors?.minlength">
+              {{getErrors('name')?.errors?.minlength ?
+              '* dialog name length must be longer then 4' : '* dialog name is required'}}
+            </small>
+          </div>
+        </div>
+        <div class="form-group">
+          <input placeholder="Dialog description" type="text"
+                 class="dialog-input dialog-description"
+                 formControlName="description">
+        </div>
+      </div>
+      <div class="form-body">
+        <h2 class="body-title">
+          Participants
+          <sub>*</sub>
+          <span class="total-participants">{{(participants$ | async)?.length}}</span>
+        </h2>
+        <div class="selected-participants">
+          <div *ngFor="let user of (participants$ | async); index as i; trackBy: participantsTrackBy"
+               class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip">
+            <div class="participant-avatar"
+                 [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
+                 'background-color': user.avatar?'':'skyblue'}">
+              <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
+              <button *ngIf="!user.me" class="remove-participant-btn">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <div class="participant-info">
+              <div class="participant-name">{{user.full_name}}</div>
+              <mat-icon [ngStyle]="{'color': user.me?'#fea929':'#28b3f2'}">
+                {{user.me ? 'stars' : 'person'}}
+              </mat-icon>
+            </div>
+          </div>
+          <button (click)="addParticipants()" class="participant-avatar add-participant-btn">
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
       </div>
     </form>
-  </mat-dialog-content>
+  </div>
 </div>

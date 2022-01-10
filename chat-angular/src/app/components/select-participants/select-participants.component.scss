@@ -1,9 +1,9 @@
-.create-wrap {
+.select-wrap {
   width: 500px;
   height: 500px;
 }
 
-.create-header {
+.select-header {
   display: flex;
   padding: 16px;
   align-items: center;
@@ -11,7 +11,7 @@
   border-bottom: 1px solid #e3e7eb;
 }
 
-.create-close {
+.select-close {
   background: transparent !important;
 }
 
@@ -21,63 +21,15 @@
   font-weight: bold;
 }
 
-.create-body {
+.select-body {
+  padding: 6px 16px;
   height: calc(100% - 115px);;
   overflow-y: scroll;
   border-bottom: 1px solid #e3e7eb;
 }
 
-.content-title {
-  font-size: 14px;
-  padding: 0 16px;
-  color: #000;
-  margin: 0;
-  font-weight: bold;
-}
-
-.info-form {
-
-  &-error {
-    font-size: 11px;
-    margin-right: auto;
-    color: red;
-  }
-}
-
-.form-header {
-  display: flex;
-  padding: 7px 12px 13px 12px;
-  border-bottom: 1px solid #e3e7eb;
-  flex-direction: column;
-}
-
-.form-group {
-  display: flex;
-  margin-bottom: 10px;
-  align-items: flex-start;
-}
-
-.add-photo {
-  margin-right: 10px;
-  padding: 0;
-  width: 48px;
-  height: 40px;
-  background: transparent;
-
-  mat-icon {
-    width: 100%;
-    height: 100%;
-    font-size: 38px;
-  }
-}
-
-.info-form {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-}
-
-.dialog-input {
+.search-input {
+  margin: 15px 0;
   color: #000;
   font-size: 16px;
   font-weight: normal;
@@ -88,21 +40,13 @@
   border-radius: 10px;
 }
 
-.form-body {
-  padding: 6px 16px;
+.select-info {
+  color: #000;
+  font-size: 16px;
 }
 
-.body-title {
-  font-weight: bold;
-  font-size: 14px;
-  margin: 0;
+.search-form {
 
-  .total-participants {
-    font-size: 12px;
-    font-weight: 300;
-    color: #0071bb;
-    margin-left: 10px;
-  }
 }
 
 .selected-participants {
@@ -118,15 +62,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.add-participant-btn{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #7a858f;
-  border: 1px solid #dadee2;
-  background: #eaeef2;
 }
 
 .participant-avatar {
@@ -163,7 +98,7 @@
   right: 7px;
   bottom: 21px;
 
-  mat-icon{
+  mat-icon {
     width: 14px;
     height: 12px;
     font-size: 14px;
@@ -190,16 +125,8 @@
   white-space: nowrap;
 }
 
-.ng-valid[required], .ng-valid.required {
-  border-left: 10px solid #42A948; /* green */
-}
-
-.ng-invalid:not(form) {
-  border-left: 10px solid #a94442; /* red */
-}
-
 @media screen and (max-width: 767px) {
-  .create-wrap{
+  .select-wrap {
     width: 100%;
   }
 }

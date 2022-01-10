@@ -1,0 +1,37 @@
+<div class="select-wrap">
+  <div class="select-header">
+    <h1 class="header-title" mat-dialog-title>Select participants</h1>
+    <button class="select-close" mat-dialog-close="">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="select-body">
+    <span class="select-info">
+      You can invite one or more participants by selecting the names
+      from the list, search, or invite them by entering their login
+      or fullname in the search bar.
+    </span>
+    <form [formGroup]="SearchForm" (ngSubmit)="SearchSubmit()" action="#" class="search-form">
+      <input required minlength="3" formControlName="name" placeholder="Search..." type="text" class="search-input">
+      <div class="selected-participants">
+        <div *ngFor="let user of (participants$ | async); index as i; trackBy: participantsTrackBy"
+             class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip">
+          <div class="participant-avatar"
+               [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
+                 'background-color': user.avatar?'':'skyblue'}">
+            <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
+            <button type="button" *ngIf="!user.me" class="remove-participant-btn">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <div class="participant-info">
+            <div class="participant-name">{{user.full_name}}</div>
+            <mat-icon [ngStyle]="{'color': user.me?'#fea929':'#28b3f2'}">
+              {{user.me ? 'stars' : 'person'}}
+            </mat-icon>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

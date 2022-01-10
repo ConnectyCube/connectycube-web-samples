@@ -1,10 +1,10 @@
 * {
 
-  font: 400 15px/1 "Open Sans", sans-serif;
+  font: 400 15px/1 'Source Sans Pro', sans-serif;
   box-sizing: border-box;
 }
 
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800&subset=latin,latin-ext);
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap');
 
 /** RESET */
 html,
@@ -208,5 +208,13 @@ cdk-virtual-scroll-viewport > div {
 .create-dialog .mat-dialog-container {
   padding: 0;
   overflow: hidden;
+}
+.select-dialog .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.mat-menu-content:not(:empty) {
+  padding: 0 !important;
 }
 

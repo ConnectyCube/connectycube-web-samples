@@ -27,6 +27,8 @@ import {CustomVirtualScrollDirective} from "./directives/custom-virtual-scroll-s
 import {MatDialogModule} from '@angular/material/dialog';
 import { ModalComponent } from './components/modal/modal.component';
 import { DialogCreatComponent } from './components/dialog-creat/dialog-creat.component';
+import {MatMenuModule} from "@angular/material/menu";
+import { SelectParticipantsComponent } from './components/select-participants/select-participants.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,7 @@ import { DialogCreatComponent } from './components/dialog-creat/dialog-creat.com
     CustomVirtualScrollDirective,
     ModalComponent,
     DialogCreatComponent,
+    SelectParticipantsComponent,
   ],
   imports: [
     BrowserModule,
@@ -59,6 +62,7 @@ import { DialogCreatComponent } from './components/dialog-creat/dialog-creat.com
     MatButtonModule,
     MatDialogModule,
     NoopAnimationsModule,
+    MatMenuModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

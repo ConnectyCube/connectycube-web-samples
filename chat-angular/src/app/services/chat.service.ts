@@ -35,4 +35,18 @@ export class ChatService {
         console.error(error);
       });
   }
+
+  public searchFullName(fullName: string) {
+    const searchParams = {full_name: fullName};
+
+    return ConnectyCube.users
+      .get(searchParams)
+  }
+
+  public searchLogin(login: string) {
+    const searchParams = {login: login};
+    return ConnectyCube.users
+      .get(searchParams)
+  }
+
 }

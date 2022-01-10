@@ -187,7 +187,7 @@ export class ChatMessagesComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    console.log('event.key', event.key);
+    // console.log('event.key', event.key);
 
     let offsetDelta;
 

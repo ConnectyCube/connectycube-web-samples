@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {appConfig} from "./config";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
+import {Store} from "@ngrx/store";
+import {addParticipant} from "../reducers/participants.actions";
 
 declare let ConnectyCube: any;
 
@@ -10,7 +12,7 @@ declare let ConnectyCube: any;
 })
 export class AuthService {
 
-  constructor(private router: Router,) {
+  constructor(private router: Router, private store$: Store) {
   }
 
   public connectToChat(id: number, password: string) {
@@ -31,15 +33,25 @@ export class AuthService {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
           localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          localStorage.removeItem('login');
         },
       }
     };
-    const id: number = JSON.parse(<string>localStorage.getItem('user')).id;
+
+    const login = atob(localStorage.getItem('login') || "");
 
     this.init(credentials, appConfigToken);
-    ConnectyCube.users.get({})
-    this.connectToChat(id, token);
+    ConnectyCube.users.get({login}).then((u: any) => {
+      const user = u.user;
+      this.store$.dispatch(addParticipant({
+        me: true,
+        login: user.login,
+        id: user.id,
+        avatar: user.avatar,
+        full_name: user.full_name
+      }))
+      this.connectToChat(user.id, token);
+    })
   }
 
   public logout() {
@@ -47,7 +59,7 @@ export class AuthService {
       .then(() => {
         this.router.navigateByUrl("/auth");
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('login');
       })
       .catch((error: any) => {
         console.error(error);
@@ -63,10 +75,17 @@ export class AuthService {
 
       if (isOnlyLogin) {
         ConnectyCube.createSession().then((session: any) => {
-          localStorage.setItem('token', session.token);
+          localStorage.setItem('token', btoa(session.token));
 
           ConnectyCube.login(userProfileLogin).then((u: any) => {
-            localStorage.setItem('user', JSON.stringify(u));
+            this.store$.dispatch(addParticipant({
+              me: true,
+              login: u.login,
+              id: u.id,
+              avatar: u.avatar,
+              full_name: u.full_name
+            }))
+            localStorage.setItem('login', btoa(u.login));
             this.connectToChat(u.id, password);
             resolve();
           })
@@ -77,7 +96,14 @@ export class AuthService {
       }
       else {
         ConnectyCube.login(userProfileLogin).then((u: any) => {
-          localStorage.setItem('user', JSON.stringify(u));
+          this.store$.dispatch(addParticipant({
+            me: true,
+            login: u.login,
+            id: u.id,
+            avatar: u.avatar,
+            full_name: u.full_name
+          }))
+          localStorage.setItem('login', btoa(u.login));
           this.connectToChat(u.id, password);
           resolve();
         })
@@ -103,7 +129,7 @@ export class AuthService {
           full_name: userName,
         };
 
-        localStorage.setItem('token', session.token);
+        localStorage.setItem('token', btoa(session.token));
 
         ConnectyCube.users.signup(userProfile)
           .then(() => {

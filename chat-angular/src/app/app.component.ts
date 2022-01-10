@@ -17,8 +17,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(<string>localStorage.getItem('user'));
+    const token = atob(localStorage.getItem('token') || "");
 
     if (token) {
       this.authService.autoLogin(token);

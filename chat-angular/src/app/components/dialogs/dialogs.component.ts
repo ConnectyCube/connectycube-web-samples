@@ -6,9 +6,13 @@ import {toggleCreatChatStatus} from "../../reducers/interface.actions";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogCreatComponent} from "../dialog-creat/dialog-creat.component";
 import {ChatService} from "../../services/chat.service";
-import {dialogsSelector} from "../../reducers/dialog.selectors";
+import {dialogsSearchSelector, dialogsSelector} from "../../reducers/dialog.selectors";
 import {Observable} from "rxjs";
 import {Dialog} from "../../services/config";
+import {FormControl} from "@angular/forms";
+import {meSelector} from "../../reducers/participants.selectors";
+import {participant} from "../../reducers/participants.reducer";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-dialogs',
@@ -19,12 +23,12 @@ export class DialogsComponent implements OnInit {
   @ViewChild(CdkVirtualScrollViewport) virtualScroll: CdkVirtualScrollViewport;
 
   public dialogs$: Observable<Dialog[]> = this.store$.select(dialogsSelector);
-  public dialogArray: Array<number> = [];
+  public userMe: participant = {login: "", me: true, id: 404, avatar: null, full_name: ""};
   public prevLiActiveElem: Element | null = null;
   public isScrollBarPressed = false;
   public moreIcon = 'expand_more';
-  public fullName = JSON.parse(<string>localStorage.getItem('user')).full_name || 'full name';
-  public avatar = JSON.parse(<string>localStorage.getItem('user')).avatar || this.fullName.slice(0, 2).toUpperCase();
+
+  public dialog_name = new FormControl('');
 
   constructor(
     private authService: AuthService,
@@ -32,9 +36,15 @@ export class DialogsComponent implements OnInit {
     private store$: Store,
     private dialog: MatDialog
   ) {
-    for (let i = 0; i < 25; i++) {
-      this.dialogArray[i] = i;
-    }
+    this.dialog_name.valueChanges.subscribe(data => this.changeSearchValue(data.toLowerCase()));
+  }
+
+  private changeSearchValue(data: string) {
+    this.dialogs$ = this.store$.select(dialogsSearchSelector, {data})
+  }
+
+  dialogTrackBy(index: number, dialog: Dialog) {
+    return dialog.id;
   }
 
   public logout() {
@@ -43,7 +53,7 @@ export class DialogsComponent implements OnInit {
 
   public addDialogEvent(e: MouseEvent) {
     this.store$.dispatch(toggleCreatChatStatus({isChatCreator: true}))
-    this.dialog.open(DialogCreatComponent, {panelClass: 'create-dialog'});
+    this.dialog.open(DialogCreatComponent, {panelClass: 'create-dialog', disableClose: true});
   }
 
   public dialogHandler(e: MouseEvent) {
@@ -74,6 +84,11 @@ export class DialogsComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatService.getDialogs();
+    const subsSelect = this.store$.select(meSelector).subscribe(res => {
+      if (res) {
+        this.userMe = res;
+      }
+    })
   }
 
 }
