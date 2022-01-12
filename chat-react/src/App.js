@@ -14,6 +14,9 @@ function App() {
       <Route exact path="/">
         {localStorage.token ? <Redirect to="/home" /> : <Login chat={chat} />}
       </Route>
+      <Route exact path="/login">
+        {localStorage.token ? <Redirect to="/home" /> : <Login chat={chat} />}
+      </Route>
       <Route exact path="/signup">
         <SignUp chat={chat} />
       </Route>

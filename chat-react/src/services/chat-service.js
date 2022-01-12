@@ -69,6 +69,23 @@ export const ChatProvider = ({ children }) => {
         console.log(error);
       });
   };
+
+  const startGroupChat = (occupants, groupName) => {
+    const params = {
+      type: 2,
+      name: groupName,
+      occupants_ids: occupants,
+      description: "New group",
+    };
+
+    ConnectyCube.chat.dialog
+      .create(params)
+      .then((dialog) => {
+        getChats();
+      })
+      .catch((error) => {});
+  };
+
   const setDialog = (dialog) => {
     setChosenDialog(dialog);
   };
@@ -85,8 +102,8 @@ export const ChatProvider = ({ children }) => {
     }
     setMessages({ ...messagesRef.current });
   };
+
   const sendMessage = (dialog, message, opponentId) => {
-    debugger;
     addMessageToStore(message, dialog._id);
     const messageToSend = {
       type: dialog.type === 3 ? "chat" : "groupchat",
@@ -100,6 +117,7 @@ export const ChatProvider = ({ children }) => {
 
     ConnectyCube.chat.send(opponentId, messageToSend);
   };
+
   const getMessages = (dialog) => {
     return new Promise((resolve, reject) => {
       let key = dialog._id;
@@ -147,6 +165,7 @@ export const ChatProvider = ({ children }) => {
         getMessages,
         messages,
         sendMessage,
+        startGroupChat,
       }}
     >
       {children}

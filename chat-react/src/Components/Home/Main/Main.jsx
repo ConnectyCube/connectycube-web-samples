@@ -30,6 +30,7 @@ const Main = (props) => {
     animateScroll.scrollToBottom({
       containerId: messagesRef.current.id,
     });
+    //  messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
   useEffect(() => {
     if (messages) {
@@ -80,7 +81,7 @@ const Main = (props) => {
       >
         {dialog && (
           <div id="messages" className="messages">
-            {allMessages ? allMessages : "NO MESSAGES YET"}
+            {allMessages ? allMessages : <span className="no-msg">NO MESSAGES YET</span>}
           </div>
         )}
         {!dialog && <div className="choose__chat">Choose a chat</div>}

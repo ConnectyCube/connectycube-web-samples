@@ -2,10 +2,12 @@ import React from "react";
 import "./Chats.scss";
 import { useEffect } from "react";
 import { createRef } from "react";
+import { getTime } from "../../../../services/helpers";
 
 const Chats = (props) => {
   const chatRef = React.createRef();
   const { userInfo, setDialog, chosenDialog } = props;
+  debugger;
   useEffect(() => {
     try {
       if (userInfo._id === chosenDialog._id) {
@@ -35,13 +37,23 @@ const Chats = (props) => {
       </div>
       <div className="user__info-main">
         <p className="chat__username">{userInfo.name}</p>
+        <small>
+          {userInfo.last_message
+            ? userInfo.last_message_user_id === parseInt(localStorage.userId)
+              ? "me: " + userInfo.last_message
+              : userInfo.name + " : " + userInfo.last_message
+            : "No messages yet"}
+        </small>
+        <small>
+          {userInfo.last_message
+            ? getTime(userInfo.last_message_date_sent)
+            : getTime(userInfo.created_at)}
+        </small>
         {/* <p className="chat__user-status">Offline</p> */}
       </div>
-      <span>
-        {userInfo.unread_messages_count > 0
-          ? userInfo.unread_messages_count
-          : ""}
-      </span>
+      {userInfo.unread_messages_count > 0 && (
+        <span className="not__read">{userInfo.unread_messages_count}</span>
+      )}
       {/* <span className="last__mesage-time">14:30</span> */}
     </div>
   );

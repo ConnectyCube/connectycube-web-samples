@@ -2,14 +2,32 @@ import React, { useState } from "react";
 import "./NewChat.scss";
 import ConnectyCube from "connectycube";
 import { AiOutlineClose } from "react-icons/ai";
-
+import { useRef } from "react";
 import { FaSearch } from "react-icons/fa";
 import FoundUser from "./FoundUser/FoundUser";
+import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 const NewChat = (props) => {
-  const { close, getChats } = props;
+  const { close, getChats, type, startGroupChat } = props;
   const userRef = React.createRef();
 
+  const [create, setCreate] = useState(false);
+
   const [foundedUsers, setFoundedUsers] = useState([]);
+  let groupOccupants = useRef([]);
+
+  const [occupants, setOccupants] = useState([]);
+  const groupChatUsers = (e, id) => {
+    if (e.currentTarget.checked) {
+      groupOccupants.current.push(id);
+      setOccupants(groupOccupants.current.length);
+    } else {
+      groupOccupants.current = groupOccupants.current.filter((el) => {
+        return el !== id;
+      });
+      setOccupants(groupOccupants.current.length);
+    }
+    console.log(groupOccupants.current);
+  };
 
   const findUser = () => {
     return new Promise((resolve, reject) => {
@@ -48,7 +66,15 @@ const NewChat = (props) => {
       .then((users) => {
         setFoundedUsers(() => {
           let array = users.map((e) => {
-            return <FoundUser close={close} getChats={getChats} userInfo={e} />;
+            return (
+              <FoundUser
+                close={close}
+                getChats={getChats}
+                userInfo={e}
+                type={type}
+                groupChatUsers={groupChatUsers}
+              />
+            );
           });
           return array;
         });
@@ -60,20 +86,48 @@ const NewChat = (props) => {
   };
 
   return (
-    <form onSubmit={finding} className="new-chat__form" action="" method="POST">
-      <div className="close__btn" onClick={close}>
-        <AiOutlineClose color="white" fontSize="1.5em" />
-      </div>
-      <h1>Start new chat</h1>
-      <div className="find__user-container">
-        <input ref={userRef} type="text" placeholder="Enter user name" />
-        <button type="button" className="find__user-btn" onClick={finding}>
-          <FaSearch />
-        </button>
-      </div>
+    <div className="new-chat__container">
+      {!create && (
+        <form
+          onSubmit={finding}
+          className="new-chat__form"
+          action=""
+          method="POST"
+        >
+          <div className="close__btn" onClick={close}>
+            <AiOutlineClose color="black" fontSize="1.5em" />
+          </div>
+          <h1>Start new chat</h1>
+          <div className="find__user-container">
+            <input ref={userRef} type="text" placeholder="Enter user name" />
+            <button type="button" className="find__user-btn" onClick={finding}>
+              <FaSearch />
+            </button>
+          </div>
 
-      <div className="found__users">{foundedUsers}</div>
-    </form>
+          <div className="found__users">{foundedUsers}</div>
+          {type === 2 && occupants > 0 && (
+            <button
+              className="create__group-btn"
+              onClick={() => {
+                setCreate(true);
+                //  startGroupChat(groupOccupants.current);
+              }}
+              type="button"
+            >
+              Create group chat
+            </button>
+          )}
+        </form>
+      )}
+      {create && (
+        <CreateGroupChat
+          close={close}
+          startGroupChat={startGroupChat}
+          occupants={groupOccupants.current}
+        />
+      )}
+    </div>
   );
 };
 

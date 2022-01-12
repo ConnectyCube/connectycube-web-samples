@@ -54,6 +54,9 @@
   }
   & .messages__container {
     flex: 0 1 100%;
+    display: flex;
+    height: 100%;
+    flex-direction: column-reverse;
     overflow-x: hidden;
     width: 100%;
     position: relative;
@@ -64,6 +67,13 @@
       display: flex;
       padding: 55px;
       flex-direction: column;
+
+      & .no-msg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
     }
 
     & .choose__chat {

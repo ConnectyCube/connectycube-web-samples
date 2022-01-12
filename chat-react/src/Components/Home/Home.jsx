@@ -13,6 +13,7 @@ const Home = (props) => {
     getMessages,
     messages,
     sendMessage,
+	 startGroupChat
   } = props.chat;
   return (
     <div className="home__container">
@@ -23,6 +24,7 @@ const Home = (props) => {
         getChats={getChats}
         setDialog={setDialog}
         chosenDialog={chosenDialog}
+		  startGroupChat={startGroupChat}
       />
       <Main
         className="main__block"

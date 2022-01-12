@@ -15,7 +15,6 @@
     transition: 0.3s ease-in-out;
 
     &:hover {
-      background-color: white;
       color: black;
     }
   }
@@ -28,10 +27,10 @@
     text-align: left;
 
     & .user__full-name {
-      color: white;
+      color: black;
     }
     & .user__login {
-      color: white;
+      color: black;
       font-size: 14px;
     }
   }

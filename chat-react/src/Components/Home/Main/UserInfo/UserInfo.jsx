@@ -23,14 +23,8 @@ const UserInfo = (props) => {
         <span>{userInfo.name}</span>
       </div>
       <div className="user__info-buttons">
-        <div className="button__call">
-          <FiPhoneCall color="white" fontSize={32} />
-        </div>
-        <div className="button__video-call">
-          <BsCameraVideo color="white" fontSize={32} />
-        </div>
         <div className="button__more">
-          <FiMoreHorizontal fontSize={32} />
+          <FiMoreHorizontal fontSize={25} />
         </div>
       </div>
     </div>

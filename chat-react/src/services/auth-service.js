@@ -88,6 +88,21 @@ class AuthService {
     });
   };
 
+  logout = () => {
+    return new Promise((resolve, reject) => {
+      ConnectyCube.logout()
+        .then(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("login");
+          localStorage.removeItem("userId");
+          resolve();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  };
+
   signup = (userName, login, password) => {
     return new Promise((resolve, reject) => {
       ConnectyCube.createSession().then((session) => {

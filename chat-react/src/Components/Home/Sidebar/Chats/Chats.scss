@@ -36,12 +36,36 @@
   }
   & .user__info-chats {
     & .user__img-container {
+      width: 60px;
+      height: 60px;
     }
   }
   & .user__info-main {
+    display: flex;
+    flex-direction: column;
     padding-left: 20px;
     color: black;
+    text-align: left;
+    justify-content: space-between;
+    flex: 1 1 100%;
+
+    & > * {
+      &:not(:last-child) {
+        padding-bottom: 5px;
+      }
+    }
+    & small {
+      font-size: 11px;
+      color: #919191;
+    }
   }
   & .last__mesage-time {
+  }
+
+  & .not__read {
+    background: #bfbbbb;
+    padding: 5px 10px;
+    border-radius: 50%;
+    color: white;
   }
 }

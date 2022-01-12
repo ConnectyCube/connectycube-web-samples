@@ -3,8 +3,7 @@ import "./FoundUser.scss";
 import ConnectyCube from "connectycube";
 
 const FoundUser = (props) => {
-  const { userInfo, getChats, close } = props;
-
+  const { userInfo, getChats, close, type, groupChatUsers } = props;
   const startChat = (e) => {
     close();
     const params = {
@@ -38,15 +37,25 @@ const FoundUser = (props) => {
           <span className="user__login">@{userInfo.login}</span>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={startChat}
-        className="add__btn"
-        fontSize="2em"
-        color="white"
-      >
-        Start chat
-      </button>
+      {type === 1 ? (
+        <button
+          type="button"
+          onClick={startChat}
+          className="add__btn"
+          fontSize="2em"
+          color="white"
+        >
+          Start chat
+        </button>
+      ) : (
+        <input
+          type="checkbox"
+          value={false}
+          onChange={(e) => {
+            groupChatUsers(e, userInfo.id);
+          }}
+        />
+      )}
     </div>
   );
 };
