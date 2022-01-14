@@ -1,6 +1,6 @@
 <div class="create-wrap">
   <div class="create-header">
-    <h1 class="header-title" mat-dialog-title>Start Group Chat</h1>
+    <h1 class="header-title" mat-dialog-title>Create Group Chat</h1>
     <button class="create-close" mat-dialog-close="">
       <mat-icon>close</mat-icon>
     </button>
@@ -30,6 +30,9 @@
         </div>
       </div>
       <div class="form-body">
+        <div (click)="editParticipants()" *ngIf="(participants$ | async)!.length > 1" class="edit-participants">Edit
+          participants
+        </div>
         <h2 class="body-title">
           Participants
           <sub>*</sub>
@@ -42,7 +45,7 @@
                  [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
                  'background-color': user.avatar?'':'skyblue'}">
               <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
-              <button *ngIf="!user.me" class="remove-participant-btn">
+              <button *ngIf="!user.me" (click)="removeParticipant($event,user.id)" class="remove-participant-btn">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
@@ -53,11 +56,17 @@
               </mat-icon>
             </div>
           </div>
-          <button (click)="addParticipants()" class="participant-avatar add-participant-btn">
+          <button *ngIf="(participants$ | async)!.length === 1" (click)="addParticipants()"
+                  class="participant-avatar add-participant-btn">
             <mat-icon>add</mat-icon>
           </button>
         </div>
       </div>
     </form>
+  </div>
+  <div class="create-footer">
+    <button class="footer-close-btn" mat-button mat-dialog-close="">Cancel</button>
+    <button class="footer-create-btn" (click)="createDialog()" mat-button mat-dialog-close=""
+            [disabled]="(participants$ | async)!.length < 2 || !CreateForm.valid">Create</button>
   </div>
 </div>

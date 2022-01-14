@@ -4,6 +4,7 @@ import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
 import {addParticipant} from "../reducers/participants.actions";
+import {logout} from "../reducers/app.action";
 
 declare let ConnectyCube: any;
 
@@ -57,6 +58,7 @@ export class AuthService {
   public logout() {
     ConnectyCube.logout()
       .then(() => {
+        this.store$.dispatch(logout());
         this.router.navigateByUrl("/auth");
         localStorage.removeItem('token');
         localStorage.removeItem('login');

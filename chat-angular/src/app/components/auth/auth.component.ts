@@ -13,6 +13,8 @@ import {ModalComponent} from "../modal/modal.component";
 })
 export class AuthComponent implements OnInit {
 
+  private authDoor: boolean = true;
+
   public authStatus: string = 'Log in';
   public authStatusText: string = 'Sign up';
 
@@ -40,7 +42,9 @@ export class AuthComponent implements OnInit {
   }
 
   public onSubmit() {
+    if(!this.authDoor) return;
     if (this.authForm.valid) {
+      this.authDoor = false;
       console.log("VALID")
       if (this.authStatus === "Log in") {
         console.warn("[Login]", this.authForm.value);
@@ -49,6 +53,7 @@ export class AuthComponent implements OnInit {
             this.router.navigateByUrl('/chat');
           })
           .catch((error: any) => {
+            this.authDoor = true;
             console.log(error);
             localStorage.removeItem('token')
             localStorage.removeItem('user')
@@ -62,6 +67,7 @@ export class AuthComponent implements OnInit {
             this.router.navigateByUrl('/chat');
           })
           .catch((error: any) => {
+            this.authDoor = true;
             console.log(error);
             localStorage.removeItem('token')
             localStorage.removeItem('user')

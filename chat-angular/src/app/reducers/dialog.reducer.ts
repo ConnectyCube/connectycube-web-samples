@@ -1,6 +1,6 @@
 import {Dialog} from "../services/config";
 import {createReducer, on} from "@ngrx/store";
-import {addDialogs} from "./dialog.actions";
+import {addDialog, addDialogs} from "./dialog.actions";
 
 export interface dialogState {
   dialogObject: {
@@ -19,5 +19,9 @@ export const dialogReducer = createReducer(
   on(addDialogs, (state, {dialogs}) => ({
     ...state,
     dialogObject: {dialogs}
+  })),
+  on(addDialog, (state, {dialog}) => ({
+    ...state,
+    dialogObject: {dialogs: [...[dialog],...state.dialogObject.dialogs]}
   }))
 )

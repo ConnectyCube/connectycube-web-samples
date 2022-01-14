@@ -5,3 +5,8 @@ export const addDialogs = createAction(
   '[DIALOG] add dialogs',
   props<{ dialogs: Array<Dialog> }>()
 )
+
+export const addDialog = createAction(
+  '[DIALOG] add dialog',
+  props<{dialog:Dialog}>()
+)

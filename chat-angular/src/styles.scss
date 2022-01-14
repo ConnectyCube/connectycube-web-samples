@@ -209,7 +209,13 @@ cdk-virtual-scroll-viewport > div {
   padding: 0;
   overflow: hidden;
 }
+
 .select-dialog .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.create-dialog-one .mat-dialog-container {
   padding: 0;
   overflow: hidden;
 }

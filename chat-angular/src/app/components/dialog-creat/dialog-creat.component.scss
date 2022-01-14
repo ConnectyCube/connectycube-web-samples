@@ -22,6 +22,7 @@
 }
 
 .create-body {
+  position: relative;
   height: calc(100% - 115px);;
   overflow-y: scroll;
   border-bottom: 1px solid #e3e7eb;
@@ -89,6 +90,7 @@
 }
 
 .form-body {
+  position: relative;
   padding: 6px 16px;
 }
 
@@ -120,13 +122,22 @@
   align-items: center;
 }
 
-.add-participant-btn{
+.add-participant-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   color: #7a858f;
   border: 1px solid #dadee2;
   background: #eaeef2;
+}
+
+.edit-participants {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 14px;
+  color: #0071bb;
+  cursor: pointer;
 }
 
 .participant-avatar {
@@ -163,7 +174,7 @@
   right: 7px;
   bottom: 21px;
 
-  mat-icon{
+  mat-icon {
     width: 14px;
     height: 12px;
     font-size: 14px;
@@ -182,12 +193,61 @@
   }
 }
 
+.create-footer {
+  display: flex;
+  height: 50px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 16px;
+}
+
 .participant-name {
   color: #000;
   max-width: 36px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.footer-close-btn {
+  margin-right: 5px;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #8b96a0;
+  border-radius: 4px;
+  color: #606b76;
+  cursor: pointer;
+  display: flex;
+  font-stretch: normal;
+  font-style: normal;
+  font-weight: 700;
+  justify-content: center;
+  letter-spacing: normal;
+  outline: none;
+  padding: 0 12px;
+  text-align: center;
+}
+
+.footer-create-btn {
+  color: #ffffff;
+  align-items: center;
+  background-color: #337cbd;
+  border: 1px solid #337cbd;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  font-stretch: normal;
+  font-style: normal;
+  font-weight: 700;
+  justify-content: center;
+  letter-spacing: normal;
+  outline: none;
+  padding: 0 12px;
+  text-align: center;
+  &:disabled{
+    color: #ffffff;
+    cursor: not-allowed;
+  }
 }
 
 .ng-valid[required], .ng-valid.required {
@@ -199,7 +259,7 @@
 }
 
 @media screen and (max-width: 767px) {
-  .create-wrap{
+  .create-wrap {
     width: 100%;
   }
 }

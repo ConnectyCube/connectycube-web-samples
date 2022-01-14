@@ -1,0 +1,34 @@
+<div class="create-wrap">
+  <div class="create-header">
+    <h1 class="header-title" mat-dialog-title>Start Chat</h1>
+    <button class="create-close" mat-dialog-close="">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="create-body">
+    <span class="select-info">
+      You can start individual chat with participant by selecting the names
+      from the list, search them by entering their login
+      or fullname in the search bar.
+    </span>
+    <form [formGroup]="SearchForm" (ngSubmit)="SearchSubmit()" action="#" class="search-form">
+      <input required minlength="3" formControlName="name" placeholder="Search..." type="text" class="search-input">
+    </form>
+    <cdk-virtual-scroll-viewport class="searched-participants"
+                                 itemSize="56">
+      <div class="participant-item-search"
+           *cdkVirtualFor="let user of searchedParticipants$; index as i;
+            trackBy: participantsTrackBy"
+           (click)="createChat($event,user.id)"
+           mat-dialog-close="">
+        <div class="participant-avatar-search"
+             [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
+                 'background-color': user.avatar?'':'skyblue'}"
+        >
+          <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
+        </div>
+        <h3 class="participant-name-search">{{user.full_name}}</h3>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</div>

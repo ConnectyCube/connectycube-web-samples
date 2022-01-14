@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Dialog} from "./config";
 import {Store} from "@ngrx/store";
-import {addDialogs} from "../reducers/dialog.actions";
+import {addDialog, addDialogs} from "../reducers/dialog.actions";
+import {dialogsSelector} from "../reducers/dialog.selectors";
+import {take} from 'rxjs/operators';
 
 declare let ConnectyCube: any;
 
@@ -47,6 +49,61 @@ export class ChatService {
     const searchParams = {login: login};
     return ConnectyCube.users
       .get(searchParams)
+  }
+
+  public createGroupChat(name: string, description: string, idArray: Array<number>, photo?: string) {
+    const params = {
+      type: 2,
+      name: name,
+      occupants_ids: idArray,
+      description: description,
+      photo: photo,
+    };
+
+    ConnectyCube.chat.dialog
+      .create(params)
+      .then((d: any) => {
+        console.warn(d);
+        const dialog: Dialog = {
+          id: d._id, name: d.name, photo: d.photo, lastMessage: d.last_message,
+          lastMessageDate: d.last_message_date_sent, unreadMessage: d.unread_messages_count,
+          createAt: d.created_at
+        };
+        console.warn(dialog)
+        this.store$.dispatch(addDialog({dialog}));
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }
+
+  public createIndividualChat(id: number) {
+    const params = {
+      type: 3,
+      occupants_ids: [id],
+    };
+
+    ConnectyCube.chat.dialog
+      .create(params)
+      .then((d: any) => {
+        const dialog: Dialog = {
+          id: d._id, name: d.name, photo: d.photo, lastMessage: d.last_message,
+          lastMessageDate: d.last_message_date_sent, unreadMessage: d.unread_messages_count,
+          createAt: d.created_at
+        };
+        console.warn(dialog)
+        this.store$.select(dialogsSelector).pipe(take(1)).subscribe(res => {
+          if (res !== undefined) {
+            const thisIsChat = res.some((d: Dialog) => d.id === dialog.id);
+            if (!thisIsChat) {
+              this.store$.dispatch(addDialog({dialog}));
+            }
+          }
+        })
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
   }
 
 }

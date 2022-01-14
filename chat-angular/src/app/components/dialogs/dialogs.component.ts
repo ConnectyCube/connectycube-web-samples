@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {AuthService} from "../../services/auth.service";
 import {Store} from "@ngrx/store";
@@ -13,6 +13,8 @@ import {FormControl} from "@angular/forms";
 import {meSelector} from "../../reducers/participants.selectors";
 import {participant} from "../../reducers/participants.reducer";
 import {take} from "rxjs/operators";
+import {DialogOneOneComponent} from "../dialog-one-one/dialog-one-one.component";
+import {removeAllSearchParticipants} from "../../reducers/participants.actions";
 
 @Component({
   selector: 'app-dialogs',
@@ -51,8 +53,11 @@ export class DialogsComponent implements OnInit {
     this.authService.logout();
   }
 
-  public addDialogEvent(e: MouseEvent) {
-    this.store$.dispatch(toggleCreatChatStatus({isChatCreator: true}))
+  public addOneDialogEvent() {
+    this.dialog.open(DialogOneOneComponent, {panelClass: 'create-dialog-one', disableClose: true});
+  }
+
+  public addGroupDialogEvent() {
     this.dialog.open(DialogCreatComponent, {panelClass: 'create-dialog', disableClose: true});
   }
 

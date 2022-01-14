@@ -9,6 +9,7 @@ import {environment} from '../../environments/environment';
 import {interfaceReducer, interfaceState} from "./interface.reducer";
 import {dialogReducer, dialogState} from "./dialog.reducer";
 import {participantsReducer, participantsState} from "./participants.reducer";
+import {logout} from "./metaReducer";
 
 export const INTERFACE_KEY = 'interface'
 export const DIALOG_KEY = 'dialog'
@@ -27,4 +28,4 @@ export const reducers: ActionReducerMap<State> = {
 };
 
 
-export const metaReducers: MetaReducer<State>[] = !environment.production ? [] : [];
+export const metaReducers: MetaReducer<State>[] = !environment.production ? [logout] : [logout];

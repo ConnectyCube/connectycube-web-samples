@@ -38,11 +38,11 @@
         <mat-icon class="add__icon">person_add</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item>
+        <button type="button" (click)="addOneDialogEvent()" mat-menu-item>
           <mat-icon>chat</mat-icon>
           <span>New chat</span>
         </button>
-        <button (click)="addDialogEvent($event)" mat-menu-item>
+        <button type="button" (click)="addGroupDialogEvent()" mat-menu-item>
           <mat-icon>3p</mat-icon>
           <span>New group chat</span>
         </button>
