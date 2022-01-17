@@ -3,8 +3,9 @@ import {appConfig} from "./config";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
-import {addParticipant} from "../reducers/participants.actions";
+import {addParticipant} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
+import {ChatService} from "./chat.service";
 
 declare let ConnectyCube: any;
 
@@ -13,7 +14,7 @@ declare let ConnectyCube: any;
 })
 export class AuthService {
 
-  constructor(private router: Router, private store$: Store) {
+  constructor(private router: Router, private store$: Store,private chatService:ChatService) {
   }
 
   public connectToChat(id: number, password: string) {
@@ -35,6 +36,7 @@ export class AuthService {
         sessionExpired: (handleResponse: any, retry: any) => {
           localStorage.removeItem('token');
           localStorage.removeItem('login');
+          this.router.navigateByUrl("/auth");
         },
       }
     };
@@ -51,7 +53,9 @@ export class AuthService {
         avatar: user.avatar,
         full_name: user.full_name
       }))
-      this.connectToChat(user.id, token);
+      this.connectToChat(user.id, token).then(()=>{
+        this.chatService.init();
+      })
     })
   }
 
@@ -88,7 +92,9 @@ export class AuthService {
               full_name: u.full_name
             }))
             localStorage.setItem('login', btoa(u.login));
-            this.connectToChat(u.id, password);
+            this.connectToChat(u.id, password).then(()=>{
+              this.chatService.init();
+            });
             resolve();
           })
             .catch((error: any) => {
@@ -106,7 +112,9 @@ export class AuthService {
             full_name: u.full_name
           }))
           localStorage.setItem('login', btoa(u.login));
-          this.connectToChat(u.id, password);
+          this.connectToChat(u.id, password).then(()=>{
+            this.chatService.init();
+          });
           resolve();
         })
           .catch((error: any) => {

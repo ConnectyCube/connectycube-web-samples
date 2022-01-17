@@ -1,23 +1,26 @@
 <div class="chat__right-panel">
-  <div class="header">
+  <div *ngIf="selectedConversation$ | async" class="header">
     <div class="user">
-      <div class="user__avatar">
-        <p>LL</p>
+      <div class="user__avatar"
+           [ngStyle]="{'background-image': selectedDialog.photo?'url('+ selectedDialog.photo +')':'none',
+                 'background-color': selectedDialog.photo?'':'skyblue'}">
+        <p *ngIf="!selectedDialog.photo">{{selectedDialog.name.slice(0, 2).toUpperCase()}}</p>
       </div>
       <div class="user__info">
-        <p class="user__fullname">Full
-          Nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
+        <p class="user__fullname">
+          {{selectedDialog.name}}
+        </p>
         <small class="user__status">Typing...</small>
       </div>
     </div>
   </div>
-  <div class="body">
+  <div *ngIf="selectedConversation$ | async" class="body">
     <div class="messages-container" #messagesContainer>
       <cdk-virtual-scroll-viewport
         #viewport
         itemSize="items"
       >
-        <div #messageContainer *cdkVirtualFor="let message of messages.reverse()"
+        <div #messageContainer *cdkVirtualFor="let message of messages | async;index as i; trackBy: messagesTrackBy"
              [ngClass]="message.senderName?'them':'me'"
              class="message-container">
           <div [ngClass]="message.senderName?'them':'me'"
@@ -26,8 +29,8 @@
           {{isGroupChat ? message.senderName : ''}}
         </span>
             <p class="message-text">{{message.body}}
-              <span style="display: inline-block; width: 35px; height: 5px"></span></p>
-            <p class="message-time">{{message.time}}</p>
+              <span style="display: inline-block; width: 90px; height: 5px"></span></p>
+            <p class="message-time">{{getDateMessage(message.date_sent)}}</p>
           </div>
         </div>
       </cdk-virtual-scroll-viewport>

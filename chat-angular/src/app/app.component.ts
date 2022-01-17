@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {AuthService} from "./services/auth.service";
 import {appConfig, CREDENTIALS} from "./services/config";
+import {Store} from "@ngrx/store";
+import {selectCurrentRoute, selectFragment, selectUrl} from "./reducers/router.selector";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -10,22 +13,32 @@ import {appConfig, CREDENTIALS} from "./services/config";
 })
 export class AppComponent implements OnInit {
 
+  private sub: any
+
   constructor(
     private router: Router,
     private authService: AuthService,
+    private store$: Store
   ) {
   }
 
   ngOnInit() {
     const token = atob(localStorage.getItem('token') || "");
 
-    if (token) {
-      this.authService.autoLogin(token);
-      this.router.navigateByUrl('/chat');
-    }
-    else {
-      this.router.navigateByUrl('/auth')
-    }
+    this.sub = this.store$.select(selectUrl).subscribe(res => {
+      console.warn(res);
+      if (res !== undefined) {
+        if (token && res !== '/auth') {
+          this.authService.autoLogin(token);
+          res = res === '/' ? '/chat' : res;
+          this.router.navigateByUrl(res);
+        }
+        else {
+          this.router.navigateByUrl('/auth')
+        }
+        this.sub.unsubscribe();
+      }
+    })
   }
 
 }

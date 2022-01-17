@@ -1,4 +1,5 @@
 import {environment} from "../../environments/environment";
+import {participant} from "../reducers/participants/participants.reducer";
 
 export const CREDENTIALS = {
   appId: Number(environment.APP_ID),
@@ -16,10 +17,10 @@ export const appConfig = {
 }
 
 export interface Message {
+  id:string,
   senderName?: string,
   body: string,
-  time: string,
-  statusUndefined?: boolean,
+  date_sent: number,
 }
 
 export interface ItemsHeight {
@@ -30,9 +31,13 @@ export interface ItemsHeight {
 export interface Dialog {
   id: string,
   name: string,
+  type: number
   photo: string | null,
   lastMessage: string | null,
   lastMessageDate: number | null,
   unreadMessage: number,
   createAt: string,
+  msgIds: Array<string>,
+  pId:Array<number>
+  participants: Map<string, participant>
 }

@@ -1,7 +1,20 @@
 import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {DeviceDetectorService} from "ngx-device-detector";
-import {ItemsHeight, Message} from "../../services/config";
+import {Dialog, ItemsHeight, Message} from "../../services/config";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
+import {Store} from "@ngrx/store";
+import {selectDialogIdRouterParam} from "../../reducers/router.selector";
+import {openDialog} from "../../reducers/dialog/dialog.actions";
+import {
+  dialogFindSelector,
+  isActivatedConversationSelector,
+  selectedConversationSelector
+} from "../../reducers/dialog/dialog.selectors";
+import {take} from "rxjs/operators";
+import {ChatService} from "../../services/chat.service";
+import {participant} from "../../reducers/participants/participants.reducer";
+import {getMessagesSelector} from "../../reducers/messages/messages.selectors";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-chat-messages',
@@ -20,17 +33,67 @@ export class ChatMessagesComponent implements OnInit {
   public items: Array<number> = []
   public itemsTotalHeight = 0;
   public isScrollBarPressed = false;
-
-  public messages: Array<Message> = [];
+  public selectedConversation$ = this.store$.select(selectedConversationSelector);
+  public messages: Observable<Array<Message>> = this.store$.select(getMessagesSelector);
+  public selectedDialog: Dialog = {
+    id: "",
+    type: 0,
+    name: "",
+    photo: null,
+    lastMessage: null,
+    lastMessageDate: null,
+    unreadMessage: 0,
+    createAt: "",
+    msgIds: [],
+    pId: [],
+    participants: new Map<string, participant>()
+  };
+  public subscribeDialogFind: any;
   public isMobile: boolean = this.deviceService.isMobile();
   public isTablet: boolean = this.deviceService.isTablet();
-  public isGroupChat: boolean = true;
+  public isGroupChat: boolean = false;
 
-  constructor(private deviceService: DeviceDetectorService) {
-    const itemsheight: ItemsHeight = this.measureMessages(this.messages);
-    console.warn(itemsheight);
-    this.items = itemsheight.items;
-    this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+  constructor(
+    private deviceService: DeviceDetectorService,
+    private store$: Store,
+    private chatService: ChatService
+  ) {
+    //Subscribe to change dialogId in URL
+    this.store$.select(selectDialogIdRouterParam).subscribe(res => {
+      if (res) {
+        const dialogId = atob(<string>res);
+        console.log(dialogId);
+        if (this.subscribeDialogFind) {
+          this.subscribeDialogFind.unsubscribe();
+        }
+        //Select data of selected dialog
+        this.subscribeDialogFind = this.store$.select(dialogFindSelector, {id: dialogId})
+          .subscribe((dialog: any) => {
+            if (dialog !== undefined) {
+              this.selectedDialog = dialog;
+              this.isGroupChat = dialog.type === 2
+              //Check has the chat been rendered?
+              this.store$.select(isActivatedConversationSelector, {id: dialogId}).pipe(take(1))
+                .subscribe(isActivated => {
+                  if (isActivated !== undefined) {
+                    this.store$.dispatch(openDialog({dialogId, isActivated}));
+                    this.chatService.getChatHistory(this.selectedDialog, isActivated);
+                  }
+                })
+            }
+          })
+      }
+    })
+
+    // Virtual Scroll
+    this.messages.pipe(take(1)).subscribe(msgs => {
+      if (msgs != undefined) {
+        const itemsheight: ItemsHeight = this.measureMessages(msgs);
+        console.warn(itemsheight);
+        this.items = itemsheight.items;
+        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+      }
+    })
   }
 
   private measureText(text: string, maxWidth: number) {
@@ -60,7 +123,7 @@ export class ChatMessagesComponent implements OnInit {
     let heightSum: number = 0;
     let itemsArray: Array<number> = [];
 
-    this.messages.forEach((msg: Message, index: number) => {
+    messages.forEach((msg: Message, index: number) => {
       let msgHeight: number = 0;
 
       let maxWidth = (this.messagesContainer.nativeElement.offsetWidth - 20) * 0.8;
@@ -87,49 +150,65 @@ export class ChatMessagesComponent implements OnInit {
     return {items: itemsArray, itemsTotalHeight: heightSum};
   }
 
+  messagesTrackBy(index:number,message:Message){
+    return message.id;
+  }
+
   public pageUpDown(e: any) {
     e.preventDefault();
+  }
+
+  public getDateMessage(date_sent: number): string {
+    return new Date(date_sent * 1000).toLocaleString()
   }
 
   public sendMessage(e: any, trigger: string) {
     const text: string = this.areaElement.nativeElement.value.trim();
 
     if (text) {
-      const sname = text.includes('Cuuu') ? 'Yupi' : '';
       const message: Message = {
-        senderName: sname,
+        id: "",
+        senderName: "",
         body: text,
-        time: new Date().toLocaleTimeString().slice(0, 5)
+        date_sent: Math.floor(Date.now() / 1000)
       };
 
       if (trigger === 'area') {
         if (!this.isMobile && !this.isTablet) {
-          this.messages = [...this.messages, message];
-
-          const itemsheight: ItemsHeight = this.measureMessages(this.messages);
-          console.warn(itemsheight);
-          this.items = itemsheight.items;
-          this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-          this.scrollBarContent.nativeElement.style.height =
-            this.itemsTotalHeight + 'px';
-          this.virtualScroll.scrollToOffset(0);
-          this.scrollTrack();
+          this.chatService.sendMessage(this.selectedDialog, message)
+            .then(() => {
+              this.messages.pipe(take(1)).subscribe(msgs => {
+                if (msgs !== undefined) {
+                  const itemsheight: ItemsHeight = this.measureMessages(msgs);
+                  console.warn(itemsheight);
+                  this.items = itemsheight.items;
+                  this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+                  this.scrollBarContent.nativeElement.style.height =
+                    this.itemsTotalHeight + 'px';
+                  this.virtualScroll.scrollToOffset(0);
+                  this.scrollTrack();
+                }
+              })
+            });
         }
         else {
           return;
         }
       }
       else if (trigger === 'button') {
-        this.messages = [...this.messages, message];
-
-        const itemsheight: ItemsHeight = this.measureMessages(this.messages);
-        console.warn(itemsheight);
-        this.items = itemsheight.items;
-        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-        this.scrollBarContent.nativeElement.style.height =
-          this.itemsTotalHeight + 'px';
-        this.virtualScroll.scrollToOffset(0);
-        this.scrollTrack();
+        this.chatService.sendMessage(this.selectedDialog, message);
+        this.messages.pipe(take(1)).subscribe(msgs => {
+          if (msgs !== undefined) {
+            const itemsheight: ItemsHeight = this.measureMessages(msgs);
+            console.warn(itemsheight);
+            this.items = itemsheight.items;
+            this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+            this.scrollBarContent.nativeElement.style.height =
+              this.itemsTotalHeight + 'px';
+            this.virtualScroll.scrollToOffset(0);
+            this.scrollTrack();
+          }
+        })
       }
     }
     this.areaElement.nativeElement.value = '';

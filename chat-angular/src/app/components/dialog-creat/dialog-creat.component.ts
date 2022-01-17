@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl} from "@angular/forms";
 import {Store} from "@ngrx/store";
-import {participantSelector} from "../../reducers/participants.selectors";
-import {participant} from "../../reducers/participants.reducer";
+import {participantSelector} from "../../reducers/participants/participants.selectors";
+import {participant} from "../../reducers/participants/participants.reducer";
 import {MatDialog} from "@angular/material/dialog";
 import {SelectParticipantsComponent} from "../select-participants/select-participants.component";
 import {Observable} from "rxjs";
 import {take} from "rxjs/operators";
-import {removeAllSelectedParticipants, removeParticipant} from "../../reducers/participants.actions";
+import {removeAllSelectedParticipants, removeParticipant} from "../../reducers/participants/participants.actions";
 import {ChatService} from "../../services/chat.service";
 
 @Component({

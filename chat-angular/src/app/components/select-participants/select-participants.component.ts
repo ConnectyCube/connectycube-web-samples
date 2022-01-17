@@ -1,15 +1,15 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {meSelector, participantSelector, searchedParticipantSelector} from "../../reducers/participants.selectors";
+import {meSelector, participantSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
 import {Store} from "@ngrx/store";
 import {FormBuilder, FormControl} from "@angular/forms";
-import {participant} from "../../reducers/participants.reducer";
+import {participant} from "../../reducers/participants/participants.reducer";
 import {ChatService} from "../../services/chat.service";
 import {
   addSearchParticipants, addSelectedParticipants,
   removeAllSearchParticipants,
   selectParticipant,
   unSelectParticipant
-} from "../../reducers/participants.actions";
+} from "../../reducers/participants/participants.actions";
 import {take} from "rxjs/operators";
 import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 

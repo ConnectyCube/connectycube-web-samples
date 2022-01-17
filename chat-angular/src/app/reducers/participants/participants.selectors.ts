@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {participant, participantsState} from "./participants.reducer";
-import {PARTICIPANT_KEY} from "./index";
+import {PARTICIPANT_KEY} from "../index";
 
 export const featureSelector =
   createFeatureSelector<participantsState>(PARTICIPANT_KEY)

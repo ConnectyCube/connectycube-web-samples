@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
-import {chatCreatorStatusSelector} from "../../reducers/interface.selectors";
+import {chatCreatorStatusSelector} from "../../reducers/interface/interface.selectors";
 
 @Component({
   selector: 'app-chat',

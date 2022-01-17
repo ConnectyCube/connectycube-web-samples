@@ -10,3 +10,6 @@ export const {
   selectRouteData, // select the current route data
   selectUrl, // select the current url
 } = getSelectors();
+
+
+export const selectDialogIdRouterParam = selectRouteParam('hashcode');

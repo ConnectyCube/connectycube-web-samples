@@ -3,9 +3,9 @@ import {FormBuilder, FormControl} from "@angular/forms";
 import {Store} from "@ngrx/store";
 import {MatDialog} from "@angular/material/dialog";
 import {ChatService} from "../../services/chat.service";
-import {participant} from "../../reducers/participants.reducer";
-import {addSearchParticipants, removeAllSearchParticipants} from "../../reducers/participants.actions";
-import {participantSelector, searchedParticipantSelector} from "../../reducers/participants.selectors";
+import {participant} from "../../reducers/participants/participants.reducer";
+import {addSearchParticipants, removeAllSearchParticipants} from "../../reducers/participants/participants.actions";
+import {participantSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
 
 @Component({
   selector: 'app-dialog-one-one',

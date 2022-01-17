@@ -2,19 +2,20 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {AuthService} from "../../services/auth.service";
 import {Store} from "@ngrx/store";
-import {toggleCreatChatStatus} from "../../reducers/interface.actions";
+import {toggleCreatChatStatus} from "../../reducers/interface/interface.actions";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogCreatComponent} from "../dialog-creat/dialog-creat.component";
 import {ChatService} from "../../services/chat.service";
-import {dialogsSearchSelector, dialogsSelector} from "../../reducers/dialog.selectors";
+import {dialogsSearchSelector, dialogsSelector, selectedConversationSelector} from "../../reducers/dialog/dialog.selectors";
 import {Observable} from "rxjs";
 import {Dialog} from "../../services/config";
 import {FormControl} from "@angular/forms";
-import {meSelector} from "../../reducers/participants.selectors";
-import {participant} from "../../reducers/participants.reducer";
+import {meSelector} from "../../reducers/participants/participants.selectors";
+import {participant} from "../../reducers/participants/participants.reducer";
 import {take} from "rxjs/operators";
 import {DialogOneOneComponent} from "../dialog-one-one/dialog-one-one.component";
-import {removeAllSearchParticipants} from "../../reducers/participants.actions";
+import {removeAllSearchParticipants} from "../../reducers/participants/participants.actions";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-dialogs',
@@ -25,6 +26,7 @@ export class DialogsComponent implements OnInit {
   @ViewChild(CdkVirtualScrollViewport) virtualScroll: CdkVirtualScrollViewport;
 
   public dialogs$: Observable<Dialog[]> = this.store$.select(dialogsSelector);
+  public selectedConversation$ = this.store$.select(selectedConversationSelector);
   public userMe: participant = {login: "", me: true, id: 404, avatar: null, full_name: ""};
   public prevLiActiveElem: Element | null = null;
   public isScrollBarPressed = false;
@@ -36,7 +38,8 @@ export class DialogsComponent implements OnInit {
     private authService: AuthService,
     private chatService: ChatService,
     private store$: Store,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {
     this.dialog_name.valueChanges.subscribe(data => this.changeSearchValue(data.toLowerCase()));
   }
@@ -61,12 +64,14 @@ export class DialogsComponent implements OnInit {
     this.dialog.open(DialogCreatComponent, {panelClass: 'create-dialog', disableClose: true});
   }
 
-  public dialogHandler(e: MouseEvent) {
+  public dialogHandler(e: MouseEvent, id: string) {
     e.preventDefault();
-    this.prevLiActiveElem?.classList.remove("active");
-    const activeLiElem = (<HTMLLinkElement>e.target).closest('.dialog__list-item');
-    activeLiElem?.classList.add("active");
-    this.prevLiActiveElem = activeLiElem;
+    const encodedUrl = btoa(id);
+    this.router.navigateByUrl(`chat/${encodedUrl}`)
+    // this.prevLiActiveElem?.classList.remove("active");
+    // const activeLiElem = (<HTMLLinkElement>e.target).closest('.dialog__list-item');
+    // activeLiElem?.classList.add("active");
+    // this.prevLiActiveElem = activeLiElem;
   }
 
   public moreHandler() {

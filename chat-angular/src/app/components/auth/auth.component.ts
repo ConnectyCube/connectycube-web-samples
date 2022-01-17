@@ -102,7 +102,8 @@ export class AuthComponent implements OnInit {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
           localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          localStorage.removeItem('login');
+          this.router.navigateByUrl("/auth");
         },
       }
     };
