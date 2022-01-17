@@ -45,10 +45,11 @@ export class ChatMessagesComponent implements OnInit {
     unreadMessage: 0,
     createAt: "",
     msgIds: [],
-    pId: [],
+    participantIds: [],
     participants: new Map<string, participant>()
   };
   public subscribeDialogFind: any;
+  public subscribeVirtualScrollCalc: any;
   public isMobile: boolean = this.deviceService.isMobile();
   public isTablet: boolean = this.deviceService.isTablet();
   public isGroupChat: boolean = false;
@@ -84,16 +85,6 @@ export class ChatMessagesComponent implements OnInit {
           })
       }
     })
-
-    // Virtual Scroll
-    this.messages.pipe(take(1)).subscribe(msgs => {
-      if (msgs != undefined) {
-        const itemsheight: ItemsHeight = this.measureMessages(msgs);
-        console.warn(itemsheight);
-        this.items = itemsheight.items;
-        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-      }
-    })
   }
 
   private measureText(text: string, maxWidth: number) {
@@ -125,7 +116,6 @@ export class ChatMessagesComponent implements OnInit {
 
     messages.forEach((msg: Message, index: number) => {
       let msgHeight: number = 0;
-
       let maxWidth = (this.messagesContainer.nativeElement.offsetWidth - 20) * 0.8;
       maxWidth = Math.round(maxWidth * 100) / 100;
       msgHeight = this.measureText(msg.body, maxWidth) + PADDING_MES;
@@ -150,7 +140,7 @@ export class ChatMessagesComponent implements OnInit {
     return {items: itemsArray, itemsTotalHeight: heightSum};
   }
 
-  messagesTrackBy(index:number,message:Message){
+  messagesTrackBy(index: number, message: Message) {
     return message.id;
   }
 
@@ -178,7 +168,7 @@ export class ChatMessagesComponent implements OnInit {
           this.chatService.sendMessage(this.selectedDialog, message)
             .then(() => {
               this.messages.pipe(take(1)).subscribe(msgs => {
-                if (msgs !== undefined) {
+                if (msgs.length !== 0) {
                   const itemsheight: ItemsHeight = this.measureMessages(msgs);
                   console.warn(itemsheight);
                   this.items = itemsheight.items;
@@ -198,7 +188,7 @@ export class ChatMessagesComponent implements OnInit {
       else if (trigger === 'button') {
         this.chatService.sendMessage(this.selectedDialog, message);
         this.messages.pipe(take(1)).subscribe(msgs => {
-          if (msgs !== undefined) {
+          if (msgs.length !== 0) {
             const itemsheight: ItemsHeight = this.measureMessages(msgs);
             console.warn(itemsheight);
             this.items = itemsheight.items;
@@ -218,43 +208,53 @@ export class ChatMessagesComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.scrollBarContent.nativeElement.style.height =
-      this.itemsTotalHeight + 'px';
-    this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+    // Virtual Scroll
+    this.subscribeVirtualScrollCalc = this.messages.subscribe(msgs => {
+      if (msgs.length !== 0 && !msgs.some(item => item === undefined)) {
+        const itemsheight: ItemsHeight = this.measureMessages(msgs);
+        console.warn(itemsheight);
+        this.items = itemsheight.items;
+        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
 
-    this.virtualScroll.elementScrolled().subscribe((event) => {
-      if (!this.isScrollBarPressed) {
-        this.scrollTrack();
+        this.scrollBarContent.nativeElement.style.height =
+          this.itemsTotalHeight + 'px';
+        this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+
+        this.virtualScroll.elementScrolled().subscribe((event) => {
+          if (!this.isScrollBarPressed) {
+            this.scrollTrack();
+          }
+        });
+
+        this.scrollBar.nativeElement.addEventListener(
+          'mousedown',
+          () => {
+            console.log('mousedown');
+            this.isScrollBarPressed = true;
+          },
+          false
+        );
+        this.scrollBar.nativeElement.addEventListener(
+          'mouseup',
+          () => {
+            console.log('mouseup');
+            this.isScrollBarPressed = false;
+          },
+          false
+        );
+
+        this.scrollBar.nativeElement.onscroll = () => {
+          const newScrollOffset =
+            this.itemsTotalHeight -
+            this.scrollBar.nativeElement.scrollTop -
+            this.scrollBar.nativeElement.clientHeight;
+
+          if (this.isScrollBarPressed) {
+            this.virtualScroll.scrollToOffset(newScrollOffset);
+          }
+        };
       }
-    });
-
-    this.scrollBar.nativeElement.addEventListener(
-      'mousedown',
-      () => {
-        console.log('mousedown');
-        this.isScrollBarPressed = true;
-      },
-      false
-    );
-    this.scrollBar.nativeElement.addEventListener(
-      'mouseup',
-      () => {
-        console.log('mouseup');
-        this.isScrollBarPressed = false;
-      },
-      false
-    );
-
-    this.scrollBar.nativeElement.onscroll = () => {
-      const newScrollOffset =
-        this.itemsTotalHeight -
-        this.scrollBar.nativeElement.scrollTop -
-        this.scrollBar.nativeElement.clientHeight;
-
-      if (this.isScrollBarPressed) {
-        this.virtualScroll.scrollToOffset(newScrollOffset);
-      }
-    };
+    })
   }
 
   @HostListener('wheel', ['$event'])

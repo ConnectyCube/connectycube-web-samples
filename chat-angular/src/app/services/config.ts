@@ -38,6 +38,6 @@ export interface Dialog {
   unreadMessage: number,
   createAt: string,
   msgIds: Array<string>,
-  pId:Array<number>
+  participantIds:Array<number>
   participants: Map<string, participant>
 }

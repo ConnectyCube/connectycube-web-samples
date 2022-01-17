@@ -34,43 +34,7 @@ export class DialogOneOneComponent implements OnInit, OnDestroy {
   })
 
   public SearchSubmit() {
-    if (this.SearchForm.valid) {
-      const sValue = this.SearchForm.value.name;
-      console.warn('[Search Value]', sValue);
-      const promiseF = this.chatService.searchFullName(sValue);
-      const promiseL = this.chatService.searchLogin(sValue);
-      Promise.allSettled([promiseF, promiseL]).then((result: any) => {
-        console.warn(result);
-        const participants: Map<string, any> = new Map();
-        result.forEach((item: any) => {
-          if (item.hasOwnProperty("value")) {
-            if (item.value.hasOwnProperty("items")) {
-              console.log(item.value.items)
-              item.value.items.forEach((item: any) => {
-                participants.set(String(item.user.id), item.user)
-              });
-            }
-            else {
-              console.log(item.value);
-              participants.set(String(item.value.user.id), item.value.user);
-            }
-          }
-        })
-        const participantArray: Array<participant> = [];
-        [...participants].forEach(([key, value]) => {
-          participantArray.push({
-            id: value.id,
-            full_name: value.full_name,
-            login: value.login,
-            avatar: value.avatar,
-            me: false,
-          })
-        });
-        console.warn(participants);
-        console.warn(participantArray);
-        this.store$.dispatch(addSearchParticipants({participantArray}))
-      })
-    }
+    this.chatService.searchMethod(this.SearchForm, []);
   }
 
   public createChat(e: any, userId: number) {

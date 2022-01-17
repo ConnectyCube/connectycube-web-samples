@@ -6,6 +6,9 @@ import {dialogsSelector, getDialogParticipant} from "../reducers/dialog/dialog.s
 import {take} from 'rxjs/operators';
 import {addMessage, addMessages} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
+import {builtMessage} from "./utilities";
+import {addSearchParticipants} from "../reducers/participants/participants.actions";
+import {Router} from "@angular/router";
 
 declare let ConnectyCube: any;
 
@@ -17,7 +20,9 @@ export class ChatService {
   public dialogsHeight: Map<number, number> = new Map<number, number>();
   public tempHeight: number = 0;
 
-  constructor(private store$: Store) {
+  constructor(
+    private store$: Store,
+    private router: Router) {
   }
 
   private getChatParticipants(pId: Array<number>) {
@@ -55,7 +60,7 @@ export class ChatService {
       this.store$.select(getDialogParticipant, {dialogId: msg.extension.dialog_id, pId: userId})
         .pipe(take(1)).subscribe(p => {
         console.warn(p)
-        if (p !== undefined) {
+        if (p !== undefined && !p.me) {
           const message: Message = {
             id: msg.id,
             body: msg.body,
@@ -75,11 +80,7 @@ export class ChatService {
       .list()
       .then((result: any) => {
         const dialogs: Array<Dialog> = result.items.map((d: any) => {
-          const dialog: Dialog = {
-            id: d._id, name: d.name, type: d.type, photo: d.photo, lastMessage: d.last_message,
-            lastMessageDate: d.last_message_date_sent, unreadMessage: d.unread_messages_count,
-            createAt: d.created_at, msgIds: [], pId: d.occupants_ids, participants: new Map<string, participant>()
-          };
+          const dialog: Dialog = builtMessage(d);
           return dialog;
         })
         console.warn("[Processed dialogs]", dialogs);
@@ -103,6 +104,50 @@ export class ChatService {
       .get(searchParams)
   }
 
+  public searchMethod(searchForm: any, selectedParticipant: Array<participant>) {
+    if (searchForm.invalid) {
+      const sValue = searchForm.value.name;
+      console.warn('[Search Value]', sValue);
+      const promiseF = this.searchFullName(sValue);
+      const promiseL = this.searchLogin(sValue);
+      Promise.allSettled([promiseF, promiseL]).then((result: any) => {
+        console.warn(result);
+        const participants: Map<string, any> = new Map();
+        result.forEach((item: any) => {
+          if (item.hasOwnProperty("value")) {
+            if (item.value.hasOwnProperty("items")) {
+              console.log(item.value.items)
+              item.value.items.forEach((item: any) => {
+                participants.set(String(item.user.id), item.user)
+              });
+            }
+            else {
+              console.log(item.value);
+              participants.set(String(item.value.user.id), item.value.user);
+            }
+          }
+        })
+        const participantArray: Array<participant> = [];
+        [...participants].forEach(([key, value]) => {
+          const active = selectedParticipant.some((p: participant) => p.id === value.id);
+
+          if (!active) {
+            participantArray.push({
+              id: value.id,
+              full_name: value.full_name,
+              login: value.login,
+              avatar: value.avatar,
+              me: false,
+            })
+          }
+        });
+        console.warn(participants);
+        console.warn(participantArray);
+        this.store$.dispatch(addSearchParticipants({participantArray}))
+      })
+    }
+  }
+
   public createGroupChat(name: string, description: string, idArray: Array<number>, photo?: string) {
     const params = {
       type: 2,
@@ -116,13 +161,10 @@ export class ChatService {
       .create(params)
       .then((d: any) => {
         console.warn(d);
-        const dialog: Dialog = {
-          id: d._id, name: d.name, type: d.type, photo: d.photo, lastMessage: d.last_message,
-          lastMessageDate: d.last_message_date_sent, unreadMessage: d.unread_messages_count,
-          createAt: d.created_at, msgIds: [], pId: d.occupants_ids, participants: new Map<string, participant>()
-        };
+        const dialog: Dialog = builtMessage(d);
         console.warn(dialog)
         this.store$.dispatch(addDialog({dialog}));
+        this.router.navigateByUrl('chat/' + btoa(dialog.id));
       })
       .catch((error: any) => {
         console.error(error);
@@ -138,17 +180,14 @@ export class ChatService {
     ConnectyCube.chat.dialog
       .create(params)
       .then((d: any) => {
-        const dialog: Dialog = {
-          id: d._id, name: d.name, type: d.type, photo: d.photo, lastMessage: d.last_message,
-          lastMessageDate: d.last_message_date_sent, unreadMessage: d.unread_messages_count,
-          createAt: d.created_at, msgIds: [], pId: d.occupants_ids, participants: new Map<string, participant>()
-        };
+        const dialog: Dialog = builtMessage(d);
         console.warn(dialog)
         this.store$.select(dialogsSelector).pipe(take(1)).subscribe(res => {
           if (res !== undefined) {
             const thisIsChat = res.some((d: Dialog) => d.id === dialog.id);
             if (!thisIsChat) {
               this.store$.dispatch(addDialog({dialog}));
+              this.router.navigateByUrl('chat/' + btoa(dialog.id));
             }
           }
         })
@@ -168,7 +207,7 @@ export class ChatService {
     };
 
     if (!isActivated) {
-      this.getChatParticipants(dialog.pId).then((result: any) => {
+      this.getChatParticipants(dialog.participantIds).then((result: any) => {
         console.warn("[RESULT]", result)
         const participants: Map<string, participant> = this.processParticipants(result.items)
         console.warn("[PROCECED USER]", participants);
@@ -219,13 +258,7 @@ export class ChatService {
       };
 
       if (dialog.type === 3) {
-        let opponentId;
-        dialog.pId.forEach((id: number) => {
-          const p = dialog.participants.get(String(id));
-          if (!p?.me) {
-            opponentId = +id;
-          }
-        })
+        const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
         message.id = ConnectyCube.chat.send(opponentId, messageParams);
       }
       else {

@@ -17,6 +17,7 @@ export class AuthComponent implements OnInit {
 
   public authStatus: string = 'Log in';
   public authStatusText: string = 'Sign up';
+  public invalid = false;
 
   public getErrors(value: string) {
     return this.authForm.get(value);
@@ -42,31 +43,36 @@ export class AuthComponent implements OnInit {
   }
 
   public onSubmit() {
-    if(!this.authDoor) return;
+    if (!this.authDoor) return;
     if (this.authForm.valid) {
       this.authDoor = false;
       console.log("VALID")
       if (this.authStatus === "Log in") {
         console.warn("[Login]", this.authForm.value);
-        this.authService.login(this.authForm.value.login, this.authForm.value.password, true)
-          .then(() => {
-            this.router.navigateByUrl('/chat');
-          })
-          .catch((error: any) => {
-            this.authDoor = true;
-            console.log(error);
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
-            this.ModalOn('error', JSON.stringify(error));
-          });
+        this.authService.createSession().then((session: any) => {
+          localStorage.setItem('token', btoa(session.token));
+          this.authService.login(this.authForm.value.login, this.authForm.value.password)
+            .then(() => {
+              this.router.navigateByUrl('/chat');
+            })
+            .catch((error: any) => {
+              this.invalid = true;
+              this.authDoor = true;
+              console.log(error);
+              localStorage.removeItem('token')
+              localStorage.removeItem('user')
+              this.ModalOn('error', JSON.stringify(error));
+            });
+        })
       }
       else if (this.authStatus === "Sign up") {
         console.warn("[Sign up]", this.authForm.value);
-        this.authService.auth(this.authForm.value.name, this.authForm.value.login, this.authForm.value.password)
+        this.authService.register(this.authForm.value.name, this.authForm.value.login, this.authForm.value.password)
           .then(() => {
             this.router.navigateByUrl('/chat');
           })
           .catch((error: any) => {
+            this.invalid = true;
             this.authDoor = true;
             console.log(error);
             localStorage.removeItem('token')
@@ -74,6 +80,9 @@ export class AuthComponent implements OnInit {
             this.ModalOn('error', JSON.stringify(error));
           });
       }
+    }
+    else{
+      this.invalid = true;
     }
   }
 
@@ -101,9 +110,7 @@ export class AuthComponent implements OnInit {
     const appConfigToken = {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('login');
-          this.router.navigateByUrl("/auth");
+          this.authService.tokenExpired();
         },
       }
     };

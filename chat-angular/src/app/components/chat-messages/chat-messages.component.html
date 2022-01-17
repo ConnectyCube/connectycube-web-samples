@@ -14,7 +14,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="selectedConversation$ | async" class="body">
+  <div class="body">
     <div class="messages-container" #messagesContainer>
       <cdk-virtual-scroll-viewport
         #viewport
@@ -38,7 +38,7 @@
         <div #scrollBarContent></div>
       </div>
     </div>
-    <form action="#" class="chat-form">
+    <form *ngIf="selectedConversation$ | async" action="#" class="chat-form">
       <div class="send-container">
         <textarea
           #areaElement

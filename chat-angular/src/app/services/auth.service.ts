@@ -14,7 +14,13 @@ declare let ConnectyCube: any;
 })
 export class AuthService {
 
-  constructor(private router: Router, private store$: Store,private chatService:ChatService) {
+  constructor(private router: Router, private store$: Store, private chatService: ChatService) {
+  }
+
+  public tokenExpired() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('login');
+    this.router.navigateByUrl("/auth");
   }
 
   public connectToChat(id: number, password: string) {
@@ -26,6 +32,10 @@ export class AuthService {
     return ConnectyCube.chat.connect(userCredentials);
   }
 
+  public createSession() {
+    return ConnectyCube.createSession();
+  }
+
   public autoLogin(token: string) {
     const credentials = {
       appId: Number(environment.APP_ID),
@@ -34,9 +44,7 @@ export class AuthService {
     const appConfigToken = {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('login');
-          this.router.navigateByUrl("/auth");
+          this.tokenExpired();
         },
       }
     };
@@ -53,7 +61,7 @@ export class AuthService {
         avatar: user.avatar,
         full_name: user.full_name
       }))
-      this.connectToChat(user.id, token).then(()=>{
+      this.connectToChat(user.id, token).then(() => {
         this.chatService.init();
       })
     })
@@ -72,55 +80,30 @@ export class AuthService {
       });
   }
 
-  public login(login: string, password: string, isOnlyLogin: boolean) {
+  public login(login: string, password: string) {
     return new Promise<void>((resolve, reject) => {
       const userProfileLogin = {
         login: login,
         password: password
       }
 
-      if (isOnlyLogin) {
-        ConnectyCube.createSession().then((session: any) => {
-          localStorage.setItem('token', btoa(session.token));
-
-          ConnectyCube.login(userProfileLogin).then((u: any) => {
-            this.store$.dispatch(addParticipant({
-              me: true,
-              login: u.login,
-              id: u.id,
-              avatar: u.avatar,
-              full_name: u.full_name
-            }))
-            localStorage.setItem('login', btoa(u.login));
-            this.connectToChat(u.id, password).then(()=>{
-              this.chatService.init();
-            });
-            resolve();
-          })
-            .catch((error: any) => {
-              reject(error);
-            });
-        })
-      }
-      else {
-        ConnectyCube.login(userProfileLogin).then((u: any) => {
-          this.store$.dispatch(addParticipant({
-            me: true,
-            login: u.login,
-            id: u.id,
-            avatar: u.avatar,
-            full_name: u.full_name
-          }))
-          localStorage.setItem('login', btoa(u.login));
-          this.connectToChat(u.id, password).then(()=>{
-            this.chatService.init();
-          });
-          resolve();
-        })
-          .catch((error: any) => {
-            reject(error);
-          });
-      }
+      ConnectyCube.login(userProfileLogin).then((u: any) => {
+        this.store$.dispatch(addParticipant({
+          me: true,
+          login: u.login,
+          id: u.id,
+          avatar: u.avatar,
+          full_name: u.full_name
+        }))
+        localStorage.setItem('login', btoa(u.login));
+        this.connectToChat(u.id, password).then(() => {
+          this.chatService.init();
+        });
+        resolve();
+      })
+        .catch((error: any) => {
+          reject(error);
+        });
     })
   }
 
@@ -128,10 +111,10 @@ export class AuthService {
     return ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
-  public auth(userName: string, login: string, password: string) {
+  public register(userName: string, login: string, password: string) {
     return new Promise<void>((resolve, reject) => {
 
-      ConnectyCube.createSession().then((session: any) => {
+      this.createSession().then((session: any) => {
 
         const userProfile = {
           login: login,
@@ -143,7 +126,7 @@ export class AuthService {
 
         ConnectyCube.users.signup(userProfile)
           .then(() => {
-            this.login(login, password, false)
+            this.login(login, password)
               .then((user: any) => {
                 console.log("Logging user", user);
                 resolve();

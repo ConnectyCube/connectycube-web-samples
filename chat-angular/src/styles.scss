@@ -224,3 +224,10 @@ cdk-virtual-scroll-viewport > div {
   padding: 0 !important;
 }
 
+.valids  {
+  border-left: 10px solid #42A948 !important; /* green */
+}
+
+.invalids {
+  border-left: 10px solid #a94442 !important; /* red */
+}
