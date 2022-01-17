@@ -6,7 +6,7 @@ import {dialogsSelector, getDialogParticipant} from "../reducers/dialog/dialog.s
 import {take} from 'rxjs/operators';
 import {addMessage, addMessages} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
-import {builtMessage} from "./utilities";
+import {builtDialog} from "./utilities";
 import {addSearchParticipants} from "../reducers/participants/participants.actions";
 import {Router} from "@angular/router";
 
@@ -53,6 +53,20 @@ export class ChatService {
     return participants;
   }
 
+  private addDialog(dialogId: string) {
+    const filters = {_id: dialogId};
+
+    ConnectyCube.chat.dialog
+      .list(filters)
+      .then((result: any) => {
+        const dialog: Dialog = builtDialog(result.items[0]);
+        this.store$.dispatch(addDialog({dialog}));
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }
+
   public init() {
     ConnectyCube.chat.onMessageListener = (userId: any, msg: any) => {
       console.warn(userId, msg);
@@ -73,6 +87,14 @@ export class ChatService {
         }
       });
     }
+    ConnectyCube.chat.onSystemMessageListener = (msg: any) => {
+      const dialogId = msg.extension.id;
+      switch (msg.body) {
+        case "dialog/UPDATE_DIALOG":
+          this.addDialog(dialogId);
+          break;
+      }
+    };
   }
 
   public getDialogs() {
@@ -80,7 +102,7 @@ export class ChatService {
       .list()
       .then((result: any) => {
         const dialogs: Array<Dialog> = result.items.map((d: any) => {
-          const dialog: Dialog = builtMessage(d);
+          const dialog: Dialog = builtDialog(d);
           return dialog;
         })
         console.warn("[Processed dialogs]", dialogs);
@@ -105,7 +127,7 @@ export class ChatService {
   }
 
   public searchMethod(searchForm: any, selectedParticipant: Array<participant>) {
-    if (searchForm.invalid) {
+    if (searchForm.valid) {
       const sValue = searchForm.value.name;
       console.warn('[Search Value]', sValue);
       const promiseF = this.searchFullName(sValue);
@@ -161,8 +183,13 @@ export class ChatService {
       .create(params)
       .then((d: any) => {
         console.warn(d);
-        const dialog: Dialog = builtMessage(d);
+        const dialog: Dialog = builtDialog(d);
         console.warn(dialog)
+        idArray.forEach((ocupantId: number, index: number) => {
+          if (index !== 0) {
+            this.sendSystemMsg(ocupantId, dialog.id)
+          }
+        });
         this.store$.dispatch(addDialog({dialog}));
         this.router.navigateByUrl('chat/' + btoa(dialog.id));
       })
@@ -171,24 +198,26 @@ export class ChatService {
       });
   }
 
-  public createIndividualChat(id: number) {
+  public createIndividualChat(ocupantId: number) {
     const params = {
       type: 3,
-      occupants_ids: [id],
+      occupants_ids: [ocupantId],
     };
 
     ConnectyCube.chat.dialog
       .create(params)
       .then((d: any) => {
-        const dialog: Dialog = builtMessage(d);
+        const dialog: Dialog = builtDialog(d);
         console.warn(dialog)
+
         this.store$.select(dialogsSelector).pipe(take(1)).subscribe(res => {
           if (res !== undefined) {
             const thisIsChat = res.some((d: Dialog) => d.id === dialog.id);
             if (!thisIsChat) {
+              this.sendSystemMsg(ocupantId, dialog.id)
               this.store$.dispatch(addDialog({dialog}));
-              this.router.navigateByUrl('chat/' + btoa(dialog.id));
             }
+            this.router.navigateByUrl('chat/' + btoa(dialog.id));
           }
         })
       })
@@ -268,6 +297,28 @@ export class ChatService {
       this.store$.dispatch(addMessage({message}));
       resolve();
     })
+  }
+
+  public readAllChatMessages(dialogId: string) {
+    const messageIds = "";
+    const params = {
+      read: 1,
+      chat_dialog_id: dialogId,
+    };
+
+    ConnectyCube.chat.message
+      .update(messageIds, params)
+  }
+
+  public sendSystemMsg(userId: number, dialogId: string) {
+    const msg = {
+      body: "dialog/UPDATE_DIALOG",
+      extension: {
+        id: dialogId
+      }
+    };
+
+    ConnectyCube.chat.sendSystemMessage(userId, msg);
   }
 
 }
