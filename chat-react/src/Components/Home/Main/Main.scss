@@ -20,7 +20,7 @@
       background-color: dodgerblue;
       color: white;
       font-weight: 600;
-      border-radius: 4px;
+      border-radius: 0px 4px 4px 0px;
       cursor: pointer;
     }
     & .message__area {
@@ -65,7 +65,7 @@
     background-color: white;
     & .messages {
       display: flex;
-      padding: 55px;
+      padding: 15px;
       flex-direction: column;
 
       & .no-msg {

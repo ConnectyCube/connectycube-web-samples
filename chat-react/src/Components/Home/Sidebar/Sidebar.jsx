@@ -2,14 +2,9 @@ import React, { useEffect, useState } from "react";
 import Chats from "./Chats/Chats";
 import "./Sidebar.scss";
 import NewChat from "./NewChat/NewChat";
-import { Virtuoso } from "react-virtuoso";
-import { MdOutlineAddComment } from "react-icons/md";
-import { RiLogoutBoxRLine } from "react-icons/ri";
 import { BsPencil } from "react-icons/bs";
 import Auth from "../../../services/auth-service";
-import { Redirect, useHistory } from "react-router";
-import { Link } from "react-router-dom";
-import { getTime } from "../../../services/helpers";
+import { useHistory } from "react-router";
 
 const Sidebar = (props) => {
   const [searching, setSearching] = useState(false);
@@ -21,13 +16,15 @@ const Sidebar = (props) => {
     setDialog,
     chosenDialog,
     startGroupChat,
+    startChat,
+    searchUsers,
   } = props;
+
   const [newChatForm, setNewChatForm] = useState(false);
   const createModalRef = React.createRef();
   const [chatType, setChatType] = useState();
   const createChatRef = React.createRef();
   useEffect(() => {
-    
     if (localStorage.token) {
       connect({
         userId: localStorage.userId,
@@ -53,6 +50,7 @@ const Sidebar = (props) => {
             />
           );
         }
+        return;
       });
     } else {
       chats = dialogs.map((dialog) => {
@@ -68,6 +66,7 @@ const Sidebar = (props) => {
   };
 
   let chats;
+
   if (dialogs) {
     if (searching) {
       chatsRender(dialogs, searchFor);
@@ -148,6 +147,8 @@ const Sidebar = (props) => {
           close={newChatClose}
           type={chatType}
           startGroupChat={startGroupChat}
+          startChat={startChat}
+          searchUsers={searchUsers}
         />
       )}
 

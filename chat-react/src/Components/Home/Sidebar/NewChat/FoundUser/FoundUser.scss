@@ -3,6 +3,24 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
+
+  & .add-status {
+    background-color: transparent;
+    color: #007bad;
+    border: 1px solid #36b6eb;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: 0.2s;
+    cursor: pointer;
+    &.add:hover {
+      background: #31baf3;
+      color: #ffffff;
+    }
+    &.delete {
+      background: #31baf3;
+      color: #ffffff;
+    }
+  }
   & .add__btn {
     cursor: pointer;
     border: none;

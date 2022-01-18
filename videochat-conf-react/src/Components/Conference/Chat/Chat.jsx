@@ -37,10 +37,7 @@ const Chat = (props) => {
   const onSendMessage = (e) => {
     e.stopPropagation();
     if (messageRef.current.value.trim()) {
-      messageRef.current.value = messageRef.current.value.replace(
-        /(\r\n|\n|\r)/gm,
-        ""
-      );
+      messageRef.current.value = messageRef.current.value.replace(" ", "");
       chat.sendMessage(messageRef.current.value, props.dialog);
       messageRef.current.style.height = "45px";
 

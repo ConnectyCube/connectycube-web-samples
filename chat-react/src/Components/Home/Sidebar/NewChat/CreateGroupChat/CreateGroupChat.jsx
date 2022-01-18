@@ -1,5 +1,6 @@
 import React from "react";
 import "./CreateGroupChat.scss";
+import { AiOutlineClose } from "react-icons/ai";
 const CreateGroupChat = (props) => {
   const { occupants, startGroupChat, close } = props;
 
@@ -29,6 +30,9 @@ const CreateGroupChat = (props) => {
       >
         Create group chat
       </button>
+      <div className="close__btn" onClick={close}>
+        <AiOutlineClose color="black" fontSize="1.5em" />
+      </div>
     </form>
   );
 };

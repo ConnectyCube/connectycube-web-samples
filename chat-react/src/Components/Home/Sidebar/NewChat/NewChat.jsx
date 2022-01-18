@@ -6,8 +6,10 @@ import { useRef } from "react";
 import { FaSearch } from "react-icons/fa";
 import FoundUser from "./FoundUser/FoundUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
+import { BsBoxArrowInUpLeft } from "react-icons/bs";
 const NewChat = (props) => {
-  const { close, getChats, type, startGroupChat } = props;
+  const { close, getChats, type, startGroupChat, startChat, searchUsers } =
+    props;
   const userRef = React.createRef();
 
   const [create, setCreate] = useState(false);
@@ -17,7 +19,7 @@ const NewChat = (props) => {
 
   const [occupants, setOccupants] = useState([]);
   const groupChatUsers = (e, id) => {
-    if (e.currentTarget.checked) {
+    if (e) {
       groupOccupants.current.push(id);
       setOccupants(groupOccupants.current.length);
     } else {
@@ -29,52 +31,29 @@ const NewChat = (props) => {
     console.log(groupOccupants.current);
   };
 
-  const findUser = () => {
-    return new Promise((resolve, reject) => {
-      const users = [];
-      const searchParams = {
-        full_name: userRef.current.value,
-        per_page: 100,
-        page: 1,
-      };
-      const searchLogin = { login: userRef.current.value };
-      ConnectyCube.users
-        .get(searchParams)
-        .then((result) => {
-          result.items.forEach((element) => {
-            users.push(element.user);
-          });
-
-          ConnectyCube.users
-            .get(searchLogin)
-            .then((result) => {
-              users.unshift(result.user);
-              resolve(users);
-            })
-            .catch((error) => {
-              resolve(users);
-            });
-        })
-        .catch((error) => {});
-    });
-  };
-
   const finding = (e) => {
     e.preventDefault();
-
-    findUser()
+    searchUsers(userRef.current.value)
       .then((users) => {
+        let allUsers = [];
         setFoundedUsers(() => {
-          let array = users.map((e) => {
-            return (
-              <FoundUser
-                close={close}
-                getChats={getChats}
-                userInfo={e}
-                type={type}
-                groupChatUsers={groupChatUsers}
-              />
-            );
+          debugger;
+          let array = users.map((user) => {
+            let alreadyRendered = allUsers.find((e) => e === user.id);
+            if (!alreadyRendered) {
+              allUsers.push(user.id);
+              return (
+                <FoundUser
+                  startChat={startChat}
+                  close={close}
+                  getChats={getChats}
+                  userInfo={user}
+                  type={type}
+                  groupChatUsers={groupChatUsers}
+                  groupOccupants={groupOccupants.current}
+                />
+              );
+            }
           });
           return array;
         });

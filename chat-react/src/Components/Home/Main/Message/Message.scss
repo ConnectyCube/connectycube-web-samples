@@ -1,20 +1,42 @@
 .message {
-  padding: 15px 20px 20px 10px;
-  background-color: #eaeaeb !important;
   display: flex;
   text-align: left;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   max-width: 80%;
   position: relative;
 
+  & .user-message__info {
+    padding: 10px;
+    margin-left: 10px;
+    background-color: #eaeaeb !important;
+    display: flex;
+    border-radius: 15px;
+    flex-direction: column;
+    min-width: 150px;
+    & .message__time {
+      font-size: 12px;
+      font-weight: 500;
+      font-style: italic;
+      color: #929293;
+      position: absolute;
+      bottom: 2px;
+      right: 10px;
+    }
+
+    & > * {
+      &:not(:last-child) {
+        padding-bottom: 5px;
+      }
+    }
+  }
   & .message__avatar {
     width: 60px;
     height: 60px;
   }
   & p {
-    word-wrap: break-word;
     width: 100%;
+    white-space: pre-line;
   }
   & .message-user__name {
     font-weight: 600;
@@ -37,12 +59,8 @@
   &.opponent {
     align-self: flex-start;
     & .user__img {
-      position: absolute;
       width: 50px;
       height: 50px;
-
-      left: -52px;
-      top: 9%;
     }
   }
 }

@@ -1,13 +1,11 @@
 import React from "react";
 import "./Chats.scss";
 import { useEffect } from "react";
-import { createRef } from "react";
 import { getTime } from "../../../../services/helpers";
 
 const Chats = (props) => {
   const chatRef = React.createRef();
   const { userInfo, setDialog, chosenDialog } = props;
-  debugger;
   useEffect(() => {
     try {
       if (userInfo._id === chosenDialog._id) {

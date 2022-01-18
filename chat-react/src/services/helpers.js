@@ -14,12 +14,9 @@ export const getTime = (messageTime) => {
     );
   } else {
     const now = messageTime;
-    debugger;
     var json = JSON.stringify(now);
     var dateStr = JSON.parse(json);
-    console.log(dateStr);
     var d = new Date(dateStr);
-    console.log(d);
     return (
       d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes()
     );

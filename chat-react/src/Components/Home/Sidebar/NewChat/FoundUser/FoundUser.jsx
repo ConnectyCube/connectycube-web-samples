@@ -1,24 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./FoundUser.scss";
-import ConnectyCube from "connectycube";
 
 const FoundUser = (props) => {
-  const { userInfo, getChats, close, type, groupChatUsers } = props;
-  const startChat = (e) => {
-    close();
-    const params = {
-      type: 3,
-      occupants_ids: [userInfo.id],
-    };
-    ConnectyCube.chat.dialog
-      .create(params)
-      .then((dialog) => {
-        getChats();
+  const {
+    userInfo,
+    close,
+    type,
+    groupChatUsers,
+    startChat,
+    groupOccupants,
+  } = props;
+  const [checked, setChecked] = useState(false);
+  useEffect(() => {
+    setChecked(
+      groupOccupants.find((e) => {
+        return e === userInfo.id;
       })
-      .catch((error) => {});
+    );
+  }, [userInfo, groupOccupants]);
+  const startChatting = () => {
+    close();
+    startChat(userInfo.id);
   };
   return (
-    <div className="found__user">
+    <div className={`found__user ${checked ? "checked" : "not-checked"}`}>
       <div className="user__main-info">
         <div className="user__avatar">
           <img
@@ -40,7 +45,7 @@ const FoundUser = (props) => {
       {type === 1 ? (
         <button
           type="button"
-          onClick={startChat}
+          onClick={startChatting}
           className="add__btn"
           fontSize="2em"
           color="white"
@@ -48,13 +53,15 @@ const FoundUser = (props) => {
           Start chat
         </button>
       ) : (
-        <input
-          type="checkbox"
-          value={false}
-          onChange={(e) => {
-            groupChatUsers(e, userInfo.id);
+        <div
+          className={`add-status ${checked ? "delete" : "add"}`}
+          onClick={(e) => {
+            groupChatUsers(!checked, userInfo.id);
+            checked ? setChecked(false) : setChecked(true);
           }}
-        />
+        >
+          {checked ? "Delete" : "Add"}
+        </div>
       )}
     </div>
   );

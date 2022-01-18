@@ -12,9 +12,9 @@ export const ChatProvider = ({ children }) => {
   const [dialogs, setDialogs] = useState();
   //   const messagesRef = useRef([]);
   const messagesRef = useRef({});
-
+  const usersInGroupsRef = useRef([]);
+  const [usersInGroups, setUsersInGroups] = useState();
   const [messages, setMessages] = useState();
-  const [chatStory, setChatStory] = useState();
   const chatCallbaks = () => {
     ConnectyCube.chat.onMessageListener = (userId, message) => {
       console.log(
@@ -38,6 +38,35 @@ export const ChatProvider = ({ children }) => {
       //   setMessages(messagesRef.current);
       // });
     };
+
+    ConnectyCube.chat.onSystemMessageListener = (msg) => {
+      if (msg.extension.name === "New Dialog") {
+        const filters = { _id: msg.body };
+        ConnectyCube.chat.dialog
+          .list(filters)
+          .then((dialog) => {
+            if (dialog.items[0].type === 2) {
+              updateGroupUsers(dialog.items[0].occupants_ids)
+                .then((users) => {
+                  chatsRef.current.unshift(dialog.items[0]);
+                  setDialogs([...chatsRef.current]);
+                  setDialog(dialog.items[0]);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            } else {
+              chatsRef.current.unshift(dialog.items[0]);
+              setDialogs([...chatsRef.current]);
+              setDialog(dialog.items[0]);
+            }
+          })
+          .catch((error) => {});
+        // chatsRef.current.unshift(dialog);
+        // setDialogs([...chatsRef.current]);
+        // setDialog(dialog);
+      }
+    };
   };
 
   chatCallbaks();
@@ -57,17 +86,137 @@ export const ChatProvider = ({ children }) => {
       });
   };
 
+  const updateGroupUsers = (usersIds) => {
+    let users = new Array();
+    return new Promise((resolve, reject) => {
+      usersIds.forEach((userId) => {
+        if (usersInGroupsRef.current[userId]) {
+          console.table("WE HAVE IT ", usersInGroupsRef.current);
+        } else {
+          users.push(userId);
+          console.error("WE DONT HAVE USER " + userId);
+        }
+      });
+      if (users.length > 0) {
+        const params = {
+          page: 1,
+          per_page: 30,
+          filter: {
+            field: "id",
+            param: "in",
+            value: users,
+          },
+        };
+        ConnectyCube.users
+          .get(params)
+          .then((result) => {
+            result.items.forEach((user) => {
+              usersInGroupsRef.current[user.user.id] = user.user;
+              setUsersInGroups({ ...usersInGroupsRef.current });
+            });
+            resolve(usersInGroupsRef.current);
+          })
+          .catch((error) => {
+            reject();
+          });
+      } else {
+        resolve();
+      }
+    });
+  };
+
+  const searchUsers = (userName) => {
+    return new Promise((resolve, reject) => {
+      const users = [];
+      const searchParams = {
+        full_name: userName,
+        per_page: 100,
+        page: 1,
+      };
+      const searchLogin = { login: userName };
+      ConnectyCube.users
+        .get(searchParams)
+        .then((result) => {
+          result.items.forEach((element) => {
+            users.push(element.user);
+          });
+
+          ConnectyCube.users
+            .get(searchLogin)
+            .then((result) => {
+              users.unshift(result.user);
+              resolve(users);
+            })
+            .catch((error) => {
+              resolve(users);
+            });
+        })
+        .catch((error) => {});
+    });
+  };
+
+  const addGroupUsers = (result) => {
+    return new Promise((resolve, reject) => {
+      chatsRef.current = result.items;
+      setDialogs([...chatsRef.current]);
+      result.items.forEach((dialog) => {
+        if (dialog.type === 2) {
+          dialog.occupants_ids.forEach((userId) => {
+            usersInGroupsRef.current.push(userId);
+          });
+          usersInGroupsRef.current = [...new Set(usersInGroupsRef.current)];
+          setUsersInGroups([...usersInGroupsRef.current]);
+        }
+      });
+      resolve();
+    });
+  };
+
   const getChats = () => {
     const filters = {};
     ConnectyCube.chat.dialog
       .list(filters)
       .then((result) => {
-        chatsRef.current = result.items;
-        setDialogs([...chatsRef.current]);
+        addGroupUsers(result)
+          .then(() => {
+            const params = {
+              page: 1,
+              per_page: 30,
+              filter: {
+                field: "id",
+                param: "in",
+                value: usersInGroupsRef.current,
+              },
+            };
+
+            ConnectyCube.users
+              .get(params)
+              .then((result) => {
+                usersInGroupsRef.current = {};
+                result.items.forEach((user) => {
+                  usersInGroupsRef.current[user.user.id] = user.user;
+                  setUsersInGroups({ ...usersInGroupsRef.current });
+                });
+              })
+              .catch((error) => {});
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const dialogSystemMessage = (userId, dialogId) => {
+    const msg = {
+      body: `${dialogId}`,
+      extension: {
+        name: "New Dialog",
+      },
+    };
+    ConnectyCube.chat.sendSystemMessage(userId, msg);
   };
 
   const startGroupChat = (occupants, groupName) => {
@@ -81,7 +230,33 @@ export const ChatProvider = ({ children }) => {
     ConnectyCube.chat.dialog
       .create(params)
       .then((dialog) => {
-        getChats();
+        occupants.forEach((userId) => {
+          dialogSystemMessage(userId, dialog._id);
+        });
+        chatsRef.current.unshift(dialog);
+        setDialogs([...chatsRef.current]);
+        setDialog(dialog);
+      })
+      .catch((error) => {});
+  };
+
+  const startChat = (userId) => {
+    const params = {
+      type: 3,
+      occupants_ids: [userId],
+    };
+    ConnectyCube.chat.dialog
+      .create(params)
+      .then((dialog) => {
+        let dialogIs = chatsRef.current.find((e) => {
+          return e._id === dialog._id;
+        });
+        if (!dialogIs) {
+          dialogSystemMessage(userId, dialog._id);
+          chatsRef.current.unshift(dialog);
+          setDialogs([...chatsRef.current]);
+        }
+        setDialog(dialog);
       })
       .catch((error) => {});
   };
@@ -91,13 +266,14 @@ export const ChatProvider = ({ children }) => {
   };
 
   const addMessageToStore = (message, dialogId) => {
+    let timeNow = new Date().getTime();
     if (typeof e === "object") {
       messagesRef.current[dialogId].push(message);
     } else {
       messagesRef.current[dialogId].push({
         message: message,
         sender_id: parseInt(localStorage.userId),
-        timestamp: new Date().getTime(),
+        date_sent: parseInt(new Date().getTime() / 1000),
       });
     }
     setMessages({ ...messagesRef.current });
@@ -112,10 +288,10 @@ export const ChatProvider = ({ children }) => {
         save_to_history: 1,
         dialog_id: dialog._id,
       },
-      markable: 1,
     };
-
-    ConnectyCube.chat.send(opponentId, messageToSend);
+    dialog.type === 3
+      ? ConnectyCube.chat.send(opponentId, messageToSend)
+      : ConnectyCube.chat.send(dialog._id, messageToSend);
   };
 
   const getMessages = (dialog) => {
@@ -134,12 +310,14 @@ export const ChatProvider = ({ children }) => {
             .list(params)
             .then((messages) => {
               // messagesRef.current = [];
-              messagesRef.current[key] = new Array();
-              messages.items.map((e) => {
-                messagesRef.current[key].unshift(e);
-                return 0;
-              });
-              setMessages({ ...messagesRef.current });
+              if (messages.items) {
+                messagesRef.current[key] = new Array();
+                messages.items.map((e) => {
+                  messagesRef.current[key].unshift(e);
+                  return 0;
+                });
+                setMessages({ ...messagesRef.current });
+              }
 
               resolve(messages);
             })
@@ -166,6 +344,9 @@ export const ChatProvider = ({ children }) => {
         messages,
         sendMessage,
         startGroupChat,
+        startChat,
+        usersInGroups,
+        searchUsers,
       }}
     >
       {children}

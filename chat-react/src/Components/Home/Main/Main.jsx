@@ -6,7 +6,8 @@ import UserInfo from "./UserInfo/UserInfo";
 import { animateScroll } from "react-scroll";
 
 const Main = (props) => {
-  const { sendMessage, chosenDialog, getMessages, messages } = props;
+  const { sendMessage, chosenDialog, getMessages, messages, usersInGroups } =
+    props;
   const dialog = chosenDialog;
   const messageRef = React.createRef();
   const messagesRef = React.createRef();
@@ -38,7 +39,14 @@ const Main = (props) => {
         for (let i = 0; i < messages[chosenDialog._id].length; i++) {
           setAllMessages(() => {
             return messages[chosenDialog._id].map((e) => {
-              return <Message key={e.index} message={e} dialogInfo={dialog} />;
+              return (
+                <Message
+                  usersInGroups={usersInGroups}
+                  key={e.index}
+                  message={e}
+                  dialogInfo={dialog}
+                />
+              );
             });
           });
         }
@@ -51,11 +59,11 @@ const Main = (props) => {
       (id) => id !== parseInt(localStorage.userId)
     )[0];
     if (messageRef.current.value.trim()) {
-      messageRef.current.value = messageRef.current.value.replace(
-        /(\r\n|\n|\r)/gm,
-        ""
-      );
-      sendMessage(dialog, messageRef.current.value, opponentId);
+      let message = messageRef.current.value.replaceAll("\n+", "\n");
+      message = message.replaceAll("((?!\n+)\\s+)", " ");
+      message = message.replaceAll("((?!\n+)\\s+)", "");
+
+      sendMessage(dialog, message, opponentId);
       messageRef.current.style.height = "45px";
       messageRef.current.value = "";
     }
@@ -81,7 +89,11 @@ const Main = (props) => {
       >
         {dialog && (
           <div id="messages" className="messages">
-            {allMessages ? allMessages : <span className="no-msg">NO MESSAGES YET</span>}
+            {allMessages ? (
+              allMessages
+            ) : (
+              <span className="no-msg">NO MESSAGES YET</span>
+            )}
           </div>
         )}
         {!dialog && <div className="choose__chat">Choose a chat</div>}
