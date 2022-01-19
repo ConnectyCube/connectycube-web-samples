@@ -1,54 +1,90 @@
-import {Dialog} from "../../services/config";
+import {Dialog, Message} from "../../services/config";
 import {createReducer, on} from "@ngrx/store";
-import {addDialog, addDialogs, addMessageId, addMessagesIdsAndParticipants, openDialog} from "./dialog.actions";
-import {addMessage} from "../messages/messages.action";
+import {
+  addDialog,
+  addDialogs,
+  addMessageId,
+  addMessagesIdsAndParticipants,
+  addTypingParticipant,
+  openDialog, removeTypingParticipant, setNullConverastion
+} from "./dialog.actions";
+import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
-export interface dialogState {
+//Entity Adapter
+export interface dialogState extends EntityState<Dialog> {
   selectedConversation: string,
   activatedConversation: Array<string>,
-  dialogs: Array<Dialog>
+};
+
+export function selectDialogId(d: Dialog): string {
+  return d.id;
 }
 
-export const initialState: dialogState = {
+export function sortByDateCreate(d1: Dialog, d2: Dialog): number {
+  return new Date(d2.createAt).getTime() - new Date(d1.createAt).getTime();
+}
+
+export const dialogsAdapter = createEntityAdapter<Dialog>({
+  selectId: selectDialogId,
+  sortComparer: sortByDateCreate
+})
+
+export const initialState: dialogState = dialogsAdapter.getInitialState({
   selectedConversation: "",
   activatedConversation: [],
-  dialogs: []
-}
+})
 
 export const dialogReducer = createReducer(
   initialState,
-  on(addDialogs, (state, {dialogs}) => ({
-    ...state,
-    dialogs: dialogs
-  })),
-  on(addDialog, (state, {dialog}) => ({
-    ...state,
-    dialogs: [...[dialog], ...state.dialogs]
-  })),
+  on(addDialogs, (state, {dialogs}) => {
+    return dialogsAdapter.setAll(dialogs, state);
+  }),
+  on(addDialog, (state, {dialog}) => {
+    return dialogsAdapter.addOne(dialog, state);
+  }),
   on(openDialog, (state, {dialogId, isActivated}) => ({
     ...state,
     selectedConversation: dialogId,
     activatedConversation: isActivated ? state.activatedConversation
       : [...state.activatedConversation, ...[dialogId]]
   })),
-  on(addMessageId, (state, {dialogId, msgIds}) => ({
-    ...state,
-    dialogs: state.dialogs.map((d: Dialog) => {
-      if (d.id === dialogId) {
-        msgIds = [...msgIds,...d.msgIds];
-        return {...d, msgIds};
+  on(addMessageId, (state, {dialogId, msgIds}) => {
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {msgIds: [...msgIds, ...state.entities[dialogId]!.msgIds]}
+    }, state)
+  }),
+  on(addMessagesIdsAndParticipants, (state, {dialogId, msgIds, participants}) => {
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {msgIds, participants}
+    }, state)
+  }),
+  on(addTypingParticipant, (state, {dialogId, pId}) => {
+    if (state.entities[dialogId]!.participants.has(String(pId))) {
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {
+          typingParticipants:
+            [...state.entities[dialogId]!.typingParticipants, ...[{
+              id: pId,
+              name: state.entities[dialogId]!.participants.get(String(pId))!.full_name
+            }]]
+        }
+      }, state)
+    }
+    return state;
+  }),
+  on(removeTypingParticipant, (state, {dialogId, pId}) => {
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {
+        typingParticipants: state.entities[dialogId]!.typingParticipants.filter((p: any) => p.id !== pId)
       }
-      return d;
-    })
-  })),
-  on(addMessagesIdsAndParticipants, (state, {dialogId, msgIds, participants}) => ({
+    }, state)
+  }),
+  on(setNullConverastion, (state) => ({
     ...state,
-    dialogs: state.dialogs.map((d: Dialog) => {
-      if (d.id === dialogId) {
-        console.warn(participants)
-        return {...d, msgIds, participants};
-      }
-      return d;
-    })
+    selectedConversation: ""
   }))
 )

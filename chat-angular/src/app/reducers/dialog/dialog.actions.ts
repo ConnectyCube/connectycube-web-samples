@@ -19,11 +19,24 @@ export const openDialog = createAction(
 
 export const addMessageId = createAction(
   '[DIALOG] add dialog`s message id',
-  props<{dialogId:string, msgIds:Array<string>}>()
+  props<{ dialogId: string, msgIds: Array<string> }>()
 )
 
 export const addMessagesIdsAndParticipants = createAction(
   '[DIALOG] add dialog`s messages ids and participants',
-  props<{dialogId:string, msgIds:Array<string>, participants:Map<string,participant>}>()
+  props<{ dialogId: string, msgIds: Array<string>, participants: Map<string, participant> }>()
 )
 
+export const addTypingParticipant = createAction(
+  '[DIALOG] add typing participant to dialog',
+  props<{ dialogId: string, pId: number }>()
+);
+
+export const removeTypingParticipant = createAction(
+  '[DIALOG] remove typing participant from dialog',
+  props<{dialogId: string, pId: number}>()
+)
+
+export const setNullConverastion = createAction(
+  '[DIALOG] set null conversation'
+)

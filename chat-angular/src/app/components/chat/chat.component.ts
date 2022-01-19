@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
-import {chatCreatorStatusSelector} from "../../reducers/interface/interface.selectors";
+import {selectedConversationSelector} from "../../reducers/dialog/dialog.selectors";
+import {selectDialogIdRouterParam} from "../../reducers/router.selector";
 
 @Component({
   selector: 'app-chat',
@@ -9,7 +10,7 @@ import {chatCreatorStatusSelector} from "../../reducers/interface/interface.sele
 })
 export class ChatComponent implements OnInit {
 
-  public isChatCreate$ = this.store$.select(chatCreatorStatusSelector);
+  public selectedConversation$ = this.store$.select(selectDialogIdRouterParam);
 
   constructor(private store$: Store) {
   }

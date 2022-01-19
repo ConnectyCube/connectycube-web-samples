@@ -14,6 +14,9 @@ export const getMessagesSelector = createSelector(
   getMessageEntities,
   getDialogMessages,
   (messages: any, msgIds: any) => {
-    return msgIds ? msgIds.map((id: string) => messages[id]) : [];
+    if(msgIds){
+      return msgIds.length !== 0 ? msgIds.map((id: string) => messages[id]) : [];
+    }
+    return [];
   }
 )

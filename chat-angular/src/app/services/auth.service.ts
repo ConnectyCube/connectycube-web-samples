@@ -36,7 +36,7 @@ export class AuthService {
     return ConnectyCube.createSession();
   }
 
-  public autoLogin(token: string) {
+  public initSessionFromToken(token: string) {
     const credentials = {
       appId: Number(environment.APP_ID),
       token: token
@@ -112,36 +112,20 @@ export class AuthService {
   }
 
   public register(userName: string, login: string, password: string) {
-    return new Promise<void>((resolve, reject) => {
+    return this.createSession().then((session: any) => {
 
-      this.createSession().then((session: any) => {
+      const userProfile = {
+        login: login,
+        password: password,
+        full_name: userName,
+      };
 
-        const userProfile = {
-          login: login,
-          password: password,
-          full_name: userName,
-        };
+      localStorage.setItem('token', btoa(session.token));
 
-        localStorage.setItem('token', btoa(session.token));
-
-        ConnectyCube.users.signup(userProfile)
-          .then(() => {
-            this.login(login, password)
-              .then((user: any) => {
-                console.log("Logging user", user);
-                resolve();
-              })
-              .catch((error: any) => {
-                console.error('Logging Error!', error);
-                reject(error);
-              })
-          })
-          .catch((error: any) => {
-            console.log("Sign up", error);
-            reject(error);
-          })
-
-      });
-    })
+      return ConnectyCube.users.signup(userProfile)
+        .then(() => {
+          return this.login(login, password);
+        })
+    });
   }
 }

@@ -1,14 +1,25 @@
 import {Injectable} from '@angular/core';
 import {Dialog, Message} from "./config";
 import {Store} from "@ngrx/store";
-import {addDialog, addDialogs, addMessageId, addMessagesIdsAndParticipants} from "../reducers/dialog/dialog.actions";
-import {dialogsSelector, getDialogParticipant} from "../reducers/dialog/dialog.selectors";
+import {
+  addDialog,
+  addDialogs,
+  addMessageId,
+  addMessagesIdsAndParticipants,
+  addTypingParticipant, removeTypingParticipant
+} from "../reducers/dialog/dialog.actions";
+import {
+  dialogsSelector,
+  getDialogParticipant,
+  getIndividualDialogByParticipantId
+} from "../reducers/dialog/dialog.selectors";
 import {take} from 'rxjs/operators';
 import {addMessage, addMessages} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
 import {builtDialog} from "./utilities";
 import {addSearchParticipants} from "../reducers/participants/participants.actions";
 import {Router} from "@angular/router";
+import {meSelector} from "../reducers/participants/participants.selectors";
 
 declare let ConnectyCube: any;
 
@@ -95,16 +106,47 @@ export class ChatService {
           break;
       }
     };
+
+    ConnectyCube.chat.onMessageTypingListener = (isTyping: boolean, userId: number, dialogId: string) => {
+      //Group dialog
+      if (dialogId) {
+        this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+          if (userMe !== undefined) {
+            if (userMe.id !== userId) {
+              console.log("GROUP CHAT", isTyping, userId, dialogId);
+              if (isTyping) {
+                this.store$.dispatch(addTypingParticipant({dialogId, pId: userId}));
+              }
+              else {
+                this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
+              }
+            }
+          }
+        })
+      }
+      //Individual dialog
+      else {
+        this.store$.select(getIndividualDialogByParticipantId, {pId: userId}).pipe(take(1))
+          .subscribe((dialogId: any) => {
+            if (dialogId !== undefined) {
+              console.log("INDIVIDUAL CHAT", isTyping, userId, dialogId);
+              if (isTyping) {
+                this.store$.dispatch(addTypingParticipant({dialogId, pId: userId}));
+              }
+              else {
+                this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
+              }
+            }
+          })
+      }
+    };
   }
 
   public getDialogs() {
     ConnectyCube.chat.dialog
       .list()
       .then((result: any) => {
-        const dialogs: Array<Dialog> = result.items.map((d: any) => {
-          const dialog: Dialog = builtDialog(d);
-          return dialog;
-        })
+        const dialogs: Array<Dialog> = result.items.map((d: any) => builtDialog(d))
         console.warn("[Processed dialogs]", dialogs);
         this.store$.dispatch(addDialogs({dialogs}));
       })
@@ -113,14 +155,14 @@ export class ChatService {
       });
   }
 
-  public searchFullName(fullName: string) {
+  public searchUsersByFullName(fullName: string) {
     const searchParams = {full_name: fullName};
 
     return ConnectyCube.users
       .get(searchParams)
   }
 
-  public searchLogin(login: string) {
+  public searchUsersByLogin(login: string) {
     const searchParams = {login: login};
     return ConnectyCube.users
       .get(searchParams)
@@ -130,8 +172,8 @@ export class ChatService {
     if (searchForm.valid) {
       const sValue = searchForm.value.name;
       console.warn('[Search Value]', sValue);
-      const promiseF = this.searchFullName(sValue);
-      const promiseL = this.searchLogin(sValue);
+      const promiseF = this.searchUsersByFullName(sValue);
+      const promiseL = this.searchUsersByLogin(sValue);
       Promise.allSettled([promiseF, promiseL]).then((result: any) => {
         console.warn(result);
         const participants: Map<string, any> = new Map();
@@ -319,6 +361,29 @@ export class ChatService {
     };
 
     ConnectyCube.chat.sendSystemMessage(userId, msg);
+  }
+
+  public sendStartTypingStatus(dialog: Dialog) {
+    console.log("[START] 111111")
+    //Group dialog
+    if (dialog.type === 2) {
+      ConnectyCube.chat.sendIsTypingStatus(dialog.id);
+    }
+    else {
+      const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
+      ConnectyCube.chat.sendIsTypingStatus(opponentId, dialog.id);
+    }
+  }
+
+  public sendStopTypingStatus(dialog: Dialog) {
+    //Group dialog
+    if (dialog.type === 2) {
+      ConnectyCube.chat.sendIsStopTypingStatus(dialog.id);
+    }
+    else {
+      const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
+      ConnectyCube.chat.sendIsStopTypingStatus(opponentId);
+    }
   }
 
 }

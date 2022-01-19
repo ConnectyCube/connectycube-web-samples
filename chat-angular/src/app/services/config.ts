@@ -17,7 +17,7 @@ export const appConfig = {
 }
 
 export interface Message {
-  id:string,
+  id: string,
   senderName?: string,
   body: string,
   date_sent: number,
@@ -38,6 +38,7 @@ export interface Dialog {
   unreadMessage: number,
   createAt: string,
   msgIds: Array<string>,
-  participantIds:Array<number>
-  participants: Map<string, participant>
+  participantIds: Array<number>
+  participants: Map<string, participant>,
+  typingParticipants: Array<{id:number, name:string}>
 }

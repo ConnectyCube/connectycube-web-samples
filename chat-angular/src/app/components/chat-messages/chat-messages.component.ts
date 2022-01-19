@@ -4,17 +4,18 @@ import {Dialog, ItemsHeight, Message} from "../../services/config";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {Store} from "@ngrx/store";
 import {selectDialogIdRouterParam} from "../../reducers/router.selector";
-import {openDialog} from "../../reducers/dialog/dialog.actions";
+import {openDialog, setNullConverastion} from "../../reducers/dialog/dialog.actions";
 import {
-  dialogFindSelector,
+  dialogFindSelector, getDialogsTypingParticipant,
   isActivatedConversationSelector,
   selectedConversationSelector
 } from "../../reducers/dialog/dialog.selectors";
-import {take} from "rxjs/operators";
+import {filter, take} from "rxjs/operators";
 import {ChatService} from "../../services/chat.service";
 import {participant} from "../../reducers/participants/participants.reducer";
 import {getMessagesSelector} from "../../reducers/messages/messages.selectors";
 import {Observable} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-chat-messages',
@@ -29,6 +30,8 @@ export class ChatMessagesComponent implements OnInit {
   @ViewChild(CdkVirtualScrollViewport) virtualScroll: CdkVirtualScrollViewport;
   @ViewChild('scrollBar') scrollBar: ElementRef;
   @ViewChild('scrollBarContent') scrollBarContent: ElementRef;
+
+  private timerId: number | undefined;
 
   public items: Array<number> = []
   public itemsTotalHeight = 0;
@@ -46,31 +49,50 @@ export class ChatMessagesComponent implements OnInit {
     createAt: "",
     msgIds: [],
     participantIds: [],
-    participants: new Map<string, participant>()
+    participants: new Map<string, participant>(),
+    typingParticipants: []
   };
   public subscribeDialogFind: any;
   public subscribeVirtualScrollCalc: any;
   public isMobile: boolean = this.deviceService.isMobile();
   public isTablet: boolean = this.deviceService.isTablet();
   public isGroupChat: boolean = false;
+  public typingParticipants$: any;
+  public typingParticipants: string = "";
 
   constructor(
     private deviceService: DeviceDetectorService,
     private store$: Store,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private router: Router,
   ) {
     //Subscribe to change dialogId in URL
     this.store$.select(selectDialogIdRouterParam).subscribe(res => {
-      if (res) {
+      if (res !== undefined) {
+        if (this.timerId) {
+          clearTimeout(this.timerId);
+          this.sendIsStopTypingStatus();
+        }
         const dialogId = atob(<string>res);
         console.log(dialogId);
         if (this.subscribeDialogFind) {
           this.subscribeDialogFind.unsubscribe();
         }
+        if (this.areaElement) {
+          this.areaElement.nativeElement.value = "";
+        }
         //Select data of selected dialog
         this.subscribeDialogFind = this.store$.select(dialogFindSelector, {id: dialogId})
-          .subscribe((dialog: any) => {
+          .pipe(filter(v => !!v), take(1)).subscribe((dialog: any) => {
             if (dialog !== undefined) {
+              //Typing participants
+              this.typingParticipants$ = this.store$.select(getDialogsTypingParticipant, {dialogId: dialog.id})
+                .subscribe(typParticipants => {
+                  if (typParticipants !== undefined) {
+                    this.typingParticipants = typParticipants.join(",");
+                  }
+                });
+
               this.selectedDialog = dialog;
               this.isGroupChat = dialog.type === 2
               //Check has the chat been rendered?
@@ -85,6 +107,13 @@ export class ChatMessagesComponent implements OnInit {
           })
       }
     })
+  }
+
+  private sendIsStopTypingStatus() {
+    // console.trace("[STOP] 1111111111111")
+    this.chatService.sendStopTypingStatus(this.selectedDialog);
+    console.warn(1111)
+    this.timerId = undefined;
   }
 
   private measureText(text: string, maxWidth: number) {
@@ -144,6 +173,23 @@ export class ChatMessagesComponent implements OnInit {
     return message.id;
   }
 
+  public setNullConversation() {
+    this.router.navigateByUrl("/chat/");
+    this.store$.dispatch(setNullConverastion());
+  }
+
+  public typing(e: any) {
+    if (e.target.value.trim()) {
+      if (this.timerId === undefined) {
+        this.chatService.sendStartTypingStatus(this.selectedDialog);
+      }
+      clearTimeout(this.timerId);
+      this.timerId = setTimeout(() => {
+        this.sendIsStopTypingStatus();
+      }, 3000);
+    }
+  }
+
   public pageUpDown(e: any) {
     e.preventDefault();
   }
@@ -156,6 +202,8 @@ export class ChatMessagesComponent implements OnInit {
     const text: string = this.areaElement.nativeElement.value.trim();
 
     if (text) {
+      clearTimeout(this.timerId);
+      this.sendIsStopTypingStatus();
       const message: Message = {
         id: "",
         senderName: "",

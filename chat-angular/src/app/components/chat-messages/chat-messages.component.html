@@ -1,6 +1,9 @@
 <div class="chat__right-panel">
   <div *ngIf="selectedConversation$ | async" class="header">
     <div class="user">
+      <button (click)="setNullConversation()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
       <div class="user__avatar"
            [ngStyle]="{'background-image': selectedDialog.photo?'url('+ selectedDialog.photo +')':'none',
                  'background-color': selectedDialog.photo?'':'skyblue'}">
@@ -10,7 +13,10 @@
         <p class="user__fullname">
           {{selectedDialog.name}}
         </p>
-        <small class="user__status">Typing...</small>
+        <small *ngIf="typingParticipants" class="user__status">
+          Typing: {{(typingParticipants.split(',')).length > 3 ? "more than 3" : typingParticipants}} <img
+          src="assets/typing.gif"/>
+        </small>
       </div>
     </div>
   </div>
@@ -42,6 +48,7 @@
       <div class="send-container">
         <textarea
           #areaElement
+          (input)="typing($event)"
           (keydown.enter)="sendMessage($event,'area')"
           (keydown.pageDown)="pageUpDown($event)"
           (keydown.pageUp)="pageUpDown($event)"

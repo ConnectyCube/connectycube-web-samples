@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
       console.warn(res);
       if (res !== undefined) {
         if (token && res !== '/auth') {
-          this.authService.autoLogin(token);
+          this.authService.initSessionFromToken(token);
           res = res === '/' ? '/chat' : res;
           this.router.navigateByUrl(res);
         }

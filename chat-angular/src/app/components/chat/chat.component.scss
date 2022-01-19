@@ -30,21 +30,23 @@
   app-chat-messages {
     width: calc(100% - 280px);
   }
-  app-dialog-creat {
-    width: calc(100% - 280px);
-  }
 }
 
 @media screen and (max-width: 767px) {
-  app-dialogs {
-    min-width: 100%;
+  .selected{
+    app-dialogs{
+      display: none !important;
+    }
+    app-chat-messages{
+      display: flex !important;
+      width: 100% !important;
+    }
   }
-  app-chat-messages {
-    display: none !important;
+  app-dialogs{
+    display: flex !important;
     width: 100% !important;
   }
-  app-dialog-creat {
+  app-chat-messages{
     display: none !important;
-    width: 100% !important;
   }
 }
