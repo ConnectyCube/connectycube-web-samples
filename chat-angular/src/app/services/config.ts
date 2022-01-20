@@ -21,6 +21,7 @@ export interface Message {
   senderName?: string,
   body: string,
   date_sent: number,
+  photo?: string | undefined,
 }
 
 export interface ItemsHeight {
@@ -40,5 +41,5 @@ export interface Dialog {
   msgIds: Array<string>,
   participantIds: Array<number>
   participants: Map<string, participant>,
-  typingParticipants: Array<{id:number, name:string}>
+  typingParticipants: Array<{ id: number, name: string }>
 }

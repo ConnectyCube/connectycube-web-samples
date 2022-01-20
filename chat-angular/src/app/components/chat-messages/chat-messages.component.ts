@@ -173,6 +173,14 @@ export class ChatMessagesComponent implements OnInit {
     return message.id;
   }
 
+  public onFileSelected(e: any) {
+    const file: any = e.target.files[0];
+    console.warn(file);
+    if (file) {
+      this.chatService.sendMsgWithPhoto(file, this.selectedDialog);
+    }
+  }
+
   public setNullConversation() {
     this.router.navigateByUrl("/chat/");
     this.store$.dispatch(setNullConverastion());

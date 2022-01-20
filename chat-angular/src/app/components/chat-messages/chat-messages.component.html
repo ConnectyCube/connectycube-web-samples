@@ -31,11 +31,14 @@
              class="message-container">
           <div [ngClass]="message.senderName?'them':'me'"
                class="message">
-        <span class="message-name" [ngClass]="message.senderName?'them':'me'">
-          {{isGroupChat ? message.senderName : ''}}
-        </span>
-            <p class="message-text">{{message.body}}
+            <span class="message-name" [ngClass]="message.senderName?'them':'me'">
+              {{isGroupChat ? message.senderName : ''}}
+            </span>
+            <p *ngIf="!message.photo" class="message-text">{{message.body}}
               <span style="display: inline-block; width: 90px; height: 5px"></span></p>
+            <div>
+              <img *ngIf="message.photo" [src]="message.photo" alt="photo" class="message-photo">
+            </div>
             <p class="message-time">{{getDateMessage(message.date_sent)}}</p>
           </div>
         </div>
@@ -57,6 +60,17 @@
           id="message-area"
           placeholder="Enter your message"
         ></textarea>
+        <div class="button-group">
+          <input type="file" class="attache-file-input"
+                 matTooltip="Attach file"
+                 matTooltipShowDelay="500"
+                 matTooltipClass="tooltip"
+                 (change)="onFileSelected($event)">
+          <button class="attache-file"
+                  type="button">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+        </div>
         <button
           type="button"
           (click)="sendMessage($event, 'button')"

@@ -16,7 +16,7 @@
       display: flex;
       align-items: center;
 
-      .back-btn{
+      .back-btn {
         margin-left: -15px;
         margin-right: 5px;
         background: transparent;
@@ -27,7 +27,7 @@
         height: 50px;
         border-radius: 50%;
         background-size: cover;
-        background-repeat:no-repeat;
+        background-repeat: no-repeat;
 
         p {
           display: flex;
@@ -70,7 +70,7 @@
         max-width: 100%;
         font-size: 11px;
 
-        img{
+        img {
           margin-left: 5px;
           width: 20px;
           height: 20px;
@@ -136,12 +136,34 @@
 
 
 .send-message-btn {
-  margin-left: 10px;
   min-width: 40px;
   background: #2087b2;
   color: #fff;
   height: 46px;
   width: 46px;
+}
+
+.button-group {
+  position: relative;
+  margin: 0 6px;
+  height: 24px;
+  width: 24px;
+}
+
+.attache-file {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  padding: 0;
+  background: transparent;
+}
+
+.attache-file-input {
+  position: absolute;
+  z-index: 6;
+  opacity: 0;
+  width: 24px;
+  height: 24px;
 }
 
 .message-container {
@@ -210,6 +232,7 @@ cdk-virtual-scroll-viewport {
 }
 
 .message-name {
+  display: flex;
   font-size: 14px;
   font-weight: 700;
   color: black;
@@ -228,6 +251,14 @@ cdk-virtual-scroll-viewport {
   white-space: pre-line;
 }
 
+.message-photo {
+  max-height: 200px;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  padding-bottom: 5px;
+}
+
 .message-time {
   font-size: 11px;
   font-weight: normal;
@@ -238,8 +269,8 @@ cdk-virtual-scroll-viewport {
   right: 7px;
 }
 
-@media screen and (min-width: 767px){
-  .back-btn{
+@media screen and (min-width: 767px) {
+  .back-btn {
     display: none;
   }
 }

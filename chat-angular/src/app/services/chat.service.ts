@@ -78,6 +78,42 @@ export class ChatService {
       });
   }
 
+  private prepareMessageWithAttachmentAndSend(file: any, dialog: Dialog) {
+    const messageParams = {
+      type: dialog.type === 3 ? "chat" : "groupchat",
+      body: "attachment",
+      extension: {
+        save_to_history: 1,
+        dialog_id: dialog.id,
+        attachments: [{uid: file.uid, id: file.id, type: "photo"}],
+      },
+    };
+
+    const message: Message = {
+      id: "",
+      body: "",
+      senderName: "",
+      date_sent: Math.floor(Date.now() / 1000)
+    }
+
+    if (dialog.type === 3) {
+      const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
+      message.id = ConnectyCube.chat.send(opponentId, messageParams);
+    }
+    else {
+      message.id = ConnectyCube.chat.send(dialog.id, messageParams);
+    }
+
+    if (message.id) {
+      message.photo = ConnectyCube.storage.privateUrl(file.uid);
+      console.warn(message);
+      if(message.photo){
+        this.store$.dispatch(addMessageId({dialogId: dialog.id, msgIds: [message.id]}));
+        this.store$.dispatch(addMessage({message}));
+      }
+    }
+  }
+
   public init() {
     ConnectyCube.chat.onMessageListener = (userId: any, msg: any) => {
       console.warn(userId, msg);
@@ -91,6 +127,10 @@ export class ChatService {
             body: msg.body,
             senderName: p.full_name,
             date_sent: msg.extension.date_sent
+          }
+          if (msg.extension.hasOwnProperty("attachments") && msg.extension.attachments.length > 0) {
+            const fileUID = msg.extension.attachments[0].uid;
+            message.photo = ConnectyCube.storage.privateUrl(fileUID);
           }
 
           this.store$.dispatch(addMessageId({dialogId: msg.extension.dialog_id, msgIds: [msg.id]}));
@@ -149,6 +189,26 @@ export class ChatService {
         const dialogs: Array<Dialog> = result.items.map((d: any) => builtDialog(d))
         console.warn("[Processed dialogs]", dialogs);
         this.store$.dispatch(addDialogs({dialogs}));
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }
+
+  public sendMsgWithPhoto(file: any, dialog: Dialog) {
+    const fileParams = {
+      name: file.name,
+      file: file,
+      type: file.type,
+      size: file.size,
+      public: false,
+    };
+
+    ConnectyCube.storage
+      .createAndUpload(fileParams)
+      .then((result: any) => {
+        console.warn(result);
+        this.prepareMessageWithAttachmentAndSend(result, dialog);
       })
       .catch((error: any) => {
         console.error(error);
@@ -297,6 +357,12 @@ export class ChatService {
                 date_sent: m.date_sent,
                 senderName: sender?.me ? "" : sender?.full_name,
               }
+
+              if (m.hasOwnProperty("attachments") && m.attachments.length > 0) {
+                const fileUID = m.attachments[0].uid;
+                message.photo = ConnectyCube.storage.privateUrl(fileUID);
+              }
+
               messages.push(message);
               msgIds.push(m._id);
             })

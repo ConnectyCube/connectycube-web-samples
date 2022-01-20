@@ -18,9 +18,7 @@ export class AuthService {
   }
 
   public tokenExpired() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('login');
-    this.router.navigateByUrl("/auth");
+    this.logout();
   }
 
   public connectToChat(id: number, password: string) {
