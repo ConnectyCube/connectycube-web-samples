@@ -18,13 +18,13 @@ const NewChat = (props) => {
   let groupOccupants = useRef([]);
 
   const [occupants, setOccupants] = useState([]);
-  const groupChatUsers = (e, id) => {
+  const groupChatUsers = (e, userInfo) => {
     if (e) {
-      groupOccupants.current.push(id);
+      groupOccupants.current.push(userInfo);
       setOccupants(groupOccupants.current.length);
     } else {
       groupOccupants.current = groupOccupants.current.filter((el) => {
-        return el !== id;
+        return el.id !== userInfo.id;
       });
       setOccupants(groupOccupants.current.length);
     }
@@ -36,24 +36,23 @@ const NewChat = (props) => {
     searchUsers(userRef.current.value)
       .then((users) => {
         let allUsers = [];
+        let userFiltered = users.filter(
+          (ele, ind) => ind === users.findIndex((elem) => elem.id === ele.id)
+        );
         setFoundedUsers(() => {
-          debugger;
-          let array = users.map((user) => {
-            let alreadyRendered = allUsers.find((e) => e === user.id);
-            if (!alreadyRendered) {
-              allUsers.push(user.id);
-              return (
-                <FoundUser
-                  startChat={startChat}
-                  close={close}
-                  getChats={getChats}
-                  userInfo={user}
-                  type={type}
-                  groupChatUsers={groupChatUsers}
-                  groupOccupants={groupOccupants.current}
-                />
-              );
-            }
+          let array = userFiltered.map((user) => {
+            allUsers.push(user.id);
+            return (
+              <FoundUser
+                startChat={startChat}
+                close={close}
+                getChats={getChats}
+                userInfo={user}
+                type={type}
+                groupChatUsers={groupChatUsers}
+                groupOccupants={groupOccupants.current}
+              />
+            );
           });
           return array;
         });
@@ -103,7 +102,7 @@ const NewChat = (props) => {
         <CreateGroupChat
           close={close}
           startGroupChat={startGroupChat}
-          occupants={groupOccupants.current}
+          groupOccupants={groupOccupants.current}
         />
       )}
     </div>

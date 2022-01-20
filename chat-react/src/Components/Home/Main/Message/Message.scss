@@ -3,6 +3,7 @@
   text-align: left;
   flex-direction: row;
   align-items: center;
+
   max-width: 80%;
   position: relative;
 
@@ -14,6 +15,7 @@
     border-radius: 15px;
     flex-direction: column;
     min-width: 150px;
+
     & .message__time {
       font-size: 12px;
       font-weight: 500;
@@ -28,6 +30,26 @@
       &:not(:last-child) {
         padding-bottom: 5px;
       }
+    }
+  }
+  & .user__img-container {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #8b8bd9;
+    border-radius: 50%;
+    & .user-no-img {
+      border-radius: 50%;
+      text-transform: uppercase;
+      color: white;
+    }
+    & img {
+      object-fit: cover;
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
     }
   }
   & .message__avatar {
@@ -46,14 +68,21 @@
   }
   &.my {
     align-self: flex-end;
-    & .user__img {
-      // position: absolute;
-      // width: 50px;
-      // height: 50px;
-
-      // left: -52px;
-      // top: 9%;
-      display: none;
+    & .user__img-container {
+      order: 2;
+    }
+    & .user-message__info {
+      order: 1;
+      margin-right: 10px;
+      & .message__time {
+        font-size: 12px;
+        font-weight: 500;
+        font-style: italic;
+        color: #929293;
+        position: absolute;
+        bottom: 2px;
+        right: 70px;
+      }
     }
   }
   &.opponent {

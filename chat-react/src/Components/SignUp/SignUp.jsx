@@ -25,9 +25,8 @@ const SignUp = () => {
   };
 
   const onEnterPress = (e) => {
-  
     if (e.keyCode === 13 && e.shiftKey === false) {
-		e.preventDefault();
+      e.preventDefault();
       signUp();
     }
   };
@@ -44,7 +43,7 @@ const SignUp = () => {
         <input ref={userLoginRef} type="text" placeholder="Login" />
         <input ref={userPasswordRef} type="password" placeholder="Password" />
         <button type="button" onClick={signUp}>
-          Registrate
+          Register
         </button>
       </form>
       <div className="login__block">

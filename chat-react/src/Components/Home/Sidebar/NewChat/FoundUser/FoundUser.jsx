@@ -2,19 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./FoundUser.scss";
 
 const FoundUser = (props) => {
-  const {
-    userInfo,
-    close,
-    type,
-    groupChatUsers,
-    startChat,
-    groupOccupants,
-  } = props;
+  const { userInfo, close, type, groupChatUsers, startChat, groupOccupants } =
+    props;
   const [checked, setChecked] = useState(false);
   useEffect(() => {
     setChecked(
       groupOccupants.find((e) => {
-        return e === userInfo.id;
+        return e.id === userInfo.id;
       })
     );
   }, [userInfo, groupOccupants]);
@@ -56,7 +50,7 @@ const FoundUser = (props) => {
         <div
           className={`add-status ${checked ? "delete" : "add"}`}
           onClick={(e) => {
-            groupChatUsers(!checked, userInfo.id);
+            groupChatUsers(!checked, userInfo);
             checked ? setChecked(false) : setChecked(true);
           }}
         >

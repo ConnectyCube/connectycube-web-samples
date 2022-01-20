@@ -1,4 +1,14 @@
 .new-chat__form {
+  & .users__in-group {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 20px;
+    flex-wrap: wrap;
+    & > * {
+      padding-right: 20px;
+    }
+  }
   &.create {
     padding-top: 30px;
   }

@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./CreateGroupChat.scss";
 import { AiOutlineClose } from "react-icons/ai";
+import UserInGroup from "./UserInGroup/UserInGroup";
 const CreateGroupChat = (props) => {
-  const { occupants, startGroupChat, close } = props;
-
+  const { groupOccupants, startGroupChat, close } = props;
   const groupNameRef = React.createRef();
+  let usersInGroup = [];
+
+  usersInGroup = groupOccupants.map((user) => {
+    return <UserInGroup user={user} />;
+  });
+
   return (
     <form className="new-chat__form create" action="#" method="POST">
       <div className="chat__img">
@@ -24,7 +30,7 @@ const CreateGroupChat = (props) => {
         className="create__group-btn"
         onClick={() => {
           close();
-          startGroupChat(occupants, groupNameRef.current.value);
+          startGroupChat(groupOccupants, groupNameRef.current.value);
         }}
         type="button"
       >
@@ -33,6 +39,7 @@ const CreateGroupChat = (props) => {
       <div className="close__btn" onClick={close}>
         <AiOutlineClose color="black" fontSize="1.5em" />
       </div>
+      <div className="users__in-group">{usersInGroup}</div>
     </form>
   );
 };

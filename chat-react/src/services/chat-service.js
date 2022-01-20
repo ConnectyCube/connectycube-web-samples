@@ -1,4 +1,5 @@
 import ConnectyCube from "connectycube";
+import { debug } from "connectycube/lib/cubeConfig";
 import { createContext, useRef, useState } from "react";
 // import { isiOS } from "./heplers";
 //import sound from "../sounds/notification_sound.mp3";
@@ -23,7 +24,7 @@ export const ChatProvider = ({ children }) => {
         message
       );
 
-      addMessageToStore(message);
+      addMessageToStore(message, message.dialog_id, userId);
       // if (!isiOS()) {
       //   if (userId !== chatParticipantsRef.current[0].userId) {
       //     let audio = new Audio(sound);
@@ -155,19 +156,30 @@ export const ChatProvider = ({ children }) => {
     });
   };
 
+  const sendTypingStatus = (isTyping, opponentId) => {
+    isTyping
+      ? ConnectyCube.chat.sendIsTypingStatus(opponentId)
+      : ConnectyCube.chat.sendIsStopTypingStatus(opponentId);
+  };
+
   const addGroupUsers = (result) => {
     return new Promise((resolve, reject) => {
       chatsRef.current = result.items;
       setDialogs([...chatsRef.current]);
+
       result.items.forEach((dialog) => {
         if (dialog.type === 2) {
           dialog.occupants_ids.forEach((userId) => {
             usersInGroupsRef.current.push(userId);
           });
-          usersInGroupsRef.current = [...new Set(usersInGroupsRef.current)];
-          setUsersInGroups([...usersInGroupsRef.current]);
         }
       });
+      let s = usersInGroupsRef.current;
+      console.table(s);
+      usersInGroupsRef.current = [...new Set(usersInGroupsRef.current)];
+      console.table(usersInGroupsRef.current);
+      setUsersInGroups([...usersInGroupsRef.current]);
+
       resolve();
     });
   };
@@ -181,7 +193,7 @@ export const ChatProvider = ({ children }) => {
           .then(() => {
             const params = {
               page: 1,
-              per_page: 30,
+              per_page: 5000,
               filter: {
                 field: "id",
                 param: "in",
@@ -220,17 +232,22 @@ export const ChatProvider = ({ children }) => {
   };
 
   const startGroupChat = (occupants, groupName) => {
+    let usersIds = [];
+    occupants.forEach((user) => {
+      usersIds.push(user.id);
+    });
+
     const params = {
       type: 2,
       name: groupName,
-      occupants_ids: occupants,
+      occupants_ids: usersIds,
       description: "New group",
     };
 
     ConnectyCube.chat.dialog
       .create(params)
       .then((dialog) => {
-        occupants.forEach((userId) => {
+        usersIds.forEach((userId) => {
           dialogSystemMessage(userId, dialog._id);
         });
         chatsRef.current.unshift(dialog);
@@ -262,13 +279,27 @@ export const ChatProvider = ({ children }) => {
   };
 
   const setDialog = (dialog) => {
+    chatsRef.current.find((el) => {
+      if (el._id === dialog._id) {
+        el.unread_messages_count = 0;
+      }
+    });
+    setDialogs([...chatsRef.current]);
     setChosenDialog(dialog);
   };
 
-  const addMessageToStore = (message, dialogId) => {
+  const addMessageToStore = (message, dialogId, userId) => {
     let timeNow = new Date().getTime();
-    if (typeof e === "object") {
-      messagesRef.current[dialogId].push(message);
+    if (typeof message === "object") {
+      if (userId) {
+        messagesRef.current[dialogId].push({
+          message: message.body,
+          sender_id: userId,
+          date_sent: parseInt(message.extension.date_sent),
+        });
+      } else {
+        messagesRef.current[dialogId].push(message);
+      }
     } else {
       messagesRef.current[dialogId].push({
         message: message,
@@ -280,7 +311,6 @@ export const ChatProvider = ({ children }) => {
   };
 
   const sendMessage = (dialog, message, opponentId) => {
-    addMessageToStore(message, dialog._id);
     const messageToSend = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: message,
@@ -289,9 +319,12 @@ export const ChatProvider = ({ children }) => {
         dialog_id: dialog._id,
       },
     };
-    dialog.type === 3
-      ? ConnectyCube.chat.send(opponentId, messageToSend)
-      : ConnectyCube.chat.send(dialog._id, messageToSend);
+    if (dialog.type === 3) {
+      addMessageToStore(message, dialog._id);
+      ConnectyCube.chat.send(opponentId, messageToSend);
+    } else {
+      ConnectyCube.chat.send(dialog._id, messageToSend);
+    }
   };
 
   const getMessages = (dialog) => {
@@ -347,6 +380,7 @@ export const ChatProvider = ({ children }) => {
         startChat,
         usersInGroups,
         searchUsers,
+        sendTypingStatus,
       }}
     >
       {children}

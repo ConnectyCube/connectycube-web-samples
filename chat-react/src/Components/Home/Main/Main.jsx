@@ -6,8 +6,14 @@ import UserInfo from "./UserInfo/UserInfo";
 import { animateScroll } from "react-scroll";
 
 const Main = (props) => {
-  const { sendMessage, chosenDialog, getMessages, messages, usersInGroups } =
-    props;
+  const {
+    sendMessage,
+    chosenDialog,
+    getMessages,
+    messages,
+    usersInGroups,
+    sendTypingStatus,
+  } = props;
   const dialog = chosenDialog;
   const messageRef = React.createRef();
   const messagesRef = React.createRef();
@@ -27,12 +33,24 @@ const Main = (props) => {
     scrollToBottom();
   }, [allMessages]);
 
+  const typingStatus = () => {
+    if (dialog.type === 3) {
+      const occupant = dialog.occupants_ids.filter((e) => {
+        return e !== parseInt(localStorage.userId);
+      });
+      sendTypingStatus(true, occupant[0]);
+    } else {
+      sendTypingStatus(true, dialog._id);
+    }
+  };
+
   const scrollToBottom = () => {
     animateScroll.scrollToBottom({
       containerId: messagesRef.current.id,
     });
     //  messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
+
   useEffect(() => {
     if (messages) {
       if (messages[chosenDialog._id]) {
@@ -101,6 +119,7 @@ const Main = (props) => {
       {dialog && (
         <form action="#" method="GET" onKeyDown={onEnterPress}>
           <textarea
+            onChange={typingStatus}
             ref={messageRef}
             className="message__area"
             placeholder="Enter message"
