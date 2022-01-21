@@ -11,25 +11,21 @@ const Message = (props) => {
         message.sender_id === parseInt(localStorage.userId) ? "my" : "opponent"
       }`}
     >
-      <div className="user__img-container">
-        {dialogInfo.type === 2 ? (
-          usersInGroups[message.sender_id].avatar ? (
-            <img src={`${usersInGroups[message.sender_id].avatar}`} />
+      {dialogInfo.type === 2 && (
+        <div className="user__img-container">
+          {dialogInfo.type === 2 ? (
+            usersInGroups[message.sender_id].avatar ? (
+              <img src={`${usersInGroups[message.sender_id].avatar}`} />
+            ) : (
+              <div className="user-no-img">
+                {usersInGroups[message.sender_id].full_name.slice(0, 2)}
+              </div>
+            )
           ) : (
-            <div className="user-no-img">
-              {usersInGroups[message.sender_id].full_name.slice(0, 2)}
-            </div>
-          )
-        ) : dialogInfo.photo && message.sender_id !== myUserId ? (
-          <img src={`${dialogInfo.photo}`} />
-        ) : (
-          <div className="user-no-img">
-            {message.sender_id !== myUserId
-              ? dialogInfo.name.slice(0, 2)
-              : localStorage.login.slice(0, 2)}
-          </div>
-        )}
-      </div>
+            ""
+          )}
+        </div>
+      )}
       <div className="user-message__info">
         <span className="message-user__name">
           {message.sender_id === parseInt(localStorage.userId)

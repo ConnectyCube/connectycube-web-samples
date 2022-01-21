@@ -3,7 +3,12 @@ import "./UserInfo.scss";
 import { FiPhoneCall, FiMoreHorizontal } from "react-icons/fi";
 import { BsCameraVideo } from "react-icons/bs";
 const UserInfo = (props) => {
-  const { userInfo } = props;
+  const { userInfo, typeStatus } = props;
+  let opponentId = userInfo.occupants_ids.find(
+    (el) => el !== parseInt(localStorage.userId)
+  );
+
+  let typingStatus = typeStatus[opponentId];
   return (
     <div className="user__info">
       <div className="user__info-main">
@@ -20,7 +25,12 @@ const UserInfo = (props) => {
             </div>
           )}
         </div>
-        <span>{userInfo.name}</span>
+        <div className="user-name-container">
+          <span>{userInfo.name}</span>
+          <span className="typing-status">
+            {typingStatus ? (typingStatus.isTyping ? "typing..." : "") : ""}
+          </span>
+        </div>
       </div>
       <div className="user__info-buttons">
         <div className="button__more">

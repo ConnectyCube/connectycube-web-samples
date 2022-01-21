@@ -47,6 +47,7 @@ const Sidebar = (props) => {
               userInfo={dialog}
               setDialog={setDialog}
               chosenDialog={chosenDialog}
+				  dialogs={dialogs}
             />
           );
         }
@@ -59,6 +60,7 @@ const Sidebar = (props) => {
             userInfo={dialog}
             setDialog={setDialog}
             chosenDialog={chosenDialog}
+				dialogs={dialogs}
           />
         );
       });

@@ -3,8 +3,8 @@
   text-align: left;
   flex-direction: row;
   align-items: center;
-
-  max-width: 80%;
+  white-space: pre-wrap;
+  max-width: 90%;
   position: relative;
 
   & .user-message__info {
@@ -15,6 +15,7 @@
     border-radius: 15px;
     flex-direction: column;
     min-width: 150px;
+    word-wrap: break-word;
 
     & .message__time {
       font-size: 12px;
@@ -74,6 +75,7 @@
     & .user-message__info {
       order: 1;
       margin-right: 10px;
+      position: relative;
       & .message__time {
         font-size: 12px;
         font-weight: 500;
@@ -81,12 +83,13 @@
         color: #929293;
         position: absolute;
         bottom: 2px;
-        right: 70px;
+        right: 10px;
       }
     }
   }
   &.opponent {
     align-self: flex-start;
+
     & .user__img {
       width: 50px;
       height: 50px;

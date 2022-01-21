@@ -9,6 +9,7 @@ export default ChatContext;
 
 export const ChatProvider = ({ children }) => {
   const chatsRef = useRef();
+  const chosenDialogRef = useRef();
   const [chosenDialog, setChosenDialog] = useState();
   const [dialogs, setDialogs] = useState();
   //   const messagesRef = useRef([]);
@@ -16,7 +17,24 @@ export const ChatProvider = ({ children }) => {
   const usersInGroupsRef = useRef([]);
   const [usersInGroups, setUsersInGroups] = useState();
   const [messages, setMessages] = useState();
+  const typeStatusRef = useRef({});
+  const [typeStatus, setTypeStatus] = useState({});
   const chatCallbaks = () => {
+    ConnectyCube.chat.onMessageTypingListener = function (
+      isTyping,
+      userId,
+      dialogId
+    ) {
+      typeStatusRef.current[userId] = { isTyping: isTyping };
+      setTypeStatus({ ...typeStatusRef.current });
+      console.log(
+        "[ConnectyCube.chat.onMessageTypingListener] callback:",
+        isTyping,
+        userId,
+        dialogId
+      );
+    };
+
     ConnectyCube.chat.onMessageListener = (userId, message) => {
       console.log(
         "[ConnectyCube.chat.onMessageListener] callback:",
@@ -24,6 +42,37 @@ export const ChatProvider = ({ children }) => {
         message
       );
 
+      if (!chosenDialogRef.current) {
+        chatsRef.current.find((el) => {
+          if (el._id === message.dialog_id) {
+            el.unread_messages_count = el.unread_messages_count + 1;
+            el.last_message = message.body;
+            el.last_message_date_sent = parseInt(message.extension.date_sent);
+          }
+        });
+      } else if (chosenDialogRef.current._id !== message.dialog_id) {
+        chatsRef.current.find((el) => {
+          if (el._id === message.dialog_id) {
+            el.unread_messages_count = el.unread_messages_count + 1;
+            el.last_message = message.body;
+            el.last_message_date_sent = parseInt(message.extension.date_sent);
+          }
+        });
+      } else {
+        const params = {
+          messageId: message.id,
+          userId: userId,
+          dialogId: message.dialog_id,
+        };
+
+        ConnectyCube.chat.sendReadStatus(params);
+        chatsRef.current.find((el) => {
+          if (el._id === message.dialog_id) {
+            el.unread_messages_count = 0;
+          }
+        });
+      }
+      setDialogs([...chatsRef.current]);
       addMessageToStore(message, message.dialog_id, userId);
       // if (!isiOS()) {
       //   if (userId !== chatParticipantsRef.current[0].userId) {
@@ -51,7 +100,6 @@ export const ChatProvider = ({ children }) => {
                 .then((users) => {
                   chatsRef.current.unshift(dialog.items[0]);
                   setDialogs([...chatsRef.current]);
-                  setDialog(dialog.items[0]);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -59,7 +107,6 @@ export const ChatProvider = ({ children }) => {
             } else {
               chatsRef.current.unshift(dialog.items[0]);
               setDialogs([...chatsRef.current]);
-              setDialog(dialog.items[0]);
             }
           })
           .catch((error) => {});
@@ -124,6 +171,49 @@ export const ChatProvider = ({ children }) => {
         resolve();
       }
     });
+  };
+
+  const prepareMessageWithAttachmentAndSend = (file) => {
+    const message = {
+      type: chosenDialog.type === 3 ? "chat" : "groupchat",
+      body: "attachment",
+      extension: {
+        save_to_history: 1,
+        dialog_id: chosenDialog._id,
+        attachments: [{ uid: file.uid, id: file.id, type: "photo" }],
+      },
+    };
+
+    // send the message
+    if (chosenDialog.type === 2) {
+      message.id = ConnectyCube.chat.send(chosenDialog._id, message);
+    } else {
+      const opponentId = chosenDialog.occupants_ids.filter(
+        (e) => e !== parseInt(localStorage.userId)
+      );
+      debugger;
+      message.id = ConnectyCube.chat.send(opponentId, message);
+    }
+  };
+
+  const sendMsgWithPhoto = (file) => {
+    const fileParams = {
+      name: file.name,
+      file: file,
+      type: file.type,
+      size: file.size,
+      public: false,
+    };
+
+    ConnectyCube.storage
+      .createAndUpload(fileParams)
+      .then((result) => {
+        console.warn(result);
+        prepareMessageWithAttachmentAndSend(result);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const searchUsers = (userName) => {
@@ -285,6 +375,7 @@ export const ChatProvider = ({ children }) => {
       }
     });
     setDialogs([...chatsRef.current]);
+    chosenDialogRef.current = dialog;
     setChosenDialog(dialog);
   };
 
@@ -381,6 +472,8 @@ export const ChatProvider = ({ children }) => {
         usersInGroups,
         searchUsers,
         sendTypingStatus,
+        typeStatus,
+        sendMsgWithPhoto,
       }}
     >
       {children}

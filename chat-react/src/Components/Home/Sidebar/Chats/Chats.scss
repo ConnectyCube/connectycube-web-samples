@@ -48,6 +48,26 @@
     text-align: left;
     justify-content: space-between;
     flex: 1 1 100%;
+    & .last__message {
+      display: block;
+      padding-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 13px;
+      margin: 0;
+    }
+    & .group__name-container {
+      display: flex;
+      align-items: center;
+
+      & small {
+      }
+
+      & .group__img {
+        padding-right: 5px;
+      }
+    }
 
     & > * {
       &:not(:last-child) {

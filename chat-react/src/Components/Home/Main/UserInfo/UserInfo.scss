@@ -1,3 +1,8 @@
+.typing-status {
+  font-size: 13px;
+  padding-top: 5px;
+  font-style: italic;
+}
 .user__info {
   display: flex;
   justify-content: space-between;
@@ -8,6 +13,12 @@
   & .user__info-main {
     display: flex;
     align-items: center;
+
+    & .user-name-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
     & .user__avatar-dialog {
       margin-right: 10px;

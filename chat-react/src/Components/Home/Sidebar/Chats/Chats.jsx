@@ -2,10 +2,11 @@ import React from "react";
 import "./Chats.scss";
 import { useEffect } from "react";
 import { getTime } from "../../../../services/helpers";
+import { TiGroup } from "react-icons/ti";
 
 const Chats = (props) => {
   const chatRef = React.createRef();
-  const { userInfo, setDialog, chosenDialog } = props;
+  const { userInfo, setDialog, chosenDialog, dialogs } = props;
   useEffect(() => {
     try {
       if (userInfo._id === chosenDialog._id) {
@@ -14,7 +15,7 @@ const Chats = (props) => {
         chatRef.current.classList.remove("chosen");
       }
     } catch {}
-  }, [chosenDialog]);
+  }, [chosenDialog, dialogs]);
 
   const retrieveChat = () => {
     setDialog(userInfo);
@@ -34,8 +35,14 @@ const Chats = (props) => {
         </div>
       </div>
       <div className="user__info-main">
-        <p className="chat__username">{userInfo.name}</p>
-        <small>
+        <div className="group__name-container">
+          {userInfo.type === 2 && (
+            <TiGroup className="group__img" size={26} color="grey" />
+          )}
+          <p className="chat__username">{userInfo.name}</p>
+        </div>
+
+        <small className="last__message">
           {userInfo.last_message
             ? userInfo.last_message_user_id === parseInt(localStorage.userId)
               ? "me: " + userInfo.last_message
@@ -47,12 +54,10 @@ const Chats = (props) => {
             ? getTime(userInfo.last_message_date_sent)
             : getTime(userInfo.created_at)}
         </small>
-        {/* <p className="chat__user-status">Offline</p> */}
       </div>
       {userInfo.unread_messages_count > 0 && (
         <span className="not__read">{userInfo.unread_messages_count}</span>
       )}
-      {/* <span className="last__mesage-time">14:30</span> */}
     </div>
   );
 };

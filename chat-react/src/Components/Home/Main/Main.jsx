@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Message from "./Message/Message";
 import UserInfo from "./UserInfo/UserInfo";
 import { animateScroll } from "react-scroll";
+import { IoMdAttach } from "react-icons/io";
 
 const Main = (props) => {
   const {
@@ -13,13 +14,18 @@ const Main = (props) => {
     messages,
     usersInGroups,
     sendTypingStatus,
+    typeStatus,
+    sendMsgWithPhoto,
   } = props;
   const dialog = chosenDialog;
+  const fileMessageRef = React.createRef();
   const messageRef = React.createRef();
   const messagesRef = React.createRef();
+  const [typingPrevStatus, setTypingPrevStatus] = useState();
   const [allMessages, setAllMessages] = useState();
   useEffect(() => {
     setAllMessages();
+    setTypingPrevStatus(false);
     if (dialog) {
       getMessages(dialog)
         .then((messages) => {})
@@ -33,15 +39,35 @@ const Main = (props) => {
     scrollToBottom();
   }, [allMessages]);
 
-  const typingStatus = () => {
-    if (dialog.type === 3) {
+  const startTyping = () => {
+    try {
+      clearTimeout(timer);
+    } catch {
+      console.log("no timer yet");
+    }
+    if (!typingPrevStatus) {
+      setTypingPrevStatus(true);
+      if (dialog.type === 3) {
+        const occupant = dialog.occupants_ids.filter((e) => {
+          return e !== parseInt(localStorage.userId);
+        });
+        sendTypingStatus(true, occupant[0]);
+      } else {
+        sendTypingStatus(true, dialog._id);
+      }
+    }
+    let timer = setTimeout(() => {
       const occupant = dialog.occupants_ids.filter((e) => {
         return e !== parseInt(localStorage.userId);
       });
-      sendTypingStatus(true, occupant[0]);
-    } else {
-      sendTypingStatus(true, dialog._id);
-    }
+      setTypingPrevStatus(false);
+      sendTypingStatus(false, occupant[0]);
+    }, 10000);
+  };
+
+  const onFileSelected = (e) => {
+    const file = e.currentTarget.files[0];
+    sendMsgWithPhoto(file);
   };
 
   const scrollToBottom = () => {
@@ -97,7 +123,7 @@ const Main = (props) => {
   return (
     <div className="main__container">
       <div className="main__header">
-        {dialog && <UserInfo userInfo={dialog} />}
+        {dialog && <UserInfo userInfo={dialog} typeStatus={typeStatus} />}
         {!dialog && <div className="header-none">Chats</div>}
       </div>
       <div
@@ -119,11 +145,20 @@ const Main = (props) => {
       {dialog && (
         <form action="#" method="GET" onKeyDown={onEnterPress}>
           <textarea
-            onChange={typingStatus}
+            onKeyDown={startTyping}
             ref={messageRef}
             className="message__area"
             placeholder="Enter message"
           ></textarea>
+          <label for="file-upload" className="custom-file-upload">
+            <IoMdAttach size={28} />
+          </label>
+          <input
+            onChange={onFileSelected}
+            ref={fileMessageRef}
+            id="file-upload"
+            type="file"
+          />
 
           <button onClick={onSendMessage} type="button" className="send-btn">
             Send
