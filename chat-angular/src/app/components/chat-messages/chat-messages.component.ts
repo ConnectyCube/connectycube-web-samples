@@ -4,9 +4,14 @@ import {Dialog, ItemsHeight, Message} from "../../services/config";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {Store} from "@ngrx/store";
 import {selectDialogIdRouterParam} from "../../reducers/router.selector";
-import {openDialog, setNullConverastion} from "../../reducers/dialog/dialog.actions";
 import {
-  dialogFindSelector, getDialogsTypingParticipant,
+  openDialog,
+  readDialogAllMessages,
+  setNullConverastion,
+  updateParticipantLastActivity
+} from "../../reducers/dialog/dialog.actions";
+import {
+  dialogFindSelector, getDialogParticipant, getDialogsParticipants, getDialogsTypingParticipant,
   isActivatedConversationSelector,
   selectedConversationSelector
 } from "../../reducers/dialog/dialog.selectors";
@@ -16,6 +21,7 @@ import {participant} from "../../reducers/participants/participants.reducer";
 import {getMessagesSelector} from "../../reducers/messages/messages.selectors";
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
+import {meSelector} from "../../reducers/participants/participants.selectors";
 
 @Component({
   selector: 'app-chat-messages',
@@ -38,6 +44,7 @@ export class ChatMessagesComponent implements OnInit {
   public isScrollBarPressed = false;
   public selectedConversation$ = this.store$.select(selectedConversationSelector);
   public messages: Observable<Array<Message>> = this.store$.select(getMessagesSelector);
+  public meId: any;
   public selectedDialog: Dialog = {
     id: "",
     type: 0,
@@ -59,6 +66,8 @@ export class ChatMessagesComponent implements OnInit {
   public isGroupChat: boolean = false;
   public typingParticipants$: any;
   public typingParticipants: string = "";
+  public lastActivity: number = -1;
+  public lastActiveUserId: number;
 
   constructor(
     private deviceService: DeviceDetectorService,
@@ -66,6 +75,10 @@ export class ChatMessagesComponent implements OnInit {
     private chatService: ChatService,
     private router: Router,
   ) {
+    this.store$.select(meSelector).pipe(filter(v => !!v), take(1)).subscribe(userMe => {
+      this.meId = userMe!.id;
+    })
+
     //Subscribe to change dialogId in URL
     this.store$.select(selectDialogIdRouterParam).subscribe(res => {
       if (res !== undefined) {
@@ -85,6 +98,21 @@ export class ChatMessagesComponent implements OnInit {
         this.subscribeDialogFind = this.store$.select(dialogFindSelector, {id: dialogId})
           .pipe(filter(v => !!v), take(1)).subscribe((dialog: any) => {
             if (dialog !== undefined) {
+              //last activity
+              this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
+              if (dialog.type === 3) {
+                this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
+                this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
+                this.getUserStatus(this.lastActiveUserId).then(() => {
+                  this.store$.select(getDialogParticipant, {
+                    dialogId,
+                    pId: this.lastActiveUserId
+                  }).pipe(filter(v => !!v && v.lastActivity), take(1)).subscribe(participant => {
+                    console.warn(participant)
+                    this.lastActivity = participant.lastActivity;
+                  })
+                });
+              }
               //Typing participants
               this.typingParticipants$ = this.store$.select(getDialogsTypingParticipant, {dialogId: dialog.id})
                 .subscribe(typParticipants => {
@@ -98,14 +126,36 @@ export class ChatMessagesComponent implements OnInit {
               //Check has the chat been rendered?
               this.store$.select(isActivatedConversationSelector, {id: dialogId}).pipe(take(1))
                 .subscribe(isActivated => {
+                  this.virtualScroll.scrollToOffset(0);
                   if (isActivated !== undefined) {
                     this.store$.dispatch(openDialog({dialogId, isActivated}));
-                    this.chatService.getChatHistory(this.selectedDialog, isActivated);
+                    this.chatService.getChatHistory(this.selectedDialog, isActivated)
                   }
                 })
+              this.store$.select(getDialogsParticipants, {dialogId})
+                .pipe(filter(v => v.size !== 0), take(1)).subscribe(participants => {
+                if (participants !== undefined) {
+                  this.selectedDialog = {...this.selectedDialog, participants};
+                }
+              })
             }
           })
       }
+    })
+  }
+
+  private getUserStatus(userId: number) {
+    return new Promise<void>((resolve, reject) => {
+      console.warn(userId)
+      this.chatService.getLastActivity(userId)?.then((result: any) => {
+        const seconds = result.seconds;
+        this.store$.dispatch(updateParticipantLastActivity({participantId: userId, lastActivity: seconds}));
+        console.warn(result);
+        resolve()
+      })
+        .catch((error: any) => {
+          console.error(error);
+        });
     })
   }
 
@@ -114,6 +164,14 @@ export class ChatMessagesComponent implements OnInit {
     this.chatService.sendStopTypingStatus(this.selectedDialog);
     console.warn(1111)
     this.timerId = undefined;
+  }
+
+  private measureImage(src: string) {
+    return new Promise<number>((resolve, reject) => {
+      const img = new Image();
+      img.addEventListener('load', () => resolve(img.naturalHeight > 200 ? 200 : img.naturalHeight));
+      img.src = src;
+    })
   }
 
   private measureText(text: string, maxWidth: number) {
@@ -137,34 +195,48 @@ export class ChatMessagesComponent implements OnInit {
       (vsScrolled + this.scrollBar.nativeElement.clientHeight);
   }
 
-  private measureMessages(messages: Array<Message>): ItemsHeight {
-    const PADDING_MES: number = 18;
+  private async measureMessages(messages: Array<Message>) {
+    const PADDING_MES: number = 22;
     const MAX_INDEX: number = messages.length - 1;
     let heightSum: number = 0;
     let itemsArray: Array<number> = [];
+    let index = 0;
 
-    messages.forEach((msg: Message, index: number) => {
-      let msgHeight: number = 0;
+    for (const msg of messages) {
+      //first element + container padding
+      let msgHeight: number = index === 0 ? 14 : 0;
       let maxWidth = (this.messagesContainer.nativeElement.offsetWidth - 20) * 0.8;
       maxWidth = Math.round(maxWidth * 100) / 100;
-      msgHeight = this.measureText(msg.body, maxWidth) + PADDING_MES;
+      msgHeight += PADDING_MES;
       if (msg.senderName) {
         if (this.isGroupChat) {
           msgHeight += 19
         }
         if (index < MAX_INDEX) {
-          // msgHeight += this.messages[index + 1].senderName ? 8 : 16;
+          msgHeight += messages[index + 1].senderName ? 8 : 16;
         }
       }
       else {
         if (index < MAX_INDEX) {
-          // msgHeight += this.messages[index + 1].senderName ? 16 : 8;
+          msgHeight += messages[index + 1].senderName ? 16 : 8;
         }
+      }
+
+      if (msg.photo) {
+        await this.measureImage(msg.photo).then((imgHeight: number) => {
+          msgHeight += imgHeight;
+        })
+        msgHeight += 5;
+      }
+      else {
+        msgHeight += this.measureText(msg.body, maxWidth);
       }
 
       itemsArray.push(msgHeight);
       heightSum += msgHeight;
-    })
+
+      index++;
+    }
 
     return {items: itemsArray, itemsTotalHeight: heightSum};
   }
@@ -177,8 +249,20 @@ export class ChatMessagesComponent implements OnInit {
     const file: any = e.target.files[0];
     console.warn(file);
     if (file) {
-      this.chatService.sendMsgWithPhoto(file, this.selectedDialog);
+      this.chatService.sendMsgWithPhoto(file, this.selectedDialog, this.meId);
     }
+  }
+
+  public getLastSeen(lastActivity: number) {
+    if(lastActivity === - 1){
+      return "Unknown last activity";
+    }
+    if(lastActivity < 30){
+      return "Online";
+    }
+    const date = new Date().getTime() - lastActivity * 1000;
+    const activity = lastActivity > 86400 ? new Date(date).toLocaleString() : new Date(date).toLocaleTimeString();
+    return "Last seen: " + activity;
   }
 
   public setNullConversation() {
@@ -210,10 +294,13 @@ export class ChatMessagesComponent implements OnInit {
     const text: string = this.areaElement.nativeElement.value.trim();
 
     if (text) {
+      this.areaElement.nativeElement.value = "";
       clearTimeout(this.timerId);
       this.sendIsStopTypingStatus();
       const message: Message = {
         id: "",
+        senderId: this.meId,
+        status: "pending",
         senderName: "",
         body: text,
         date_sent: Math.floor(Date.now() / 1000)
@@ -221,18 +308,21 @@ export class ChatMessagesComponent implements OnInit {
 
       if (trigger === 'area') {
         if (!this.isMobile && !this.isTablet) {
+          console.warn(this.selectedDialog)
           this.chatService.sendMessage(this.selectedDialog, message)
             .then(() => {
               this.messages.pipe(take(1)).subscribe(msgs => {
                 if (msgs.length !== 0) {
-                  const itemsheight: ItemsHeight = this.measureMessages(msgs);
-                  console.warn(itemsheight);
-                  this.items = itemsheight.items;
-                  this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-                  this.scrollBarContent.nativeElement.style.height =
-                    this.itemsTotalHeight + 'px';
-                  this.virtualScroll.scrollToOffset(0);
-                  this.scrollTrack();
+                  this.measureMessages(msgs).then((res: any) => {
+                    const itemsheight: ItemsHeight = res;
+                    console.warn(itemsheight);
+                    this.items = itemsheight.items;
+                    this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+                    this.scrollBarContent.nativeElement.style.height =
+                      this.itemsTotalHeight + 'px';
+                    this.virtualScroll.scrollToOffset(0);
+                    this.scrollTrack();
+                  });
                 }
               })
             });
@@ -245,19 +335,37 @@ export class ChatMessagesComponent implements OnInit {
         this.chatService.sendMessage(this.selectedDialog, message);
         this.messages.pipe(take(1)).subscribe(msgs => {
           if (msgs.length !== 0) {
-            const itemsheight: ItemsHeight = this.measureMessages(msgs);
-            console.warn(itemsheight);
-            this.items = itemsheight.items;
-            this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-            this.scrollBarContent.nativeElement.style.height =
-              this.itemsTotalHeight + 'px';
-            this.virtualScroll.scrollToOffset(0);
-            this.scrollTrack();
+            this.measureMessages(msgs).then((res: any) => {
+              const itemsheight: ItemsHeight = res;
+              console.warn(itemsheight);
+              this.items = itemsheight.items;
+              this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+              this.scrollBarContent.nativeElement.style.height =
+                this.itemsTotalHeight + 'px';
+              this.virtualScroll.scrollToOffset(0);
+              this.scrollTrack();
+            });
           }
         })
       }
     }
     this.areaElement.nativeElement.value = '';
+  }
+
+  public getMessageStatus(status: string): string {
+    switch (status) {
+      case "pending":
+        return "schedule"
+        break;
+      case "sent":
+        return "done"
+        break;
+      case "read":
+        return "done_all"
+        break;
+      default:
+        return "error"
+    }
   }
 
   ngOnInit(): void {
@@ -267,14 +375,15 @@ export class ChatMessagesComponent implements OnInit {
     // Virtual Scroll
     this.subscribeVirtualScrollCalc = this.messages.subscribe(msgs => {
       if (msgs.length !== 0 && !msgs.some(item => item === undefined)) {
-        const itemsheight: ItemsHeight = this.measureMessages(msgs);
-        console.warn(itemsheight);
-        this.items = itemsheight.items;
-        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-
-        this.scrollBarContent.nativeElement.style.height =
-          this.itemsTotalHeight + 'px';
-        this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+        this.measureMessages(msgs).then((res: any) => {
+          const itemsheight: ItemsHeight = res;
+          console.warn(itemsheight);
+          this.items = itemsheight.items;
+          this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+          this.scrollBarContent.nativeElement.style.height =
+            this.itemsTotalHeight + 'px';
+          this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+        });
 
         this.virtualScroll.elementScrolled().subscribe((event) => {
           if (!this.isScrollBarPressed) {

@@ -13,7 +13,8 @@ export interface participant {
   login: string,
   avatar: string | null,
   me: boolean,
-  active?: boolean
+  active?: boolean,
+  lastActivity?: number
 }
 
 export interface participantsState {

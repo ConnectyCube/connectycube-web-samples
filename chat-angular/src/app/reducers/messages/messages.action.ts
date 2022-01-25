@@ -10,3 +10,8 @@ export const addMessage = createAction(
   '[MESSAGES] add message',
   props<{ message: Message }>()
 )
+
+export const updateMessageStatus = createAction(
+  '[MESSAGES] update message status',
+  props<{ msgId: string, status:string }>()
+)

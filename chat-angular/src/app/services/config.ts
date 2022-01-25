@@ -10,6 +10,11 @@ export const CREDENTIALS = {
 export const appConfig = {
   debug: {mode: 1},
   conference: {server: environment.CONFERENCE_SERVER_ENDPOINT},
+  chat: {
+    streamManagement: {
+      enable: true
+    }
+  },
   endpoints: {
     api: environment.API_ENDPOINT,
     chat: environment.CHAT_ENDPOINT
@@ -18,7 +23,9 @@ export const appConfig = {
 
 export interface Message {
   id: string,
+  senderId: number,
   senderName?: string,
+  status: string
   body: string,
   date_sent: number,
   photo?: string | undefined,

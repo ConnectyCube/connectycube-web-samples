@@ -183,7 +183,7 @@
   transform: scale(1, -1);
   line-height: 1.25;
   max-width: 80%;
-  padding: 8px 10px;
+  padding: 10px;
   position: relative;
   word-wrap: break-word;
   min-width: 150px;
@@ -259,14 +259,35 @@ cdk-virtual-scroll-viewport {
   padding-bottom: 5px;
 }
 
+.them {
+  .message-time {
+    bottom: -13px;
+    right: 8px;
+  }
+}
+
+.me {
+  .message-time {
+    bottom: -13px;
+    right: 20px;
+  }
+}
+
 .message-time {
   font-size: 11px;
   font-weight: normal;
   font-style: italic;
   color: rgb(0, 173, 239);
   position: absolute;
-  bottom: -9px;
-  right: 7px;
+}
+
+.message-status {
+  color: gray;
+  font-size: 12px;
+  font-weight: 600;
+  position: absolute;
+  bottom: -11px;
+  right: -7px;
 }
 
 @media screen and (min-width: 767px) {

@@ -17,6 +17,9 @@
           Typing: {{(typingParticipants.split(',')).length > 3 ? "more than 3" : typingParticipants}} <img
           src="assets/typing.gif"/>
         </small>
+        <small *ngIf="selectedDialog.type === 3 && !typingParticipants" class="user__status">
+          {{getLastSeen(lastActivity)}}
+        </small>
       </div>
     </div>
   </div>
@@ -24,7 +27,8 @@
     <div class="messages-container" #messagesContainer>
       <cdk-virtual-scroll-viewport
         #viewport
-        itemSize="items"
+        customVirtualScrollStrategy
+        [itemHeights]="items"
       >
         <div #messageContainer *cdkVirtualFor="let message of messages | async;index as i; trackBy: messagesTrackBy"
              [ngClass]="message.senderName?'them':'me'"
@@ -40,6 +44,8 @@
               <img *ngIf="message.photo" [src]="message.photo" alt="photo" class="message-photo">
             </div>
             <p class="message-time">{{getDateMessage(message.date_sent)}}</p>
+            <mat-icon *ngIf="message.senderId === meId"
+                      class="message-status">{{getMessageStatus(message.status)}}</mat-icon>
           </div>
         </div>
       </cdk-virtual-scroll-viewport>

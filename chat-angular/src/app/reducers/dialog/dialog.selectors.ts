@@ -1,7 +1,6 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {DIALOG_KEY} from "../index";
 import {dialogsAdapter, dialogState} from "./dialog.reducer";
-import {Dialog} from "../../services/config";
 
 export const featureSelector =
   createFeatureSelector<dialogState>(DIALOG_KEY);
@@ -74,5 +73,32 @@ export const getDialogsTypingParticipant = createSelector(
   getDialogEntities,
   (dialogs: any, {dialogId}: any) => {
     return dialogs[dialogId].typingParticipants.map((p: any) => p.name);
+  }
+)
+
+export const getDialogsParticipants = createSelector(
+  getDialogEntities,
+  (dialogs: any, {dialogId}: any) => {
+    return dialogs[dialogId].participants;
+  }
+)
+
+export const getUnreadMessageIds = (props: { dialogId: string }) =>
+  createSelector(
+    getDialogEntities,
+    (dialogs: any) => {
+      const unreadMessageCount = dialogs[props.dialogId]?.unreadMessage
+      return dialogs[props.dialogId]?.msgIds.slice(0, unreadMessageCount);
+    }
+  )
+
+export const getParticipantId = createSelector(
+  getDialogEntities,
+  selectedConversationSelector,
+  (dialogs: any, dialogId: any) => {
+    if (dialogs[dialogId].type === 3) {
+      return dialogs[dialogId].participantIds
+        .find((id: number) => !dialogs[dialogId].participants.get(String(id)).me);
+    }
   }
 )

@@ -6,6 +6,9 @@ import {Store} from "@ngrx/store";
 import {addParticipant} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
 import {ChatService} from "./chat.service";
+import {getParticipantId} from "../reducers/dialog/dialog.selectors";
+import {take} from 'rxjs/operators';
+import {updateParticipantLastActivity} from "../reducers/dialog/dialog.actions";
 
 declare let ConnectyCube: any;
 
@@ -18,7 +21,9 @@ export class AuthService {
   }
 
   public tokenExpired() {
-    this.logout();
+    this.router.navigateByUrl("/auth");
+    localStorage.removeItem('token');
+    localStorage.removeItem('login');
   }
 
   public connectToChat(id: number, password: string) {
@@ -60,9 +65,27 @@ export class AuthService {
         full_name: user.full_name
       }))
       this.connectToChat(user.id, token).then(() => {
-        this.chatService.init();
+        this.chatInit();
       })
     })
+  }
+
+  public chatInit() {
+    this.chatService.init();
+    this.store$.select(getParticipantId).pipe(take(1))
+      .subscribe(participantId => {
+        if (participantId) {
+          this.chatService.getLastActivity(participantId)
+            .then((result: any) => {
+              const seconds = result.seconds;
+              this.store$.dispatch(updateParticipantLastActivity({participantId: participantId, lastActivity: seconds}));
+              console.warn(result)
+            })
+            .catch((error: any) => {
+              console.error(error);
+            });
+        }
+      })
   }
 
   public logout() {
@@ -95,7 +118,7 @@ export class AuthService {
         }))
         localStorage.setItem('login', btoa(u.login));
         this.connectToChat(u.id, password).then(() => {
-          this.chatService.init();
+          this.chatInit();
         });
         resolve();
       })

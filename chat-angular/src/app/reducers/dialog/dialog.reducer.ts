@@ -6,7 +6,12 @@ import {
   addMessageId,
   addMessagesIdsAndParticipants,
   addTypingParticipant,
-  openDialog, removeTypingParticipant, setNullConverastion
+  openDialog,
+  readDialogAllMessages,
+  addOneUnreadMessage,
+  removeTypingParticipant,
+  setNullConverastion,
+  updateDialogLastMessage, updateDialogParticipants, updateParticipantLastActivity
 } from "./dialog.actions";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
@@ -21,7 +26,9 @@ export function selectDialogId(d: Dialog): string {
 }
 
 export function sortByDateCreate(d1: Dialog, d2: Dialog): number {
-  return new Date(d2.createAt).getTime() - new Date(d1.createAt).getTime();
+  const date1 = d1.lastMessageDate ? d1.lastMessageDate : Math.floor(new Date(d1.createAt).getTime() / 1000);
+  const date2 = d2.lastMessageDate ? d2.lastMessageDate : Math.floor(new Date(d2.createAt).getTime() / 1000);
+  return date2 - date1;
 }
 
 export const dialogsAdapter = createEntityAdapter<Dialog>({
@@ -86,5 +93,54 @@ export const dialogReducer = createReducer(
   on(setNullConverastion, (state) => ({
     ...state,
     selectedConversation: ""
-  }))
-)
+  })),
+  on(readDialogAllMessages, (state, {dialogId}) => {
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {
+        unreadMessage: 0
+      }
+    }, state)
+  }),
+  on(addOneUnreadMessage, (state, {dialogId}) => {
+    if (state.selectedConversation !== dialogId) {
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {
+          unreadMessage: state.entities[dialogId]!.unreadMessage + 1,
+        }
+      }, state)
+    }
+    return state;
+  }),
+  on(updateDialogLastMessage, (state, {dialogId, lastMessage, lastMessageDate}) => {
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {
+        lastMessage,
+        lastMessageDate
+      }
+    }, state)
+  }),
+  on(updateDialogParticipants, (state, {dialogId, participants}) => {
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {
+        participants
+      }
+    }, state)
+  }),
+  on(updateParticipantLastActivity, (state, {participantId, lastActivity}) => {
+    const dialogId = state.selectedConversation;
+    const participants = new Map(state.entities[dialogId]!.participants)
+    const updateUser = participants.get(String(participantId));
+    if (updateUser) {
+      updateUser.lastActivity = lastActivity;
+      participants.set(String(participantId), updateUser);
+    }
+    return dialogsAdapter.updateOne({
+      id: dialogId,
+      changes: {participants}
+    }, state)
+  })
+);
