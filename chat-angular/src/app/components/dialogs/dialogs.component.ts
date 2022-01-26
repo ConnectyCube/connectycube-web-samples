@@ -64,16 +64,6 @@ export class DialogsComponent implements OnInit {
     this.dialog.open(DialogCreatComponent, {panelClass: 'create-dialog', disableClose: true});
   }
 
-  public dialogHandler(e: MouseEvent, id: string) {
-    e.preventDefault();
-    const encodedUrl = btoa(id);
-    this.router.navigateByUrl(`chat/${encodedUrl}`)
-    // this.prevLiActiveElem?.classList.remove("active");
-    // const activeLiElem = (<HTMLLinkElement>e.target).closest('.dialog__list-item');
-    // activeLiElem?.classList.add("active");
-    // this.prevLiActiveElem = activeLiElem;
-  }
-
   public moreHandler() {
     if (this.moreIcon === 'expand_less') {
       this.moreIcon = 'expand_more';

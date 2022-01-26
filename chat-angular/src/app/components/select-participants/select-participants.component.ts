@@ -1,5 +1,5 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {meSelector, participantSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
+import {meSelector, selectedParticipantsSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
 import {Store} from "@ngrx/store";
 import {FormBuilder, FormControl} from "@angular/forms";
 import {participant} from "../../reducers/participants/participants.reducer";
@@ -22,7 +22,7 @@ import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 export class SelectParticipantsComponent implements OnInit, OnDestroy {
 
   public selectedParticipant: Array<participant> = [];
-  public participants$ = this.store$.select(participantSelector);
+  public participants$ = this.store$.select(selectedParticipantsSelector);
   public searchedParticipants$ = this.store$.select(searchedParticipantSelector);
 
   constructor(

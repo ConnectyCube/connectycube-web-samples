@@ -5,7 +5,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ChatService} from "../../services/chat.service";
 import {participant} from "../../reducers/participants/participants.reducer";
 import {addSearchParticipants, removeAllSearchParticipants} from "../../reducers/participants/participants.actions";
-import {participantSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
+import {selectedParticipantsSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
 
 @Component({
   selector: 'app-dialog-one-one',
@@ -14,7 +14,7 @@ import {participantSelector, searchedParticipantSelector} from "../../reducers/p
 })
 export class DialogOneOneComponent implements OnInit, OnDestroy {
 
-  public participants$ = this.store$.select(participantSelector);
+  public participants$ = this.store$.select(selectedParticipantsSelector);
   public searchedParticipants$ = this.store$.select(searchedParticipantSelector);
 
   constructor(

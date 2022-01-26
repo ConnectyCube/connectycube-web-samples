@@ -14,15 +14,14 @@ import {
   readDialogAllMessages, updateParticipantLastActivity
 } from "../reducers/dialog/dialog.actions";
 import {
-  dialogsSelector,
-  getDialogParticipant,
+  dialogsSelector, getDialogParticipant,
   getIndividualDialogByParticipantId, selectedConversationSelector
 } from "../reducers/dialog/dialog.selectors";
 import {filter, take} from 'rxjs/operators';
 import {addMessage, addMessages, updateMessageStatus} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
 import {builtDialog} from "./utilities";
-import {addSearchParticipants} from "../reducers/participants/participants.actions";
+import {addParticipants, addSearchParticipants} from "../reducers/participants/participants.actions";
 import {Router} from "@angular/router";
 import {meSelector} from "../reducers/participants/participants.selectors";
 import {getUnreadMessageList} from "../reducers/messages/messages.selectors";
@@ -241,9 +240,32 @@ export class ChatService {
     ConnectyCube.chat.dialog
       .list()
       .then((result: any) => {
-        const dialogs: Array<Dialog> = result.items.map((d: any) => builtDialog(d))
-        console.warn("[Processed dialogs]", dialogs);
-        this.store$.dispatch(addDialogs({dialogs}));
+        const lastMessageUserIds: Array<number> = []
+        const dialogs: Array<Dialog> = result.items.map((d: any) => {
+          if (d.type === 3) {
+            lastMessageUserIds.push(d.last_message_user_id);
+          }
+          return builtDialog(d);
+        })
+        console.warn("[lastMessageUserIds]", lastMessageUserIds)
+        this.searchUsersById(lastMessageUserIds).then((result: any) => {
+          console.warn("[searchUsersById]", result);
+          const participants: Array<participant> = result.items.map((u: any) => {
+            return {
+              id: u.user.id,
+              full_name: u.user.full_name,
+              login: u.user.login,
+              avatar: u.user.avatar,
+              me: u.user.login === atob(<string>localStorage.getItem('login')),
+            }
+          })
+          this.store$.dispatch(addParticipants({participants}));
+          console.warn("[Processed dialogs]", dialogs);
+          this.store$.dispatch(addDialogs({dialogs}));
+        })
+          .catch((error: any) => {
+            console.error(error);
+          })
       })
       .catch((error: any) => {
         console.error(error);
@@ -275,6 +297,20 @@ export class ChatService {
 
     return ConnectyCube.users
       .get(searchParams)
+  }
+
+  public searchUsersById(userIds: Array<number>) {
+    const params = {
+      page: 1,
+      filter: {
+        field: "id",
+        param: "in",
+        value: userIds,
+      },
+    };
+
+    return ConnectyCube.users
+      .get(params)
   }
 
   public searchUsersByLogin(login: string) {

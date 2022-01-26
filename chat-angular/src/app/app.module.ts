@@ -30,6 +30,7 @@ import { DialogCreatComponent } from './components/dialog-creat/dialog-creat.com
 import {MatMenuModule} from "@angular/material/menu";
 import { SelectParticipantsComponent } from './components/select-participants/select-participants.component';
 import { DialogOneOneComponent } from './components/dialog-one-one/dialog-one-one.component';
+import { DialogComponent } from './components/dialogs/dialog/dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { DialogOneOneComponent } from './components/dialog-one-one/dialog-one-on
     DialogCreatComponent,
     SelectParticipantsComponent,
     DialogOneOneComponent,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,

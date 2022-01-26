@@ -54,22 +54,19 @@
         #viewport
         itemSize="73"
       >
-        <li *cdkVirtualFor="let dialog of (dialogs$ | async); index as i; trackBy: dialogTrackBy"
-            class="dialog__list-item" [ngClass]="{'active':(selectedConversation$ | async) === dialog.id}">
-          <a (click)="dialogHandler($event,dialog.id)">
-            <div *ngIf="dialog.unreadMessage !== 0" class="item-badge">{{dialog.unreadMessage}}</div>
-            <div class="item-avatar"
-                 [ngStyle]="{'background-image': dialog.photo?'url('+ dialog.photo +')':'none',
-                 'background-color': dialog.photo?'':'skyblue'}">
-              <p *ngIf="!dialog.photo">{{dialog.name.slice(0, 2).toUpperCase()}}</p>
-            </div>
-            <div class="item-info">
-              <h4 class="item-name">{{dialog.name}}</h4>
-              <small class="item-last-message">{{dialog.lastMessage || "No messages yet"}}</small>
-              <small class="item-time">{{getDateMessages(dialog.lastMessageDate, dialog.createAt)}}</small>
-            </div>
-          </a>
-        </li>
+        <app-dialog
+          *cdkVirtualFor="let dialog of (dialogs$ | async); index as i; trackBy: dialogTrackBy"
+          [id]="dialog.id"
+          [createAt]="dialog.createAt"
+          [lastMessage]="dialog.lastMessage"
+          [lastMessageDate]="dialog.lastMessageDate"
+          [lastMessageUserId]="dialog.lastMessageUserId"
+          [name]="dialog.name"
+          [photo]="dialog.photo"
+          [type]="dialog.type"
+          [unreadMessage]="dialog.unreadMessage"
+        >
+        </app-dialog>
       </cdk-virtual-scroll-viewport>
     </ul>
   </div>

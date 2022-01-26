@@ -11,7 +11,7 @@ import {
   updateParticipantLastActivity
 } from "../../reducers/dialog/dialog.actions";
 import {
-  dialogFindSelector, getDialogParticipant, getDialogsParticipants, getDialogsTypingParticipant,
+  dialogFindSelector, getDialogParticipantActivity, getDialogsParticipants, getDialogsTypingParticipant,
   isActivatedConversationSelector,
   selectedConversationSelector
 } from "../../reducers/dialog/dialog.selectors";
@@ -22,6 +22,7 @@ import {getMessagesSelector} from "../../reducers/messages/messages.selectors";
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
 import {meSelector} from "../../reducers/participants/participants.selectors";
+import {isToday} from "../../services/utilities";
 
 @Component({
   selector: 'app-chat-messages',
@@ -32,6 +33,7 @@ export class ChatMessagesComponent implements OnInit {
 
   @ViewChild('areaElement') areaElement: ElementRef;
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
+  @ViewChild('inputFile') inputFile: ElementRef;
 
   @ViewChild(CdkVirtualScrollViewport) virtualScroll: CdkVirtualScrollViewport;
   @ViewChild('scrollBar') scrollBar: ElementRef;
@@ -39,6 +41,8 @@ export class ChatMessagesComponent implements OnInit {
 
   private timerId: number | undefined;
 
+  public lastActivity: number | undefined;
+  public lastActivityStatus: string = "";
   public items: Array<number> = []
   public itemsTotalHeight = 0;
   public isScrollBarPressed = false;
@@ -52,6 +56,7 @@ export class ChatMessagesComponent implements OnInit {
     photo: null,
     lastMessage: null,
     lastMessageDate: null,
+    lastMessageUserId: null,
     unreadMessage: 0,
     createAt: "",
     msgIds: [],
@@ -66,7 +71,7 @@ export class ChatMessagesComponent implements OnInit {
   public isGroupChat: boolean = false;
   public typingParticipants$: any;
   public typingParticipants: string = "";
-  public lastActivity: number = -1;
+  public lastActivity$: Observable<number>;
   public lastActiveUserId: number;
 
   constructor(
@@ -98,21 +103,6 @@ export class ChatMessagesComponent implements OnInit {
         this.subscribeDialogFind = this.store$.select(dialogFindSelector, {id: dialogId})
           .pipe(filter(v => !!v), take(1)).subscribe((dialog: any) => {
             if (dialog !== undefined) {
-              //last activity
-              this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
-              if (dialog.type === 3) {
-                this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
-                this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
-                this.getUserStatus(this.lastActiveUserId).then(() => {
-                  this.store$.select(getDialogParticipant, {
-                    dialogId,
-                    pId: this.lastActiveUserId
-                  }).pipe(filter(v => !!v && v.lastActivity), take(1)).subscribe(participant => {
-                    console.warn(participant)
-                    this.lastActivity = participant.lastActivity;
-                  })
-                });
-              }
               //Typing participants
               this.typingParticipants$ = this.store$.select(getDialogsTypingParticipant, {dialogId: dialog.id})
                 .subscribe(typParticipants => {
@@ -136,6 +126,18 @@ export class ChatMessagesComponent implements OnInit {
                 .pipe(filter(v => v.size !== 0), take(1)).subscribe(participants => {
                 if (participants !== undefined) {
                   this.selectedDialog = {...this.selectedDialog, participants};
+                  //last activity
+                  this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
+                  if (dialog.type === 3) {
+                    this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
+                    this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
+                    this.getUserStatus(this.lastActiveUserId).then(() => {
+                      this.lastActivity$ = this.store$.select(getDialogParticipantActivity, {
+                        dialogId,
+                        pId: this.lastActiveUserId
+                      });
+                    });
+                  }
                 }
               })
             }
@@ -156,6 +158,7 @@ export class ChatMessagesComponent implements OnInit {
         .catch((error: any) => {
           console.error(error);
         });
+      resolve();
     })
   }
 
@@ -250,19 +253,26 @@ export class ChatMessagesComponent implements OnInit {
     console.warn(file);
     if (file) {
       this.chatService.sendMsgWithPhoto(file, this.selectedDialog, this.meId);
+      this.inputFile.nativeElement.value = '';
     }
   }
 
-  public getLastSeen(lastActivity: number) {
-    if(lastActivity === - 1){
-      return "Unknown last activity";
+  public getLastSeen(lastActivity: number | null) {
+    if (lastActivity === -1 || lastActivity === null) {
+      this.lastActivityStatus = "";
     }
-    if(lastActivity < 30){
-      return "Online";
+    else {
+      this.lastActivity = lastActivity;
+      if (lastActivity < 60) {
+        this.lastActivityStatus = "Online";
+      }
+      else {
+        const date = new Date(new Date().getTime() - lastActivity * 1000);
+        const activity = isToday(date) ? date.toLocaleTimeString() : date.toLocaleString();
+        this.lastActivityStatus = "Last seen: " + activity;
+      }
     }
-    const date = new Date().getTime() - lastActivity * 1000;
-    const activity = lastActivity > 86400 ? new Date(date).toLocaleString() : new Date(date).toLocaleTimeString();
-    return "Last seen: " + activity;
+    return this.lastActivityStatus;
   }
 
   public setNullConversation() {

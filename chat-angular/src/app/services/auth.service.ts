@@ -3,7 +3,7 @@ import {appConfig} from "./config";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
-import {addParticipant} from "../reducers/participants/participants.actions";
+import {addMeParticipant} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
 import {ChatService} from "./chat.service";
 import {getParticipantId} from "../reducers/dialog/dialog.selectors";
@@ -57,7 +57,7 @@ export class AuthService {
     this.init(credentials, appConfigToken);
     ConnectyCube.users.get({login}).then((u: any) => {
       const user = u.user;
-      this.store$.dispatch(addParticipant({
+      this.store$.dispatch(addMeParticipant({
         me: true,
         login: user.login,
         id: user.id,
@@ -91,6 +91,7 @@ export class AuthService {
   public logout() {
     ConnectyCube.logout()
       .then(() => {
+        ConnectyCube.chat.disconnect();
         this.store$.dispatch(logout());
         this.router.navigateByUrl("/auth");
         localStorage.removeItem('token');
@@ -109,7 +110,7 @@ export class AuthService {
       }
 
       ConnectyCube.login(userProfileLogin).then((u: any) => {
-        this.store$.dispatch(addParticipant({
+        this.store$.dispatch(addMeParticipant({
           me: true,
           login: u.login,
           id: u.id,

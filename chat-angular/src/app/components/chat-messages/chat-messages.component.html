@@ -18,7 +18,7 @@
           src="assets/typing.gif"/>
         </small>
         <small *ngIf="selectedDialog.type === 3 && !typingParticipants" class="user__status">
-          {{getLastSeen(lastActivity)}}
+          {{lastActivity !== (lastActivity$ | async) ? getLastSeen(lastActivity$ | async) : lastActivityStatus}}
         </small>
       </div>
     </div>
@@ -67,11 +67,13 @@
           placeholder="Enter your message"
         ></textarea>
         <div class="button-group">
-          <input type="file" class="attache-file-input"
-                 matTooltip="Attach file"
-                 matTooltipShowDelay="500"
-                 matTooltipClass="tooltip"
-                 (change)="onFileSelected($event)">
+          <input
+            #inputFile
+            type="file" class="attache-file-input"
+            matTooltip="Attach file"
+            matTooltipShowDelay="500"
+            matTooltipClass="tooltip"
+            (change)="onFileSelected($event)">
           <button class="attache-file"
                   type="button">
             <mat-icon>attach_file</mat-icon>

@@ -1,18 +1,33 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {participant, participantsState} from "./participants.reducer";
+import {participant, participantAdapter, participantsState} from "./participants.reducer";
 import {PARTICIPANT_KEY} from "../index";
 
 export const featureSelector =
   createFeatureSelector<participantsState>(PARTICIPANT_KEY)
 
-export const meSelector = createSelector(
-  featureSelector,
-  state => state.participantsArray.find((p: participant) => p.me)
+export const participantSelector = participantAdapter.getSelectors();
+
+export const getParticipantsEntities = createSelector(featureSelector, participantSelector.selectEntities);
+export const getParticipantsIds = createSelector(featureSelector, participantSelector.selectIds);
+
+export const getLastMessageParticipantName = createSelector(
+  getParticipantsEntities,
+  (participants: any, {participantId}: any) => {
+    if (participants[participantId]) {
+      return participants[participantId].me ? "You" : participants[participantId].full_name;
+    }
+    return "";
+  }
 )
 
-export const participantSelector = createSelector(
+export const meSelector = createSelector(
   featureSelector,
-  state => state.participantsArray
+  state => state.selectedParticipants.find((p: participant) => p.me)
+)
+
+export const selectedParticipantsSelector = createSelector(
+  featureSelector,
+  state => state.selectedParticipants
 )
 
 export const searchedParticipantSelector = createSelector(

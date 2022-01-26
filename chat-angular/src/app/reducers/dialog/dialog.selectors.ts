@@ -61,6 +61,13 @@ export const getDialogParticipant = createSelector(
   }
 )
 
+export const getDialogParticipantActivity = createSelector(
+  getDialogEntities,
+  (dialogs: any, {dialogId, pId}: any) => {
+    return dialogs[dialogId].participants.get(String(pId)).lastActivity;
+  }
+)
+
 export const getIndividualDialogByParticipantId = createSelector(
   getDialogEntities,
   getDialogIds,
@@ -96,6 +103,7 @@ export const getParticipantId = createSelector(
   getDialogEntities,
   selectedConversationSelector,
   (dialogs: any, dialogId: any) => {
+    if (!dialogId) return;
     if (dialogs[dialogId].type === 3) {
       return dialogs[dialogId].participantIds
         .find((id: number) => !dialogs[dialogId].participants.get(String(id)).me);

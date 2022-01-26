@@ -1,11 +1,11 @@
 import {createReducer, on} from "@ngrx/store";
 import {
-  addParticipant,
+  addMeParticipant,
   addSearchParticipants, addSelectedParticipants,
-  removeParticipant, removeAllSearchParticipants,
-  selectParticipant,
-  unSelectParticipant, removeAllSelectedParticipants
+  removeSelectedParticipant, removeAllSearchParticipants,
+  unSelectParticipant, removeAllSelectedParticipants, selectParticipant, addParticipants
 } from "./participants.actions";
+import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
 export interface participant {
   id: number,
@@ -17,29 +17,38 @@ export interface participant {
   lastActivity?: number
 }
 
-export interface participantsState {
-  participantsArray: Array<participant>,
+//Entity Adapter
+export interface participantsState extends EntityState<participant> {
+  selectedParticipants: Array<participant>,
   searchedParticipants: Array<participant>
 }
 
-export const initialState: participantsState = {
-  participantsArray: [],
-  searchedParticipants: []
+export function selectParticipantId(p: participant) {
+  return p.id;
 }
+
+export const participantAdapter = createEntityAdapter<participant>({
+  selectId: selectParticipantId
+})
+
+export const initialState: participantsState = participantAdapter.getInitialState({
+  selectedParticipants: [],
+  searchedParticipants: []
+})
 
 export const participantsReducer = createReducer(
   initialState,
-  on(addParticipant, (state, {id, full_name, login, avatar, me}) => ({
+  on(addMeParticipant, (state, {id, full_name, login, avatar, me}) => ({
     ...state,
-    participantsArray: [...state.participantsArray, ...[{id, full_name, login, avatar, me}]]
+    selectedParticipants: [...state.selectedParticipants, ...[{id, full_name, login, avatar, me}]]
   })),
-  on(removeParticipant, (state, {id}) => ({
+  on(removeSelectedParticipant, (state, {id}) => ({
     ...state,
-    participantsArray: state.participantsArray.filter((p: participant) => p.id !== id)
+    selectedParticipants: state.selectedParticipants.filter((p: participant) => p.id !== id)
   })),
   on(addSelectedParticipants, (state, {selectedParticipant}) => ({
     ...state,
-    participantsArray: selectedParticipant
+    selectedParticipants: selectedParticipant
   })),
   on(addSearchParticipants, (state, {participantArray}) => ({
     ...state,
@@ -59,6 +68,9 @@ export const participantsReducer = createReducer(
   })),
   on(removeAllSelectedParticipants, (state) => ({
     ...state,
-    participantsArray: state.participantsArray.filter((p: participant) => p.me)
+    selectedParticipants: state.selectedParticipants.filter((p: participant) => p.me)
   })),
+  on(addParticipants, (state, {participants}) => {
+    return participantAdapter.setMany(participants, state)
+  })
 )

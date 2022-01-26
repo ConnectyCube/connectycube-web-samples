@@ -43,6 +43,7 @@ export interface Dialog {
   photo: string | null,
   lastMessage: string | null,
   lastMessageDate: number | null,
+  lastMessageUserId: number | null,
   unreadMessage: number,
   createAt: string,
   msgIds: Array<string>,

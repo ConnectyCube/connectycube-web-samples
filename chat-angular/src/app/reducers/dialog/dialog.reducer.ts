@@ -1,4 +1,4 @@
-import {Dialog, Message} from "../../services/config";
+import {Dialog} from "../../services/config";
 import {createReducer, on} from "@ngrx/store";
 import {
   addDialog,
@@ -19,7 +19,7 @@ import {createEntityAdapter, EntityState} from "@ngrx/entity";
 export interface dialogState extends EntityState<Dialog> {
   selectedConversation: string,
   activatedConversation: Array<string>,
-};
+}
 
 export function selectDialogId(d: Dialog): string {
   return d.id;
