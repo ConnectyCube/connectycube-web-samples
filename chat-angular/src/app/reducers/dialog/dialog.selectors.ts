@@ -54,20 +54,6 @@ export const getDialogMessages = createSelector(
   }
 )
 
-export const getDialogParticipant = createSelector(
-  getDialogEntities,
-  (dialogs: any, {dialogId, pId}: any) => {
-    return dialogs[dialogId].participants.get(String(pId));
-  }
-)
-
-export const getDialogParticipantActivity = createSelector(
-  getDialogEntities,
-  (dialogs: any, {dialogId, pId}: any) => {
-    return dialogs[dialogId].participants.get(String(pId)).lastActivity;
-  }
-)
-
 export const getIndividualDialogByParticipantId = createSelector(
   getDialogEntities,
   getDialogIds,
@@ -83,13 +69,6 @@ export const getDialogsTypingParticipant = createSelector(
   }
 )
 
-export const getDialogsParticipants = createSelector(
-  getDialogEntities,
-  (dialogs: any, {dialogId}: any) => {
-    return dialogs[dialogId].participants;
-  }
-)
-
 export const getUnreadMessageIds = (props: { dialogId: string }) =>
   createSelector(
     getDialogEntities,
@@ -102,11 +81,11 @@ export const getUnreadMessageIds = (props: { dialogId: string }) =>
 export const getParticipantId = createSelector(
   getDialogEntities,
   selectedConversationSelector,
-  (dialogs: any, dialogId: any) => {
+  (dialogs: any, dialogId: any, {meId}: any) => {
     if (!dialogId) return;
     if (dialogs[dialogId].type === 3) {
       return dialogs[dialogId].participantIds
-        .find((id: number) => !dialogs[dialogId].participants.get(String(id)).me);
+        .find((id: number) => id !== meId);
     }
   }
 )

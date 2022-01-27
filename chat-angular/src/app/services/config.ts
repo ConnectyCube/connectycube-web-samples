@@ -48,6 +48,5 @@ export interface Dialog {
   createAt: string,
   msgIds: Array<string>,
   participantIds: Array<number>
-  participants: Map<string, participant>,
   typingParticipants: Array<{ id: number, name: string }>
 }

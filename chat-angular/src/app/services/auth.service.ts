@@ -3,12 +3,12 @@ import {appConfig} from "./config";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
-import {addMeParticipant} from "../reducers/participants/participants.actions";
+import {addMeParticipant, updateParticipantLastActivity} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
 import {ChatService} from "./chat.service";
 import {getParticipantId} from "../reducers/dialog/dialog.selectors";
 import {take} from 'rxjs/operators';
-import {updateParticipantLastActivity} from "../reducers/dialog/dialog.actions";
+import {meSelector} from "../reducers/participants/participants.selectors";
 
 declare let ConnectyCube: any;
 
@@ -72,20 +72,27 @@ export class AuthService {
 
   public chatInit() {
     this.chatService.init();
-    this.store$.select(getParticipantId).pipe(take(1))
-      .subscribe(participantId => {
-        if (participantId) {
-          this.chatService.getLastActivity(participantId)
-            .then((result: any) => {
-              const seconds = result.seconds;
-              this.store$.dispatch(updateParticipantLastActivity({participantId: participantId, lastActivity: seconds}));
-              console.warn(result)
-            })
-            .catch((error: any) => {
-              console.error(error);
-            });
-        }
-      })
+    this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+      if (userMe) {
+        this.store$.select(getParticipantId, {meId: userMe.id}).pipe(take(1))
+          .subscribe(participantId => {
+            if (participantId) {
+              this.chatService.getLastActivity(participantId)
+                .then((result: any) => {
+                  const seconds = result.seconds;
+                  this.store$.dispatch(updateParticipantLastActivity({
+                    participantId: participantId,
+                    lastActivity: seconds
+                  }));
+                  console.warn(result)
+                })
+                .catch((error: any) => {
+                  console.error(error);
+                });
+            }
+          })
+      }
+    })
   }
 
   public logout() {

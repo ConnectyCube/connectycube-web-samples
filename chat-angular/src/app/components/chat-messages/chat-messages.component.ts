@@ -6,12 +6,10 @@ import {Store} from "@ngrx/store";
 import {selectDialogIdRouterParam} from "../../reducers/router.selector";
 import {
   openDialog,
-  readDialogAllMessages,
   setNullConverastion,
-  updateParticipantLastActivity
 } from "../../reducers/dialog/dialog.actions";
 import {
-  dialogFindSelector, getDialogParticipantActivity, getDialogsParticipants, getDialogsTypingParticipant,
+  dialogFindSelector, getDialogsTypingParticipant,
   isActivatedConversationSelector,
   selectedConversationSelector
 } from "../../reducers/dialog/dialog.selectors";
@@ -21,8 +19,9 @@ import {participant} from "../../reducers/participants/participants.reducer";
 import {getMessagesSelector} from "../../reducers/messages/messages.selectors";
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
-import {meSelector} from "../../reducers/participants/participants.selectors";
+import {getParticipantActivity, meSelector} from "../../reducers/participants/participants.selectors";
 import {isToday} from "../../services/utilities";
+import {updateParticipantLastActivity} from "../../reducers/participants/participants.actions";
 
 @Component({
   selector: 'app-chat-messages',
@@ -61,7 +60,6 @@ export class ChatMessagesComponent implements OnInit {
     createAt: "",
     msgIds: [],
     participantIds: [],
-    participants: new Map<string, participant>(),
     typingParticipants: []
   };
   public subscribeDialogFind: any;
@@ -119,27 +117,21 @@ export class ChatMessagesComponent implements OnInit {
                   this.virtualScroll.scrollToOffset(0);
                   if (isActivated !== undefined) {
                     this.store$.dispatch(openDialog({dialogId, isActivated}));
-                    this.chatService.getChatHistory(this.selectedDialog, isActivated)
+                    this.chatService.getChatHistory(this.selectedDialog, isActivated).then(() => {
+                      //last activity
+                      this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
+                      if (dialog.type === 3) {
+                        this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
+                        this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
+                        this.getUserStatus(this.lastActiveUserId).then(() => {
+                          this.lastActivity$ = this.store$.select(getParticipantActivity, {
+                            pId: this.lastActiveUserId
+                          });
+                        });
+                      }
+                    })
                   }
                 })
-              this.store$.select(getDialogsParticipants, {dialogId})
-                .pipe(filter(v => v.size !== 0), take(1)).subscribe(participants => {
-                if (participants !== undefined) {
-                  this.selectedDialog = {...this.selectedDialog, participants};
-                  //last activity
-                  this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
-                  if (dialog.type === 3) {
-                    this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
-                    this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
-                    this.getUserStatus(this.lastActiveUserId).then(() => {
-                      this.lastActivity$ = this.store$.select(getDialogParticipantActivity, {
-                        dialogId,
-                        pId: this.lastActiveUserId
-                      });
-                    });
-                  }
-                }
-              })
             }
           })
       }
@@ -366,13 +358,10 @@ export class ChatMessagesComponent implements OnInit {
     switch (status) {
       case "pending":
         return "schedule"
-        break;
       case "sent":
         return "done"
-        break;
       case "read":
         return "done_all"
-        break;
       default:
         return "error"
     }

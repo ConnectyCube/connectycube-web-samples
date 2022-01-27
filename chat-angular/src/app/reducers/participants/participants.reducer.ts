@@ -3,7 +3,7 @@ import {
   addMeParticipant,
   addSearchParticipants, addSelectedParticipants,
   removeSelectedParticipant, removeAllSearchParticipants,
-  unSelectParticipant, removeAllSelectedParticipants, selectParticipant, addParticipants
+  unSelectParticipant, removeAllSelectedParticipants, selectParticipant, addParticipants, updateParticipantLastActivity
 } from "./participants.actions";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
@@ -72,5 +72,13 @@ export const participantsReducer = createReducer(
   })),
   on(addParticipants, (state, {participants}) => {
     return participantAdapter.setMany(participants, state)
+  }),
+  on(updateParticipantLastActivity, (state, {participantId, lastActivity}) => {
+    return participantAdapter.updateOne({
+      id: participantId,
+      changes: {
+        lastActivity
+      }
+    }, state)
   })
 )

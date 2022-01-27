@@ -14,7 +14,6 @@ export const builtDialog = (d: any) => {
     createAt: d.created_at,
     msgIds: [],
     participantIds: d.occupants_ids,
-    participants: new Map<string, participant>(),
     typingParticipants: []
   };
 }

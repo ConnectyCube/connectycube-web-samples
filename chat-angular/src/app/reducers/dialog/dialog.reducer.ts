@@ -4,14 +4,14 @@ import {
   addDialog,
   addDialogs,
   addMessageId,
-  addMessagesIdsAndParticipants,
+  addMessagesIds,
   addTypingParticipant,
   openDialog,
   readDialogAllMessages,
   addOneUnreadMessage,
   removeTypingParticipant,
   setNullConverastion,
-  updateDialogLastMessage, updateDialogParticipants, updateParticipantLastActivity
+  updateDialogLastMessage
 } from "./dialog.actions";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
@@ -61,21 +61,21 @@ export const dialogReducer = createReducer(
       changes: {msgIds: [...msgIds, ...state.entities[dialogId]!.msgIds]}
     }, state)
   }),
-  on(addMessagesIdsAndParticipants, (state, {dialogId, msgIds, participants}) => {
+  on(addMessagesIds, (state, {dialogId, msgIds}) => {
     return dialogsAdapter.updateOne({
       id: dialogId,
-      changes: {msgIds, participants}
+      changes: {msgIds}
     }, state)
   }),
-  on(addTypingParticipant, (state, {dialogId, pId}) => {
-    if (state.entities[dialogId]!.participants.has(String(pId))) {
+  on(addTypingParticipant, (state, {dialogId, participant}) => {
+    if (participant) {
       return dialogsAdapter.updateOne({
         id: dialogId,
         changes: {
           typingParticipants:
             [...state.entities[dialogId]!.typingParticipants, ...[{
-              id: pId,
-              name: state.entities[dialogId]!.participants.get(String(pId))!.full_name
+              id: participant.id,
+              name: participant.full_name
             }]]
         }
       }, state)
@@ -113,34 +113,14 @@ export const dialogReducer = createReducer(
     }
     return state;
   }),
-  on(updateDialogLastMessage, (state, {dialogId, lastMessage, lastMessageDate}) => {
+  on(updateDialogLastMessage, (state, {dialogId, lastMessage, lastMessageDate, lastMessageUserId}) => {
     return dialogsAdapter.updateOne({
       id: dialogId,
       changes: {
         lastMessage,
-        lastMessageDate
+        lastMessageDate,
+        lastMessageUserId
       }
-    }, state)
-  }),
-  on(updateDialogParticipants, (state, {dialogId, participants}) => {
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {
-        participants
-      }
-    }, state)
-  }),
-  on(updateParticipantLastActivity, (state, {participantId, lastActivity}) => {
-    const dialogId = state.selectedConversation;
-    const participants = new Map(state.entities[dialogId]!.participants)
-    const updateUser = participants.get(String(participantId));
-    if (updateUser) {
-      updateUser.lastActivity = lastActivity;
-      participants.set(String(participantId), updateUser);
-    }
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {participants}
     }, state)
   })
 );

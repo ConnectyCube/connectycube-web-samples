@@ -10,10 +10,31 @@ export const participantSelector = participantAdapter.getSelectors();
 export const getParticipantsEntities = createSelector(featureSelector, participantSelector.selectEntities);
 export const getParticipantsIds = createSelector(featureSelector, participantSelector.selectIds);
 
+export const getParticipant = createSelector(
+  getParticipantsEntities,
+  (participants: any, {participantId}: any) => {
+    if (participants[participantId]) {
+      return participants[participantId];
+    }
+    return undefined;
+  }
+)
+
+export const getParticipantActivity = createSelector(
+  getParticipantsEntities,
+  (participants: any, {pId}: any) => {
+    if(participants[pId].lastActivity){
+      return participants[pId].lastActivity;
+    }
+    return null;
+  }
+)
+
 export const getLastMessageParticipantName = createSelector(
   getParticipantsEntities,
   (participants: any, {participantId}: any) => {
     if (participants[participantId]) {
+      console.warn("[participants[participantId]]", participants[participantId])
       return participants[participantId].me ? "You" : participants[participantId].full_name;
     }
     return "";

@@ -45,3 +45,8 @@ export const addParticipants = createAction(
   '[PARTICIPANT/ENTITY] add participants',
   props<{ participants: Array<participant> }>()
 )
+
+export const updateParticipantLastActivity = createAction(
+  '[PARTICIPANT/ENTITY] add last activity participant',
+  props<{ participantId: number, lastActivity: number }>()
+)

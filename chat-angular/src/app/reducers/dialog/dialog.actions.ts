@@ -22,14 +22,14 @@ export const addMessageId = createAction(
   props<{ dialogId: string, msgIds: Array<string> }>()
 )
 
-export const addMessagesIdsAndParticipants = createAction(
+export const addMessagesIds = createAction(
   '[DIALOG] add dialog`s messages ids and participants',
-  props<{ dialogId: string, msgIds: Array<string>, participants: Map<string, participant> }>()
+  props<{ dialogId: string, msgIds: Array<string>}>()
 )
 
 export const addTypingParticipant = createAction(
   '[DIALOG] add typing participant to dialog',
-  props<{ dialogId: string, pId: number }>()
+  props<{ dialogId: string, participant: participant }>()
 );
 
 export const removeTypingParticipant = createAction(
@@ -53,15 +53,5 @@ export const addOneUnreadMessage = createAction(
 
 export const updateDialogLastMessage = createAction(
   '[DIALOG] update dialog last message',
-  props<{ dialogId: string, lastMessage: string, lastMessageDate: number }>()
-)
-
-export const updateDialogParticipants = createAction(
-  '[DIALOG] update dialog participants',
-  props<{ dialogId: string, participants: Map<string, participant> }>()
-)
-
-export const updateParticipantLastActivity = createAction(
-  '[DIALOG] add last activity participant',
-  props<{participantId: number, lastActivity: number }>()
+  props<{ dialogId: string, lastMessage: string, lastMessageDate: number, lastMessageUserId:number }>()
 )

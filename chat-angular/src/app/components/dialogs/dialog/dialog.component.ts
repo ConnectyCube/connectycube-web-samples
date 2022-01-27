@@ -5,6 +5,8 @@ import {ChatService} from "../../../services/chat.service";
 import {Router} from "@angular/router";
 import {getLastMessageParticipantName} from "../../../reducers/participants/participants.selectors";
 import {filter, take} from "rxjs/operators";
+import {participant} from "../../../reducers/participants/participants.reducer";
+import {addParticipants} from "../../../reducers/participants/participants.actions";
 
 @Component({
   selector: 'app-dialog',
@@ -22,6 +24,7 @@ export class DialogComponent implements OnInit, OnChanges {
 
   public selectedConversation$ = this.store$.select(selectedConversationSelector);
   public lastMessageUserName: string = "";
+  public itemLastMessage: string | null = "";
 
   @Input() id: string;
   @Input() name: string;
@@ -48,19 +51,56 @@ export class DialogComponent implements OnInit, OnChanges {
     this.router.navigateByUrl(`chat/${encodedUrl}`)
   }
 
+  public getUsersFromSDK(participantId: number) {
+    this.chatService.searchUsersById([participantId]).then((result: any) => {
+      console.warn("[searchUserById]", result);
+      const participants: Array<participant> = result.items.map((u: any) => {
+        return {
+          id: u.user.id,
+          full_name: u.user.full_name,
+          login: u.user.login,
+          avatar: u.user.avatar,
+          me: u.user.login === atob(<string>localStorage.getItem('login')),
+        }
+      })
+      this.itemLastMessage = participants[0].full_name + ": " + this.lastMessage;
+      this.store$.dispatch(addParticipants({participants}));
+    })
+      .catch((error: any) => {
+        console.error(error);
+      })
+  }
+
+  public getLastMessageUserName(participantId: number | null) {
+    if (participantId === null) {
+      return "No messages yet";
+    }
+    //If group chat
+    if (this.type === 2) {
+      this.store$.select(getLastMessageParticipantName, {participantId})
+        .pipe(filter(v => v !== undefined), take(1)).subscribe(name => {
+        if (name) {
+          this.lastMessageUserName = name;
+        }
+        else {
+          this.getUsersFromSDK(participantId);
+        }
+      })
+      return this.lastMessageUserName + ': ' + this.lastMessage;
+    }
+    // else individual chat
+    else {
+      return this.lastMessage;
+    }
+  }
+
   ngOnInit(): void {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.warn("[changes]", changes);
-    if (changes.lastMessage) {
+    if (changes.lastMessageUserId && changes.lastMessageUserId.currentValue !== changes.lastMessageUserId.previousValue) {
       const participantId = changes.lastMessageUserId.currentValue;
-      this.store$.select(getLastMessageParticipantName, {participantId})
-        .pipe(filter(v => !!v), take(1)).subscribe(name => {
-        if (this.type !== 3) {
-          this.lastMessageUserName = name + ': ';
-        }
-      })
+      this.itemLastMessage = this.getLastMessageUserName(participantId);
     }
   }
 

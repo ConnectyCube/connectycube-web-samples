@@ -7,7 +7,11 @@ import {MatDialog} from "@angular/material/dialog";
 import {SelectParticipantsComponent} from "../select-participants/select-participants.component";
 import {Observable} from "rxjs";
 import {take} from "rxjs/operators";
-import {removeAllSelectedParticipants, removeSelectedParticipant} from "../../reducers/participants/participants.actions";
+import {
+  addParticipants,
+  removeAllSelectedParticipants,
+  removeSelectedParticipant
+} from "../../reducers/participants/participants.actions";
 import {ChatService} from "../../services/chat.service";
 
 @Component({
@@ -66,6 +70,7 @@ export class DialogCreatComponent implements OnInit, OnDestroy {
         const description = this.CreateForm.value.description;
         const idArray = res.map((p: participant) => p.id);
         console.log(name, description, idArray)
+        this.store$.dispatch(addParticipants({participants: res}));
         this.chatService.createGroupChat(name, description, idArray);
       }
     })

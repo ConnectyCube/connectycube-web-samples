@@ -5,25 +5,28 @@ import {
   addDialog,
   addDialogs,
   addMessageId,
-  addMessagesIdsAndParticipants,
+  addMessagesIds,
   addTypingParticipant,
   addOneUnreadMessage,
   removeTypingParticipant,
   updateDialogLastMessage,
-  updateDialogParticipants,
-  readDialogAllMessages, updateParticipantLastActivity
+  readDialogAllMessages
 } from "../reducers/dialog/dialog.actions";
 import {
-  dialogsSelector, getDialogParticipant,
+  dialogsSelector,
   getIndividualDialogByParticipantId, selectedConversationSelector
 } from "../reducers/dialog/dialog.selectors";
 import {filter, take} from 'rxjs/operators';
 import {addMessage, addMessages, updateMessageStatus} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
 import {builtDialog} from "./utilities";
-import {addParticipants, addSearchParticipants} from "../reducers/participants/participants.actions";
+import {
+  addParticipants,
+  addSearchParticipants,
+  updateParticipantLastActivity
+} from "../reducers/participants/participants.actions";
 import {Router} from "@angular/router";
-import {meSelector} from "../reducers/participants/participants.selectors";
+import {getParticipant, meSelector} from "../reducers/participants/participants.selectors";
 import {getUnreadMessageList} from "../reducers/messages/messages.selectors";
 
 declare let ConnectyCube: any;
@@ -42,31 +45,40 @@ export class ChatService {
   }
 
   private getChatParticipants(pId: Array<number>) {
+    const unfinedParticipants: Array<number> = [];
+    pId.forEach((id: number) => {
+      this.store$.select(getParticipant, {participantId: id})
+        .pipe(take(1)).subscribe(p => {
+        if (!p) {
+          unfinedParticipants.push(id);
+        }
+      });
+    })
     const params = {
       filter: {
         field: "id",
         param: "in",
-        value: pId,
+        value: unfinedParticipants,
       },
     };
-
-    return ConnectyCube.users.get(params)
+    if (unfinedParticipants.length > 0) {
+      return ConnectyCube.users.get(params)
+    }
+    return Promise.resolve();
   }
 
-  private processParticipants(users: any): Map<string, participant> {
-    const participants: Map<string, participant> = new Map<string, participant>();
+  private processParticipants(users: any) {
     const loginMe = atob(<string>localStorage.getItem("login"));
-    users.forEach((u: any) => {
-      const p: participant = {
+    const participants: Array<participant> = users.map((u: any) => {
+      return {
         id: u.user.id,
         full_name: u.user.full_name,
         login: u.user.login,
         avatar: u.user.avatar,
         me: loginMe === u.user.login
       }
-      participants.set(String(p.id), p);
     })
-    return participants;
+    this.store$.dispatch(addParticipants({participants}))
   }
 
   private addDialog(dialogId: string) {
@@ -81,6 +93,21 @@ export class ChatService {
       .catch((error: any) => {
         console.error(error);
       });
+  }
+
+  private processedTypingStatus(userId: number, isTyping: boolean, dialogId: string) {
+    this.store$.select(getParticipant, {participantId: userId})
+      .pipe(filter(v => !!v), take(1)).subscribe(user => {
+      if (!user.me) {
+        console.log("GROUP CHAT", isTyping, userId, dialogId);
+        if (isTyping) {
+          this.store$.dispatch(addTypingParticipant({dialogId, participant: user}));
+        }
+        else {
+          this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
+        }
+      }
+    })
   }
 
   private prepareMessageWithAttachmentAndSend(file: any, dialog: Dialog, senderId: number) {
@@ -104,8 +131,12 @@ export class ChatService {
     }
 
     if (dialog.type === 3) {
-      const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
-      message.id = ConnectyCube.chat.send(opponentId, messageParams);
+      this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+        if (userMe) {
+          const opponentId = dialog.participantIds.find((id: number) => id !== userMe.id);
+          message.id = ConnectyCube.chat.send(opponentId, messageParams);
+        }
+      })
     }
     else {
       message.id = ConnectyCube.chat.send(dialog.id, messageParams);
@@ -128,7 +159,8 @@ export class ChatService {
       this.store$.dispatch(updateDialogLastMessage({
         dialogId: msg.extension.dialog_id,
         lastMessage: msg.body,
-        lastMessageDate: msg.extension.date_sent
+        lastMessageDate: msg.extension.date_sent,
+        lastMessageUserId: userId,
       }))
 
       this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
@@ -148,7 +180,7 @@ export class ChatService {
         }
       })
 
-      this.store$.select(getDialogParticipant, {dialogId: msg.extension.dialog_id, pId: userId})
+      this.store$.select(getParticipant, {participantId: userId})
         .pipe(take(1)).subscribe(p => {
         console.warn(p)
         if (p !== undefined && !p.me) {
@@ -182,19 +214,8 @@ export class ChatService {
     ConnectyCube.chat.onMessageTypingListener = (isTyping: boolean, userId: number, dialogId: string) => {
       //Group dialog
       if (dialogId) {
-        this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
-          if (userMe !== undefined) {
-            if (userMe.id !== userId) {
-              console.log("GROUP CHAT", isTyping, userId, dialogId);
-              if (isTyping) {
-                this.store$.dispatch(addTypingParticipant({dialogId, pId: userId}));
-              }
-              else {
-                this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
-              }
-            }
-          }
-        })
+        console.log("GROUP CHAT", isTyping, userId, dialogId);
+        this.processedTypingStatus(userId, isTyping, dialogId);
       }
       //Individual dialog
       else {
@@ -202,12 +223,7 @@ export class ChatService {
           .subscribe((dialogId: any) => {
             if (dialogId !== undefined) {
               console.log("INDIVIDUAL CHAT", isTyping, userId, dialogId);
-              if (isTyping) {
-                this.store$.dispatch(addTypingParticipant({dialogId, pId: userId}));
-              }
-              else {
-                this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
-              }
+              this.processedTypingStatus(userId, isTyping, dialogId);
             }
           })
       }
@@ -242,8 +258,10 @@ export class ChatService {
       .then((result: any) => {
         const lastMessageUserIds: Array<number> = []
         const dialogs: Array<Dialog> = result.items.map((d: any) => {
-          if (d.type === 3) {
-            lastMessageUserIds.push(d.last_message_user_id);
+          if (d.type === 2 && d.last_message_user_id) {
+            if (!lastMessageUserIds.includes(d.last_message_user_id)) {
+              lastMessageUserIds.push(d.last_message_user_id);
+            }
           }
           return builtDialog(d);
         })
@@ -420,70 +438,77 @@ export class ChatService {
   }
 
   public getChatHistory(dialog: Dialog, isActivated: boolean) {
-    const dialogId = dialog.id;
-    const params = {
-      chat_dialog_id: dialogId,
-      sort_desc: "date_sent",
-      limit: 100,
-      skip: 0,
-    };
+    return new Promise<void>((resolve,reject)=>{
+      const dialogId = dialog.id;
+      const params = {
+        chat_dialog_id: dialogId,
+        sort_desc: "date_sent",
+        limit: 100,
+        skip: 0,
+      };
 
-    this.store$.dispatch(readDialogAllMessages({dialogId}));
+      this.store$.dispatch(readDialogAllMessages({dialogId}));
 
-    if (!isActivated) {
-      this.getChatParticipants(dialog.participantIds).then((result: any) => {
-        console.warn("[RESULT]", result)
-        const participants: Map<string, participant> = this.processParticipants(result.items)
-        this.store$.dispatch(updateDialogParticipants({dialogId, participants}));
-        console.warn("[PROCECED USER]", participants);
-        ConnectyCube.chat.message
-          .list(params)
-          .then((result: any) => {
-            const msgs = result.items;
-            console.warn(msgs)
-            const messages: Array<Message> = [];
-            const msgIds: Array<string> = [];
-            msgs.forEach((m: any) => {
-              const sender = participants.get(String(m.sender_id));
-              const message: Message = {
-                id: m._id,
-                body: m.message,
-                status: m.read ? "read" : "sent",
-                date_sent: m.date_sent,
-                senderName: sender?.me ? "" : sender?.full_name,
-                senderId: m.sender_id
-              }
+      if (!isActivated) {
+        this.getChatParticipants(dialog.participantIds).then((result: any) => {
+          if (result) {
+            console.warn("[RESULT]", result)
+            this.processParticipants(result.items)
+          }
+          resolve();
+          ConnectyCube.chat.message
+            .list(params)
+            .then((result: any) => {
+              const msgs = result.items;
+              console.warn(msgs)
+              const messages: Array<Message> = [];
+              const msgIds: Array<string> = [];
+              msgs.forEach((m: any) => {
+                this.store$.select(getParticipant, {participantId: m.sender_id}).pipe(take(1)).subscribe(p => {
+                  if (p) {
+                    const sender = p;
+                    const message: Message = {
+                      id: m._id,
+                      body: m.message,
+                      status: m.read ? "read" : "sent",
+                      date_sent: m.date_sent,
+                      senderName: sender?.me ? "" : sender?.full_name,
+                      senderId: m.sender_id
+                    }
 
-              if (!m.read && !sender?.me) {
-                this.sendReadStatus(m._id, m.sender_id, dialogId);
-              }
+                    if (!m.read && !sender?.me) {
+                      this.sendReadStatus(m._id, m.sender_id, dialogId);
+                    }
 
-              if (m.hasOwnProperty("attachments") && m.attachments.length > 0) {
-                const fileUID = m.attachments[0].uid;
-                message.photo = ConnectyCube.storage.privateUrl(fileUID);
-              }
+                    if (m.hasOwnProperty("attachments") && m.attachments.length > 0) {
+                      const fileUID = m.attachments[0].uid;
+                      message.photo = ConnectyCube.storage.privateUrl(fileUID);
+                    }
 
-              messages.push(message);
-              msgIds.push(m._id);
+                    messages.push(message);
+                    msgIds.push(m._id);
+                  }
+                });
+              })
+              console.warn("[MESSAGES]", messages);
+              console.warn("[IDS]", msgIds);
+
+              this.store$.dispatch(addMessages({messages}))
+              this.store$.dispatch(addMessagesIds({dialogId, msgIds}))
             })
-            console.warn("[MESSAGES]", messages);
-            console.warn("[IDS]", msgIds);
-
-            this.store$.dispatch(addMessages({messages}))
-            this.store$.dispatch(addMessagesIdsAndParticipants({dialogId, msgIds, participants}))
-          })
+            .catch((error: any) => {
+              console.error(error);
+            });
+        })
           .catch((error: any) => {
             console.error(error);
-          });
-      })
-        .catch((error: any) => {
-          console.warn(111111111111)
-          console.error(error);
-        })
-    }
-    else {
-      this.readAllChatMessages(dialogId);
-    }
+          })
+      }
+      else {
+        this.readAllChatMessages(dialogId);
+        resolve();
+      }
+    })
   }
 
   public sendMessage(dialog: Dialog, message: Message) {
@@ -499,15 +524,19 @@ export class ChatService {
       };
 
       if (dialog.type === 3) {
-        console.warn(dialog.participants);
-        const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))!.me);
-        console.warn(opponentId);
-        this.store$.dispatch(updateDialogLastMessage({
-          dialogId: dialog.id,
-          lastMessage: message.body,
-          lastMessageDate: message.date_sent
-        }))
-        message.id = ConnectyCube.chat.send(opponentId, messageParams);
+        this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+          if (userMe) {
+            const opponentId = dialog.participantIds.find((id: number) => id !== userMe.id);
+            console.warn(opponentId);
+            this.store$.dispatch(updateDialogLastMessage({
+              dialogId: dialog.id,
+              lastMessage: message.body,
+              lastMessageDate: message.date_sent,
+              lastMessageUserId: message.senderId,
+            }))
+            message.id = ConnectyCube.chat.send(opponentId, messageParams);
+          }
+        })
       }
       else {
         message.id = ConnectyCube.chat.send(dialog.id, messageParams);
@@ -536,8 +565,12 @@ export class ChatService {
       ConnectyCube.chat.sendIsTypingStatus(dialog.id);
     }
     else {
-      const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
-      ConnectyCube.chat.sendIsTypingStatus(opponentId, dialog.id);
+      this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+        if (userMe) {
+          const opponentId = dialog.participantIds.find((id: number) => id !== userMe.id);
+          ConnectyCube.chat.sendIsTypingStatus(opponentId);
+        }
+      })
     }
   }
 
@@ -547,8 +580,12 @@ export class ChatService {
       ConnectyCube.chat.sendIsStopTypingStatus(dialog.id);
     }
     else {
-      const opponentId = dialog.participantIds.find((id: number) => !dialog.participants.get(String(id))?.me);
-      ConnectyCube.chat.sendIsStopTypingStatus(opponentId);
+      this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+        if (userMe) {
+          const opponentId = dialog.participantIds.find((id: number) => id !== userMe.id);
+          ConnectyCube.chat.sendIsStopTypingStatus(opponentId);
+        }
+      })
     }
   }
 

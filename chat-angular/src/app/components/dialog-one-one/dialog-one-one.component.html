@@ -19,7 +19,7 @@
       <div class="participant-item-search"
            *cdkVirtualFor="let user of searchedParticipants$; index as i;
             trackBy: participantsTrackBy"
-           (click)="createChat($event,user.id)"
+           (click)="createChat($event,user)"
            mat-dialog-close="">
         <div class="participant-avatar-search"
              [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',

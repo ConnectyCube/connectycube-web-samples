@@ -4,8 +4,15 @@ import {Store} from "@ngrx/store";
 import {MatDialog} from "@angular/material/dialog";
 import {ChatService} from "../../services/chat.service";
 import {participant} from "../../reducers/participants/participants.reducer";
-import {addSearchParticipants, removeAllSearchParticipants} from "../../reducers/participants/participants.actions";
-import {selectedParticipantsSelector, searchedParticipantSelector} from "../../reducers/participants/participants.selectors";
+import {
+  addParticipants,
+  addSearchParticipants,
+  removeAllSearchParticipants
+} from "../../reducers/participants/participants.actions";
+import {
+  selectedParticipantsSelector,
+  searchedParticipantSelector
+} from "../../reducers/participants/participants.selectors";
 
 @Component({
   selector: 'app-dialog-one-one',
@@ -37,8 +44,9 @@ export class DialogOneOneComponent implements OnInit, OnDestroy {
     this.chatService.searchMethod(this.SearchForm, []);
   }
 
-  public createChat(e: any, userId: number) {
-    this.chatService.createIndividualChat(userId);
+  public createChat(e: any, user: participant) {
+    this.store$.dispatch(addParticipants({participants: [user]}));
+    this.chatService.createIndividualChat(user.id);
   }
 
 
