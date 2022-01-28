@@ -1,6 +1,7 @@
 import {createReducer, on} from "@ngrx/store";
 import {addMessages, setActiveDialogId, addMessage} from "./dialog.actions";
 import {concat} from "rxjs";
+import {SafeHtml} from "@angular/platform-browser";
 
 export interface dialogState {
   dialog: {
@@ -11,7 +12,7 @@ export interface dialogState {
 
 export interface Message {
   senderName?: string,
-  body: string,
+  body: string | null,
   time: string,
   statusUndefined?: boolean,
 }
