@@ -318,7 +318,6 @@ export class CallService {
   }
 
   public stopCall() {
-    this.stopCheckUserMicLevel();
     return this.OurSession.leave();
   }
 
