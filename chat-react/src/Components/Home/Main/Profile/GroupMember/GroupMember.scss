@@ -1,0 +1,17 @@
+.member {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  & .member__photo-container {
+    padding-right: 10px;
+    border-radius: 50%;
+    & .member__avatar-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    & .user__no-img {
+    }
+  }
+}

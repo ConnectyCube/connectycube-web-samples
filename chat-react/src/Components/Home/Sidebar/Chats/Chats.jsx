@@ -3,6 +3,7 @@ import "./Chats.scss";
 import { useEffect } from "react";
 import { getTime } from "../../../../services/helpers";
 import { TiGroup } from "react-icons/ti";
+/* eslint-disable */
 
 const Chats = (props) => {
   const chatRef = React.createRef();

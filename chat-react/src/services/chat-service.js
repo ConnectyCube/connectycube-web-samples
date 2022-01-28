@@ -1,5 +1,5 @@
+/* eslint-disable */
 import ConnectyCube from "connectycube";
-import { debug } from "connectycube/lib/cubeConfig";
 import { createContext, useRef, useState } from "react";
 // import { isiOS } from "./heplers";
 //import sound from "../sounds/notification_sound.mp3";
@@ -13,18 +13,21 @@ export const ChatProvider = ({ children }) => {
   const [chosenDialog, setChosenDialog] = useState();
   const [dialogs, setDialogs] = useState();
   //   const messagesRef = useRef([]);
+  const [connectStatus, setConnectStatus] = useState(false);
   const messagesRef = useRef({});
   const usersInGroupsRef = useRef([]);
   const [usersInGroups, setUsersInGroups] = useState();
   const [messages, setMessages] = useState();
   const typeStatusRef = useRef({});
   const [typeStatus, setTypeStatus] = useState({});
+  const [lastActivity, setLastActivity] = useState(`last seen recent`);
   const chatCallbaks = () => {
     ConnectyCube.chat.onMessageTypingListener = function (
       isTyping,
       userId,
       dialogId
     ) {
+      lastActivityCheck();
       typeStatusRef.current[userId] = { isTyping: isTyping };
       setTypeStatus({ ...typeStatusRef.current });
       console.log(
@@ -49,6 +52,7 @@ export const ChatProvider = ({ children }) => {
             el.last_message = message.body;
             el.last_message_date_sent = parseInt(message.extension.date_sent);
           }
+          return 0;
         });
       } else if (chosenDialogRef.current._id !== message.dialog_id) {
         chatsRef.current.find((el) => {
@@ -57,6 +61,7 @@ export const ChatProvider = ({ children }) => {
             el.last_message = message.body;
             el.last_message_date_sent = parseInt(message.extension.date_sent);
           }
+          return 0;
         });
       } else {
         const params = {
@@ -70,10 +75,20 @@ export const ChatProvider = ({ children }) => {
           if (el._id === message.dialog_id) {
             el.unread_messages_count = 0;
           }
+          return 0;
         });
       }
       setDialogs([...chatsRef.current]);
-      addMessageToStore(message, message.dialog_id, userId);
+      if (message.extension.hasOwnProperty("attachments")) {
+        if (message.extension.attachments.length > 0) {
+          const fileUID = message.extension.attachments[0].uid;
+          const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
+          addMessageToStore(message, message.dialog_id, userId, fileUrl);
+          // insert the imageHTML as HTML template
+        }
+      } else {
+        addMessageToStore(message, message.dialog_id, userId);
+      }
       // if (!isiOS()) {
       //   if (userId !== chatParticipantsRef.current[0].userId) {
       //     let audio = new Audio(sound);
@@ -128,14 +143,16 @@ export const ChatProvider = ({ children }) => {
       })
       .then(() => {
         console.log("Connected", `chatConnection`);
+        setConnectStatus(true);
       })
       .catch((error) => {
         console.log(`Failed connection due to ${error}`);
+        setConnectStatus(false);
       });
   };
 
   const updateGroupUsers = (usersIds) => {
-    let users = new Array();
+    let users = [];
     return new Promise((resolve, reject) => {
       usersIds.forEach((userId) => {
         if (usersInGroupsRef.current[userId]) {
@@ -191,8 +208,17 @@ export const ChatProvider = ({ children }) => {
       const opponentId = chosenDialog.occupants_ids.filter(
         (e) => e !== parseInt(localStorage.userId)
       );
-      debugger;
+
       message.id = ConnectyCube.chat.send(opponentId, message);
+      const fileUID = message.extension.attachments[0].uid;
+      const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
+
+      addMessageToStore(
+        message,
+        message.extension.dialog_id,
+        parseInt(localStorage.userId),
+        fileUrl
+      );
     }
   };
 
@@ -208,7 +234,6 @@ export const ChatProvider = ({ children }) => {
     ConnectyCube.storage
       .createAndUpload(fileParams)
       .then((result) => {
-        console.warn(result);
         prepareMessageWithAttachmentAndSend(result);
       })
       .catch((error) => {
@@ -244,6 +269,47 @@ export const ChatProvider = ({ children }) => {
         })
         .catch((error) => {});
     });
+  };
+  const lastActivityCheck = () => {
+    try {
+      let userId = chosenDialogRef.current.occupants_ids.filter(
+        (e) => e !== parseInt(localStorage.userId)
+      );
+
+      ConnectyCube.chat
+        .getLastUserActivity(userId[0])
+        .then((result) => {
+          const userId = result.userId;
+          const seconds = result.seconds;
+          // 'userId' was 'seconds' ago
+
+          const lastLoggedInTime = new Date(Date.now() - seconds * 1000);
+
+          if (seconds <= 30) {
+            setLastActivity(`Online`);
+          } else if (seconds < 3600) {
+            let minutes = Math.floor(seconds / 60);
+            setLastActivity(`last seen ${minutes} minutes ago`);
+          } else {
+            const dateNow = new Date();
+            const hourNow = dateNow.getHours();
+            let hours = Math.floor(seconds / 3600);
+            if (hourNow - hours <= 0) {
+              let day = lastLoggedInTime.getUTCDate();
+              let month = lastLoggedInTime.getMonth() + 1;
+              month < 10 ? (month = "0" + month) : (month = month);
+              let year = lastLoggedInTime.getFullYear();
+              setLastActivity(`last seen ${day}/${month}/${year}`);
+            } else {
+              setLastActivity(`last seen ${hours} hours ago`);
+            }
+          }
+        })
+        .catch((error) => {
+          setLastActivity(`last seen recent`);
+          console.error(error);
+        });
+    } catch {}
   };
 
   const sendTypingStatus = (isTyping, opponentId) => {
@@ -369,25 +435,40 @@ export const ChatProvider = ({ children }) => {
   };
 
   const setDialog = (dialog) => {
-    chatsRef.current.find((el) => {
-      if (el._id === dialog._id) {
-        el.unread_messages_count = 0;
-      }
-    });
-    setDialogs([...chatsRef.current]);
-    chosenDialogRef.current = dialog;
-    setChosenDialog(dialog);
+    if (dialog === "close") {
+      setChosenDialog(undefined);
+    } else {
+      chatsRef.current.find((el) => {
+        if (el._id === dialog._id) {
+          el.unread_messages_count = 0;
+        }
+      });
+      setDialogs([...chatsRef.current]);
+      chosenDialogRef.current = dialog;
+      setChosenDialog(dialog);
+      chosenDialogRef.current.type === 2
+        ? setLastActivity("")
+        : lastActivityCheck();
+    }
   };
 
-  const addMessageToStore = (message, dialogId, userId) => {
+  const addMessageToStore = (message, dialogId, userId, fileUrl) => {
     let timeNow = new Date().getTime();
     if (typeof message === "object") {
       if (userId) {
-        messagesRef.current[dialogId].push({
-          message: message.body,
-          sender_id: userId,
-          date_sent: parseInt(message.extension.date_sent),
-        });
+        if (fileUrl) {
+          messagesRef.current[dialogId].push({
+            fileUrl: fileUrl,
+            sender_id: userId,
+            date_sent: parseInt(message.extension.date_sent),
+          });
+        } else {
+          messagesRef.current[dialogId].push({
+            message: message.body,
+            sender_id: userId,
+            date_sent: parseInt(message.extension.date_sent),
+          });
+        }
       } else {
         messagesRef.current[dialogId].push(message);
       }
@@ -436,8 +517,21 @@ export const ChatProvider = ({ children }) => {
               // messagesRef.current = [];
               if (messages.items) {
                 messagesRef.current[key] = new Array();
+
                 messages.items.map((e) => {
-                  messagesRef.current[key].unshift(e);
+                  if (e.attachments.length > 0) {
+                    const fileUrl = ConnectyCube.storage.privateUrl(
+                      e.attachments[0].uid
+                    );
+                    messagesRef.current[key].unshift({
+                      fileUrl: fileUrl,
+                      sender_id: e.sender_id,
+                      date_sent: e.date_sent,
+                    });
+                  } else {
+                    messagesRef.current[key].unshift(e);
+                  }
+
                   return 0;
                 });
                 setMessages({ ...messagesRef.current });
@@ -474,6 +568,8 @@ export const ChatProvider = ({ children }) => {
         sendTypingStatus,
         typeStatus,
         sendMsgWithPhoto,
+        lastActivity,
+        connectStatus,
       }}
     >
       {children}

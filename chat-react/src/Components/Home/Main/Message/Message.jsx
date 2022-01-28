@@ -1,10 +1,12 @@
 import React from "react";
 import "./Message.scss";
 import { getTime } from "../../../../services/helpers";
+/* eslint-disable */
+
 const Message = (props) => {
   const { message, dialogInfo, usersInGroups } = props;
   const time = getTime(message.date_sent);
-  const myUserId = parseInt(localStorage.userId);
+
   return (
     <div
       className={`message ${
@@ -36,7 +38,22 @@ const Message = (props) => {
               : usersInGroups[message.sender_id].login
             : dialogInfo.name}
         </span>
-        <p>{message.message ? message.message : message.body}</p>
+        <div>
+          {message.message ? (
+            message.message
+          ) : message.body ? (
+            message.body
+          ) : (
+            <div
+              className="message__photo-container"
+              onClick={(e) => {
+                e.currentTarget.classList.toggle("full");
+              }}
+            >
+              <img className="message__photo" src={message.fileUrl} />
+            </div>
+          )}
+        </div>
         <span className="message__time">{time}</span>
       </div>
     </div>

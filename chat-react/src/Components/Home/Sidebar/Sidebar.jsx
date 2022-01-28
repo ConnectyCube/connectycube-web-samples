@@ -6,20 +6,23 @@ import { BsPencil } from "react-icons/bs";
 import Auth from "../../../services/auth-service";
 import { useHistory } from "react-router";
 
+/* eslint-disable */
+
 const Sidebar = (props) => {
   const [searching, setSearching] = useState(false);
   const [searchFor, setSearchFor] = useState();
   const {
     dialogs,
     connect,
+    connectStatus,
     getChats,
     setDialog,
     chosenDialog,
     startGroupChat,
     startChat,
     searchUsers,
+    lastActivity,
   } = props;
-
   const [newChatForm, setNewChatForm] = useState(false);
   const createModalRef = React.createRef();
   const [chatType, setChatType] = useState();
@@ -47,7 +50,8 @@ const Sidebar = (props) => {
               userInfo={dialog}
               setDialog={setDialog}
               chosenDialog={chosenDialog}
-				  dialogs={dialogs}
+              dialogs={dialogs}
+              lastActivity={lastActivity}
             />
           );
         }
@@ -60,7 +64,8 @@ const Sidebar = (props) => {
             userInfo={dialog}
             setDialog={setDialog}
             chosenDialog={chosenDialog}
-				dialogs={dialogs}
+            dialogs={dialogs}
+            lastActivity={lastActivity}
           />
         );
       });
@@ -103,9 +108,13 @@ const Sidebar = (props) => {
     let modal = createModalRef.current;
     modal.classList.add("hide");
   };
+  console.warn(chosenDialog);
 
   return (
-    <div className="sidebar__container" onMouseLeave={closeModals}>
+    <div
+      className={`sidebar__container ${chosenDialog ? "" : "show"}`}
+      onMouseLeave={closeModals}
+    >
       <div className="sidebar__header sidebar-header">
         {/* <div className="sidebar-header__button">
           <div></div>
@@ -167,7 +176,10 @@ const Sidebar = (props) => {
         className="sidebar-search__chat"
         placeholder="Search..."
       ></input>
-      {dialogs && <div className="sidebar-chats__container">{chats}</div>}
+      {dialogs && connectStatus && (
+        <div className="sidebar-chats__container">{chats}</div>
+      )}
+      {!connectStatus && <div class="loader">Loading...</div>}
       <div
         ref={createChatRef}
         onClick={creatingChatChose}

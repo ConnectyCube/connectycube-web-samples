@@ -34,8 +34,9 @@
     }
   }
   & .user__img-container {
-    width: 50px;
-    height: 50px;
+    max-width: 50px;
+    min-height: 50px;
+    min-width: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,23 +44,46 @@
     border-radius: 50%;
     & .user-no-img {
       border-radius: 50%;
+      text-align: center;
       text-transform: uppercase;
       color: white;
     }
     & img {
       object-fit: cover;
       border-radius: 50%;
-      width: 100%;
-      height: 100%;
+      width: 50px;
+      height: 50px;
     }
   }
   & .message__avatar {
     width: 60px;
     height: 60px;
   }
-  & p {
+  & div {
     width: 100%;
     white-space: pre-line;
+    & .message__photo-container {
+      &.full {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 20;
+        background-color: #000000de;
+
+        & .message__photo {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: scale(3) translate(-17%, -20%);
+        }
+      }
+      & .message__photo {
+        max-height: 200px;
+        transition: 0.2s;
+      }
+    }
   }
   & .message-user__name {
     font-weight: 600;

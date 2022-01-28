@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./NewChat.scss";
+/* eslint-disable */
 import ConnectyCube from "connectycube";
 import { AiOutlineClose } from "react-icons/ai";
 import { useRef } from "react";

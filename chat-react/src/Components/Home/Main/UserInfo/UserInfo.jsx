@@ -1,9 +1,13 @@
 import React from "react";
 import "./UserInfo.scss";
+/* eslint-disable */
+
 import { FiPhoneCall, FiMoreHorizontal } from "react-icons/fi";
 import { BsCameraVideo } from "react-icons/bs";
+import { IoIosArrowBack } from "react-icons/io";
 const UserInfo = (props) => {
-  const { userInfo, typeStatus } = props;
+  const { userInfo, typeStatus, lastActivity, setDialog, toggleProfile } =
+    props;
   let opponentId = userInfo.occupants_ids.find(
     (el) => el !== parseInt(localStorage.userId)
   );
@@ -12,6 +16,13 @@ const UserInfo = (props) => {
   return (
     <div className="user__info">
       <div className="user__info-main">
+        <IoIosArrowBack
+          size={32}
+          onClick={() => {
+            setDialog("close");
+          }}
+          className="user__info-back"
+        />
         <div className="user__avatar-dialog">
           {userInfo.photo ? (
             <img
@@ -26,10 +37,25 @@ const UserInfo = (props) => {
           )}
         </div>
         <div className="user-name-container">
-          <span>{userInfo.name}</span>
-          <span className="typing-status">
-            {typingStatus ? (typingStatus.isTyping ? "typing..." : "") : ""}
+          <span
+            onClick={() => {
+              toggleProfile();
+            }}
+          >
+            {userInfo.name}
           </span>
+
+          <div className="typing-status">
+            {typingStatus ? (
+              typingStatus.isTyping ? (
+                "typing..."
+              ) : (
+                <span className="last__activity">{lastActivity}</span>
+              )
+            ) : (
+              <span className="last__activity">{lastActivity}</span>
+            )}
+          </div>
         </div>
       </div>
       <div className="user__info-buttons">

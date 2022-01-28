@@ -1,4 +1,4 @@
-.main__container {
+.main__content {
   background-color: white;
   height: 100%;
   width: 100%;
@@ -6,6 +6,31 @@
   justify-content: space-between;
   flex-direction: column;
   overflow: hidden;
+  transition: 0.2s;
+  &.small {
+    @media screen and (min-width: 1400px) {
+      width: 70%;
+    }
+    @media screen and (max-width: 1400px) {
+      width: 100%;
+    }
+
+    @media screen and (max-width: 767px) {
+      width: 0%;
+    }
+  }
+}
+
+.main__container {
+  background-color: white;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+  overflow: hidden;
+  position: relative;
+
   & form {
     display: flex;
     position: relative;
@@ -74,7 +99,7 @@
     background-color: white;
     & .messages {
       display: flex;
-      padding: 15px;
+      padding-left: 15px;
       flex-direction: column;
 
       & .no-msg {
