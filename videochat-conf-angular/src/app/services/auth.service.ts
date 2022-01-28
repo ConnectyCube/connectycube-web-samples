@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {CommonUtilities} from "../utilities/common.utilities";
+import * as ConnectyCube from "ConnectyCube";
 
-declare let ConnectyCube: any;
+// declare let ConnectyCube: any;
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class AuthService {
   public auth(userName: string) {
     return new Promise<any>((resolve, reject) => {
 
-      ConnectyCube.createSession().then(() => {
+      ConnectyCube.createSession().then((session: any) => {
         const login: string = CommonUtilities.randomLogin() + CommonUtilities.randomLogin();
         const password: string = CommonUtilities.hashCode(login);
 

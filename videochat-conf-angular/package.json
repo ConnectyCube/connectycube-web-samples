@@ -9,6 +9,16 @@
     "watch": "npm run config && ng build --watch --configuration development",
     "test": "npm run config && ng test"
   },
+  "browser": {
+    "http": false,
+    "https": false,
+    "net": false,
+    "path": false,
+    "stream": false,
+    "tls": false,
+    "zlib": false,
+    "util": false
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.0",
@@ -29,7 +39,9 @@
     "colors": "^1.1.2",
     "connectycube": "^3.14.0",
     "dotenv": "^5.0.0",
+    "html-escaper": "^3.0.3",
     "ngx-device-detector": "^2.1.1",
+    "node-fetch": "^2.6.7",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "yargs": "^17.2.1",

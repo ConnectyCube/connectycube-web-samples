@@ -18,8 +18,9 @@ import {setActiveDialogId} from "../reducers/dialog.actions";
 import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
 import {ChatService} from "./chat.service";
 import {isRecordingSelector} from "../reducers/interface.selectors";
+import * as ConnectyCube from "ConnectyCube";
 
-declare let ConnectyCube: any;
+// declare let ConnectyCube: any;
 
 @Injectable({
   providedIn: 'root'
@@ -66,7 +67,7 @@ export class CallService {
 
   private getByValue(map: Map<number, number>, searchValue: number) {
     for (let [key, value] of map.entries()) {
-      if (value === searchValue){
+      if (value === searchValue) {
         return key;
       }
     }
@@ -438,6 +439,7 @@ export class CallService {
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
+
       this.OurSession = session;
 
 
@@ -484,7 +486,13 @@ export class CallService {
               else {
                 this.store.dispatch(addShowRecordButtonStatus({showRecordButtonStatus: false}));
               }
-              session.join(confRoomId, userId, userDisplayName);
+              session.join(confRoomId, userId, userDisplayName).then((res: any) => {
+                console.warn(res)
+              }).catch((error: any) => {
+                console.error(error)
+              })
+
+
             })
 
           resolve(CallService.generateMeetRoomURL(confRoomId));
