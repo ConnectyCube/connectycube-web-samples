@@ -9,7 +9,7 @@ const Profile = (props) => {
     showProfile,
     userInfo,
     lastActivity,
-    setDialog,
+
     toggleProfile,
     usersInGroups,
   } = props;
