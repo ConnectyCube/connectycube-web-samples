@@ -7,7 +7,7 @@ import {addMessage} from "../reducers/dialog.actions";
 import {addRecordingStatus} from "../reducers/interface.actions";
 import {addUser, updateVideoStatus} from "../reducers/participant.actions";
 import {User} from "../reducers/participant.reducer";
-import ConnectyCube from "ConnectyCube";
+import ConnectyCube from "connectycube";
 import {CommonUtilities} from "../utilities/common.utilities";
 import {DomSanitizer} from "@angular/platform-browser";
 
