@@ -34,7 +34,7 @@
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js","./src/adapter/adapter-latest.js"]
+            "scripts": ["./src/adapter/adapter-latest.js"]
           },
           "configurations": {
             "production": {
@@ -103,7 +103,7 @@
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": ["./node_modules/connectycube/dist/connectycube.min.js","./src/adapter/adapter-latest.js"]
+            "scripts": ["./src/adapter/adapter-latest.js"]
           }
         }
       }
