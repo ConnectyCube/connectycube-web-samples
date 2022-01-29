@@ -18,7 +18,7 @@ import {setActiveDialogId} from "../reducers/dialog.actions";
 import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
 import {ChatService} from "./chat.service";
 import {isRecordingSelector} from "../reducers/interface.selectors";
-import * as ConnectyCube from "ConnectyCube";
+import ConnectyCube from "ConnectyCube";
 
 // declare let ConnectyCube: any;
 

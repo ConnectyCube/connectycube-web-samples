@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CommonUtilities} from "../utilities/common.utilities";
-import * as ConnectyCube from "ConnectyCube";
+import ConnectyCube from "ConnectyCube";
 
 // declare let ConnectyCube: any;
 
