@@ -3,14 +3,11 @@ import {appConfig} from "./config";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
-import {addMeParticipant, updateParticipantLastActivity} from "../reducers/participants/participants.actions";
+import {addMeParticipant} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
 import {ChatService} from "./chat.service";
-import {getParticipantId} from "../reducers/dialog/dialog.selectors";
-import {take} from 'rxjs/operators';
-import {meSelector} from "../reducers/participants/participants.selectors";
-
-declare let ConnectyCube: any;
+import {chatConnected} from "../reducers/interface/interface.actions";
+import ConnectyCube from "connectycube";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +17,7 @@ export class AuthService {
   constructor(private router: Router, private store$: Store, private chatService: ChatService) {
   }
 
-  public tokenExpired() {
+  public cleanTokenAndNavigateToLoginScreen() {
     this.router.navigateByUrl("/auth");
     localStorage.removeItem('token');
     localStorage.removeItem('login');
@@ -47,7 +44,7 @@ export class AuthService {
     const appConfigToken = {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
-          this.tokenExpired();
+          this.cleanTokenAndNavigateToLoginScreen();
         },
       }
     };
@@ -72,27 +69,7 @@ export class AuthService {
 
   public chatInit() {
     this.chatService.init();
-    this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
-      if (userMe) {
-        this.store$.select(getParticipantId, {meId: userMe.id}).pipe(take(1))
-          .subscribe(participantId => {
-            if (participantId) {
-              this.chatService.getLastActivity(participantId)
-                .then((result: any) => {
-                  const seconds = result.seconds;
-                  this.store$.dispatch(updateParticipantLastActivity({
-                    participantId: participantId,
-                    lastActivity: seconds
-                  }));
-                  console.warn(result)
-                })
-                .catch((error: any) => {
-                  console.error(error);
-                });
-            }
-          })
-      }
-    })
+    this.store$.dispatch(chatConnected());
   }
 
   public logout() {
@@ -100,9 +77,7 @@ export class AuthService {
       .then(() => {
         ConnectyCube.chat.disconnect();
         this.store$.dispatch(logout());
-        this.router.navigateByUrl("/auth");
-        localStorage.removeItem('token');
-        localStorage.removeItem('login');
+        this.cleanTokenAndNavigateToLoginScreen();
       })
       .catch((error: any) => {
         console.error(error);

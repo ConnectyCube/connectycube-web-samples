@@ -9,6 +9,16 @@
     "watch": "npm run config && ng build --watch --configuration development",
     "test": "npm run config && ng test"
   },
+  "browser": {
+    "http": false,
+    "https": false,
+    "net": false,
+    "path": false,
+    "stream": false,
+    "tls": false,
+    "zlib": false,
+    "util": false
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~13.1.0",
@@ -29,6 +39,7 @@
     "connectycube": "^3.14.0",
     "dotenv": "^5.0.0",
     "ngx-device-detector": "^3.0.0",
+    "node-fetch": "^2.6.7",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

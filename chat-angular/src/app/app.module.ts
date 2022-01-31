@@ -31,6 +31,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import { SelectParticipantsComponent } from './components/select-participants/select-participants.component';
 import { DialogOneOneComponent } from './components/dialog-one-one/dialog-one-one.component';
 import { DialogComponent } from './components/dialogs/dialog/dialog.component';
+import { MessageComponent } from './components/chat-messages/message/message.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { DialogComponent } from './components/dialogs/dialog/dialog.component';
     SelectParticipantsComponent,
     DialogOneOneComponent,
     DialogComponent,
+    MessageComponent,
   ],
   imports: [
     BrowserModule,

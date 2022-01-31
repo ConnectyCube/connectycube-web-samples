@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Dialog, Message} from "./config";
+import {Dialog, Message, pathToLoader} from "./config";
 import {Store} from "@ngrx/store";
 import {
   addDialog,
@@ -10,16 +10,16 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   updateDialogLastMessage,
-  readDialogAllMessages
+  readDialogAllMessages, updateMessageId
 } from "../reducers/dialog/dialog.actions";
 import {
   dialogsSelector,
   getIndividualDialogByParticipantId, selectedConversationSelector
 } from "../reducers/dialog/dialog.selectors";
 import {filter, take} from 'rxjs/operators';
-import {addMessage, addMessages, updateMessageStatus} from "../reducers/messages/messages.action";
+import {addMessage, addMessages, updateMessagePhoto, updateMessageStatus} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
-import {builtDialog} from "./utilities";
+import {builtDialog, makeid} from "./utilities";
 import {
   addParticipants,
   addSearchParticipants,
@@ -28,8 +28,7 @@ import {
 import {Router} from "@angular/router";
 import {getParticipant, meSelector} from "../reducers/participants/participants.selectors";
 import {getUnreadMessageList} from "../reducers/messages/messages.selectors";
-
-declare let ConnectyCube: any;
+import ConnectyCube from "connectycube";
 
 @Injectable({
   providedIn: 'root'
@@ -44,9 +43,9 @@ export class ChatService {
     private router: Router) {
   }
 
-  private getChatParticipants(pId: Array<number>) {
+  private getChatParticipants(participantsIds: Array<number>) {
     const unfinedParticipants: Array<number> = [];
-    pId.forEach((id: number) => {
+    participantsIds.forEach((id: number) => {
       this.store$.select(getParticipant, {participantId: id})
         .pipe(take(1)).subscribe(p => {
         if (!p) {
@@ -95,22 +94,21 @@ export class ChatService {
       });
   }
 
-  private processedTypingStatus(userId: number, isTyping: boolean, dialogId: string) {
-    this.store$.select(getParticipant, {participantId: userId})
-      .pipe(filter(v => !!v), take(1)).subscribe(user => {
-      if (!user.me) {
-        console.log("GROUP CHAT", isTyping, userId, dialogId);
-        if (isTyping) {
-          this.store$.dispatch(addTypingParticipant({dialogId, participant: user}));
+  private processTypingStatus(userId: number, isTyping: boolean, dialogId: string) {
+    if (isTyping) {
+      this.store$.select(getParticipant, {participantId: userId})
+        .pipe(take(1)).subscribe(participant => {
+        if (participant) {
+          this.store$.dispatch(addTypingParticipant({dialogId, participant}));
         }
-        else {
-          this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
-        }
-      }
-    })
+      })
+    }
+    else {
+      this.store$.dispatch(removeTypingParticipant({dialogId, pId: userId}));
+    }
   }
 
-  private prepareMessageWithAttachmentAndSend(file: any, dialog: Dialog, senderId: number) {
+  private prepareMessageWithAttachmentAndSend(file: any, dialog: Dialog, senderId: number, tempMsgId: string) {
     const messageParams = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: "attachment",
@@ -146,8 +144,8 @@ export class ChatService {
       message.photo = ConnectyCube.storage.privateUrl(file.uid);
       console.warn(message);
       if (message.photo) {
-        this.store$.dispatch(addMessageId({dialogId: dialog.id, msgIds: [message.id]}));
-        this.store$.dispatch(addMessage({message}));
+        this.store$.dispatch(updateMessageId({dialogId: dialog.id, currentMsgIds: tempMsgId, newMsgIds: message.id}));
+        this.store$.dispatch(updateMessagePhoto({msgId: tempMsgId, photo: message.photo, id: message.id}));
       }
     }
   }
@@ -169,7 +167,6 @@ export class ChatService {
             this.store$.select(selectedConversationSelector).pipe(take(1))
               .subscribe(selectedConversation => {
                 if (selectedConversation === msg.extension.dialog_id) {
-                  this.readOneMessage(msg.id, msg.extension.dialog_id);
                   this.sendReadStatus(msg.id, userId, msg.extension.dialog_id);
                 }
               })
@@ -214,8 +211,13 @@ export class ChatService {
     ConnectyCube.chat.onMessageTypingListener = (isTyping: boolean, userId: number, dialogId: string) => {
       //Group dialog
       if (dialogId) {
-        console.log("GROUP CHAT", isTyping, userId, dialogId);
-        this.processedTypingStatus(userId, isTyping, dialogId);
+        this.store$.select(getParticipant, {participantId: userId})
+          .pipe(filter(v => !!v), take(1)).subscribe(user => {
+          if (!user.me) {
+            console.log("GROUP CHAT", isTyping, userId, dialogId);
+            this.processTypingStatus(userId, isTyping, dialogId);
+          }
+        })
       }
       //Individual dialog
       else {
@@ -223,7 +225,7 @@ export class ChatService {
           .subscribe((dialogId: any) => {
             if (dialogId !== undefined) {
               console.log("INDIVIDUAL CHAT", isTyping, userId, dialogId);
-              this.processedTypingStatus(userId, isTyping, dialogId);
+              this.processTypingStatus(userId, isTyping, dialogId);
             }
           })
       }
@@ -299,11 +301,24 @@ export class ChatService {
       public: false,
     };
 
+    const message: Message = {
+      id: makeid(12),
+      body: "",
+      senderId: senderId,
+      senderName: "",
+      status: "pending",
+      photo: pathToLoader,
+      date_sent: Math.floor(Date.now() / 1000)
+    }
+    console.warn(message.id)
+    this.store$.dispatch(addMessageId({dialogId: dialog.id, msgIds: [message.id]}));
+    this.store$.dispatch(addMessage({message}));
+
     ConnectyCube.storage
       .createAndUpload(fileParams)
       .then((result: any) => {
         console.warn(result);
-        this.prepareMessageWithAttachmentAndSend(result, dialog, senderId);
+        this.prepareMessageWithAttachmentAndSend(result, dialog, senderId, message.id);
       })
       .catch((error: any) => {
         console.error(error);
@@ -438,7 +453,7 @@ export class ChatService {
   }
 
   public getChatHistory(dialog: Dialog, isActivated: boolean) {
-    return new Promise<void>((resolve,reject)=>{
+    return new Promise<void>((resolve, reject) => {
       const dialogId = dialog.id;
       const params = {
         chat_dialog_id: dialogId,
@@ -609,15 +624,6 @@ export class ChatService {
       .update(messageIds, params)
   }
 
-  public readOneMessage(messageId: string, dialogId: string) {
-    const params = {
-      read: 1,
-      chat_dialog_id: dialogId,
-    };
-    ConnectyCube.chat.message
-      .update(messageId, params)
-  }
-
   public sendReadStatus(messageId: string, userId: number, dialogId: string) {
     if (userId) {
       console.warn(userId, '[IDDDD]')
@@ -634,12 +640,14 @@ export class ChatService {
 
   public subscribeToUserLastActivity(userId: number) {
     if (ConnectyCube.chat.isConnected) {
+      console.warn("[subscribeToUserLastActivity]", userId)
       ConnectyCube.chat.subscribeToUserLastActivityStatus(userId);
     }
   }
 
   public unsubscribeFromUserLastActivity(userId: number) {
     if (ConnectyCube.chat.isConnected) {
+      console.warn("[unsubscribeFromUserLastActivity]", userId)
       ConnectyCube.chat.unsubscribeFromUserLastActivityStatus(userId);
     }
   }

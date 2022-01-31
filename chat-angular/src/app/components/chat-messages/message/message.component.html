@@ -1,0 +1,15 @@
+<div [ngClass]="senderName?'them':'me'"
+     class="message">
+            <span class="message-name" [ngClass]="senderName?'them':'me'">
+              {{isGroupChat ? senderName : ''}}
+            </span>
+  <p *ngIf="!photo" class="message-text">{{body}}
+    <span style="display: inline-block; width: 90px; height: 5px"></span></p>
+  <div>
+    <img *ngIf="photo" [width]="width" [height]="height"
+         [src]="photo" loading="lazy" alt="photo" class="message-photo">
+  </div>
+  <p class="message-time">{{getDateMessage(date_sent)}}</p>
+  <mat-icon *ngIf="senderId === meId"
+            class="message-status">{{getMessageStatus(status)}}</mat-icon>
+</div>

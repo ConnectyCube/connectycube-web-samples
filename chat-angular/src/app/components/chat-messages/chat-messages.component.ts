@@ -1,32 +1,31 @@
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {DeviceDetectorService} from "ngx-device-detector";
 import {Dialog, ItemsHeight, Message} from "../../services/config";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {Store} from "@ngrx/store";
 import {selectDialogIdRouterParam} from "../../reducers/router.selector";
+import {openDialog, setNullConverastion,} from "../../reducers/dialog/dialog.actions";
 import {
-  openDialog,
-  setNullConverastion,
-} from "../../reducers/dialog/dialog.actions";
-import {
-  dialogFindSelector, getDialogsTypingParticipant,
+  dialogFindSelector,
+  getDialogsTypingParticipant,
   isActivatedConversationSelector,
   selectedConversationSelector
 } from "../../reducers/dialog/dialog.selectors";
 import {filter, take} from "rxjs/operators";
 import {ChatService} from "../../services/chat.service";
-import {participant} from "../../reducers/participants/participants.reducer";
 import {getMessagesSelector} from "../../reducers/messages/messages.selectors";
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
 import {getParticipantActivity, meSelector} from "../../reducers/participants/participants.selectors";
 import {isToday} from "../../services/utilities";
 import {updateParticipantLastActivity} from "../../reducers/participants/participants.actions";
+import {chatConnectedSelector} from "../../reducers/interface/interface.selectors";
+import {updateMessageWidthHeight} from "../../reducers/messages/messages.action";
 
 @Component({
   selector: 'app-chat-messages',
   templateUrl: './chat-messages.component.html',
-  styleUrls: ['./chat-messages.component.scss']
+  styleUrls: ['./chat-messages.component.scss'],
 })
 export class ChatMessagesComponent implements OnInit {
 
@@ -70,7 +69,7 @@ export class ChatMessagesComponent implements OnInit {
   public typingParticipants$: any;
   public typingParticipants: string = "";
   public lastActivity$: Observable<number>;
-  public lastActiveUserId: number;
+  public lastActiveUserId: number | undefined;
 
   constructor(
     private deviceService: DeviceDetectorService,
@@ -81,61 +80,73 @@ export class ChatMessagesComponent implements OnInit {
     this.store$.select(meSelector).pipe(filter(v => !!v), take(1)).subscribe(userMe => {
       this.meId = userMe!.id;
     })
+    this.store$.select(chatConnectedSelector).subscribe(chatConnected => {
+      if (chatConnected) {
+        //Subscribe to change dialogId in URL
+        this.store$.select(selectDialogIdRouterParam).subscribe(res => {
+          if (res !== undefined) {
+            if (this.timerId) {
+              clearTimeout(this.timerId);
+              this.sendIsStopTypingStatus();
+            }
+            const dialogId = atob(<string>res);
+            console.log(dialogId);
+            if (this.subscribeDialogFind) {
+              this.subscribeDialogFind.unsubscribe();
+            }
+            if (this.areaElement) {
+              this.areaElement.nativeElement.value = "";
+            }
+            //Select data of selected dialog
+            this.subscribeDialogFind = this.store$.select(dialogFindSelector, {id: dialogId})
+              .pipe(filter(v => !!v), take(1)).subscribe((dialog: any) => {
+                if (dialog !== undefined) {
+                  //Typing participants
+                  this.typingParticipants$ = this.store$.select(getDialogsTypingParticipant, {dialogId: dialog.id})
+                    .subscribe(typParticipants => {
+                      if (typParticipants !== undefined) {
+                        this.typingParticipants = typParticipants.join(",");
+                      }
+                    });
 
-    //Subscribe to change dialogId in URL
-    this.store$.select(selectDialogIdRouterParam).subscribe(res => {
-      if (res !== undefined) {
-        if (this.timerId) {
-          clearTimeout(this.timerId);
-          this.sendIsStopTypingStatus();
-        }
-        const dialogId = atob(<string>res);
-        console.log(dialogId);
-        if (this.subscribeDialogFind) {
-          this.subscribeDialogFind.unsubscribe();
-        }
-        if (this.areaElement) {
-          this.areaElement.nativeElement.value = "";
-        }
-        //Select data of selected dialog
-        this.subscribeDialogFind = this.store$.select(dialogFindSelector, {id: dialogId})
-          .pipe(filter(v => !!v), take(1)).subscribe((dialog: any) => {
-            if (dialog !== undefined) {
-              //Typing participants
-              this.typingParticipants$ = this.store$.select(getDialogsTypingParticipant, {dialogId: dialog.id})
-                .subscribe(typParticipants => {
-                  if (typParticipants !== undefined) {
-                    this.typingParticipants = typParticipants.join(",");
-                  }
-                });
-
-              this.selectedDialog = dialog;
-              this.isGroupChat = dialog.type === 2
-              //Check has the chat been rendered?
-              this.store$.select(isActivatedConversationSelector, {id: dialogId}).pipe(take(1))
-                .subscribe(isActivated => {
-                  this.virtualScroll.scrollToOffset(0);
-                  if (isActivated !== undefined) {
-                    this.store$.dispatch(openDialog({dialogId, isActivated}));
-                    this.chatService.getChatHistory(this.selectedDialog, isActivated).then(() => {
-                      //last activity
-                      this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
-                      if (dialog.type === 3) {
-                        this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
-                        this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
-                        this.getUserStatus(this.lastActiveUserId).then(() => {
-                          this.lastActivity$ = this.store$.select(getParticipantActivity, {
-                            pId: this.lastActiveUserId
-                          });
-                        });
+                  this.selectedDialog = dialog;
+                  this.isGroupChat = dialog.type === 2
+                  //Check has the chat been rendered?
+                  this.store$.select(isActivatedConversationSelector, {id: dialogId}).pipe(take(1))
+                    .subscribe(isActivated => {
+                      this.virtualScroll.scrollToOffset(0);
+                      if (isActivated !== undefined) {
+                        this.store$.dispatch(openDialog({dialogId, isActivated}));
+                        this.chatService.getChatHistory(this.selectedDialog, isActivated).then(() => {
+                          //last activity
+                          this.getUserLastActivity(dialog);
+                        })
                       }
                     })
-                  }
-                })
-            }
-          })
+                }
+              })
+          }
+        })
       }
     })
+  }
+
+  private getUserLastActivity(dialog: Dialog) {
+    //unsubscribe from last user activity
+    if (this.lastActiveUserId) {
+      this.chatService.unsubscribeFromUserLastActivity(this.lastActiveUserId);
+    }
+    if (dialog.type === 3) {
+      this.lastActiveUserId = dialog.participantIds.find((id: number) => id !== this.meId);
+      if (this.lastActiveUserId) {
+        this.chatService.subscribeToUserLastActivity(this.lastActiveUserId);
+        this.getUserStatus(this.lastActiveUserId).then(() => {
+          this.lastActivity$ = this.store$.select(getParticipantActivity, {
+            pId: this.lastActiveUserId
+          });
+        });
+      }
+    }
   }
 
   private getUserStatus(userId: number) {
@@ -155,16 +166,18 @@ export class ChatMessagesComponent implements OnInit {
   }
 
   private sendIsStopTypingStatus() {
-    // console.trace("[STOP] 1111111111111")
     this.chatService.sendStopTypingStatus(this.selectedDialog);
     console.warn(1111)
     this.timerId = undefined;
   }
 
   private measureImage(src: string) {
-    return new Promise<number>((resolve, reject) => {
+    return new Promise<{ height: number, width: number }>((resolve, reject) => {
       const img = new Image();
-      img.addEventListener('load', () => resolve(img.naturalHeight > 200 ? 200 : img.naturalHeight));
+      img.addEventListener('load', () => resolve(img.naturalHeight > 200 ? {
+        height: 200,
+        width: img.naturalWidth
+      } : {height: img.naturalHeight, width: img.naturalWidth}));
       img.src = src;
     })
   }
@@ -218,9 +231,11 @@ export class ChatMessagesComponent implements OnInit {
       }
 
       if (msg.photo) {
-        await this.measureImage(msg.photo).then((imgHeight: number) => {
-          msgHeight += imgHeight;
-        })
+        await this.measureImage(msg.photo).then(({height, width}) => {
+          console.error(msg.id);
+          // this.store$.dispatch(updateMessageWidthHeight({msgId: msg.id, height, width}));
+          msgHeight += height;
+        });
         msgHeight += 5;
       }
       else {
@@ -241,6 +256,7 @@ export class ChatMessagesComponent implements OnInit {
   }
 
   public onFileSelected(e: any) {
+    console.warn(e)
     const file: any = e.target.files[0];
     console.warn(file);
     if (file) {
@@ -286,10 +302,6 @@ export class ChatMessagesComponent implements OnInit {
 
   public pageUpDown(e: any) {
     e.preventDefault();
-  }
-
-  public getDateMessage(date_sent: number): string {
-    return new Date(date_sent * 1000).toLocaleString()
   }
 
   public sendMessage(e: any, trigger: string) {
@@ -354,19 +366,6 @@ export class ChatMessagesComponent implements OnInit {
     this.areaElement.nativeElement.value = '';
   }
 
-  public getMessageStatus(status: string): string {
-    switch (status) {
-      case "pending":
-        return "schedule"
-      case "sent":
-        return "done"
-      case "read":
-        return "done_all"
-      default:
-        return "error"
-    }
-  }
-
   ngOnInit(): void {
   }
 
@@ -419,6 +418,13 @@ export class ChatMessagesComponent implements OnInit {
         };
       }
     })
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if ($event) {
+      this.sendIsStopTypingStatus();
+    }
   }
 
   @HostListener('wheel', ['$event'])

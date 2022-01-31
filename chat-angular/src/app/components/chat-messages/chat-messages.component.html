@@ -30,24 +30,22 @@
         customVirtualScrollStrategy
         [itemHeights]="items"
       >
-        <div #messageContainer *cdkVirtualFor="let message of messages | async;index as i; trackBy: messagesTrackBy"
-             [ngClass]="message.senderName?'them':'me'"
-             class="message-container">
-          <div [ngClass]="message.senderName?'them':'me'"
-               class="message">
-            <span class="message-name" [ngClass]="message.senderName?'them':'me'">
-              {{isGroupChat ? message.senderName : ''}}
-            </span>
-            <p *ngIf="!message.photo" class="message-text">{{message.body}}
-              <span style="display: inline-block; width: 90px; height: 5px"></span></p>
-            <div>
-              <img *ngIf="message.photo" [src]="message.photo" alt="photo" class="message-photo">
-            </div>
-            <p class="message-time">{{getDateMessage(message.date_sent)}}</p>
-            <mat-icon *ngIf="message.senderId === meId"
-                      class="message-status">{{getMessageStatus(message.status)}}</mat-icon>
-          </div>
-        </div>
+        <app-message #messageContainer
+                     *cdkVirtualFor="let message of messages | async;index as i; trackBy: messagesTrackBy"
+                     [ngClass]="message.senderName?'them':'me'"
+                     class="message-container"
+                     [id]="message.id"
+                     [senderId]="message.senderId"
+                     [senderName]="message.senderName"
+                     [status]="message.status"
+                     [body]="message.body"
+                     [date_sent]="message.date_sent"
+                     [photo]="message.photo"
+                     [width]="message.width"
+                     [height]="message.height"
+                     [meId]="meId"
+                     [isGroupChat]="isGroupChat">
+        </app-message>
       </cdk-virtual-scroll-viewport>
       <div #scrollBar id="scroll-bar">
         <div #scrollBarContent></div>

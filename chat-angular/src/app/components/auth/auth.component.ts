@@ -110,7 +110,7 @@ export class AuthComponent implements OnInit {
     const appConfigToken = {
       ...appConfig, on: {
         sessionExpired: (handleResponse: any, retry: any) => {
-          this.authService.tokenExpired();
+          this.authService.cleanTokenAndNavigateToLoginScreen();
         },
       }
     };

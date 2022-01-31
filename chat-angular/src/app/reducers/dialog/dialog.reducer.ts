@@ -11,7 +11,7 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   setNullConverastion,
-  updateDialogLastMessage
+  updateDialogLastMessage, updateMessageId
 } from "./dialog.actions";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
@@ -42,85 +42,93 @@ export const initialState: dialogState = dialogsAdapter.getInitialState({
 })
 
 export const dialogReducer = createReducer(
-  initialState,
-  on(addDialogs, (state, {dialogs}) => {
-    return dialogsAdapter.setAll(dialogs, state);
-  }),
-  on(addDialog, (state, {dialog}) => {
-    return dialogsAdapter.addOne(dialog, state);
-  }),
-  on(openDialog, (state, {dialogId, isActivated}) => ({
-    ...state,
-    selectedConversation: dialogId,
-    activatedConversation: isActivated ? state.activatedConversation
-      : [...state.activatedConversation, ...[dialogId]]
-  })),
-  on(addMessageId, (state, {dialogId, msgIds}) => {
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {msgIds: [...msgIds, ...state.entities[dialogId]!.msgIds]}
-    }, state)
-  }),
-  on(addMessagesIds, (state, {dialogId, msgIds}) => {
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {msgIds}
-    }, state)
-  }),
-  on(addTypingParticipant, (state, {dialogId, participant}) => {
-    if (participant) {
+    initialState,
+    on(addDialogs, (state, {dialogs}) => {
+      return dialogsAdapter.setAll(dialogs, state);
+    }),
+    on(addDialog, (state, {dialog}) => {
+      return dialogsAdapter.addOne(dialog, state);
+    }),
+    on(openDialog, (state, {dialogId, isActivated}) => ({
+      ...state,
+      selectedConversation: dialogId,
+      activatedConversation: isActivated ? state.activatedConversation
+        : [...state.activatedConversation, ...[dialogId]]
+    })),
+    on(addMessageId, (state, {dialogId, msgIds}) => {
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {msgIds: [...msgIds, ...state.entities[dialogId]!.msgIds]}
+      }, state)
+    }),
+    on(updateMessageId, (state, {dialogId, currentMsgIds, newMsgIds}) => {
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {msgIds: state.entities[dialogId]!.msgIds.map((id: string) => id === currentMsgIds ? newMsgIds : id)}
+      }, state)
+    }),
+    on(addMessagesIds, (state, {dialogId, msgIds}) => {
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {msgIds}
+      }, state)
+    }),
+    on(addTypingParticipant, (state, {dialogId, participant}) => {
+      if (participant) {
+        return dialogsAdapter.updateOne({
+          id: dialogId,
+          changes: {
+            typingParticipants:
+              [...state.entities[dialogId]!.typingParticipants, ...[{
+                id: participant.id,
+                name: participant.full_name
+              }]]
+          }
+        }, state)
+      }
+      return state;
+    }),
+    on(removeTypingParticipant, (state, {dialogId, pId}) => {
       return dialogsAdapter.updateOne({
         id: dialogId,
         changes: {
-          typingParticipants:
-            [...state.entities[dialogId]!.typingParticipants, ...[{
-              id: participant.id,
-              name: participant.full_name
-            }]]
+          typingParticipants: state.entities[dialogId]!.typingParticipants.filter((p: any) => p.id !== pId)
         }
       }, state)
-    }
-    return state;
-  }),
-  on(removeTypingParticipant, (state, {dialogId, pId}) => {
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {
-        typingParticipants: state.entities[dialogId]!.typingParticipants.filter((p: any) => p.id !== pId)
-      }
-    }, state)
-  }),
-  on(setNullConverastion, (state) => ({
-    ...state,
-    selectedConversation: ""
-  })),
-  on(readDialogAllMessages, (state, {dialogId}) => {
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {
-        unreadMessage: 0
-      }
-    }, state)
-  }),
-  on(addOneUnreadMessage, (state, {dialogId}) => {
-    if (state.selectedConversation !== dialogId) {
+    }),
+    on(setNullConverastion, (state) => ({
+      ...state,
+      selectedConversation: ""
+    })),
+    on(readDialogAllMessages, (state, {dialogId}) => {
       return dialogsAdapter.updateOne({
         id: dialogId,
         changes: {
-          unreadMessage: state.entities[dialogId]!.unreadMessage + 1,
+          unreadMessage: 0
         }
       }, state)
-    }
-    return state;
-  }),
-  on(updateDialogLastMessage, (state, {dialogId, lastMessage, lastMessageDate, lastMessageUserId}) => {
-    return dialogsAdapter.updateOne({
-      id: dialogId,
-      changes: {
-        lastMessage,
-        lastMessageDate,
-        lastMessageUserId
+    }),
+    on(addOneUnreadMessage, (state, {dialogId}) => {
+      if (state.selectedConversation !== dialogId) {
+        return dialogsAdapter.updateOne({
+          id: dialogId,
+          changes: {
+            unreadMessage: state.entities[dialogId]!.unreadMessage + 1,
+          }
+        }, state)
       }
-    }, state)
-  })
-);
+      return state;
+    }),
+    on(updateDialogLastMessage, (state, {dialogId, lastMessage, lastMessageDate, lastMessageUserId}) => {
+      console.warn(lastMessage)
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {
+          lastMessage,
+          lastMessageDate,
+          lastMessageUserId
+        }
+      }, state)
+    })
+  )
+;

@@ -1,6 +1,3 @@
-import {participant} from "../reducers/participants/participants.reducer";
-import {addSearchParticipants} from "../reducers/participants/participants.actions";
-
 export const builtDialog = (d: any) => {
   return {
     id: d._id,
@@ -23,4 +20,15 @@ export const isToday = (date: Date) => {
   return date.getDate() == today.getDate() &&
     date.getMonth() == today.getMonth() &&
     date.getFullYear() == today.getFullYear()
+}
+
+export const makeid = (length: number) => {
+  let result = '';
+  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() *
+      charactersLength));
+  }
+  return result;
 }

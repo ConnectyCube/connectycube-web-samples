@@ -1,20 +1,22 @@
 import {createReducer, on} from "@ngrx/store";
-import {toggleCreatChatStatus} from "./interface.actions";
+import {chatConnected} from "./interface.actions";
 
-export interface interfaceState{
+export interface interfaceState {
   interfaceObject: {
-    isChatCreator?: boolean
+    isChatConnected: boolean
   }
 }
 
 export const initialState: interfaceState = {
-  interfaceObject: {}
+  interfaceObject: {
+    isChatConnected: false
+  }
 }
 
 export const interfaceReducer = createReducer(
   initialState,
-  on(toggleCreatChatStatus, (state, {isChatCreator})=>({
+  on(chatConnected, (state) => ({
     ...state,
-    interfaceObject: {...state.interfaceObject, isChatCreator}
+    interfaceObject: {...state.interfaceObject, isChatConnected: true}
   }))
 )

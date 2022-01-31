@@ -98,8 +98,8 @@ export class DialogComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.lastMessageUserId && changes.lastMessageUserId.currentValue !== changes.lastMessageUserId.previousValue) {
-      const participantId = changes.lastMessageUserId.currentValue;
+    if (changes.lastMessage && changes.lastMessage.currentValue !== changes.lastMessage.previousValue) {
+      const participantId = changes.lastMessageUserId ? changes.lastMessageUserId.currentValue : this.lastMessageUserId;
       this.itemLastMessage = this.getLastMessageUserName(participantId);
     }
   }

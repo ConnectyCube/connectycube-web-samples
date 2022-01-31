@@ -1,21 +1,22 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {AuthService} from "../../services/auth.service";
 import {Store} from "@ngrx/store";
-import {toggleCreatChatStatus} from "../../reducers/interface/interface.actions";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogCreatComponent} from "../dialog-creat/dialog-creat.component";
 import {ChatService} from "../../services/chat.service";
-import {dialogsSearchSelector, dialogsSelector, selectedConversationSelector} from "../../reducers/dialog/dialog.selectors";
+import {
+  dialogsSearchSelector,
+  dialogsSelector,
+  selectedConversationSelector
+} from "../../reducers/dialog/dialog.selectors";
 import {Observable} from "rxjs";
 import {Dialog} from "../../services/config";
 import {FormControl} from "@angular/forms";
 import {meSelector} from "../../reducers/participants/participants.selectors";
 import {participant} from "../../reducers/participants/participants.reducer";
-import {take} from "rxjs/operators";
 import {DialogOneOneComponent} from "../dialog-one-one/dialog-one-one.component";
-import {removeAllSearchParticipants} from "../../reducers/participants/participants.actions";
-import {Router} from "@angular/router";
+import {takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'app-dialogs',
@@ -39,7 +40,6 @@ export class DialogsComponent implements OnInit {
     private chatService: ChatService,
     private store$: Store,
     private dialog: MatDialog,
-    private router: Router
   ) {
     this.dialog_name.valueChanges.subscribe(data => this.changeSearchValue(data.toLowerCase()));
   }
@@ -84,11 +84,12 @@ export class DialogsComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatService.getDialogs();
-    const subsSelect = this.store$.select(meSelector).subscribe(res => {
+    this.store$.select(meSelector).pipe(takeWhile(res => !res, true),).subscribe(res => {
       if (res) {
         this.userMe = res;
+        console.warn(res);
       }
-    })
+    });
   }
 
 }

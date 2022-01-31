@@ -11,8 +11,9 @@ import {
 } from "../../reducers/participants/participants.actions";
 import {
   selectedParticipantsSelector,
-  searchedParticipantSelector
+  searchedParticipantSelector, meSelector
 } from "../../reducers/participants/participants.selectors";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-dialog-one-one',
@@ -41,7 +42,11 @@ export class DialogOneOneComponent implements OnInit, OnDestroy {
   })
 
   public SearchSubmit() {
-    this.chatService.searchMethod(this.SearchForm, []);
+    this.store$.select(meSelector).pipe(take(1)).subscribe(userMe=>{
+      if(userMe){
+        this.chatService.searchMethod(this.SearchForm, [userMe]);
+      }
+    })
   }
 
   public createChat(e: any, user: participant) {
