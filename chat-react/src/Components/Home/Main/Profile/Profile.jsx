@@ -15,12 +15,13 @@ const Profile = (props) => {
   } = props;
   let allUsers = [];
   if (userInfo) {
-    allUsers = userInfo.occupants_ids.map((e) => {
+    allUsers = userInfo.occupants_ids.map((e, index) => {
       if (usersInGroups[e]) {
         return (
           <GroupMember
             userInfo={usersInGroups[e]}
             lastActivity={lastActivity}
+            key={index}
           />
         );
       }

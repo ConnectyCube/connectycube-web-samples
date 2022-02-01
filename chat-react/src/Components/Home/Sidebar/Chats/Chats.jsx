@@ -3,10 +3,13 @@ import "./Chats.scss";
 import { useEffect } from "react";
 import { getTime } from "../../../../services/helpers";
 import { TiGroup } from "react-icons/ti";
+import { useHistory } from "react-router";
 /* eslint-disable */
 
 const Chats = (props) => {
   const chatRef = React.createRef();
+  const history = useHistory();
+
   const { userInfo, setDialog, chosenDialog, dialogs } = props;
   useEffect(() => {
     try {
@@ -17,8 +20,11 @@ const Chats = (props) => {
       }
     } catch {}
   }, [chosenDialog, dialogs]);
-
+  if (history.location.state === userInfo._id && !chosenDialog) {
+    setDialog(userInfo);
+  }
   const retrieveChat = () => {
+    history.push(`/home/${userInfo._id}`);
     setDialog(userInfo);
   };
   return (

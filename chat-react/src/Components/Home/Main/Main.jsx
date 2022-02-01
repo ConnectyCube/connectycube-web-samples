@@ -30,6 +30,8 @@ const Main = (props) => {
   const messagesRef = React.createRef();
   const [typingPrevStatus, setTypingPrevStatus] = useState();
   const [allMessages, setAllMessages] = useState();
+  let timer;
+
   useEffect(() => {
     setAllMessages();
     setTypingPrevStatus(false);
@@ -45,13 +47,8 @@ const Main = (props) => {
   useEffect(() => {
     scrollToBottom();
   }, [allMessages]);
-
   const startTyping = () => {
-    try {
-      clearTimeout(timer);
-    } catch {
-      console.log("no timer yet");
-    }
+    clearTimeout(timer);
     if (!typingPrevStatus) {
       setTypingPrevStatus(true);
       if (dialog.type === 3) {
@@ -63,13 +60,9 @@ const Main = (props) => {
         sendTypingStatus(true, dialog._id);
       }
     }
-    let timer = setTimeout(() => {
-      const occupant = dialog.occupants_ids.filter((e) => {
-        return e !== parseInt(localStorage.userId);
-      });
+    timer = setTimeout(() => {
       setTypingPrevStatus(false);
-      sendTypingStatus(false, occupant[0]);
-    }, 10000);
+    }, 5000);
   };
 
   const toggleProfile = () => {
@@ -82,7 +75,18 @@ const Main = (props) => {
 
   const onFileSelected = (e) => {
     const file = e.currentTarget.files[0];
-    sendMsgWithPhoto(file);
+    const type = file.type.split("/")[1];
+    debugger;
+    if (
+      type === "svg+xml" ||
+      type === "image" ||
+      type === "webp" ||
+      type === "png"
+    ) {
+      sendMsgWithPhoto(file);
+    } else {
+      alert("File format is not supported");
+    }
   };
 
   const scrollToBottom = () => {
@@ -95,13 +99,14 @@ const Main = (props) => {
   useEffect(() => {
     if (messages) {
       if (messages[chosenDialog._id]) {
+        console.table("MESSAGES: ", messages[chosenDialog._id]);
         for (let i = 0; i < messages[chosenDialog._id].length; i++) {
           setAllMessages(() => {
-            return messages[chosenDialog._id].map((e) => {
+            return messages[chosenDialog._id].map((e, index) => {
               return (
                 <Message
                   usersInGroups={usersInGroups}
-                  key={e.index}
+                  key={index}
                   message={e}
                   dialogInfo={dialog}
                 />
@@ -142,9 +147,8 @@ const Main = (props) => {
         setDialog={setDialog}
         userInfo={dialog}
         lastActivity={lastActivity}
-		  usersInGroups={usersInGroups}
+        usersInGroups={usersInGroups}
         showProfile={showProfile}
-		 
       />
       <div className={`main__content ${showProfile ? "small" : ""}`}>
         <div className="main__header">
@@ -153,6 +157,7 @@ const Main = (props) => {
               toggleProfile={toggleProfile}
               setDialog={setDialog}
               userInfo={dialog}
+				  usersInGroups={usersInGroups}
               typeStatus={typeStatus}
               lastActivity={lastActivity}
             />
@@ -183,7 +188,7 @@ const Main = (props) => {
               className="message__area"
               placeholder="Enter message"
             ></textarea>
-            <label for="file-upload" className="custom-file-upload">
+            <label htmlFor="file-upload" className="custom-file-upload">
               <IoMdAttach size={28} />
             </label>
             <input
@@ -191,6 +196,7 @@ const Main = (props) => {
               ref={fileMessageRef}
               id="file-upload"
               type="file"
+              accept="image/*"
             />
 
             <button onClick={onSendMessage} type="button" className="send-btn">

@@ -20,7 +20,7 @@ function App() {
       <Route exact path="/signup">
         <SignUp chat={chat} />
       </Route>
-      <Route exact path="/home">
+      <Route path="/home">
         {!localStorage.token ? <Redirect to="/" /> : <Home chat={chat} />}
       </Route>
     </div>

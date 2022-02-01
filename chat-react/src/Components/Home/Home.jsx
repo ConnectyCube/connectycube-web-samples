@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router";
 import "./Home.scss";
 import Main from "./Main/Main";
 import Sidebar from "./Sidebar/Sidebar";
@@ -23,6 +24,9 @@ const Home = (props) => {
     lastActivity,
     connectStatus,
   } = props.chat;
+  const history = useHistory();
+  history.location.state = history.location.pathname.split("/")[2];
+
   return (
     <div className="home__container">
       <Sidebar
@@ -37,7 +41,7 @@ const Home = (props) => {
         searchUsers={searchUsers}
         typeStatus={typeStatus}
         lastActivity={lastActivity}
-		  connectStatus={connectStatus}
+        connectStatus={connectStatus}
       />
       <Main
         className="main__block"

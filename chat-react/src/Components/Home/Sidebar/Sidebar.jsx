@@ -52,6 +52,7 @@ const Sidebar = (props) => {
               chosenDialog={chosenDialog}
               dialogs={dialogs}
               lastActivity={lastActivity}
+              key={dialog._id}
             />
           );
         }
@@ -66,6 +67,7 @@ const Sidebar = (props) => {
             chosenDialog={chosenDialog}
             dialogs={dialogs}
             lastActivity={lastActivity}
+            key={dialog._id}
           />
         );
       });
@@ -179,7 +181,7 @@ const Sidebar = (props) => {
       {dialogs && connectStatus && (
         <div className="sidebar-chats__container">{chats}</div>
       )}
-      {!connectStatus && <div class="loader">Loading...</div>}
+      {!connectStatus && <div className="loader">Loading...</div>}
       <div
         ref={createChatRef}
         onClick={creatingChatChose}

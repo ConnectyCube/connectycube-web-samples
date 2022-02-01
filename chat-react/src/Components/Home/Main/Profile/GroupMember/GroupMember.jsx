@@ -3,7 +3,6 @@ import "./GroupMember.scss";
 
 const GroupMember = (props) => {
   const { userInfo, lastActivity } = props;
-  debugger;
   return (
     <div className="member">
       <div className="member__photo-container">

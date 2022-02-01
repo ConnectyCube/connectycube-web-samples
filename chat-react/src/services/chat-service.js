@@ -21,14 +21,24 @@ export const ChatProvider = ({ children }) => {
   const typeStatusRef = useRef({});
   const [typeStatus, setTypeStatus] = useState({});
   const [lastActivity, setLastActivity] = useState(`last seen recent`);
+  let timer;
   const chatCallbaks = () => {
     ConnectyCube.chat.onMessageTypingListener = function (
       isTyping,
       userId,
       dialogId
     ) {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        typeStatusRef.current[userId] = { isTyping: false };
+        setTypeStatus({ ...typeStatusRef.current });
+      }, 5000);
       lastActivityCheck();
-      typeStatusRef.current[userId] = { isTyping: isTyping };
+      debugger;
+      typeStatusRef.current[userId] = {
+        isTyping: isTyping,
+        dialogId: dialogId,
+      };
       setTypeStatus({ ...typeStatusRef.current });
       console.log(
         "[ConnectyCube.chat.onMessageTypingListener] callback:",
@@ -39,6 +49,8 @@ export const ChatProvider = ({ children }) => {
     };
 
     ConnectyCube.chat.onMessageListener = (userId, message) => {
+      typeStatusRef.current[userId] = { isTyping: false };
+      setTypeStatus({ ...typeStatusRef.current });
       console.log(
         "[ConnectyCube.chat.onMessageListener] callback:",
         userId,
@@ -212,7 +224,7 @@ export const ChatProvider = ({ children }) => {
       message.id = ConnectyCube.chat.send(opponentId, message);
       const fileUID = message.extension.attachments[0].uid;
       const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
-
+      message.extension.date_sent = parseInt(new Date().getTime() / 1000);
       addMessageToStore(
         message,
         message.extension.dialog_id,
@@ -288,12 +300,12 @@ export const ChatProvider = ({ children }) => {
           if (seconds <= 30) {
             setLastActivity(`Online`);
           } else if (seconds < 3600) {
-            let minutes = Math.floor(seconds / 60);
+            let minutes = Math.ceil(seconds / 60);
             setLastActivity(`last seen ${minutes} minutes ago`);
           } else {
             const dateNow = new Date();
             const hourNow = dateNow.getHours();
-            let hours = Math.floor(seconds / 3600);
+            let hours = Math.ceil(seconds / 3600);
             if (hourNow - hours <= 0) {
               let day = lastLoggedInTime.getUTCDate();
               let month = lastLoggedInTime.getMonth() + 1;
@@ -306,7 +318,7 @@ export const ChatProvider = ({ children }) => {
           }
         })
         .catch((error) => {
-          setLastActivity(`last seen recent`);
+          setLastActivity(`last seen recently`);
           console.error(error);
         });
     } catch {}
@@ -453,8 +465,16 @@ export const ChatProvider = ({ children }) => {
   };
 
   const addMessageToStore = (message, dialogId, userId, fileUrl) => {
+    let d = chatsRef.current;
+    let chat = chatsRef.current.find((e) => e._id === dialogId);
+
+    chat.last_message_date_sent = parseInt(new Date().getTime() / 1000);
+    debugger;
+
     let timeNow = new Date().getTime();
     if (typeof message === "object") {
+      chat.last_message = message.body;
+      chat.last_message_user_id = userId;
       if (userId) {
         if (fileUrl) {
           messagesRef.current[dialogId].push({
@@ -473,6 +493,8 @@ export const ChatProvider = ({ children }) => {
         messagesRef.current[dialogId].push(message);
       }
     } else {
+      chat.last_message = message;
+      chat.last_message_user_id = parseInt(localStorage.userId);
       messagesRef.current[dialogId].push({
         message: message,
         sender_id: parseInt(localStorage.userId),

@@ -5,9 +5,30 @@ import "./UserInfo.scss";
 import { FiPhoneCall, FiMoreHorizontal } from "react-icons/fi";
 import { BsCameraVideo } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
+import { debug } from "connectycube/lib/cubeConfig";
+
 const UserInfo = (props) => {
-  const { userInfo, typeStatus, lastActivity, setDialog, toggleProfile } =
-    props;
+  const {
+    userInfo,
+    typeStatus,
+    lastActivity,
+    setDialog,
+    toggleProfile,
+    usersInGroups,
+  } = props;
+
+  let typersName = [];
+  if (userInfo.type === 2) {
+    userInfo.occupants_ids.filter((e) => {
+      if (typeStatus[e]) {
+        debugger;
+        if (typeStatus[e].isTyping && typeStatus[e].dialogId === userInfo._id) {
+          typersName.push(usersInGroups[e].full_name);
+        }
+      }
+    });
+  }
+
   let opponentId = userInfo.occupants_ids.find(
     (el) => el !== parseInt(localStorage.userId)
   );
@@ -49,11 +70,26 @@ const UserInfo = (props) => {
             {typingStatus ? (
               typingStatus.isTyping ? (
                 "typing..."
-              ) : (
+              ) : userInfo.type === 3 ? (
                 <span className="last__activity">{lastActivity}</span>
+              ) : (
+                "ATAL TYPE 1"
               )
-            ) : (
+            ) : userInfo.type === 3 ? (
               <span className="last__activity">{lastActivity}</span>
+            ) : (
+              ""
+            )}
+            {userInfo.type === 2 ? (
+              <span>
+                {typersName.length > 0
+                  ? typersName.length > 1
+                    ? typersName.toString() + " are typing"
+                    : typersName.toString() + " is typing"
+                  : ""}
+              </span>
+            ) : (
+              ""
             )}
           </div>
         </div>
