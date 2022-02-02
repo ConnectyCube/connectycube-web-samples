@@ -6,7 +6,6 @@ import { getTime } from "../../../../services/helpers";
 const Message = (props) => {
   const { message, dialogInfo, usersInGroups } = props;
   const time = getTime(message.date_sent);
-
   return (
     <div
       className={`message ${
@@ -50,7 +49,29 @@ const Message = (props) => {
                 e.currentTarget.classList.toggle("full");
               }}
             >
-              <img className="message__photo" src={message.fileUrl} />
+              <img
+                classList={`message__img ${
+                  message.loading ? "loading" : "loaded"
+                }`}
+                className="message__photo"
+                src={message.fileUrl}
+              />
+              {message.loading && (
+                <div class="lds-spinner">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -9,6 +9,7 @@ import { animateScroll } from "react-scroll";
 import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
 import Profile from "./Profile/Profile";
+import { useHistory } from "react-router";
 
 const Main = (props) => {
   const {
@@ -24,12 +25,13 @@ const Main = (props) => {
     setDialog,
   } = props;
   const dialog = chosenDialog;
-  const [showProfile, setShowProfile] = useState(false);
+  const [showProfile, setShowProfile] = useState();
   const fileMessageRef = React.createRef();
   const messageRef = React.createRef();
   const messagesRef = React.createRef();
   const [typingPrevStatus, setTypingPrevStatus] = useState();
   const [allMessages, setAllMessages] = useState();
+  const history = useHistory();
   let timer;
 
   useEffect(() => {
@@ -76,14 +78,15 @@ const Main = (props) => {
   const onFileSelected = (e) => {
     const file = e.currentTarget.files[0];
     const type = file.type.split("/")[1];
-    debugger;
+    const url = URL.createObjectURL(file);
     if (
       type === "svg+xml" ||
       type === "image" ||
       type === "webp" ||
-      type === "png"
+      type === "png" ||
+      type === "jpeg"
     ) {
-      sendMsgWithPhoto(file);
+      sendMsgWithPhoto(file, url);
     } else {
       alert("File format is not supported");
     }
@@ -157,7 +160,7 @@ const Main = (props) => {
               toggleProfile={toggleProfile}
               setDialog={setDialog}
               userInfo={dialog}
-				  usersInGroups={usersInGroups}
+              usersInGroups={usersInGroups}
               typeStatus={typeStatus}
               lastActivity={lastActivity}
             />

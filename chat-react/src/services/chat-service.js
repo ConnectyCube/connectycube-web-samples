@@ -33,8 +33,7 @@ export const ChatProvider = ({ children }) => {
         typeStatusRef.current[userId] = { isTyping: false };
         setTypeStatus({ ...typeStatusRef.current });
       }, 5000);
-      lastActivityCheck();
-      debugger;
+      dialogId ? "" : lastActivityCheck();
       typeStatusRef.current[userId] = {
         isTyping: isTyping,
         dialogId: dialogId,
@@ -95,7 +94,6 @@ export const ChatProvider = ({ children }) => {
         if (message.extension.attachments.length > 0) {
           const fileUID = message.extension.attachments[0].uid;
           const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
-          addMessageToStore(message, message.dialog_id, userId, fileUrl);
           // insert the imageHTML as HTML template
         }
       } else {
@@ -225,16 +223,10 @@ export const ChatProvider = ({ children }) => {
       const fileUID = message.extension.attachments[0].uid;
       const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
       message.extension.date_sent = parseInt(new Date().getTime() / 1000);
-      addMessageToStore(
-        message,
-        message.extension.dialog_id,
-        parseInt(localStorage.userId),
-        fileUrl
-      );
     }
   };
 
-  const sendMsgWithPhoto = (file) => {
+  const sendMsgWithPhoto = (file, url) => {
     const fileParams = {
       name: file.name,
       file: file,
@@ -243,12 +235,26 @@ export const ChatProvider = ({ children }) => {
       public: false,
     };
 
+    let dialogId = addMessageToStore(
+      { extension: { date_sent: parseInt(new Date().getTime() / 1000) } },
+      chosenDialogRef.current._id,
+      parseInt(localStorage.userId),
+      url
+    );
+
+    debugger;
     ConnectyCube.storage
       .createAndUpload(fileParams)
       .then((result) => {
+        debugger;
+        messagesRef.current[dialogId][
+          messagesRef.current[dialogId].length - 1
+        ].loading = false;
+        setMessages({ ...messagesRef.current }); 
         prepareMessageWithAttachmentAndSend(result);
       })
       .catch((error) => {
+        debugger;
         console.error(error);
       });
   };
@@ -448,7 +454,8 @@ export const ChatProvider = ({ children }) => {
 
   const setDialog = (dialog) => {
     if (dialog === "close") {
-      setChosenDialog(undefined);
+      chosenDialogRef.current = undefined;
+      setChosenDialog(chosenDialogRef.current);
     } else {
       chatsRef.current.find((el) => {
         if (el._id === dialog._id) {
@@ -465,23 +472,26 @@ export const ChatProvider = ({ children }) => {
   };
 
   const addMessageToStore = (message, dialogId, userId, fileUrl) => {
-    let d = chatsRef.current;
     let chat = chatsRef.current.find((e) => e._id === dialogId);
-
     chat.last_message_date_sent = parseInt(new Date().getTime() / 1000);
-    debugger;
-
-    let timeNow = new Date().getTime();
     if (typeof message === "object") {
       chat.last_message = message.body;
       chat.last_message_user_id = userId;
       if (userId) {
         if (fileUrl) {
+          chat.last_message = "Photo";
+          chat.last_message_user_id = userId;
           messagesRef.current[dialogId].push({
             fileUrl: fileUrl,
             sender_id: userId,
             date_sent: parseInt(message.extension.date_sent),
+            loading: true,
           });
+          setMessages(messagesRef.current);
+          return dialogId;
+          return messagesRef.current[dialogId][
+            messagesRef.current[dialogId].length - 1
+          ];
         } else {
           messagesRef.current[dialogId].push({
             message: message.body,

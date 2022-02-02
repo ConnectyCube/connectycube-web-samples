@@ -9,7 +9,6 @@ import { useHistory } from "react-router";
 const Chats = (props) => {
   const chatRef = React.createRef();
   const history = useHistory();
-
   const { userInfo, setDialog, chosenDialog, dialogs } = props;
   useEffect(() => {
     try {

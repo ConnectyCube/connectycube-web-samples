@@ -6,6 +6,7 @@ import { FiPhoneCall, FiMoreHorizontal } from "react-icons/fi";
 import { BsCameraVideo } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { debug } from "connectycube/lib/cubeConfig";
+import { useHistory } from "react-router";
 
 const UserInfo = (props) => {
   const {
@@ -16,30 +17,44 @@ const UserInfo = (props) => {
     toggleProfile,
     usersInGroups,
   } = props;
+  const history = useHistory();
 
   let typersName = [];
+  let typingStatus = { isTyping: false };
   if (userInfo.type === 2) {
     userInfo.occupants_ids.filter((e) => {
       if (typeStatus[e]) {
-        debugger;
-        if (typeStatus[e].isTyping && typeStatus[e].dialogId === userInfo._id) {
+        if (
+          typeStatus[e].isTyping &&
+          typeStatus[e].dialogId === userInfo._id &&
+          e !== parseInt(localStorage.userId)
+        ) {
           typersName.push(usersInGroups[e].full_name);
         }
       }
     });
+  } else {
+    let opponentId = userInfo.occupants_ids.find(
+      (el) => el !== parseInt(localStorage.userId)
+    );
+    if (typeStatus[opponentId]) {
+      if (
+        typeStatus[opponentId].isTyping &&
+        typeStatus[opponentId].dialogId === null
+      ) {
+        typingStatus.isTyping = true;
+        typersName.push(opponentId);
+      }
+    }
   }
 
-  let opponentId = userInfo.occupants_ids.find(
-    (el) => el !== parseInt(localStorage.userId)
-  );
-
-  let typingStatus = typeStatus[opponentId];
   return (
     <div className="user__info">
       <div className="user__info-main">
         <IoIosArrowBack
           size={32}
           onClick={() => {
+            history.push("/home");
             setDialog("close");
           }}
           className="user__info-back"
@@ -67,7 +82,7 @@ const UserInfo = (props) => {
           </span>
 
           <div className="typing-status">
-            {typingStatus ? (
+            {typingStatus && userInfo.type === 3 ? (
               typingStatus.isTyping ? (
                 "typing..."
               ) : userInfo.type === 3 ? (
