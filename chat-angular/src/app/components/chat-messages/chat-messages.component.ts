@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {DeviceDetectorService} from "ngx-device-detector";
 import {Dialog, ItemsHeight, Message} from "../../services/config";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
@@ -20,7 +20,10 @@ import {getParticipantActivity, meSelector} from "../../reducers/participants/pa
 import {isToday} from "../../services/utilities";
 import {updateParticipantLastActivity} from "../../reducers/participants/participants.actions";
 import {chatConnectedSelector} from "../../reducers/interface/interface.selectors";
-import {updateMessageWidthHeight} from "../../reducers/messages/messages.action";
+import {MeasureService} from "../../services/measure.service";
+import {throttle} from "throttle-typescript";
+import {MatDialog} from "@angular/material/dialog";
+import {DialogDetailsComponent} from "../dialog-details/dialog-details.component";
 
 @Component({
   selector: 'app-chat-messages',
@@ -76,10 +79,16 @@ export class ChatMessagesComponent implements OnInit {
     private store$: Store,
     private chatService: ChatService,
     private router: Router,
+    private measureService: MeasureService,
+    private dialog: MatDialog,
   ) {
+    //resize event for realculation virtual scroll height
+    window.addEventListener('resize', throttle(this.windowResize.bind(this), 500));
+    //select meId from store
     this.store$.select(meSelector).pipe(filter(v => !!v), take(1)).subscribe(userMe => {
       this.meId = userMe!.id;
     })
+    //subscribe for chat connected
     this.store$.select(chatConnectedSelector).subscribe(chatConnected => {
       if (chatConnected) {
         //Subscribe to change dialogId in URL
@@ -131,6 +140,64 @@ export class ChatMessagesComponent implements OnInit {
     })
   }
 
+  private windowResize() {
+    this.measureService.resetAllHeightCalculation();
+    this.messages.pipe(take(1)).pipe(take(1)).subscribe(msgs => {
+      console.warn("RESIZE");
+      this.calculateVirtualScrollHeight(msgs);
+    })
+  }
+
+  private calculateVirtualScrollHeight(msgs: Array<Message>) {
+    if (msgs.length !== 0 && !msgs.some(item => item === undefined)) {
+      const msgContainerWidth = this.messagesContainer.nativeElement.offsetWidth;
+      const isGroupChat = this.isGroupChat;
+      this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat).then((res: any) => {
+        const itemsheight: ItemsHeight = res;
+        console.warn(itemsheight);
+        this.items = itemsheight.items;
+        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+        this.scrollBarContent.nativeElement.style.height =
+          this.itemsTotalHeight + 'px';
+        this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+      });
+
+      this.virtualScroll.elementScrolled().subscribe((event) => {
+        if (!this.isScrollBarPressed) {
+          this.scrollTrack();
+        }
+      });
+
+      this.scrollBar.nativeElement.addEventListener(
+        'mousedown',
+        () => {
+          console.log('mousedown');
+          this.isScrollBarPressed = true;
+        },
+        false
+      );
+      this.scrollBar.nativeElement.addEventListener(
+        'mouseup',
+        () => {
+          console.log('mouseup');
+          this.isScrollBarPressed = false;
+        },
+        false
+      );
+
+      this.scrollBar.nativeElement.onscroll = () => {
+        const newScrollOffset =
+          this.itemsTotalHeight -
+          this.scrollBar.nativeElement.scrollTop -
+          this.scrollBar.nativeElement.clientHeight;
+
+        if (this.isScrollBarPressed) {
+          this.virtualScroll.scrollToOffset(newScrollOffset);
+        }
+      };
+    }
+  }
+
   private getUserLastActivity(dialog: Dialog) {
     //unsubscribe from last user activity
     if (this.lastActiveUserId) {
@@ -171,30 +238,6 @@ export class ChatMessagesComponent implements OnInit {
     this.timerId = undefined;
   }
 
-  private measureImage(src: string) {
-    return new Promise<{ height: number, width: number }>((resolve, reject) => {
-      const img = new Image();
-      img.addEventListener('load', () => resolve(img.naturalHeight > 200 ? {
-        height: 200,
-        width: img.naturalWidth
-      } : {height: img.naturalHeight, width: img.naturalWidth}));
-      img.src = src;
-    })
-  }
-
-  private measureText(text: string, maxWidth: number) {
-    const mainStyle = `width:${maxWidth}px; word-wrap: break-word; white-space: pre-line;
-     font-size: 16px; font-family: "Source Sans Pro"; line-height: 1.25`;
-    const div = document.createElement('div');
-    div.innerHTML = text;
-    div.style.cssText = mainStyle;
-    document.body.appendChild(div);
-    const testHeight = div.offsetHeight;
-    div.remove();
-
-    return testHeight;
-  }
-
   private scrollTrack() {
     const vsScrolled = this.virtualScroll.measureScrollOffset('top');
 
@@ -203,56 +246,17 @@ export class ChatMessagesComponent implements OnInit {
       (vsScrolled + this.scrollBar.nativeElement.clientHeight);
   }
 
-  private async measureMessages(messages: Array<Message>) {
-    const PADDING_MES: number = 22;
-    const MAX_INDEX: number = messages.length - 1;
-    let heightSum: number = 0;
-    let itemsArray: Array<number> = [];
-    let index = 0;
-
-    for (const msg of messages) {
-      //first element + container padding
-      let msgHeight: number = index === 0 ? 14 : 0;
-      let maxWidth = (this.messagesContainer.nativeElement.offsetWidth - 20) * 0.8;
-      maxWidth = Math.round(maxWidth * 100) / 100;
-      msgHeight += PADDING_MES;
-      if (msg.senderName) {
-        if (this.isGroupChat) {
-          msgHeight += 19
-        }
-        if (index < MAX_INDEX) {
-          msgHeight += messages[index + 1].senderName ? 8 : 16;
-        }
-      }
-      else {
-        if (index < MAX_INDEX) {
-          msgHeight += messages[index + 1].senderName ? 16 : 8;
-        }
-      }
-
-      if (msg.photo) {
-        await this.measureImage(msg.photo).then(({height, width}) => {
-          console.error(msg.id);
-          // this.store$.dispatch(updateMessageWidthHeight({msgId: msg.id, height, width}));
-          msgHeight += height;
-        });
-        msgHeight += 5;
-      }
-      else {
-        msgHeight += this.measureText(msg.body, maxWidth);
-      }
-
-      itemsArray.push(msgHeight);
-      heightSum += msgHeight;
-
-      index++;
-    }
-
-    return {items: itemsArray, itemsTotalHeight: heightSum};
-  }
-
   messagesTrackBy(index: number, message: Message) {
     return message.id;
+  }
+
+  public dialogDetailsHandler(isGroupChat: boolean, dialog: Dialog) {
+    if (isGroupChat) {
+      this.dialog.open(DialogDetailsComponent, {panelClass: 'dialog-details', disableClose: true, data: {dialog}});
+    }
+    else {
+
+    }
   }
 
   public onFileSelected(e: any) {
@@ -327,7 +331,9 @@ export class ChatMessagesComponent implements OnInit {
             .then(() => {
               this.messages.pipe(take(1)).subscribe(msgs => {
                 if (msgs.length !== 0) {
-                  this.measureMessages(msgs).then((res: any) => {
+                  const msgContainerWidth = this.messagesContainer.nativeElement.offsetWidth;
+                  const isGroupChat = this.isGroupChat;
+                  this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat).then((res: any) => {
                     const itemsheight: ItemsHeight = res;
                     console.warn(itemsheight);
                     this.items = itemsheight.items;
@@ -349,7 +355,9 @@ export class ChatMessagesComponent implements OnInit {
         this.chatService.sendMessage(this.selectedDialog, message);
         this.messages.pipe(take(1)).subscribe(msgs => {
           if (msgs.length !== 0) {
-            this.measureMessages(msgs).then((res: any) => {
+            const msgContainerWidth = this.messagesContainer.nativeElement.offsetWidth;
+            const isGroupChat = this.isGroupChat;
+            this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat).then((res: any) => {
               const itemsheight: ItemsHeight = res;
               console.warn(itemsheight);
               this.items = itemsheight.items;
@@ -372,52 +380,16 @@ export class ChatMessagesComponent implements OnInit {
   ngAfterViewInit() {
     // Virtual Scroll
     this.subscribeVirtualScrollCalc = this.messages.subscribe(msgs => {
-      if (msgs.length !== 0 && !msgs.some(item => item === undefined)) {
-        this.measureMessages(msgs).then((res: any) => {
-          const itemsheight: ItemsHeight = res;
-          console.warn(itemsheight);
-          this.items = itemsheight.items;
-          this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-          this.scrollBarContent.nativeElement.style.height =
-            this.itemsTotalHeight + 'px';
-          this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
-        });
-
-        this.virtualScroll.elementScrolled().subscribe((event) => {
-          if (!this.isScrollBarPressed) {
-            this.scrollTrack();
-          }
-        });
-
-        this.scrollBar.nativeElement.addEventListener(
-          'mousedown',
-          () => {
-            console.log('mousedown');
-            this.isScrollBarPressed = true;
-          },
-          false
-        );
-        this.scrollBar.nativeElement.addEventListener(
-          'mouseup',
-          () => {
-            console.log('mouseup');
-            this.isScrollBarPressed = false;
-          },
-          false
-        );
-
-        this.scrollBar.nativeElement.onscroll = () => {
-          const newScrollOffset =
-            this.itemsTotalHeight -
-            this.scrollBar.nativeElement.scrollTop -
-            this.scrollBar.nativeElement.clientHeight;
-
-          if (this.isScrollBarPressed) {
-            this.virtualScroll.scrollToOffset(newScrollOffset);
-          }
-        };
+      if (msgs.length === 0) {
+        this.items = [];
+        this.itemsTotalHeight = 0;
+        this.scrollBarContent.nativeElement.style.height =
+          this.itemsTotalHeight + 'px';
       }
-    })
+      else {
+        this.calculateVirtualScrollHeight(msgs);
+      }
+    });
   }
 
   @HostListener('window:beforeunload', ['$event'])

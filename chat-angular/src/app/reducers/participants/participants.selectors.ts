@@ -1,6 +1,7 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {participant, participantAdapter, participantsState} from "./participants.reducer";
 import {PARTICIPANT_KEY} from "../index";
+import {getDialogsParticipantIds} from "../dialog/dialog.selectors";
 
 export const featureSelector =
   createFeatureSelector<participantsState>(PARTICIPANT_KEY)
@@ -20,10 +21,18 @@ export const getParticipant = createSelector(
   }
 )
 
+export const getParticipants = createSelector(
+  getParticipantsEntities,
+  getDialogsParticipantIds,
+  (participants: any, participantIds: any) => {
+    return participantIds.map((id: number) => participants[id]);
+  }
+)
+
 export const getParticipantActivity = createSelector(
   getParticipantsEntities,
   (participants: any, {pId}: any) => {
-    if(participants[pId].lastActivity){
+    if (participants[pId].lastActivity) {
       return participants[pId].lastActivity;
     }
     return null;

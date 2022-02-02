@@ -27,8 +27,9 @@ import {
 } from "../reducers/participants/participants.actions";
 import {Router} from "@angular/router";
 import {getParticipant, meSelector} from "../reducers/participants/participants.selectors";
-import {getUnreadMessageList} from "../reducers/messages/messages.selectors";
+import {getMessagesSelector, getUnreadMessageList} from "../reducers/messages/messages.selectors";
 import ConnectyCube from "connectycube";
+import {MeasureService} from "./measure.service";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,9 @@ export class ChatService {
 
   constructor(
     private store$: Store,
-    private router: Router) {
+    private router: Router,
+    private measureService: MeasureService
+  ) {
   }
 
   private getChatParticipants(participantsIds: Array<number>) {
@@ -108,14 +111,14 @@ export class ChatService {
     }
   }
 
-  private prepareMessageWithAttachmentAndSend(file: any, dialog: Dialog, senderId: number, tempMsgId: string) {
+  private prepareMessageWithAttachmentAndSend(file: any, dialog: Dialog, senderId: number, tempMsgId: string, msgWidth: number, msgHeight: number) {
     const messageParams = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: "attachment",
       extension: {
         save_to_history: 1,
         dialog_id: dialog.id,
-        attachments: [{uid: file.uid, id: file.id, type: "photo"}],
+        attachments: [{uid: file.uid, id: file.id, type: "photo", width: msgWidth, height: msgHeight}],
       },
     };
 
@@ -192,6 +195,10 @@ export class ChatService {
           if (msg.extension.hasOwnProperty("attachments") && msg.extension.attachments.length > 0) {
             const fileUID = msg.extension.attachments[0].uid;
             message.photo = ConnectyCube.storage.privateUrl(fileUID);
+            if (msg.extension.attachments[0].height) {
+              message.height = +msg.extension.attachments[0].height;
+              message.width = +msg.extension.attachments[0].width;
+            }
           }
 
           this.store$.dispatch(addMessageId({dialogId: msg.extension.dialog_id, msgIds: [msg.id]}));
@@ -270,17 +277,19 @@ export class ChatService {
         console.warn("[lastMessageUserIds]", lastMessageUserIds)
         this.searchUsersById(lastMessageUserIds).then((result: any) => {
           console.warn("[searchUsersById]", result);
-          const participants: Array<participant> = result.items.map((u: any) => {
-            return {
-              id: u.user.id,
-              full_name: u.user.full_name,
-              login: u.user.login,
-              avatar: u.user.avatar,
-              me: u.user.login === atob(<string>localStorage.getItem('login')),
-            }
-          })
-          this.store$.dispatch(addParticipants({participants}));
-          console.warn("[Processed dialogs]", dialogs);
+          if (result.items.length > 0) {
+            const participants: Array<participant> = result.items.map((u: any) => {
+              return {
+                id: u.user.id,
+                full_name: u.user.full_name,
+                login: u.user.login,
+                avatar: u.user.avatar,
+                me: u.user.login === atob(<string>localStorage.getItem('login')),
+              }
+            })
+            this.store$.dispatch(addParticipants({participants}));
+            console.warn("[Processed dialogs]", dialogs);
+          }
           this.store$.dispatch(addDialogs({dialogs}));
         })
           .catch((error: any) => {
@@ -301,28 +310,36 @@ export class ChatService {
       public: false,
     };
 
-    const message: Message = {
-      id: makeid(12),
-      body: "",
-      senderId: senderId,
-      senderName: "",
-      status: "pending",
-      photo: pathToLoader,
-      date_sent: Math.floor(Date.now() / 1000)
-    }
-    console.warn(message.id)
-    this.store$.dispatch(addMessageId({dialogId: dialog.id, msgIds: [message.id]}));
-    this.store$.dispatch(addMessage({message}));
+    const urlImage = URL.createObjectURL(file);
+    console.warn(urlImage);
+    this.measureService.measureImage(urlImage).then(({height, width}) => {
+      console.warn(height, width);
 
-    ConnectyCube.storage
-      .createAndUpload(fileParams)
-      .then((result: any) => {
-        console.warn(result);
-        this.prepareMessageWithAttachmentAndSend(result, dialog, senderId, message.id);
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+      const message: Message = {
+        id: makeid(12),
+        body: "",
+        senderId: senderId,
+        senderName: "",
+        status: "pending",
+        photo: pathToLoader,
+        date_sent: Math.floor(Date.now() / 1000),
+        width,
+        height
+      }
+      console.warn(message.id)
+      this.store$.dispatch(addMessageId({dialogId: dialog.id, msgIds: [message.id]}));
+      this.store$.dispatch(addMessage({message}));
+
+      ConnectyCube.storage
+        .createAndUpload(fileParams)
+        .then((result: any) => {
+          console.warn(result);
+          this.prepareMessageWithAttachmentAndSend(result, dialog, senderId, message.id, width, height);
+        })
+        .catch((error: any) => {
+          console.error(error);
+        });
+    })
   }
 
   public searchUsersByFullName(fullName: string) {
@@ -333,17 +350,20 @@ export class ChatService {
   }
 
   public searchUsersById(userIds: Array<number>) {
-    const params = {
-      page: 1,
-      filter: {
-        field: "id",
-        param: "in",
-        value: userIds,
-      },
-    };
+    if (userIds.length > 0) {
+      const params = {
+        page: 1,
+        filter: {
+          field: "id",
+          param: "in",
+          value: userIds,
+        },
+      };
 
-    return ConnectyCube.users
-      .get(params)
+      return ConnectyCube.users
+        .get(params)
+    }
+    return Promise.resolve({items: []});
   }
 
   public searchUsersByLogin(login: string) {
@@ -498,6 +518,10 @@ export class ChatService {
                     if (m.hasOwnProperty("attachments") && m.attachments.length > 0) {
                       const fileUID = m.attachments[0].uid;
                       message.photo = ConnectyCube.storage.privateUrl(fileUID);
+                      if (m.attachments[0].height) {
+                        message.height = +m.attachments[0].height;
+                        message.width = +m.attachments[0].width;
+                      }
                     }
 
                     messages.push(message);
@@ -620,6 +644,8 @@ export class ChatService {
         }
       })
 
+    this.store$.select(getMessagesSelector)
+
     ConnectyCube.chat.message
       .update(messageIds, params)
   }
@@ -633,6 +659,7 @@ export class ChatService {
 
   public getLastActivity(userId: number) {
     if (ConnectyCube.chat.isConnected) {
+      console.warn("[userId]", userId);
       return ConnectyCube.chat
         .getLastUserActivity(userId)
     }

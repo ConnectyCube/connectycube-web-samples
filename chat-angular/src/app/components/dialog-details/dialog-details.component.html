@@ -1,0 +1,43 @@
+<div class="details-wrap">
+  <div class="details-header">
+    <h1 class="header-title" mat-dialog-title>Dialog details</h1>
+    <div class="header-buttons">
+      <button class="details-options">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <button class="details-close" mat-dialog-close="">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="details-body">
+    <div class="dialog__wrap">
+      <div class="dialog__avatar"
+           [ngStyle]="{'background-image': data.dialog.photo?'url('+ data.dialog.photo +')':'none',
+                 'background-color': data.dialog.photo?'':'skyblue'}">
+        <p class="unselectable" *ngIf="!data.dialog.photo">{{data.dialog.name.slice(0, 2).toUpperCase()}}</p>
+      </div>
+      <div class="dialog__info">
+        <p class="dialog__fullname">
+          {{data.dialog.name}}
+        </p>
+        <small class="dialog__members">{{data.dialog.participantIds.length + " members"}}</small>
+      </div>
+    </div>
+    <div class="participants-wrap">
+      <h2 class="participant-header">Members</h2>
+      <cdk-virtual-scroll-viewport class="list-participants"
+                                   itemSize="60">
+        <app-participant class="participant-item"
+                         *cdkVirtualFor="let user of (dialogParticipants$ | async); index as i;
+                         trackBy: participantsTrackBy"
+                         [id]="user.id"
+                         [avatar]="user.avatar"
+                         [full_name]="user.full_name"
+                         [lastActivity]="user.lastActivity"
+        >
+        </app-participant>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </div>
+</div>

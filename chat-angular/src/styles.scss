@@ -220,6 +220,11 @@ cdk-virtual-scroll-viewport > div {
   overflow: hidden;
 }
 
+.dialog-details .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
 .mat-menu-content:not(:empty) {
   padding: 0 !important;
 }
@@ -230,4 +235,13 @@ cdk-virtual-scroll-viewport > div {
 
 .invalids {
   border-left: 10px solid #a94442 !important; /* red */
+}
+
+.unselectable {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently */
 }

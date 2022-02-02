@@ -4,22 +4,24 @@
       <button (click)="setNullConversation()" class="back-btn">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <div class="user__avatar"
-           [ngStyle]="{'background-image': selectedDialog.photo?'url('+ selectedDialog.photo +')':'none',
+      <div class="user__wrap" (click)="dialogDetailsHandler(isGroupChat,selectedDialog)">
+        <div class="user__avatar"
+             [ngStyle]="{'background-image': selectedDialog.photo?'url('+ selectedDialog.photo +')':'none',
                  'background-color': selectedDialog.photo?'':'skyblue'}">
-        <p *ngIf="!selectedDialog.photo">{{selectedDialog.name.slice(0, 2).toUpperCase()}}</p>
-      </div>
-      <div class="user__info">
-        <p class="user__fullname">
-          {{selectedDialog.name}}
-        </p>
-        <small *ngIf="typingParticipants" class="user__status">
-          Typing: {{(typingParticipants.split(',')).length > 3 ? "more than 3" : typingParticipants}} <img
-          src="assets/typing.gif"/>
-        </small>
-        <small *ngIf="selectedDialog.type === 3 && !typingParticipants" class="user__status">
-          {{lastActivity !== (lastActivity$ | async) ? getLastSeen(lastActivity$ | async) : lastActivityStatus}}
-        </small>
+          <p class="unselectable" *ngIf="!selectedDialog.photo">{{selectedDialog.name.slice(0, 2).toUpperCase()}}</p>
+        </div>
+        <div class="user__info">
+          <p class="user__fullname">
+            {{selectedDialog.name}}
+          </p>
+          <small *ngIf="typingParticipants" class="user__status">
+            Typing: {{(typingParticipants.split(',')).length > 3 ? "more than 3" : typingParticipants}} <img
+            src="assets/typing.gif"/>
+          </small>
+          <small *ngIf="selectedDialog.type === 3 && !typingParticipants" class="user__status">
+            {{lastActivity !== (lastActivity$ | async) ? getLastSeen(lastActivity$ | async) : lastActivityStatus}}
+          </small>
+        </div>
       </div>
     </div>
   </div>

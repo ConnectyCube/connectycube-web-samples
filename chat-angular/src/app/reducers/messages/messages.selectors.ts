@@ -2,6 +2,7 @@ import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {messagesAdapter, messagesState} from "./messages.reducer";
 import {MESSAGES_KEY} from "../index";
 import {getDialogMessages, getUnreadMessageIds} from "../dialog/dialog.selectors";
+import {rxSubscriber} from "rxjs/internal-compatibility";
 
 export const featureSelector = createFeatureSelector<messagesState>(MESSAGES_KEY)
 
@@ -29,3 +30,10 @@ export const getUnreadMessageList = (dialogId: string) =>
       return msgIds?.map((id: string) => messages[id]);
     }
   )
+
+export const getMessageHeight = createSelector(
+  getMessageEntities,
+  (messages: any, {msgId}: any) => {
+    return messages[msgId]?.height;
+  }
+)

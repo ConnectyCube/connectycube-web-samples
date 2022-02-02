@@ -5,8 +5,8 @@
             </span>
   <p *ngIf="!photo" class="message-text">{{body}}
     <span style="display: inline-block; width: 90px; height: 5px"></span></p>
-  <div>
-    <img *ngIf="photo" [width]="width" [height]="height"
+  <div style="max-height: 205px">
+    <img *ngIf="photo" [ngStyle]="{'height':height + 'px'}"
          [src]="photo" loading="lazy" alt="photo" class="message-photo">
   </div>
   <p class="message-time">{{getDateMessage(date_sent)}}</p>

@@ -32,6 +32,14 @@ export const selectedConversationSelector = createSelector(
   state => state.selectedConversation
 )
 
+export const getDialogsParticipantIds = createSelector(
+  getDialogEntities,
+  selectedConversationSelector,
+  (dialogs:any, dialogId:any)=>{
+    return dialogs[dialogId].participantIds;
+  }
+)
+
 export const isActivatedConversationSelector = createSelector(
   featureSelector,
   (state: dialogState, {id}: any) => state.activatedConversation.some((c: string) => c === id)

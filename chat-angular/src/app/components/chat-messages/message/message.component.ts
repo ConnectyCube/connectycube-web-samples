@@ -13,7 +13,7 @@ import {
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent implements OnInit, OnChanges {
+export class MessageComponent implements OnInit {
 
   @Input() id: string;
   @Input() senderId: number;
@@ -26,6 +26,8 @@ export class MessageComponent implements OnInit, OnChanges {
   @Input() height: number;
   @Input() meId: number;
   @Input() isGroupChat: boolean;
+
+  public h = 100;
 
   constructor(private cdr: ChangeDetectorRef) {
   }
@@ -48,14 +50,6 @@ export class MessageComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    // this.cdr.checkNoChanges();
-    console.warn(changes);
-    if(changes.photo.currentValue === changes.photo.previousValue){
-
-    }
   }
 
 }

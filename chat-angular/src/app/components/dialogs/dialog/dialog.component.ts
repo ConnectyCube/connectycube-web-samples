@@ -54,17 +54,19 @@ export class DialogComponent implements OnInit, OnChanges {
   public getUsersFromSDK(participantId: number) {
     this.chatService.searchUsersById([participantId]).then((result: any) => {
       console.warn("[searchUserById]", result);
-      const participants: Array<participant> = result.items.map((u: any) => {
-        return {
-          id: u.user.id,
-          full_name: u.user.full_name,
-          login: u.user.login,
-          avatar: u.user.avatar,
-          me: u.user.login === atob(<string>localStorage.getItem('login')),
-        }
-      })
-      this.itemLastMessage = participants[0].full_name + ": " + this.lastMessage;
-      this.store$.dispatch(addParticipants({participants}));
+      if (result.length > 0) {
+        const participants: Array<participant> = result.items.map((u: any) => {
+          return {
+            id: u.user.id,
+            full_name: u.user.full_name,
+            login: u.user.login,
+            avatar: u.user.avatar,
+            me: u.user.login === atob(<string>localStorage.getItem('login')),
+          }
+        })
+        this.itemLastMessage = participants[0].full_name + ": " + this.lastMessage;
+        this.store$.dispatch(addParticipants({participants}));
+      }
     })
       .catch((error: any) => {
         console.error(error);

@@ -32,6 +32,8 @@ import { SelectParticipantsComponent } from './components/select-participants/se
 import { DialogOneOneComponent } from './components/dialog-one-one/dialog-one-one.component';
 import { DialogComponent } from './components/dialogs/dialog/dialog.component';
 import { MessageComponent } from './components/chat-messages/message/message.component';
+import { DialogDetailsComponent } from './components/dialog-details/dialog-details.component';
+import { ParticipantComponent } from './components/dialog-details/participant/participant.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,8 @@ import { MessageComponent } from './components/chat-messages/message/message.com
     DialogOneOneComponent,
     DialogComponent,
     MessageComponent,
+    DialogDetailsComponent,
+    ParticipantComponent,
   ],
   imports: [
     BrowserModule,
