@@ -316,4 +316,10 @@ cdk-virtual-scroll-viewport {
   .send-container {
     max-width: 100%;
   }
+  cdk-virtual-scroll-viewport {
+    overflow: scroll;
+  }
+  #scroll-bar {
+    overflow-y: hidden;
+  }
 }

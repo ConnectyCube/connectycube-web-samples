@@ -3,6 +3,7 @@ import {Message} from "./config";
 import {Store} from "@ngrx/store";
 import {getMessageHeight} from "../reducers/messages/messages.selectors";
 import {take} from "rxjs/operators";
+import {selectedConversationSelector} from "../reducers/dialog/dialog.selectors";
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +47,13 @@ export class MeasureService {
     })
   }
 
-  public async measureMessages(messages: Array<Message>, msgContainerWidth: number, isGroupChat: boolean) {
+  public async measureMessages(messages: Array<Message>, msgContainerWidth: number, isGroupChat: boolean, selectedDialogId: string) {
+    let changeDialog = false;
+    this.store$.select(selectedConversationSelector).subscribe(currentConversation => {
+      if (currentConversation !== selectedDialogId) {
+        changeDialog = true;
+      }
+    })
     const PADDING_MES: number = 22;
     const MAX_INDEX: number = messages.length - 1;
     let heightSum: number = 0;
@@ -54,6 +61,10 @@ export class MeasureService {
     let index = 0;
 
     for (const msg of messages) {
+      if (changeDialog) {
+        console.warn("[Change Dialog]");
+        return null;
+      }
       const msgCachHeight = this.idHeightCach.get(msg.id);
       if (msgCachHeight) {
         itemsArray.push(msgCachHeight);

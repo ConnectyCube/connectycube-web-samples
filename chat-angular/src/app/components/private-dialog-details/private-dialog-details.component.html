@@ -1,0 +1,25 @@
+<div class="private-dialog-details">
+  <div class="details-header">
+    <h1 class="header-title" mat-dialog-title>Private dialog details</h1>
+    <div class="header-buttons">
+      <button class="details-close" mat-dialog-close="">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="details-body">
+    <div class="dialog__wrap">
+      <div class="dialog__avatar"
+           [ngStyle]="{'background-image': data.dialog.photo?'url('+ data.dialog.photo +')':'none',
+                 'background-color': data.dialog.photo?'':'skyblue'}">
+        <p class="unselectable" *ngIf="!data.dialog.photo">{{data.dialog.name.slice(0, 2).toUpperCase()}}</p>
+      </div>
+      <div class="dialog__info">
+        <p class="dialog__fullname">
+          {{data.dialog.name}}
+        </p>
+        <small class="dialog__last-activity"></small>
+      </div>
+    </div>
+  </div>
+</div>

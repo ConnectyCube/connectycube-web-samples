@@ -225,11 +225,21 @@ cdk-virtual-scroll-viewport > div {
   overflow: hidden;
 }
 
+.confirm-delete .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.private-dialog-details .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
 .mat-menu-content:not(:empty) {
   padding: 0 !important;
 }
 
-.valids  {
+.valids {
   border-left: 10px solid #42A948 !important; /* green */
 }
 
@@ -239,9 +249,13 @@ cdk-virtual-scroll-viewport > div {
 
 .unselectable {
   -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none;   /* Chrome/Safari/Opera */
-  -khtml-user-select: none;    /* Konqueror */
-  -moz-user-select: none;      /* Firefox */
-  -ms-user-select: none;       /* Internet Explorer/Edge */
-  user-select: none;           /* Non-prefixed version, currently */
+  -webkit-user-select: none; /* Chrome/Safari/Opera */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently */
+}
+
+.mat-menu-panel {
+  min-height: 48px !important;
 }

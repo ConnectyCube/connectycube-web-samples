@@ -1,5 +1,6 @@
 import {createAction, props} from "@ngrx/store";
 import {Message} from "../../services/config";
+import {Update} from "@ngrx/entity";
 
 export const addMessages = createAction(
   '[MESSAGES] add array messages',
@@ -23,4 +24,9 @@ export const updateMessageStatus = createAction(
 export const updateMessageWidthHeight = createAction(
   '[MESSAGE] update message width and height',
   props<{ msgId: string, width: number, height: number }>()
+)
+
+export const updateMessageSendersName = createAction(
+  '[MESSAGES] update message`s senders name',
+  props<{ updates: Array<Update<Message>> }>()
 )

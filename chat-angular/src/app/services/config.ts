@@ -43,6 +43,7 @@ export interface Dialog {
   name: string,
   type: number
   photo: string | null,
+  creatorId: number,
   lastMessage: string | null,
   lastMessageDate: number | null,
   lastMessageUserId: number | null,

@@ -11,7 +11,7 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   setNullConverastion,
-  updateDialogLastMessage, updateMessageId
+  updateDialogLastMessage, updateMessageId, removeDialog, updateDialogParticipants
 } from "./dialog.actions";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
@@ -48,6 +48,15 @@ export const dialogReducer = createReducer(
     }),
     on(addDialog, (state, {dialog}) => {
       return dialogsAdapter.addOne(dialog, state);
+    }),
+    on(removeDialog, (state, {id}) => {
+      return dialogsAdapter.removeOne(id, state);
+    }),
+    on(updateDialogParticipants, (state, {dialogId, userId}) => {
+      return dialogsAdapter.updateOne({
+        id: dialogId,
+        changes: {participantIds: state.entities[dialogId]?.participantIds.filter((id: number) => id !== userId)}
+      }, state)
     }),
     on(openDialog, (state, {dialogId, isActivated}) => ({
       ...state,

@@ -12,6 +12,11 @@ export const addDialog = createAction(
   props<{ dialog: Dialog }>()
 )
 
+export const removeDialog = createAction(
+  '[DIALOG] remove dialog',
+  props<{ id: string }>()
+)
+
 export const openDialog = createAction(
   '[DIALOG] open dialog',
   props<{ dialogId: string, isActivated: boolean }>()
@@ -59,4 +64,9 @@ export const addOneUnreadMessage = createAction(
 export const updateDialogLastMessage = createAction(
   '[DIALOG] update dialog last message',
   props<{ dialogId: string, lastMessage: string, lastMessageDate: number, lastMessageUserId: number }>()
+)
+
+export const updateDialogParticipants = createAction(
+  '[DIALOG] update dialog participants',
+  props<{ dialogId: string, userId: number }>()
 )

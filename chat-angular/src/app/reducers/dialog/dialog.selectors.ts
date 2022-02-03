@@ -35,7 +35,7 @@ export const selectedConversationSelector = createSelector(
 export const getDialogsParticipantIds = createSelector(
   getDialogEntities,
   selectedConversationSelector,
-  (dialogs:any, dialogId:any)=>{
+  (dialogs: any, dialogId: any) => {
     return dialogs[dialogId].participantIds;
   }
 )
@@ -73,7 +73,7 @@ export const getIndividualDialogByParticipantId = createSelector(
 export const getDialogsTypingParticipant = createSelector(
   getDialogEntities,
   (dialogs: any, {dialogId}: any) => {
-    return dialogs[dialogId].typingParticipants.map((p: any) => p.name);
+    return dialogs[dialogId]?.typingParticipants.map((p: any) => p.name);
   }
 )
 

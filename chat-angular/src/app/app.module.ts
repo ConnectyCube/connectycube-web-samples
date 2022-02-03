@@ -34,6 +34,8 @@ import { DialogComponent } from './components/dialogs/dialog/dialog.component';
 import { MessageComponent } from './components/chat-messages/message/message.component';
 import { DialogDetailsComponent } from './components/dialog-details/dialog-details.component';
 import { ParticipantComponent } from './components/dialog-details/participant/participant.component';
+import { ConfirmDeleteComponent } from './components/dialog-details/confirm-delete/confirm-delete.component';
+import { PrivateDialogDetailsComponent } from './components/private-dialog-details/private-dialog-details.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,8 @@ import { ParticipantComponent } from './components/dialog-details/participant/pa
     MessageComponent,
     DialogDetailsComponent,
     ParticipantComponent,
+    ConfirmDeleteComponent,
+    PrivateDialogDetailsComponent,
   ],
   imports: [
     BrowserModule,

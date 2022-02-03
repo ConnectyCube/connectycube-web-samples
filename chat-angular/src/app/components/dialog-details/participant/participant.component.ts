@@ -12,8 +12,16 @@ import {updateParticipantLastActivity} from "../../../reducers/participants/part
 })
 export class ParticipantComponent implements OnInit, OnChanges {
 
+  @Input() avatar: string;
+  @Input() full_name: string;
+  @Input() id: number;
+  @Input() lastActivity: number | null;
+  @Input() meId: number
+  @Input() creatorId: number
+
   public lastActivityStatus: string = "";
   public lastActivity$: Observable<number>;
+  public isCreator: boolean;
 
   constructor(private store$: Store, private chatService: ChatService) {
   }
@@ -38,20 +46,23 @@ export class ParticipantComponent implements OnInit, OnChanges {
     }
   }
 
-  @Input() avatar: string;
-  @Input() full_name: string;
-  @Input() id: number;
-  @Input() lastActivity: number | null;
-
   ngOnInit(): void {
-    this.chatService.getLastActivity(this.id).then((result: any) => {
-      const seconds = result.seconds;
-      this.store$.dispatch(updateParticipantLastActivity({participantId: this.id, lastActivity: seconds}));
-    })
+    if (this.id !== this.meId) {
+      this.chatService.getLastActivity(this.id).then((result: any) => {
+        const seconds = result.seconds;
+        this.store$.dispatch(updateParticipantLastActivity({participantId: this.id, lastActivity: seconds}));
+      })
+    }
+    else {
+      this.lastActivityStatus = "Online";
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     console.warn(changes);
+    if (changes.creatorId) {
+      this.isCreator = this.id === this.creatorId;
+    }
     if (changes.lastActivity && changes.lastActivity.currentValue !== changes.lastActivity.previousValue) {
       this.getLastActivity();
     }

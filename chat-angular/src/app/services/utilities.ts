@@ -1,9 +1,12 @@
+import {Dialog} from "./config";
+
 export const builtDialog = (d: any) => {
   return {
     id: d._id,
     name: d.name,
     type: d.type,
     photo: d.photo,
+    creatorId: d.user_id,
     lastMessage: d.last_message,
     lastMessageDate: d.last_message_date_sent,
     lastMessageUserId: d.last_message_user_id,

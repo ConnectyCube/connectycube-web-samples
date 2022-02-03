@@ -1,11 +1,14 @@
-<div class="participant-avatar-search"
+<div class="participant-avatar"
      [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
                  'background-color': avatar?'':'skyblue'}">
   <p class="unselectable">{{full_name.slice(0, 2).toUpperCase()}}</p>
 </div>
-<div class="info">
-  <h3 class="participant-name-search">{{full_name}}</h3>
-  <small class="participant__status">
-    {{ lastActivityStatus }}
-  </small>
+<div class="participant-info-wrap">
+  <div class="participant-info">
+    <h3 class="participant-name">{{full_name}}</h3>
+    <small class="participant__status">
+      {{ lastActivityStatus }}
+    </small>
+  </div>
+  <div *ngIf="isCreator" class="participant-creator">Creator</div>
 </div>

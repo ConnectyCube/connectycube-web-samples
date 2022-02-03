@@ -10,14 +10,20 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   updateDialogLastMessage,
-  readDialogAllMessages, updateMessageId
+  readDialogAllMessages, updateMessageId, removeDialog, updateDialogParticipants
 } from "../reducers/dialog/dialog.actions";
 import {
   dialogsSelector,
   getIndividualDialogByParticipantId, selectedConversationSelector
 } from "../reducers/dialog/dialog.selectors";
 import {filter, take} from 'rxjs/operators';
-import {addMessage, addMessages, updateMessagePhoto, updateMessageStatus} from "../reducers/messages/messages.action";
+import {
+  addMessage,
+  addMessages,
+  updateMessagePhoto,
+  updateMessageSendersName,
+  updateMessageStatus
+} from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
 import {builtDialog, makeid} from "./utilities";
 import {
@@ -207,10 +213,14 @@ export class ChatService {
       });
     }
     ConnectyCube.chat.onSystemMessageListener = (msg: any) => {
+      console.warn(msg);
       const dialogId = msg.extension.id;
       switch (msg.body) {
         case "dialog/UPDATE_DIALOG":
           this.addDialog(dialogId);
+          break;
+        case "dialog/UPDATE_DIALOG_PARTICIPANTS":
+          this.store$.dispatch(updateDialogParticipants({dialogId, userId: msg.userId}));
           break;
       }
     };
@@ -433,7 +443,8 @@ export class ChatService {
         console.warn(dialog)
         idArray.forEach((ocupantId: number, index: number) => {
           if (index !== 0) {
-            this.sendSystemMsg(ocupantId, dialog.id)
+            const command = "dialog/UPDATE_DIALOG";
+            this.sendSystemMsg(ocupantId, dialog.id, command)
           }
         });
         this.store$.dispatch(addDialog({dialog}));
@@ -460,7 +471,8 @@ export class ChatService {
           if (res !== undefined) {
             const thisIsChat = res.some((d: Dialog) => d.id === dialog.id);
             if (!thisIsChat) {
-              this.sendSystemMsg(ocupantId, dialog.id)
+              const command = "dialog/UPDATE_DIALOG";
+              this.sendSystemMsg(ocupantId, dialog.id, command)
               this.store$.dispatch(addDialog({dialog}));
             }
             this.router.navigateByUrl('chat/' + btoa(dialog.id));
@@ -498,39 +510,69 @@ export class ChatService {
               console.warn(msgs)
               const messages: Array<Message> = [];
               const msgIds: Array<string> = [];
+              const unfindedUserIds: Array<{ msgId: string, userId: number }> = [];
               msgs.forEach((m: any) => {
                 this.store$.select(getParticipant, {participantId: m.sender_id}).pipe(take(1)).subscribe(p => {
-                  if (p) {
-                    const sender = p;
-                    const message: Message = {
-                      id: m._id,
-                      body: m.message,
-                      status: m.read ? "read" : "sent",
-                      date_sent: m.date_sent,
-                      senderName: sender?.me ? "" : sender?.full_name,
-                      senderId: m.sender_id
-                    }
-
-                    if (!m.read && !sender?.me) {
-                      this.sendReadStatus(m._id, m.sender_id, dialogId);
-                    }
-
-                    if (m.hasOwnProperty("attachments") && m.attachments.length > 0) {
-                      const fileUID = m.attachments[0].uid;
-                      message.photo = ConnectyCube.storage.privateUrl(fileUID);
-                      if (m.attachments[0].height) {
-                        message.height = +m.attachments[0].height;
-                        message.width = +m.attachments[0].width;
-                      }
-                    }
-
-                    messages.push(message);
-                    msgIds.push(m._id);
+                  if (!p) {
+                    unfindedUserIds.push({userId: m.sender_id, msgId: m._id});
                   }
+                  const sender = p || {me: false, full_name: " "};
+                  const message: Message = {
+                    id: m._id,
+                    body: m.message,
+                    status: m.read ? "read" : "sent",
+                    date_sent: m.date_sent,
+                    senderName: sender?.me ? "" : sender?.full_name,
+                    senderId: m.sender_id
+                  }
+
+                  if (!m.read && !sender?.me) {
+                    this.sendReadStatus(m._id, m.sender_id, dialogId);
+                  }
+
+                  if (m.hasOwnProperty("attachments") && m.attachments.length > 0) {
+                    const fileUID = m.attachments[0].uid;
+                    message.photo = ConnectyCube.storage.privateUrl(fileUID);
+                    if (m.attachments[0].height) {
+                      message.height = +m.attachments[0].height;
+                      message.width = +m.attachments[0].width;
+                    }
+                  }
+
+                  messages.push(message);
+                  msgIds.push(m._id);
                 });
               })
               console.warn("[MESSAGES]", messages);
               console.warn("[IDS]", msgIds);
+
+              this.searchUsersById(unfindedUserIds.map((item) => item.userId))
+                .then((result: any) => {
+                  console.warn("[unfindedUsers]", result);
+                  if (result.items.length > 0) {
+                    const participants: Array<participant> = result.items.map((u: any) => {
+                      return {
+                        id: u.user.id,
+                        full_name: u.user.full_name,
+                        login: u.user.login,
+                        avatar: u.user.avatar,
+                        me: u.user.login === atob(<string>localStorage.getItem('login')),
+                      }
+                    })
+                    this.store$.dispatch(addParticipants({participants}));
+                    const updates = unfindedUserIds.map((item) => {
+                      const participant: any = participants.find((p: participant) => p.id === item.userId);
+                      return {
+                        id: item.msgId,
+                        changes: {senderName: participant.full_name}
+                      }
+                    })
+                    this.store$.dispatch(updateMessageSendersName({updates}));
+                  }
+                })
+                .catch((error: any) => {
+                  console.error(error);
+                })
 
               this.store$.dispatch(addMessages({messages}))
               this.store$.dispatch(addMessagesIds({dialogId, msgIds}))
@@ -586,9 +628,9 @@ export class ChatService {
     })
   }
 
-  public sendSystemMsg(userId: number, dialogId: string) {
+  public sendSystemMsg(userId: number, dialogId: string, command: string) {
     const msg = {
-      body: "dialog/UPDATE_DIALOG",
+      body: command,
       extension: {
         id: dialogId
       }
@@ -677,6 +719,13 @@ export class ChatService {
       console.warn("[unsubscribeFromUserLastActivity]", userId)
       ConnectyCube.chat.unsubscribeFromUserLastActivityStatus(userId);
     }
+  }
+
+  public exitFromChat(dialogId: string, ocupantsIds: Array<number>) {
+    const toUpdateParams = {pull_all: {occupants_ids: ocupantsIds}};
+
+    return ConnectyCube.chat.dialog
+      .update(dialogId, toUpdateParams);
   }
 
 }

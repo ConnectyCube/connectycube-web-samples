@@ -4,7 +4,7 @@ import {createReducer, on} from "@ngrx/store";
 import {
   addMessage,
   addMessages,
-  updateMessagePhoto,
+  updateMessagePhoto, updateMessageSendersName,
   updateMessageStatus,
   updateMessageWidthHeight
 } from "./messages.action";
@@ -52,5 +52,8 @@ export const messagesReducer = createReducer(
       id: msgId,
       changes: {width, height}
     }, state)
+  }),
+  on(updateMessageSendersName, (state, {updates}) => {
+    return messagesAdapter.updateMany(updates, state);
   })
 );

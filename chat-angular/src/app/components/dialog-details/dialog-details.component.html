@@ -2,9 +2,19 @@
   <div class="details-header">
     <h1 class="header-title" mat-dialog-title>Dialog details</h1>
     <div class="header-buttons">
-      <button class="details-options">
+      <button [matMenuTriggerFor]="menu" class="details-options">
         <mat-icon>more_vert</mat-icon>
       </button>
+      <mat-menu #menu="matMenu">
+        <button *ngIf="isCreator" mat-menu-item>
+          <mat-icon>person_add</mat-icon>
+          Add members
+        </button>
+        <button (click)="exitFromDialog(data.dialog.id,meId)" mat-dialog-close="" mat-menu-item>
+          <mat-icon>exit_to_app</mat-icon>
+          Exit Chat
+        </button>
+      </mat-menu>
       <button class="details-close" mat-dialog-close="">
         <mat-icon>close</mat-icon>
       </button>
@@ -21,7 +31,7 @@
         <p class="dialog__fullname">
           {{data.dialog.name}}
         </p>
-        <small class="dialog__members">{{data.dialog.participantIds.length + " members"}}</small>
+        <small class="dialog__members">{{(dialogParticipants$ | async)?.length + " members"}}</small>
       </div>
     </div>
     <div class="participants-wrap">
@@ -35,6 +45,8 @@
                          [avatar]="user.avatar"
                          [full_name]="user.full_name"
                          [lastActivity]="user.lastActivity"
+                         [meId]="meId"
+                         [creatorId]="data.dialog.creatorId"
         >
         </app-participant>
       </cdk-virtual-scroll-viewport>

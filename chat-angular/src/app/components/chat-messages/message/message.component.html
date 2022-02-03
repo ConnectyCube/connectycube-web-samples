@@ -7,7 +7,7 @@
     <span style="display: inline-block; width: 90px; height: 5px"></span></p>
   <div style="max-height: 205px">
     <img *ngIf="photo" [ngStyle]="{'height':height + 'px'}"
-         [src]="photo" loading="lazy" alt="photo" class="message-photo">
+         [src]="photo" alt="photo" class="message-photo">
   </div>
   <p class="message-time">{{getDateMessage(date_sent)}}</p>
   <mat-icon *ngIf="senderId === meId"

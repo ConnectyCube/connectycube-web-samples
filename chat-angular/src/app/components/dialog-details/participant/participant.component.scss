@@ -1,4 +1,4 @@
-.participant-avatar-search {
+.participant-avatar {
   width: 40px;
   height: 40px;
   margin-right: 20px;
@@ -20,14 +20,22 @@
   }
 }
 
-.info {
+.participant-info-wrap {
   display: flex;
-  flex-direction: column;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
   max-width: calc(100% - 80px);
   width: 100%;
 }
 
-.participant-name-search {
+.participant-info {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.participant-name {
   max-width: calc(100% - 80px);
   margin: 0;
   overflow: hidden;
@@ -41,4 +49,12 @@
   align-items: center;
   max-width: 100%;
   font-size: 11px;
+}
+
+.participant-creator {
+  position: absolute;
+  right: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #727272;
 }

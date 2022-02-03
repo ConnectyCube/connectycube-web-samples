@@ -24,6 +24,7 @@ import {MeasureService} from "../../services/measure.service";
 import {throttle} from "throttle-typescript";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDetailsComponent} from "../dialog-details/dialog-details.component";
+import {PrivateDialogDetailsComponent} from "../private-dialog-details/private-dialog-details.component";
 
 @Component({
   selector: 'app-chat-messages',
@@ -55,6 +56,7 @@ export class ChatMessagesComponent implements OnInit {
     type: 0,
     name: "",
     photo: null,
+    creatorId: 0,
     lastMessage: null,
     lastMessageDate: null,
     lastMessageUserId: null,
@@ -152,14 +154,16 @@ export class ChatMessagesComponent implements OnInit {
     if (msgs.length !== 0 && !msgs.some(item => item === undefined)) {
       const msgContainerWidth = this.messagesContainer.nativeElement.offsetWidth;
       const isGroupChat = this.isGroupChat;
-      this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat).then((res: any) => {
-        const itemsheight: ItemsHeight = res;
-        console.warn(itemsheight);
-        this.items = itemsheight.items;
-        this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-        this.scrollBarContent.nativeElement.style.height =
-          this.itemsTotalHeight + 'px';
-        this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+      this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat, this.selectedDialog.id).then((res: any) => {
+        if (res) {
+          const itemsheight: ItemsHeight = res;
+          console.warn(itemsheight);
+          this.items = itemsheight.items;
+          this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+          this.scrollBarContent.nativeElement.style.height =
+            this.itemsTotalHeight + 'px';
+          this.scrollBar.nativeElement.scrollTop = this.itemsTotalHeight - 1;
+        }
       });
 
       this.virtualScroll.elementScrolled().subscribe((event) => {
@@ -234,7 +238,6 @@ export class ChatMessagesComponent implements OnInit {
 
   private sendIsStopTypingStatus() {
     this.chatService.sendStopTypingStatus(this.selectedDialog);
-    console.warn(1111)
     this.timerId = undefined;
   }
 
@@ -250,13 +253,17 @@ export class ChatMessagesComponent implements OnInit {
     return message.id;
   }
 
-  public dialogDetailsHandler(isGroupChat: boolean, dialog: Dialog) {
-    if (isGroupChat) {
-      this.dialog.open(DialogDetailsComponent, {panelClass: 'dialog-details', disableClose: true, data: {dialog}});
-    }
-    else {
-
-    }
+  public dialogDetailsHandler(isGroupChat: boolean, dialogId: string) {
+    this.store$.select(dialogFindSelector, {id: dialogId}).pipe(take(1)).subscribe(dialog => {
+      if (dialog) {
+        if (isGroupChat) {
+          this.dialog.open(DialogDetailsComponent, {panelClass: 'dialog-details', disableClose: true, data: {dialog}});
+        }
+        else {
+          this.dialog.open(PrivateDialogDetailsComponent, {panelClass: 'private-dialog-details', disableClose: true, data: {dialog}});
+        }
+      }
+    })
   }
 
   public onFileSelected(e: any) {
@@ -333,15 +340,17 @@ export class ChatMessagesComponent implements OnInit {
                 if (msgs.length !== 0) {
                   const msgContainerWidth = this.messagesContainer.nativeElement.offsetWidth;
                   const isGroupChat = this.isGroupChat;
-                  this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat).then((res: any) => {
-                    const itemsheight: ItemsHeight = res;
-                    console.warn(itemsheight);
-                    this.items = itemsheight.items;
-                    this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-                    this.scrollBarContent.nativeElement.style.height =
-                      this.itemsTotalHeight + 'px';
-                    this.virtualScroll.scrollToOffset(0);
-                    this.scrollTrack();
+                  this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat, this.selectedDialog.id).then((res: any) => {
+                    if (res) {
+                      const itemsheight: ItemsHeight = res;
+                      console.warn(itemsheight);
+                      this.items = itemsheight.items;
+                      this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+                      this.scrollBarContent.nativeElement.style.height =
+                        this.itemsTotalHeight + 'px';
+                      this.virtualScroll.scrollToOffset(0);
+                      this.scrollTrack();
+                    }
                   });
                 }
               })
@@ -357,15 +366,17 @@ export class ChatMessagesComponent implements OnInit {
           if (msgs.length !== 0) {
             const msgContainerWidth = this.messagesContainer.nativeElement.offsetWidth;
             const isGroupChat = this.isGroupChat;
-            this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat).then((res: any) => {
-              const itemsheight: ItemsHeight = res;
-              console.warn(itemsheight);
-              this.items = itemsheight.items;
-              this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-              this.scrollBarContent.nativeElement.style.height =
-                this.itemsTotalHeight + 'px';
-              this.virtualScroll.scrollToOffset(0);
-              this.scrollTrack();
+            this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat, this.selectedDialog.id).then((res: any) => {
+              if (res) {
+                const itemsheight: ItemsHeight = res;
+                console.warn(itemsheight);
+                this.items = itemsheight.items;
+                this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+                this.scrollBarContent.nativeElement.style.height =
+                  this.itemsTotalHeight + 'px';
+                this.virtualScroll.scrollToOffset(0);
+                this.scrollTrack();
+              }
             });
           }
         })

@@ -4,7 +4,7 @@
       <button (click)="setNullConversation()" class="back-btn">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <div class="user__wrap" (click)="dialogDetailsHandler(isGroupChat,selectedDialog)">
+      <div class="user__wrap" (click)="dialogDetailsHandler(isGroupChat,selectedDialog.id)">
         <div class="user__avatar"
              [ngStyle]="{'background-image': selectedDialog.photo?'url('+ selectedDialog.photo +')':'none',
                  'background-color': selectedDialog.photo?'':'skyblue'}">
