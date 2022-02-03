@@ -2,9 +2,26 @@
   display: flex;
   align-items: center;
   padding: 10px;
+  & .member__info-container {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    & .remove__user-container {
+      background: white;
+      padding: 5px 10px;
+      border-radius: 25%;
+      border: 1px solid #dbdfdf;
+      transition: 0.2s;
+      cursor: pointer;
+      &:hover {
+        background: #ededed;
+      }
+    }
+  }
   & .member__photo-container {
-    padding-right: 10px;
+    margin-right: 10px;
     border-radius: 50%;
+
     & .member__avatar-img {
       width: 60px;
       height: 60px;

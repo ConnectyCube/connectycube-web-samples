@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import { FiUserPlus } from "react-icons/fi";
 import GroupMember from "./GroupMember/GroupMember";
 import "./Profile.scss";
+
+import NewChat from "../../Sidebar/NewChat/NewChat";
 /* eslint-disable */
 
 const Profile = (props) => {
@@ -9,17 +12,19 @@ const Profile = (props) => {
     showProfile,
     userInfo,
     lastActivity,
-
+    chosenDialog,
     toggleProfile,
     usersInGroups,
   } = props;
+  const [addUsers, setAddUsers] = useState(false);
   let allUsers = [];
   if (userInfo) {
     allUsers = userInfo.occupants_ids.map((e, index) => {
-      if (usersInGroups[e]) {
+      if (usersInGroups[e] && e !== parseInt(localStorage.userId)) {
         return (
           <GroupMember
             userInfo={usersInGroups[e]}
+            chosenDialog={chosenDialog}
             lastActivity={lastActivity}
             key={index}
           />
@@ -30,6 +35,7 @@ const Profile = (props) => {
 
   return (
     <div className={`profile__info ${showProfile ? "show" : ""}`}>
+      {addUsers && <NewChat />}
       <div className="profile__header">
         <IoIosArrowBack
           onClick={() => {
@@ -37,6 +43,7 @@ const Profile = (props) => {
           }}
           size={32}
         />
+
         <span>Profile</span>
       </div>
       <div className="profile__main-info">
@@ -64,7 +71,17 @@ const Profile = (props) => {
             </div>
             {userInfo.type === 2 && (
               <div className="profile__group-members">
-                <span className="group-members__title">Members</span>
+                <div className="group__members-header">
+                  <span className="group-members__title"> Members</span>
+
+                  <FiUserPlus
+                    onClick={() => {
+                      setAddUsers(true);
+                    }}
+                    className="group__members-add"
+                    size={32}
+                  />
+                </div>
                 <div className="members__container">{allUsers}</div>
               </div>
             )}

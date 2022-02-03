@@ -22,6 +22,7 @@ const Home = (props) => {
     typeStatus,
     sendMsgWithPhoto,
     lastActivity,
+	 removeUser,
     connectStatus,
   } = props.chat;
   const history = useHistory();
@@ -49,6 +50,7 @@ const Home = (props) => {
         messages={messages}
         dialogs={dialogs}
         sendMessage={sendMessage}
+		  removeUser={removeUser}
         sendMsgWithPhoto={sendMsgWithPhoto}
         chosenDialog={chosenDialog}
         usersInGroups={usersInGroups}

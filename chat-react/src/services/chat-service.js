@@ -91,9 +91,15 @@ export const ChatProvider = ({ children }) => {
       }
       setDialogs([...chatsRef.current]);
       if (message.extension.hasOwnProperty("attachments")) {
-        if (message.extension.attachments.length > 0) {
+        debugger;
+        if (
+          message.extension.attachments.length > 0 &&
+          userId !== parseInt(localStorage.userId)
+        ) {
           const fileUID = message.extension.attachments[0].uid;
           const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
+
+          addMessageToStore(message, message.dialog_id, userId, fileUrl, false);
           // insert the imageHTML as HTML template
         }
       } else {
@@ -200,6 +206,26 @@ export const ChatProvider = ({ children }) => {
     });
   };
 
+  const removeUser = (userId) => {
+    const dialogId = chosenDialog._id;
+    const toUpdateParams = { pull_all: { occupants_ids: [userId] } };
+
+    ConnectyCube.chat.dialog
+      .update(dialogId, toUpdateParams)
+      .then((dialog) => {
+     
+        let dialogToUpdate = chatsRef.current.find((e) => {
+          return e._id === dialog._id;
+        });
+        dialogToUpdate.occupants_ids = dialog.occupants_ids;
+        dialogToUpdate.occupants_count = dialog.occupants_ids.length;
+        debugger;
+
+        setDialogs([...chatsRef.current]);
+      })
+      .catch((error) => {});
+  };
+
   const prepareMessageWithAttachmentAndSend = (file) => {
     const message = {
       type: chosenDialog.type === 3 ? "chat" : "groupchat",
@@ -239,22 +265,20 @@ export const ChatProvider = ({ children }) => {
       { extension: { date_sent: parseInt(new Date().getTime() / 1000) } },
       chosenDialogRef.current._id,
       parseInt(localStorage.userId),
-      url
+      url,
+      true
     );
 
-    debugger;
     ConnectyCube.storage
       .createAndUpload(fileParams)
       .then((result) => {
-        debugger;
         messagesRef.current[dialogId][
           messagesRef.current[dialogId].length - 1
         ].loading = false;
-        setMessages({ ...messagesRef.current }); 
+        setMessages({ ...messagesRef.current });
         prepareMessageWithAttachmentAndSend(result);
       })
       .catch((error) => {
-        debugger;
         console.error(error);
       });
   };
@@ -348,8 +372,7 @@ export const ChatProvider = ({ children }) => {
           });
         }
       });
-      let s = usersInGroupsRef.current;
-      console.table(s);
+    
       usersInGroupsRef.current = [...new Set(usersInGroupsRef.current)];
       console.table(usersInGroupsRef.current);
       setUsersInGroups([...usersInGroupsRef.current]);
@@ -471,7 +494,7 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  const addMessageToStore = (message, dialogId, userId, fileUrl) => {
+  const addMessageToStore = (message, dialogId, userId, fileUrl, loading) => {
     let chat = chatsRef.current.find((e) => e._id === dialogId);
     chat.last_message_date_sent = parseInt(new Date().getTime() / 1000);
     if (typeof message === "object") {
@@ -485,13 +508,10 @@ export const ChatProvider = ({ children }) => {
             fileUrl: fileUrl,
             sender_id: userId,
             date_sent: parseInt(message.extension.date_sent),
-            loading: true,
+            loading: loading,
           });
           setMessages(messagesRef.current);
           return dialogId;
-          return messagesRef.current[dialogId][
-            messagesRef.current[dialogId].length - 1
-          ];
         } else {
           messagesRef.current[dialogId].push({
             message: message.body,
@@ -602,6 +622,7 @@ export const ChatProvider = ({ children }) => {
         sendMsgWithPhoto,
         lastActivity,
         connectStatus,
+        removeUser,
       }}
     >
       {children}

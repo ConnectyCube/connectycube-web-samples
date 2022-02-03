@@ -23,6 +23,7 @@ const Main = (props) => {
     sendMsgWithPhoto,
     lastActivity,
     setDialog,
+	 removeUser,
   } = props;
   const dialog = chosenDialog;
   const [showProfile, setShowProfile] = useState();
@@ -146,6 +147,7 @@ const Main = (props) => {
   return (
     <div className={`main__container ${chosenDialog ? "show" : ""}`}>
       <Profile
+		chosenDialog={chosenDialog}
         toggleProfile={toggleProfile}
         setDialog={setDialog}
         userInfo={dialog}
@@ -184,7 +186,12 @@ const Main = (props) => {
           {!dialog && <div className="choose__chat">Choose a chat</div>}
         </div>
         {dialog && (
-          <form action="#" method="GET" onKeyDown={onEnterPress}>
+          <form
+            className="message__field"
+            action="#"
+            method="GET"
+            onKeyDown={onEnterPress}
+          >
             <textarea
               onKeyDown={startTyping}
               ref={messageRef}

@@ -9,6 +9,7 @@
   flex-direction: column;
   justify-content: flex-start;
   height: 100%;
+ 
   @media screen and (max-width: 1440px) {
     width: 50%;
   }
@@ -47,6 +48,15 @@
     overflow: scroll;
     height: 100%;
     background: white;
+    & .group__members-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      align-items: center;
+      & .group__members-add {
+        cursor: pointer;
+      }
+    }
     & .members__container {
       overflow-y: scroll;
       height: 100%;
