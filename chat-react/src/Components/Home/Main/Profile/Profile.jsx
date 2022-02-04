@@ -15,8 +15,12 @@ const Profile = (props) => {
     chosenDialog,
     toggleProfile,
     usersInGroups,
+    searchUsers,
   } = props;
   const [addUsers, setAddUsers] = useState(false);
+  const close = ()=>{
+	  setAddUsers(false)
+  }
   let allUsers = [];
   if (userInfo) {
     allUsers = userInfo.occupants_ids.map((e, index) => {
@@ -35,7 +39,7 @@ const Profile = (props) => {
 
   return (
     <div className={`profile__info ${showProfile ? "show" : ""}`}>
-      {addUsers && <NewChat />}
+      {addUsers && <NewChat searchUsers={searchUsers} addUsers={true} close={close} />}
       <div className="profile__header">
         <IoIosArrowBack
           onClick={() => {

@@ -42,6 +42,7 @@ const GroupMember = (props) => {
               />
             </div>
           )}
+        {userInfo.id === parseInt(localStorage.userId) && <span>admin</span>}
       </div>
       <p className="last__activity">{lastActivity}</p>
     </div>

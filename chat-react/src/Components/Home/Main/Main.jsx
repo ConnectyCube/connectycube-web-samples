@@ -23,8 +23,10 @@ const Main = (props) => {
     sendMsgWithPhoto,
     lastActivity,
     setDialog,
-	 removeUser,
+    removeUser,
+	 searchUsers,
   } = props;
+
   const dialog = chosenDialog;
   const [showProfile, setShowProfile] = useState();
   const fileMessageRef = React.createRef();
@@ -147,8 +149,9 @@ const Main = (props) => {
   return (
     <div className={`main__container ${chosenDialog ? "show" : ""}`}>
       <Profile
-		chosenDialog={chosenDialog}
+        chosenDialog={chosenDialog}
         toggleProfile={toggleProfile}
+		  searchUsers={searchUsers}
         setDialog={setDialog}
         userInfo={dialog}
         lastActivity={lastActivity}

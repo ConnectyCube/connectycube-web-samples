@@ -2,7 +2,7 @@ import React from "react";
 import "./Message.scss";
 import { getTime } from "../../../../services/helpers";
 /* eslint-disable */
-
+import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 const Message = (props) => {
   const { message, dialogInfo, usersInGroups } = props;
   const time = getTime(message.date_sent);
@@ -75,7 +75,18 @@ const Message = (props) => {
             </div>
           )}
         </div>
-        <span className="message__time">{time}</span>
+        <div className="message__time-container">
+          <span className="message__time">{time}</span>
+          {message.sender_id === parseInt(localStorage.userId) && (
+            <span className="message__status">
+              {message.read ? (
+                <IoCheckmarkDoneSharp size={14} color="#727272" />
+              ) : (
+                <IoCheckmarkSharp size={14} color="#727272" />
+              )}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

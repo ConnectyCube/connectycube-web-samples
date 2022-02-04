@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./NewChat.scss";
 /* eslint-disable */
 import ConnectyCube from "connectycube";
@@ -8,9 +8,18 @@ import { FaSearch } from "react-icons/fa";
 import FoundUser from "./FoundUser/FoundUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 import { BsBoxArrowInUpLeft } from "react-icons/bs";
+import ChatContext from "../../../../services/chat-service";
 const NewChat = (props) => {
-  const { close, getChats, type, startGroupChat, startChat, searchUsers } =
-    props;
+  const {
+    close,
+    getChats,
+    type,
+    startGroupChat,
+    startChat,
+    searchUsers,
+    addUsers,
+  } = props;
+  const context = useContext(ChatContext);
   const userRef = React.createRef();
 
   const [create, setCreate] = useState(false);
@@ -95,6 +104,21 @@ const NewChat = (props) => {
               type="button"
             >
               Create group chat
+            </button>
+          )}
+          {addUsers && occupants > 0 && (
+            <button
+              onClick={() => {
+                debugger;
+                let users = [];
+                groupOccupants.current.forEach((user) => {
+                  users.push(user.id);
+                });
+                context.addUsersToGroup(users);
+              }}
+              className="add-users__btn"
+            >
+              Add users
             </button>
           )}
         </form>

@@ -48,6 +48,8 @@ const Home = (props) => {
         className="main__block"
         getMessages={getMessages}
         messages={messages}
+		  searchUsers={searchUsers}
+
         dialogs={dialogs}
         sendMessage={sendMessage}
 		  removeUser={removeUser}

@@ -1,7 +1,12 @@
+.add__user {
+  position: fixed !important;
+  left: 50%;
+  top: 50%;
+}
 .profile__info {
   position: absolute;
   border-left: 1px solid #e7e7e7;
-  z-index: 100;
+  z-index: 21;
   transform: translateX(100%);
   width: 30%;
   display: flex;
@@ -9,7 +14,15 @@
   flex-direction: column;
   justify-content: flex-start;
   height: 100%;
- 
+  & .new-chat__container {
+    & .new-chat__form {
+      width: 100%;
+      top: 50%;
+      left: 0;
+      z-index: 22;
+    }
+  }
+
   @media screen and (max-width: 1440px) {
     width: 50%;
   }
@@ -40,13 +53,13 @@
     }
   }
   &.show {
+    background: white;
     transform: translateX(0);
     transform: translate(0);
   }
 
   & .profile__group-members {
-    overflow: scroll;
-    height: 100%;
+    height: 68%;
     background: white;
     & .group__members-header {
       display: flex;
@@ -55,6 +68,9 @@
       align-items: center;
       & .group__members-add {
         cursor: pointer;
+      }
+      & .group-members__title {
+        font-weight: 500;
       }
     }
     & .members__container {
@@ -103,7 +119,7 @@
         position: absolute;
         text-align: left;
         bottom: 10px;
-        z-index: 100;
+        z-index: 21;
         left: 20px;
         color: white;
 
