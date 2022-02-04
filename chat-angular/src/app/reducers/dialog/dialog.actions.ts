@@ -70,3 +70,8 @@ export const updateDialogParticipants = createAction(
   '[DIALOG] update dialog participants',
   props<{ dialogId: string, userId: number }>()
 )
+
+export const addDialogParticipants = createAction(
+  '[DIALOG] add dialog participants',
+  props<{ dialogId: string, userIds: Array<number> }>()
+)

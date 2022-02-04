@@ -97,3 +97,11 @@ export const getParticipantId = createSelector(
     }
   }
 )
+
+export const getDialogsMsgsCount = createSelector(
+  getDialogEntities,
+  selectedConversationSelector,
+  (dialogs: any, dialogId: any) => {
+    return dialogs[dialogId].msgIds.length;
+  }
+)

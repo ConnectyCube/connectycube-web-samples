@@ -1,5 +1,4 @@
 import {environment} from "../../environments/environment";
-import {participant} from "../reducers/participants/participants.reducer";
 
 export const CREDENTIALS = {
   appId: Number(environment.APP_ID),

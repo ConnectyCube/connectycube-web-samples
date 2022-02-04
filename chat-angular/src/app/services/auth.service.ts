@@ -59,7 +59,8 @@ export class AuthService {
         login: user.login,
         id: user.id,
         avatar: user.avatar,
-        full_name: user.full_name
+        full_name: user.full_name,
+        unselect: true,
       }))
       this.connectToChat(user.id, token).then(() => {
         this.chatInit();
@@ -97,7 +98,8 @@ export class AuthService {
           login: u.login,
           id: u.id,
           avatar: u.avatar,
-          full_name: u.full_name
+          full_name: u.full_name,
+          unselect: true
         }))
         localStorage.setItem('login', btoa(u.login));
         this.connectToChat(u.id, password).then(() => {

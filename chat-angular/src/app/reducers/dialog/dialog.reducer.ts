@@ -11,7 +11,7 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   setNullConverastion,
-  updateDialogLastMessage, updateMessageId, removeDialog, updateDialogParticipants
+  updateDialogLastMessage, updateMessageId, removeDialog, updateDialogParticipants, addDialogParticipants
 } from "./dialog.actions";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 
@@ -47,16 +47,31 @@ export const dialogReducer = createReducer(
       return dialogsAdapter.setAll(dialogs, state);
     }),
     on(addDialog, (state, {dialog}) => {
-      return dialogsAdapter.addOne(dialog, state);
+      return dialogsAdapter.setOne(dialog, state);
     }),
     on(removeDialog, (state, {id}) => {
-      return dialogsAdapter.removeOne(id, state);
+      return dialogsAdapter.removeOne(id,
+        {
+          ...state,
+          activatedConversation: state.activatedConversation.filter((dialogId: string) => dialogId !== id)
+        });
     }),
     on(updateDialogParticipants, (state, {dialogId, userId}) => {
       return dialogsAdapter.updateOne({
         id: dialogId,
         changes: {participantIds: state.entities[dialogId]?.participantIds.filter((id: number) => id !== userId)}
       }, state)
+    }),
+    on(addDialogParticipants, (state, {dialogId, userIds}) => {
+      const participantsIds = state.entities[dialogId]?.participantIds || [];
+      return dialogsAdapter.updateOne({
+          id: dialogId,
+          changes: {
+            participantIds: [...participantsIds, ...userIds]
+          }
+        },
+        state
+      )
     }),
     on(openDialog, (state, {dialogId, isActivated}) => ({
       ...state,

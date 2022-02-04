@@ -10,7 +10,7 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   updateDialogLastMessage,
-  readDialogAllMessages, updateMessageId, removeDialog, updateDialogParticipants
+  readDialogAllMessages, updateMessageId, updateDialogParticipants, addDialogParticipants
 } from "../reducers/dialog/dialog.actions";
 import {
   dialogsSelector,
@@ -89,13 +89,16 @@ export class ChatService {
     this.store$.dispatch(addParticipants({participants}))
   }
 
-  private addDialog(dialogId: string) {
+  private addDialog(dialogId: string, msgCount?: number) {
     const filters = {_id: dialogId};
 
     ConnectyCube.chat.dialog
       .list(filters)
       .then((result: any) => {
         const dialog: Dialog = builtDialog(result.items[0]);
+        if(msgCount){
+          dialog.unreadMessage = msgCount;
+        }
         this.store$.dispatch(addDialog({dialog}));
       })
       .catch((error: any) => {
@@ -217,10 +220,32 @@ export class ChatService {
       const dialogId = msg.extension.id;
       switch (msg.body) {
         case "dialog/UPDATE_DIALOG":
-          this.addDialog(dialogId);
+          this.addDialog(dialogId, +msg.extension.msgCount);
           break;
         case "dialog/UPDATE_DIALOG_PARTICIPANTS":
           this.store$.dispatch(updateDialogParticipants({dialogId, userId: msg.userId}));
+          break;
+        case "dialog/ADD_DIALOG_PARTICIPANTS":
+          const addedParticipantsIds = msg.extension.addedParticipantsIds.split(',').map(Number);
+          this.searchUsersById(addedParticipantsIds)
+            .then((result: any) => {
+              if (result.items.length !== 0) {
+                const participants: Array<participant> = result.items.map((u: any) => {
+                  return {
+                    id: u.user.id,
+                    full_name: u.user.full_name,
+                    login: u.user.login,
+                    avatar: u.user.avatar,
+                    me: u.user.login === atob(<string>localStorage.getItem('login')),
+                  }
+                })
+                this.store$.dispatch(addParticipants({participants}));
+              }
+            })
+            .catch((error: any) => {
+              console.error(error);
+            })
+          this.store$.dispatch(addDialogParticipants({dialogId, userIds: addedParticipantsIds}));
           break;
       }
     };
@@ -628,11 +653,13 @@ export class ChatService {
     })
   }
 
-  public sendSystemMsg(userId: number, dialogId: string, command: string) {
+  public sendSystemMsg(userId: number, dialogId: string, command: string, params?: any,) {
     const msg = {
       body: command,
       extension: {
-        id: dialogId
+        id: dialogId,
+        addedParticipantsIds: params?.addedParticipantsIds?.join(),
+        msgCount: params?.msgCount
       }
     };
 
@@ -723,6 +750,13 @@ export class ChatService {
 
   public exitFromChat(dialogId: string, ocupantsIds: Array<number>) {
     const toUpdateParams = {pull_all: {occupants_ids: ocupantsIds}};
+
+    return ConnectyCube.chat.dialog
+      .update(dialogId, toUpdateParams);
+  }
+
+  public addMembersToGroupChat(dialogId: string, ocupantsIds: Array<number>) {
+    const toUpdateParams = {push_all: {occupants_ids: ocupantsIds}};
 
     return ConnectyCube.chat.dialog
       .update(dialogId, toUpdateParams);

@@ -14,7 +14,8 @@ export interface participant {
   avatar: string | null,
   me: boolean,
   active?: boolean,
-  lastActivity?: number
+  lastActivity?: number,
+  unselect?: boolean
 }
 
 //Entity Adapter
@@ -38,9 +39,9 @@ export const initialState: participantsState = participantAdapter.getInitialStat
 
 export const participantsReducer = createReducer(
   initialState,
-  on(addMeParticipant, (state, {id, full_name, login, avatar, me}) => ({
+  on(addMeParticipant, (state, {id, full_name, login, avatar, me, unselect}) => ({
     ...state,
-    selectedParticipants: [...state.selectedParticipants, ...[{id, full_name, login, avatar, me}]]
+    selectedParticipants: [...state.selectedParticipants, ...[{id, full_name, login, avatar, me, unselect}]]
   })),
   on(removeSelectedParticipant, (state, {id}) => ({
     ...state,

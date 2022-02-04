@@ -10,6 +10,7 @@ import {ChatService} from "../../services/chat.service";
 import {removeDialog, setNullConverastion} from "../../reducers/dialog/dialog.actions";
 import {Router} from "@angular/router";
 import {ConfirmDeleteComponent} from "./confirm-delete/confirm-delete.component";
+import {SelectParticipantsComponent} from "../select-participants/select-participants.component";
 
 @Component({
   selector: 'app-dialog-details',
@@ -63,6 +64,21 @@ export class DialogDetailsComponent implements OnInit {
         }
       }
     });
+  }
+
+  public addMembers() {
+    this.dialogParticipants$.pipe(take(1)).subscribe(participants => {
+      if (participants) {
+        participants = participants.map((p: participant) => {
+          return {...p, unselect: true};
+        })
+        const isCreateDialog = false;
+        this.dialog.open(SelectParticipantsComponent, {
+          panelClass: 'select-dialog', disableClose: true,
+          data: {participants, isCreateDialog}
+        });
+      }
+    })
   }
 
   public exitFromDialog(dialogId: string, id: number) {

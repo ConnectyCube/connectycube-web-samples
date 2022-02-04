@@ -7,9 +7,8 @@
   </div>
   <div class="select-body">
     <span class="select-info">
-      You can invite one or more participants by selecting the names
-      from the list, search, or invite them by entering their login
-      or fullname in the search bar.
+      You can invite from one to ten participants by selecting the names from the list, search,
+      or invite them by entering their login or full name in the search bar.
     </span>
     <form [formGroup]="SearchForm" (ngSubmit)="SearchSubmit()" action="#" class="search-form">
       <input required minlength="3" formControlName="name" placeholder="Search..." type="text" class="search-input">
@@ -20,7 +19,7 @@
                [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
                  'background-color': user.avatar?'':'skyblue'}">
             <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
-            <button (click)="unselectParticipant($event, user)" type="button" *ngIf="!user.me"
+            <button (click)="unselectParticipant($event, user)" type="button" *ngIf="!user.unselect"
                     class="remove-participant-btn">
               <mat-icon>close</mat-icon>
             </button>
@@ -52,6 +51,6 @@
   </div>
   <div class="selected-footer">
     <button mat-button mat-dialog-close="">Cancel</button>
-    <button (click)="selectAll()" mat-button mat-dialog-close="">Select</button>
+    <button (click)="select()" mat-button mat-dialog-close="">{{data.isCreateDialog ? "Select" : "Add"}}</button>
   </div>
 </div>

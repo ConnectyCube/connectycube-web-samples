@@ -6,7 +6,7 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button *ngIf="isCreator" mat-menu-item>
+        <button (click)="addMembers()" *ngIf="isCreator" mat-menu-item>
           <mat-icon>person_add</mat-icon>
           Add members
         </button>

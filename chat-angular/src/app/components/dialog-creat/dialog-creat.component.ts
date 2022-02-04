@@ -40,19 +40,16 @@ export class DialogCreatComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  public editParticipants() {
-    this.store$.select(selectedParticipantsSelector).pipe(take(1)).subscribe(res => {
-      if (res) {
+  public addParticipants() {
+    this.store$.select(selectedParticipantsSelector).pipe(take(1)).subscribe(participants => {
+      if (participants) {
+        const isCreateDialog = true;
         this.dialog.open(SelectParticipantsComponent, {
           panelClass: 'select-dialog', disableClose: true,
-          data: res
+          data: {participants, isCreateDialog}
         });
       }
     })
-  }
-
-  public addParticipants() {
-    this.dialog.open(SelectParticipantsComponent, {panelClass: 'select-dialog', disableClose: true});
   }
 
   public removeParticipant(e: any, id: number) {
