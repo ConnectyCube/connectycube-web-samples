@@ -35,11 +35,12 @@ export const ChatProvider = ({ children }) => {
         dialogId,
         userId
       );
-      if (userId !== parseInt(localStorage.userId))
+      if (userId !== parseInt(localStorage.userId)) {
         messagesRef.current[dialogId].forEach((message) => {
           message.read = 1;
         });
-      setMessages({ ...messagesRef.current });
+        setMessages({ ...messagesRef.current });
+      }
     };
     ConnectyCube.chat.onMessageTypingListener = function (
       isTyping,
@@ -138,8 +139,8 @@ export const ChatProvider = ({ children }) => {
     };
 
     ConnectyCube.chat.onSystemMessageListener = (msg) => {
-      if (msg.extension.name === "New Dialog") {
-        const filters = { _id: msg.body };
+      if (msg.body === "dialog/NEW_DIALOG") {
+        const filters = { _id: msg.extension.id };
         ConnectyCube.chat.dialog
           .list(filters)
           .then((dialog) => {
@@ -229,26 +230,43 @@ export const ChatProvider = ({ children }) => {
     });
   };
 
+  const addUsersSystemMessage = (command, dialogId, params, userId) => {
+    const msg = {
+      body: command,
+      extension: {
+        id: dialogId,
+        addedParticipantsIds: params?.addedParticipantsIds?.join(),
+        msgCount: params?.msgCount,
+      },
+    };
+
+    ConnectyCube.chat.sendSystemMessage(userId, msg);
+  };
+
   const addUsersToGroup = (userId) => {
-    debugger;
     const dialogId = chosenDialog._id;
     const toUpdateParams = { push_all: { occupants_ids: userId } };
-
     ConnectyCube.chat.dialog
       .update(dialogId, toUpdateParams)
       .then((dialog) => {
-        debugger;
+        const msgCount = chatsRef.current[dialogId].lngth
+        userId.forEach((id) => {
+          addUsersSystemMessage(
+            "dialog/NEW_DIALOG",
+            dialogId,
+            { msgCount },
+            id
+          );
+        });
+
         let dialogToUpdate = chatsRef.current.find((e) => {
           return e._id === dialog._id;
         });
         dialogToUpdate.occupants_ids = dialog.occupants_ids;
         dialogToUpdate.occupants_count = dialog.occupants_ids.length;
-
         setDialogs([...chatsRef.current]);
       })
-      .catch((error) => {
-        debugger;
-      });
+      .catch((error) => {});
   };
 
   const removeUser = (userId) => {
@@ -450,10 +468,13 @@ export const ChatProvider = ({ children }) => {
                   setUsersInGroups({ ...usersInGroupsRef.current });
                 });
               })
-              .catch((error) => {});
+              .catch((error) => {
+                console.log("ОШИБКА");
+              });
           })
           .catch((error) => {
             console.error(error);
+            console.log("ОШИБКА");
           });
       })
       .catch((error) => {
@@ -463,9 +484,9 @@ export const ChatProvider = ({ children }) => {
 
   const dialogSystemMessage = (userId, dialogId) => {
     const msg = {
-      body: `${dialogId}`,
+      body: "dialog/NEW_DIALOG",
       extension: {
-        name: "New Dialog",
+        id: `${dialogId}`,
       },
     };
     ConnectyCube.chat.sendSystemMessage(userId, msg);
@@ -523,23 +544,43 @@ export const ChatProvider = ({ children }) => {
       chosenDialogRef.current = undefined;
       setChosenDialog(chosenDialogRef.current);
     } else {
+      let chat = chatsRef.current.find((chat) => {
+        return chat._id === dialog._id;
+      });
+      chosenDialogRef.current = chat;
+      let was_unread = dialog.unread_messages_count;
+
+      setChosenDialog(dialog);
+      getMessages(dialog)
+        .then(() => {
+          let messages = messagesRef.current[dialog._id];
+          let users = [];
+          for (let i = 1; i <= was_unread; i += 1) {
+            users.push(messages[messages.length - i].sender_id);
+          }
+          const uniqueUsers = new Set(users);
+          uniqueUsers.forEach((id) => {
+            if (id !== parseInt(localStorage.userId)) {
+              readAllChatMessages(id);
+            }
+          });
+          messagesRef.current.reverse();
+        })
+        .catch((error) => {
+          debugger;
+        });
+
+      chosenDialogRef.current = dialog;
+      setChosenDialog(dialog);
+      chosenDialogRef.current.type === 2
+        ? setLastActivity("")
+        : lastActivityCheck();
       chatsRef.current.find((el) => {
         if (el._id === dialog._id) {
           el.unread_messages_count = 0;
         }
       });
       setDialogs([...chatsRef.current]);
-      chosenDialogRef.current = dialog;
-      chosenDialogRef.current.occupants_ids.forEach((id) => {
-        if (id !== parseInt(localStorage.userId)) {
-          readAllChatMessages(id);
-        }
-      });
-
-      setChosenDialog(dialog);
-      chosenDialogRef.current.type === 2
-        ? setLastActivity("")
-        : lastActivityCheck();
     }
   };
 
@@ -581,11 +622,13 @@ export const ChatProvider = ({ children }) => {
           setMessages(messagesRef.current);
           return dialogId;
         } else {
-          messagesRef.current[dialogId].push({
-            message: message.body,
-            sender_id: userId,
-            date_sent: parseInt(message.extension.date_sent),
-          });
+          if (messagesRef.current[dialogId]) {
+            messagesRef.current[dialogId].push({
+              message: message.body,
+              sender_id: userId,
+              date_sent: parseInt(message.extension.date_sent),
+            });
+          }
         }
       } else {
         messagesRef.current[dialogId].push(message);
@@ -621,8 +664,9 @@ export const ChatProvider = ({ children }) => {
 
   const getMessages = (dialog) => {
     return new Promise((resolve, reject) => {
+      chosenDialogRef.current = dialog;
       let key = dialog._id;
-      if (chosenDialog) {
+      if (chosenDialogRef.current) {
         if (messagesRef.current[key] === undefined) {
           const dialogId = dialog._id;
           const params = {
@@ -643,13 +687,13 @@ export const ChatProvider = ({ children }) => {
                     const fileUrl = ConnectyCube.storage.privateUrl(
                       e.attachments[0].uid
                     );
-                    messagesRef.current[key].unshift({
+                    messagesRef.current[key].push({
                       fileUrl: fileUrl,
                       sender_id: e.sender_id,
                       date_sent: e.date_sent,
                     });
                   } else {
-                    messagesRef.current[key].unshift(e);
+                    messagesRef.current[key].push(e);
                   }
 
                   return 0;
@@ -664,6 +708,7 @@ export const ChatProvider = ({ children }) => {
               reject();
             });
         } else {
+          resolve();
           setMessages({ ...messagesRef.current });
         }
       }

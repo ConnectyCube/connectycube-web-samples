@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import "./GroupMember.scss";
 import { MdPersonRemoveAlt1 } from "react-icons/md";
-import ConnectyCube from "connectycube";
 import ChatContext from "../../../../../services/chat-service";
 const GroupMember = (props) => {
   const { userInfo, lastActivity, chosenDialog } = props;

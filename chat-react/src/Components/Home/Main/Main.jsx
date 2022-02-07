@@ -24,7 +24,7 @@ const Main = (props) => {
     lastActivity,
     setDialog,
     removeUser,
-	 searchUsers,
+    searchUsers,
   } = props;
 
   const dialog = chosenDialog;
@@ -40,13 +40,13 @@ const Main = (props) => {
   useEffect(() => {
     setAllMessages();
     setTypingPrevStatus(false);
-    if (dialog) {
-      getMessages(dialog)
-        .then((messages) => {})
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+   //  if (dialog) {
+   //    getMessages(dialog)
+   //      .then((messages) => {})
+   //      .catch((error) => {
+   //        console.error(error);
+   //      });
+   //  }
   }, [dialog]);
 
   useEffect(() => {
@@ -93,6 +93,7 @@ const Main = (props) => {
     } else {
       alert("File format is not supported");
     }
+    e.target.value = "";
   };
 
   const scrollToBottom = () => {
@@ -151,7 +152,7 @@ const Main = (props) => {
       <Profile
         chosenDialog={chosenDialog}
         toggleProfile={toggleProfile}
-		  searchUsers={searchUsers}
+        searchUsers={searchUsers}
         setDialog={setDialog}
         userInfo={dialog}
         lastActivity={lastActivity}

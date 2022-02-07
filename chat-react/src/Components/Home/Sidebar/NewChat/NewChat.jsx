@@ -109,7 +109,6 @@ const NewChat = (props) => {
           {addUsers && occupants > 0 && (
             <button
               onClick={() => {
-                debugger;
                 let users = [];
                 groupOccupants.current.forEach((user) => {
                   users.push(user.id);

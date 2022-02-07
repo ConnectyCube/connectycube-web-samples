@@ -27,7 +27,6 @@ const Home = (props) => {
   } = props.chat;
   const history = useHistory();
   history.location.state = history.location.pathname.split("/")[2];
-
   return (
     <div className="home__container">
       <Sidebar
@@ -49,7 +48,6 @@ const Home = (props) => {
         getMessages={getMessages}
         messages={messages}
 		  searchUsers={searchUsers}
-
         dialogs={dialogs}
         sendMessage={sendMessage}
 		  removeUser={removeUser}
