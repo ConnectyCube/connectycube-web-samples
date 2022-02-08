@@ -1,10 +1,10 @@
 import {Message} from "../../services/config";
-import {createEntityAdapter, EntityState} from "@ngrx/entity";
+import {createEntityAdapter, EntityState, Update} from "@ngrx/entity";
 import {createReducer, on} from "@ngrx/store";
 import {
   addMessage,
   addMessages,
-  updateMessagePhoto, updateMessageSendersName,
+  updateMessagePhoto, updateMessageSendersName, updateMessagesStatus,
   updateMessageStatus,
   updateMessageWidthHeight
 } from "./messages.action";
@@ -40,6 +40,14 @@ export const messagesReducer = createReducer(
       id: msgId,
       changes: {status}
     }, state)
+  }),
+  on(updateMessagesStatus, (state, {msgIds, status}) => {
+    return messagesAdapter.updateMany(msgIds.map((id: string) => {
+      return {
+        id,
+        changes: {status}
+      }
+    }), state)
   }),
   on(updateMessagePhoto, (state, {msgId, photo, id}) => {
     return messagesAdapter.updateOne({

@@ -1,7 +1,7 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {messagesAdapter, messagesState} from "./messages.reducer";
 import {MESSAGES_KEY} from "../index";
-import {getDialogMessages, getUnreadMessageIds} from "../dialog/dialog.selectors";
+import {getDialogMessages, getDialogMessagesByDialogId, getUnreadMessageIdsByBadge} from "../dialog/dialog.selectors";
 import {rxSubscriber} from "rxjs/internal-compatibility";
 
 export const featureSelector = createFeatureSelector<messagesState>(MESSAGES_KEY)
@@ -22,14 +22,24 @@ export const getMessagesSelector = createSelector(
   }
 )
 
-export const getUnreadMessageList = (dialogId: string) =>
+export const getUnreadMessageListByBadge = (dialogId: string) =>
   createSelector(
     getMessageEntities,
-    getUnreadMessageIds({dialogId}),
+    getUnreadMessageIdsByBadge({dialogId}),
     (messages: any, msgIds: any) => {
       return msgIds?.map((id: string) => messages[id]);
     }
   )
+
+export const getUnreadMessageListByStatus = (dialogId: string) =>
+  createSelector(
+    getMessageEntities,
+    getDialogMessagesByDialogId({dialogId}),
+    (messages: any, msgIds: any) => {
+      return msgIds?.filter((id: string) => messages[id].status === "sent" && !messages[id].sender);
+    }
+  )
+
 
 export const getMessageHeight = createSelector(
   getMessageEntities,

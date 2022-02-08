@@ -3,7 +3,7 @@ import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {AuthService} from "../../services/auth.service";
 import {Store} from "@ngrx/store";
 import {MatDialog} from "@angular/material/dialog";
-import {DialogCreatComponent} from "../dialog-creat/dialog-creat.component";
+import {DialogCreateComponent} from "../dialog-create/dialog-create.component";
 import {ChatService} from "../../services/chat.service";
 import {
   dialogsSearchSelector,
@@ -61,7 +61,7 @@ export class DialogsComponent implements OnInit {
   }
 
   public addGroupDialogEvent() {
-    this.dialog.open(DialogCreatComponent, {panelClass: 'create-dialog', disableClose: true});
+    this.dialog.open(DialogCreateComponent, {panelClass: 'create-dialog', disableClose: true});
   }
 
   public moreHandler() {

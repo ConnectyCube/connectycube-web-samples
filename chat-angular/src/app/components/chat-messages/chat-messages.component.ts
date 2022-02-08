@@ -1,6 +1,6 @@
 import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {DeviceDetectorService} from "ngx-device-detector";
-import {Dialog, ItemsHeight, Message} from "../../services/config";
+import {Dialog, imageMIMETypes, ItemsHeight, Message} from "../../services/config";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {Store} from "@ngrx/store";
 import {selectDialogIdRouterParam} from "../../reducers/router.selector";
@@ -23,8 +23,8 @@ import {chatConnectedSelector} from "../../reducers/interface/interface.selector
 import {MeasureService} from "../../services/measure.service";
 import {throttle} from "throttle-typescript";
 import {MatDialog} from "@angular/material/dialog";
-import {DialogDetailsComponent} from "../dialog-details/dialog-details.component";
-import {PrivateDialogDetailsComponent} from "../private-dialog-details/private-dialog-details.component";
+import {GroupChatDetails} from "../group-chat-details/group-chat-details";
+import {UserProfile} from "../user-profile/user-profile";
 
 @Component({
   selector: 'app-chat-messages',
@@ -257,10 +257,10 @@ export class ChatMessagesComponent implements OnInit {
     this.store$.select(dialogFindSelector, {id: dialogId}).pipe(take(1)).subscribe(dialog => {
       if (dialog) {
         if (isGroupChat) {
-          this.dialog.open(DialogDetailsComponent, {panelClass: 'dialog-details', disableClose: true, data: {dialog}});
+          this.dialog.open(GroupChatDetails, {panelClass: 'dialog-details', disableClose: true, data: {dialog}});
         }
         else {
-          this.dialog.open(PrivateDialogDetailsComponent, {panelClass: 'private-dialog-details', disableClose: true, data: {dialog}});
+          this.dialog.open(UserProfile, {panelClass: 'user-profile', disableClose: true, data: {dialog}});
         }
       }
     })
@@ -270,9 +270,14 @@ export class ChatMessagesComponent implements OnInit {
     console.warn(e)
     const file: any = e.target.files[0];
     console.warn(file);
-    if (file) {
+    const isValidFile: boolean = !!file && imageMIMETypes.includes(file.type);
+    console.error(isValidFile);
+    if (isValidFile) {
       this.chatService.sendMsgWithPhoto(file, this.selectedDialog, this.meId);
       this.inputFile.nativeElement.value = '';
+    }
+    else {
+      alert("Can not send this file type");
     }
   }
 

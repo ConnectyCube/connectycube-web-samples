@@ -57,7 +57,7 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
     console.warn(this.selectedParticipant)
   }
 
-  public unselectParticipant(e: any, user: participant) {
+  public unselectParticipant(user: participant) {
     this.store$.dispatch(unSelectParticipant({p: user}));
     this.selectedParticipant = this.selectedParticipant.filter((p: participant) => p.id !== user.id);
   }
@@ -97,7 +97,7 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
               // add dialog to added participants
               else {
                 this.store$.select(getDialogsMsgsCount).pipe(take(1)).subscribe(msgCount => {
-                  const command = "dialog/UPDATE_DIALOG";
+                  const command = "dialog/NEW_DIALOG";
                   this.chatService.sendSystemMsg(id, selectedConversation, command, {msgCount});
                 })
               }

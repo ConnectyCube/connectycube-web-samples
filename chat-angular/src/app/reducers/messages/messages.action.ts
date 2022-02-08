@@ -21,6 +21,12 @@ export const updateMessageStatus = createAction(
   '[MESSAGES] update message status',
   props<{ msgId: string, status: string }>()
 )
+
+export const updateMessagesStatus = createAction(
+  '[MESSAGES] update messages status',
+  props<{ msgIds: Array<string>, status: string }>()
+)
+
 export const updateMessageWidthHeight = createAction(
   '[MESSAGE] update message width and height',
   props<{ msgId: string, width: number, height: number }>()

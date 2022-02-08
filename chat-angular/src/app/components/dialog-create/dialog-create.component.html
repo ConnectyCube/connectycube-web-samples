@@ -39,23 +39,16 @@
           <span class="total-participants">{{(participants$ | async)?.length}}</span>
         </h2>
         <div class="selected-participants">
-          <div *ngFor="let user of (participants$ | async); index as i; trackBy: participantsTrackBy"
-               class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip">
-            <div class="participant-avatar"
-                 [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
-                 'background-color': user.avatar?'':'skyblue'}">
-              <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
-              <button *ngIf="!user.me" (click)="removeParticipant($event,user.id)" class="remove-participant-btn">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-            <div class="participant-info">
-              <div class="participant-name">{{user.full_name}}</div>
-              <mat-icon [ngStyle]="{'color': user.me?'#fea929':'#28b3f2'}">
-                {{user.me ? 'stars' : 'person'}}
-              </mat-icon>
-            </div>
-          </div>
+          <app-participant-info *ngFor="let user of (participants$ | async); index as i; trackBy: participantsTrackBy"
+                                class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip"
+                                (removeParticipantEvent)="removeParticipant($event.id)"
+                                [full_name]="user.full_name"
+                                [isMe]="user.me"
+                                [avatar]="user.avatar"
+                                [id]="user.id"
+                                [participant]="user"
+          >
+          </app-participant-info>
           <button *ngIf="(participants$ | async)!.length === 1" (click)="addParticipants()"
                   class="participant-avatar add-participant-btn">
             <mat-icon>add</mat-icon>
@@ -67,6 +60,7 @@
   <div class="create-footer">
     <button class="footer-close-btn" mat-button mat-dialog-close="">Cancel</button>
     <button class="footer-create-btn" (click)="createDialog()" mat-button mat-dialog-close=""
-            [disabled]="(participants$ | async)!.length < 2 || !CreateForm.valid">Create</button>
+            [disabled]="(participants$ | async)!.length < 2 || !CreateForm.valid">Create
+    </button>
   </div>
 </div>

@@ -3,11 +3,11 @@ import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 import {Dialog} from "../../services/config";
 
 @Component({
-  selector: 'app-private-dialog-details',
-  templateUrl: './private-dialog-details.component.html',
-  styleUrls: ['./private-dialog-details.component.scss']
+  selector: 'app-user-profile',
+  templateUrl: './user-profile.html',
+  styleUrls: ['./user-profile.scss']
 })
-export class PrivateDialogDetailsComponent implements OnInit {
+export class UserProfile implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { dialog: Dialog }) { }
 

@@ -1,12 +1,12 @@
 import {environment} from "../../environments/environment";
 
-export const CREDENTIALS = {
+export const CREDENTIALS: Readonly<any> = {
   appId: Number(environment.APP_ID),
   authKey: environment.AUTH_KEY,
   authSecret: environment.AUTH_SECRET,
 };
 
-export const appConfig = {
+export const appConfig: Readonly<any>  = {
   debug: {mode: 1},
   conference: {server: environment.CONFERENCE_SERVER_ENDPOINT},
   chat: {
@@ -53,4 +53,26 @@ export interface Dialog {
   typingParticipants: Array<{ id: number, name: string }>
 }
 
-export const pathToLoader: string = "../../assets/loader.svg";
+export const pathToLoader: Readonly<string> = "../../assets/loader.svg";
+
+export const imageMIMETypes: ReadonlyArray<string> = [
+  "image/bmp",
+  "image/cis-cod",
+  "image/gif",
+  "image/ief",
+  "image/jpeg",
+  "image/pipeg",
+  "image/svg+xml",
+  "image/tiff",
+  "image/x-cmu-raster",
+  "image/x-cmx",
+  "image/x-icon",
+  "image/x-portable-anymap",
+  "image/x-portable-bitmap",
+  "image/x-portable-graymap",
+  "image/x-portable-pixmap",
+  "image/x-rgb",
+  "image/x-xbitmap",
+  "image/x-xpixmap",
+  "image/x-xwindowdump",
+]

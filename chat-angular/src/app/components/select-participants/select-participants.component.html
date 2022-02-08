@@ -13,24 +13,17 @@
     <form [formGroup]="SearchForm" (ngSubmit)="SearchSubmit()" action="#" class="search-form">
       <input required minlength="3" formControlName="name" placeholder="Search..." type="text" class="search-input">
       <div class="selected-participants">
-        <div *ngFor="let user of selectedParticipant; index as i; trackBy: participantsTrackBy"
-             class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip">
-          <div class="participant-avatar"
-               [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
-                 'background-color': user.avatar?'':'skyblue'}">
-            <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
-            <button (click)="unselectParticipant($event, user)" type="button" *ngIf="!user.unselect"
-                    class="remove-participant-btn">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-          <div class="participant-info">
-            <div class="participant-name">{{user.full_name}}</div>
-            <mat-icon [ngStyle]="{'color': user.me?'#fea929':'#28b3f2'}">
-              {{user.me ? 'stars' : 'person'}}
-            </mat-icon>
-          </div>
-        </div>
+        <app-participant-info
+          *ngFor="let user of selectedParticipant; index as i; trackBy: participantsTrackBy"
+          class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip"
+          (removeParticipantEvent)="unselectParticipant($event)"
+          [full_name]="user.full_name"
+          [isMe]="user.me"
+          [avatar]="user.avatar"
+          [id]="user.id"
+          [participant]="user"
+        >
+        </app-participant-info>
       </div>
     </form>
     <cdk-virtual-scroll-viewport class="searched-participants"

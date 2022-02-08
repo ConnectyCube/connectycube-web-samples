@@ -15,11 +15,11 @@ import {
 import {ChatService} from "../../services/chat.service";
 
 @Component({
-  selector: 'app-dialog-creat',
-  templateUrl: './dialog-creat.component.html',
-  styleUrls: ['./dialog-creat.component.scss']
+  selector: 'app-dialog-create',
+  templateUrl: './dialog-create.component.html',
+  styleUrls: ['./dialog-create.component.scss']
 })
-export class DialogCreatComponent implements OnInit, OnDestroy {
+export class DialogCreateComponent implements OnInit, OnDestroy {
 
   public participants$: Observable<Array<participant>> = this.store$.select(selectedParticipantsSelector);
 
@@ -52,7 +52,7 @@ export class DialogCreatComponent implements OnInit, OnDestroy {
     })
   }
 
-  public removeParticipant(e: any, id: number) {
+  public removeParticipant(id: number) {
     this.store$.dispatch(removeSelectedParticipant({id}));
   }
 

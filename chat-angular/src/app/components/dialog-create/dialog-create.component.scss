@@ -161,52 +161,12 @@
   }
 }
 
-.remove-participant-btn {
-  position: absolute;
-  background: #888888;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  right: 7px;
-  bottom: 21px;
-
-  mat-icon {
-    width: 14px;
-    height: 12px;
-    font-size: 14px;
-  }
-}
-
-.participant-info {
-  display: flex;
-  align-items: center;
-
-  mat-icon {
-    font-size: 12px;
-    line-height: 24px;
-    margin-left: 3px;
-    width: 10px;
-  }
-}
-
 .create-footer {
   display: flex;
   height: 50px;
   align-items: center;
   justify-content: flex-end;
   padding: 0 16px;
-}
-
-.participant-name {
-  color: #000;
-  max-width: 36px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .footer-close-btn {

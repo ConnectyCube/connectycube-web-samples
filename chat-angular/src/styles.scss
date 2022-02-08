@@ -235,6 +235,11 @@ cdk-virtual-scroll-viewport > div {
   overflow: hidden;
 }
 
+.user-profile .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
 .mat-menu-content:not(:empty) {
   padding: 0 !important;
 }

@@ -77,12 +77,22 @@ export const getDialogsTypingParticipant = createSelector(
   }
 )
 
-export const getUnreadMessageIds = (props: { dialogId: string }) =>
+export const getUnreadMessageIdsByBadge = (props: { dialogId: string }) =>
   createSelector(
     getDialogEntities,
     (dialogs: any) => {
       const unreadMessageCount = dialogs[props.dialogId]?.unreadMessage
       return dialogs[props.dialogId]?.msgIds.slice(0, unreadMessageCount);
+    }
+  )
+
+export const getDialogMessagesByDialogId = (props: { dialogId: string }) =>
+  createSelector(
+    getDialogEntities,
+    (dialogs: any) => {
+      if (props.dialogId) {
+        return dialogs[props.dialogId].msgIds;
+      }
     }
   )
 

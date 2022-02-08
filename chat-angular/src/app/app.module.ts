@@ -26,16 +26,17 @@ import {MatButtonModule} from "@angular/material/button";
 import {CustomVirtualScrollDirective} from "./directives/custom-virtual-scroll-strategy-directive";
 import {MatDialogModule} from '@angular/material/dialog';
 import { ModalComponent } from './components/modal/modal.component';
-import { DialogCreatComponent } from './components/dialog-creat/dialog-creat.component';
+import { DialogCreateComponent } from './components/dialog-create/dialog-create.component';
 import {MatMenuModule} from "@angular/material/menu";
 import { SelectParticipantsComponent } from './components/select-participants/select-participants.component';
 import { DialogOneOneComponent } from './components/dialog-one-one/dialog-one-one.component';
 import { DialogComponent } from './components/dialogs/dialog/dialog.component';
 import { MessageComponent } from './components/chat-messages/message/message.component';
-import { DialogDetailsComponent } from './components/dialog-details/dialog-details.component';
-import { ParticipantComponent } from './components/dialog-details/participant/participant.component';
-import { ConfirmDeleteComponent } from './components/dialog-details/confirm-delete/confirm-delete.component';
-import { PrivateDialogDetailsComponent } from './components/private-dialog-details/private-dialog-details.component';
+import { GroupChatDetails } from './components/group-chat-details/group-chat-details';
+import { ParticipantComponent } from './components/group-chat-details/participant/participant.component';
+import { ConfirmDeleteComponent } from './components/group-chat-details/confirm-delete/confirm-delete.component';
+import { UserProfile } from './components/user-profile/user-profile';
+import { ParticipantInfoComponent } from './components/participant-info/participant-info.component';
 
 @NgModule({
   declarations: [
@@ -46,15 +47,16 @@ import { PrivateDialogDetailsComponent } from './components/private-dialog-detai
     ChatMessagesComponent,
     CustomVirtualScrollDirective,
     ModalComponent,
-    DialogCreatComponent,
+    DialogCreateComponent,
     SelectParticipantsComponent,
     DialogOneOneComponent,
     DialogComponent,
     MessageComponent,
-    DialogDetailsComponent,
+    GroupChatDetails,
     ParticipantComponent,
     ConfirmDeleteComponent,
-    PrivateDialogDetailsComponent,
+    UserProfile,
+    ParticipantInfoComponent,
   ],
   imports: [
     BrowserModule,

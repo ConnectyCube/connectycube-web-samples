@@ -21,7 +21,7 @@ import {
   addMessage,
   addMessages,
   updateMessagePhoto,
-  updateMessageSendersName,
+  updateMessageSendersName, updateMessagesStatus,
   updateMessageStatus
 } from "../reducers/messages/messages.action";
 import {participant} from "../reducers/participants/participants.reducer";
@@ -33,7 +33,11 @@ import {
 } from "../reducers/participants/participants.actions";
 import {Router} from "@angular/router";
 import {getParticipant, meSelector} from "../reducers/participants/participants.selectors";
-import {getMessagesSelector, getUnreadMessageList} from "../reducers/messages/messages.selectors";
+import {
+  getMessagesSelector,
+  getUnreadMessageListByBadge,
+  getUnreadMessageListByStatus
+} from "../reducers/messages/messages.selectors";
 import ConnectyCube from "connectycube";
 import {MeasureService} from "./measure.service";
 
@@ -96,7 +100,7 @@ export class ChatService {
       .list(filters)
       .then((result: any) => {
         const dialog: Dialog = builtDialog(result.items[0]);
-        if(msgCount){
+        if (msgCount) {
           dialog.unreadMessage = msgCount;
         }
         this.store$.dispatch(addDialog({dialog}));
@@ -219,10 +223,10 @@ export class ChatService {
       console.warn(msg);
       const dialogId = msg.extension.id;
       switch (msg.body) {
-        case "dialog/UPDATE_DIALOG":
+        case "dialog/NEW_DIALOG":
           this.addDialog(dialogId, +msg.extension.msgCount);
           break;
-        case "dialog/UPDATE_DIALOG_PARTICIPANTS":
+        case "dialog/REMOVE_DIALOG_PARTICIPANTS":
           this.store$.dispatch(updateDialogParticipants({dialogId, userId: msg.userId}));
           break;
         case "dialog/ADD_DIALOG_PARTICIPANTS":
@@ -286,7 +290,23 @@ export class ChatService {
       this.store$.select(selectedConversationSelector).pipe(filter(v => !!v), take(1))
         .subscribe(selectedConversation => {
           if (selectedConversation === dialogId) {
-            this.store$.dispatch(updateMessageStatus({msgId: messageId, status: "read"}));
+            if (messageId) {
+              this.store$.dispatch(updateMessageStatus({msgId: messageId, status: "read"}));
+            }
+            else {
+              this.store$.select(getUnreadMessageListByStatus(dialogId)).pipe(take(1)).subscribe(msgIds => {
+                if (msgIds.length !== 0) {
+                  this.store$.dispatch(updateMessagesStatus({msgIds, status: "read"}));
+                }
+              });
+            }
+          }
+          else {
+            this.store$.select(getUnreadMessageListByStatus(dialogId)).pipe(take(1)).subscribe(msgIds => {
+              if (msgIds.length !== 0) {
+                this.store$.dispatch(updateMessagesStatus({msgIds, status: "read"}));
+              }
+            });
           }
         })
     };
@@ -468,7 +488,7 @@ export class ChatService {
         console.warn(dialog)
         idArray.forEach((ocupantId: number, index: number) => {
           if (index !== 0) {
-            const command = "dialog/UPDATE_DIALOG";
+            const command = "dialog/NEW_DIALOG";
             this.sendSystemMsg(ocupantId, dialog.id, command)
           }
         });
@@ -496,7 +516,7 @@ export class ChatService {
           if (res !== undefined) {
             const thisIsChat = res.some((d: Dialog) => d.id === dialog.id);
             if (!thisIsChat) {
-              const command = "dialog/UPDATE_DIALOG";
+              const command = "dialog/NEW_DIALOG";
               this.sendSystemMsg(ocupantId, dialog.id, command)
               this.store$.dispatch(addDialog({dialog}));
             }
@@ -704,11 +724,13 @@ export class ChatService {
       chat_dialog_id: dialogId,
     };
 
-    this.store$.select(getUnreadMessageList(dialogId)).pipe(filter(v => !!v), take(1))
+    this.store$.select(getUnreadMessageListByBadge(dialogId)).pipe(filter(v => !!v), take(1))
       .subscribe(unreadMessageList => {
         if (unreadMessageList.length !== 0) {
-          unreadMessageList.forEach((msg: Message) => {
-            this.sendReadStatus(msg.id, msg.senderId, dialogId)
+          const userIds: Array<any> = [...new Set(unreadMessageList.map((msg: Message) => msg.senderId))];
+          console.warn(userIds);
+          userIds.forEach((userId: number) => {
+            this.sendReadStatus('', userId, dialogId)
           });
         }
       })

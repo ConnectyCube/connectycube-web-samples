@@ -13,11 +13,11 @@ import {ConfirmDeleteComponent} from "./confirm-delete/confirm-delete.component"
 import {SelectParticipantsComponent} from "../select-participants/select-participants.component";
 
 @Component({
-  selector: 'app-dialog-details',
-  templateUrl: './dialog-details.component.html',
-  styleUrls: ['./dialog-details.component.scss']
+  selector: 'app-group-chat-details',
+  templateUrl: './group-chat-details.html',
+  styleUrls: ['./group-chat-details.scss']
 })
-export class DialogDetailsComponent implements OnInit {
+export class GroupChatDetails implements OnInit {
 
   public dialogParticipants$: Observable<Array<participant>> = this.store$.select(getParticipants);
   public meId: number;
@@ -52,7 +52,7 @@ export class DialogDetailsComponent implements OnInit {
             .then((dialog: any) => {
               console.warn(dialog);
               dialog.occupants_ids.forEach((id: number) => {
-                const command = "dialog/UPDATE_DIALOG_PARTICIPANTS";
+                const command = "dialog/REMOVE_DIALOG_PARTICIPANTS";
                 this.chatService.sendSystemMsg(id, dialogId, command);
               })
               this.setNullConversation();
