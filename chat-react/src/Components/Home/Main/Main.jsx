@@ -40,13 +40,13 @@ const Main = (props) => {
   useEffect(() => {
     setAllMessages();
     setTypingPrevStatus(false);
-   //  if (dialog) {
-   //    getMessages(dialog)
-   //      .then((messages) => {})
-   //      .catch((error) => {
-   //        console.error(error);
-   //      });
-   //  }
+    //  if (dialog) {
+    //    getMessages(dialog)
+    //      .then((messages) => {})
+    //      .catch((error) => {
+    //        console.error(error);
+    //      });
+    //  }
   }, [dialog]);
 
   useEffect(() => {
@@ -66,6 +66,14 @@ const Main = (props) => {
       }
     }
     timer = setTimeout(() => {
+      if (dialog.type === 3) {
+        const occupant = dialog.occupants_ids.filter((e) => {
+          return e !== parseInt(localStorage.userId);
+        });
+        sendTypingStatus(false, occupant[0]);
+      } else {
+        sendTypingStatus(false, dialog._id);
+      }
       setTypingPrevStatus(false);
     }, 5000);
   };

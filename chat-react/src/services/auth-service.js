@@ -49,7 +49,7 @@ class AuthService {
       let creationHour = creationDate.getHours();
       let nowHour = new Date().getHours();
       let nowDay = new Date().getDay();
-      if (nowHour - creationHour >= 1 || nowDay !== creationDay) {
+      if (nowHour - creationHour >= 2 || nowDay !== creationDay) {
         localStorage.removeItem("token");
         defLogin();
       } else {

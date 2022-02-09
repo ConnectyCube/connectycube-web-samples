@@ -10,15 +10,38 @@ export const getTime = (messageTime) => {
       0
     );
     return (
-      d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes()
+      (d.getDate() < 10 ? "0" : "") +
+      d.getDate() +
+      "." +
+      (d.getMonth() < 10 ? "0" : "") +
+      d.getMonth() +
+      "." +
+      d.getFullYear() +
+      ", " +
+      d.getHours() +
+      ":" +
+      (d.getMinutes() < 10 ? "0" : "") +
+      d.getMinutes()
     );
   } else {
     const now = messageTime;
     var json = JSON.stringify(now);
     var dateStr = JSON.parse(json);
     var d = new Date(dateStr);
+
     return (
-      d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes()
+      (d.getDate() < 10 ? "0" : "") +
+      d.getDate() +
+      "." +
+      (d.getMonth() < 10 ? "0" : "") +
+      d.getMonth() +
+      "." +
+      d.getFullYear() +
+      ", " +
+      d.getHours() +
+      ":" +
+      (d.getMinutes() < 10 ? "0" : "") +
+      d.getMinutes()
     );
   }
 };

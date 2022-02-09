@@ -18,28 +18,33 @@ const Profile = (props) => {
     searchUsers,
   } = props;
   const [addUsers, setAddUsers] = useState(false);
-  const close = ()=>{
-	  setAddUsers(false)
-  }
+  const close = () => {
+    setAddUsers(false);
+  };
   let allUsers = [];
+  let opponentId;
   if (userInfo) {
+    opponentId = userInfo.occupants_ids.find((id) => {
+      return id !== parseInt(localStorage.userId);
+    });
+
     allUsers = userInfo.occupants_ids.map((e, index) => {
-      if (usersInGroups[e] && e !== parseInt(localStorage.userId)) {
-        return (
-          <GroupMember
-            userInfo={usersInGroups[e]}
-            chosenDialog={chosenDialog}
-            lastActivity={lastActivity}
-            key={index}
-          />
-        );
-      }
+      return (
+        <GroupMember
+          userInfo={usersInGroups[e]}
+          chosenDialog={chosenDialog}
+          lastActivity={lastActivity}
+          key={index}
+        />
+      );
     });
   }
 
   return (
     <div className={`profile__info ${showProfile ? "show" : ""}`}>
-      {addUsers && <NewChat searchUsers={searchUsers} addUsers={true} close={close} />}
+      {addUsers && (
+        <NewChat searchUsers={searchUsers} addUsers={true} close={close} />
+      )}
       <div className="profile__header">
         <IoIosArrowBack
           onClick={() => {
@@ -66,7 +71,10 @@ const Profile = (props) => {
             )}
             <div className="profile__user-info">
               <p>{userInfo.name ? userInfo.name : "Unknown"}</p>
-              <p className="last__activity">{lastActivity}</p>
+              {userInfo.type !== 2 && (
+                <p className="last__activity">{lastActivity[opponentId]}</p>
+              )}
+
               {userInfo.type === 2 && (
                 <p className="members__count">
                   {userInfo.occupants_ids.length} members

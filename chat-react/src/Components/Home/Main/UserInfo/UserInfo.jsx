@@ -7,6 +7,9 @@ import { BsCameraVideo } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { debug } from "connectycube/lib/cubeConfig";
 import { useHistory } from "react-router";
+import { useState } from "react";
+import { useContext } from "react";
+import ChatContext from "../../../../services/chat-service";
 
 const UserInfo = (props) => {
   const {
@@ -17,8 +20,10 @@ const UserInfo = (props) => {
     toggleProfile,
     usersInGroups,
   } = props;
+  const context = useContext(ChatContext);
+  const [userInfoModal, setUserInfoModal] = useState(false);
   const history = useHistory();
-
+  let opponentId;
   let typersName = [];
   let typingStatus = { isTyping: false };
   if (userInfo.type === 2) {
@@ -34,7 +39,7 @@ const UserInfo = (props) => {
       }
     });
   } else {
-    let opponentId = userInfo.occupants_ids.find(
+    opponentId = userInfo.occupants_ids.find(
       (el) => el !== parseInt(localStorage.userId)
     );
     if (typeStatus[opponentId]) {
@@ -48,8 +53,33 @@ const UserInfo = (props) => {
     }
   }
 
+  const toggleMore = (close) => {
+    if (close) {
+      setUserInfoModal(false);
+    } else {
+      userInfoModal ? setUserInfoModal(false) : setUserInfoModal(true);
+    }
+  };
+
   return (
-    <div className="user__info">
+    <div
+      className="user__info"
+      // onMouseLeave={() => {
+      //   toggleMore(true);
+      // }}
+    >
+      {userInfoModal && (
+        <ul className="more__modal">
+          <li
+            onClick={() => {
+              context.leaveGroupChat(parseInt(localStorage.userId));
+              history.push("/home");
+            }}
+          >
+            Exit chat
+          </li>
+        </ul>
+      )}
       <div className="user__info-main">
         <IoIosArrowBack
           size={32}
@@ -59,6 +89,7 @@ const UserInfo = (props) => {
           }}
           className="user__info-back"
         />
+
         <div className="user__avatar-dialog">
           {userInfo.photo ? (
             <img
@@ -86,12 +117,14 @@ const UserInfo = (props) => {
               typingStatus.isTyping ? (
                 "typing..."
               ) : userInfo.type === 3 ? (
-                <span className="last__activity">{lastActivity}</span>
+                <span className="last__activity">
+                  {lastActivity[opponentId]}
+                </span>
               ) : (
                 "ATAL TYPE 1"
               )
             ) : userInfo.type === 3 ? (
-              <span className="last__activity">{lastActivity}</span>
+              <span className="last__activity">{lastActivity[opponentId]}</span>
             ) : (
               ""
             )}
@@ -110,7 +143,12 @@ const UserInfo = (props) => {
         </div>
       </div>
       <div className="user__info-buttons">
-        <div className="button__more">
+        <div
+          onClick={() => {
+            toggleMore(false);
+          }}
+          className="button__more"
+        >
           <FiMoreHorizontal fontSize={25} />
         </div>
       </div>

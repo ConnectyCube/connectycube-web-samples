@@ -15,6 +15,7 @@ export const ChatProvider = ({ children }) => {
   //   const messagesRef = useRef([]);
   const [connectStatus, setConnectStatus] = useState(false);
   const messagesRef = useRef({});
+  const lastActivityRef = useRef({});
   const usersInGroupsRef = useRef([]);
   const [usersInGroups, setUsersInGroups] = useState();
   const [messages, setMessages] = useState();
@@ -147,6 +148,8 @@ export const ChatProvider = ({ children }) => {
             if (dialog.items[0].type === 2) {
               updateGroupUsers(dialog.items[0].occupants_ids)
                 .then((users) => {
+                  dialog.items[0].unread_messages_count =
+                    msg.extension.msgCount;
                   chatsRef.current.unshift(dialog.items[0]);
                   setDialogs([...chatsRef.current]);
                 })
@@ -162,12 +165,53 @@ export const ChatProvider = ({ children }) => {
         // chatsRef.current.unshift(dialog);
         // setDialogs([...chatsRef.current]);
         // setDialog(dialog);
-      } else if (msg.extension.name === "READ") {
-        let s = msg;
-        messagesRef.current[msg.body].forEach((message) => {
-          message.read = 1;
+      } else if (msg.body === "dialog/UPDATE_DIALOG_PARTICIPANTS") {
+        if (msg.extension.addedParticipantsIds) {
+          let userId = msg.extension.addedParticipantsIds.split(",");
+          userId = userId.map((e) => {
+            return parseInt(e);
+          });
+          const dialog = chatsRef.current.find((e) => {
+            return e._id === msg.extension.id;
+          });
+          let dialogUsers = dialog.occupants_ids.concat(userId);
+          dialogUsers.forEach((user) => {
+            user = parseInt(user);
+          });
+          dialog.occupants_ids = dialogUsers;
+          setDialogs([...chatsRef.current]);
+          console.log(userId);
+        } else {
+          let userIds = msg.extension.updatedParticipants.split(",");
+          userIds = userIds.map((e) => {
+            return parseInt(e);
+          });
+          const dialog = chatsRef.current.find((e) => {
+            return e._id === msg.extension.id;
+          });
+          userIds.forEach((user) => {
+            user = parseInt(user);
+          });
+          dialog.occupants_ids = userIds;
+          setDialogs([...chatsRef.current]);
+          console.log(userIds);
+        }
+      } else if (msg.body === "dialog/REMOVE_DIALOG_PARTICIPANT") {
+        chatsRef.current.forEach((dialog) => {
+          if (dialog._id === msg.extension.id) {
+            dialog.occupants_ids = dialog.occupants_ids.filter((e) => {
+              return e !== msg.userId;
+            });
+          }
         });
-        setMessages({ ...messagesRef.current });
+        setDialogs([...chatsRef.current]);
+      } else if (msg.body === "dialog/REMOVED_FROM_DIALOG") {
+        chatsRef.current = chatsRef.current.filter((dialog) => {
+          return dialog._id !== msg.extension.id;
+        });
+        chosenDialogRef.current = undefined;
+        setChosenDialog(chosenDialogRef.current);
+        setDialogs([...chatsRef.current]);
       }
     };
   };
@@ -230,7 +274,26 @@ export const ChatProvider = ({ children }) => {
     });
   };
 
-  const addUsersSystemMessage = (command, dialogId, params, userId) => {
+  const updateDialogParticipantsSystemMessage = (
+    command,
+    dialogId,
+    params,
+    userId
+  ) => {
+    const msg = {
+      body: command,
+      extension: {
+        id: dialogId,
+        addedParticipantsIds: params?.addedParticipantsIds?.join(),
+        updatedParticipants: params?.updatedParticipants?.join(),
+        msgCount: params?.msgCount,
+      },
+    };
+
+    ConnectyCube.chat.sendSystemMessage(userId, msg);
+  };
+
+  const addedUsersSystemMessage = (command, dialogId, params, userId) => {
     const msg = {
       body: command,
       extension: {
@@ -245,13 +308,23 @@ export const ChatProvider = ({ children }) => {
 
   const addUsersToGroup = (userId) => {
     const dialogId = chosenDialog._id;
+
+    const usersToSendSystemMessage = chosenDialogRef.current.occupants_ids;
     const toUpdateParams = { push_all: { occupants_ids: userId } };
     ConnectyCube.chat.dialog
       .update(dialogId, toUpdateParams)
       .then((dialog) => {
-        const msgCount = chatsRef.current[dialogId].lngth
+        const msgCount = messagesRef.current[dialogId].length;
+        usersToSendSystemMessage.forEach((id) => {
+          updateDialogParticipantsSystemMessage(
+            "dialog/UPDATE_DIALOG_PARTICIPANTS",
+            dialogId,
+            { addedParticipantsIds: userId },
+            id
+          );
+        });
         userId.forEach((id) => {
-          addUsersSystemMessage(
+          addedUsersSystemMessage(
             "dialog/NEW_DIALOG",
             dialogId,
             { msgCount },
@@ -259,32 +332,48 @@ export const ChatProvider = ({ children }) => {
           );
         });
 
-        let dialogToUpdate = chatsRef.current.find((e) => {
-          return e._id === dialog._id;
-        });
-        dialogToUpdate.occupants_ids = dialog.occupants_ids;
-        dialogToUpdate.occupants_count = dialog.occupants_ids.length;
-        setDialogs([...chatsRef.current]);
+        //   let dialogToUpdate = chatsRef.current.find((e) => {
+        //     return e._id === dialog._id;
+        //   });
+        //   dialogToUpdate.occupants_ids = dialog.occupants_ids;
+        //   dialogToUpdate.occupants_count = dialog.occupants_ids.length;
+        //   setDialogs([...chatsRef.current]);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const removeUser = (userId) => {
-    const dialogId = chosenDialog._id;
+    const dialogId = chosenDialogRef.current._id;
     const toUpdateParams = { pull_all: { occupants_ids: [userId] } };
 
     ConnectyCube.chat.dialog
       .update(dialogId, toUpdateParams)
       .then((dialog) => {
-        let dialogToUpdate = chatsRef.current.find((e) => {
-          return e._id === dialog._id;
-        });
-        dialogToUpdate.occupants_ids = dialog.occupants_ids;
-        dialogToUpdate.occupants_count = dialog.occupants_ids.length;
+        const msg = {
+          body: "dialog/REMOVED_FROM_DIALOG",
+          extension: { id: dialogId },
+        };
+        ConnectyCube.chat.sendSystemMessage(userId, msg);
 
-        setDialogs([...chatsRef.current]);
+        let updatedParticipants = chosenDialogRef.current.occupants_ids.filter(
+          (id) => {
+            return id !== userId;
+          }
+        );
+        updatedParticipants.forEach((id) => {
+          updateDialogParticipantsSystemMessage(
+            "dialog/UPDATE_DIALOG_PARTICIPANTS",
+            dialogId,
+            { updatedParticipants },
+            id
+          );
+        });
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const prepareMessageWithAttachmentAndSend = (file) => {
@@ -373,46 +462,50 @@ export const ChatProvider = ({ children }) => {
         .catch((error) => {});
     });
   };
-  const lastActivityCheck = () => {
-    try {
-      let userId = chosenDialogRef.current.occupants_ids.filter(
-        (e) => e !== parseInt(localStorage.userId)
-      );
+  const lastActivityCheck = (id) => {
+    ConnectyCube.chat
+      .getLastUserActivity(id)
+      .then((result) => {
+        const userId = result.userId;
+        const seconds = result.seconds;
 
-      ConnectyCube.chat
-        .getLastUserActivity(userId[0])
-        .then((result) => {
-          const userId = result.userId;
-          const seconds = result.seconds;
-          // 'userId' was 'seconds' ago
+        // 'userId' was 'seconds' ago
 
-          const lastLoggedInTime = new Date(Date.now() - seconds * 1000);
+        const lastLoggedInTime = new Date(Date.now() - seconds * 1000);
 
-          if (seconds <= 30) {
-            setLastActivity(`Online`);
-          } else if (seconds < 3600) {
-            let minutes = Math.ceil(seconds / 60);
-            setLastActivity(`last seen ${minutes} minutes ago`);
+        if (seconds <= 30) {
+          lastActivityRef.current[userId] = `Online`;
+          setLastActivity({ ...lastActivityRef.current });
+        } else if (seconds < 3600) {
+          let minutes = Math.ceil(seconds / 60);
+          lastActivityRef.current[userId] = `last seen ${minutes} minutes ago`;
+
+          setLastActivity({ ...lastActivityRef.current });
+        } else {
+          const dateNow = new Date();
+          const hourNow = dateNow.getHours();
+          let hours = Math.ceil(seconds / 3600);
+          if (hourNow - hours <= 0) {
+            let day = lastLoggedInTime.getUTCDate();
+            let month = lastLoggedInTime.getMonth() + 1;
+            month < 10 ? (month = "0" + month) : (month = month);
+            let year = lastLoggedInTime.getFullYear();
+            lastActivityRef.current[
+              userId
+            ] = `last seen ${day}/${month}/${year}`;
+            setLastActivity({ ...lastActivityRef.current });
           } else {
-            const dateNow = new Date();
-            const hourNow = dateNow.getHours();
-            let hours = Math.ceil(seconds / 3600);
-            if (hourNow - hours <= 0) {
-              let day = lastLoggedInTime.getUTCDate();
-              let month = lastLoggedInTime.getMonth() + 1;
-              month < 10 ? (month = "0" + month) : (month = month);
-              let year = lastLoggedInTime.getFullYear();
-              setLastActivity(`last seen ${day}/${month}/${year}`);
-            } else {
-              setLastActivity(`last seen ${hours} hours ago`);
-            }
+            lastActivityRef.current[userId] = `last seen ${hours} hours ago`;
+
+            setLastActivity({ ...lastActivityRef.current });
           }
-        })
-        .catch((error) => {
-          setLastActivity(`last seen recently`);
-          console.error(error);
-        });
-    } catch {}
+        }
+      })
+      .catch((error) => {
+        lastActivityRef.current[id] = `last seen recently`;
+        setLastActivity({ ...lastActivityRef.current });
+        console.error(error);
+      });
   };
 
   const sendTypingStatus = (isTyping, opponentId) => {
@@ -440,6 +533,37 @@ export const ChatProvider = ({ children }) => {
 
       resolve();
     });
+  };
+
+  const leaveGroupChat = () => {
+    const dialogId = chosenDialogRef.current._id;
+    const msg = {
+      body: "dialog/REMOVE_DIALOG_PARTICIPANT",
+      extension: { id: dialogId },
+    };
+    const toUpdateParams = {
+      pull_all: { occupants_ids: [parseInt(localStorage.userId)] },
+    };
+
+    ConnectyCube.chat.dialog
+      .update(dialogId, toUpdateParams)
+      .then((dialog) => {
+        chosenDialogRef.current.occupants_ids.forEach((id) => {
+          if (id !== parseInt(localStorage.userId)) {
+            ConnectyCube.chat.sendSystemMessage(id, msg);
+          }
+        });
+        chatsRef.current = chatsRef.current.filter((dialog) => {
+          return dialog._id !== chosenDialogRef.current._id;
+        });
+        setDialogs([...chatsRef.current]);
+        chosenDialogRef.current = undefined;
+        setChosenDialog(chosenDialogRef.current);
+      })
+
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getChats = () => {
@@ -564,17 +688,21 @@ export const ChatProvider = ({ children }) => {
               readAllChatMessages(id);
             }
           });
-          messagesRef.current.reverse();
+          messagesRef.current[dialog._id].reverse();
         })
         .catch((error) => {
-          debugger;
+          console.log(error);
         });
+      chosenDialogRef.current.occupants_ids.forEach((id) => {
+        lastActivityCheck(id);
+      });
 
       chosenDialogRef.current = dialog;
       setChosenDialog(dialog);
-      chosenDialogRef.current.type === 2
-        ? setLastActivity("")
-        : lastActivityCheck();
+      // chosenDialogRef.current.type === 2
+      //   ? setLastActivity("")
+      //   : lastActivityCheck();
+
       chatsRef.current.find((el) => {
         if (el._id === dialog._id) {
           el.unread_messages_count = 0;
@@ -737,6 +865,7 @@ export const ChatProvider = ({ children }) => {
         connectStatus,
         removeUser,
         addUsersToGroup,
+        leaveGroupChat,
       }}
     >
       {children}

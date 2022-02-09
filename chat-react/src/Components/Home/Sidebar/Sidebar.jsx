@@ -84,6 +84,8 @@ const Sidebar = (props) => {
     }
   }
 
+  const contextMenuRef = React.createRef();
+
   const newChatOpen = () => {
     let modal = createModalRef.current;
     modal.classList.toggle("hide");
@@ -112,30 +114,46 @@ const Sidebar = (props) => {
   };
   console.warn(chosenDialog);
 
+  const toggleContextMenuHeader = (leave) => {
+    if (leave === "leave") {
+      contextMenuRef.current.classList.add("hide");
+    } else {
+      contextMenuRef.current.classList.toggle("hide");
+    }
+  };
+
   return (
     <div
       className={`sidebar__container ${chosenDialog ? "" : "show"}`}
       onMouseLeave={closeModals}
     >
-      <div className="sidebar__header sidebar-header">
+      <div
+        className="sidebar__header sidebar-header"
+        onMouseLeave={() => {
+          toggleContextMenuHeader("leave");
+        }}
+      >
         {/* <div className="sidebar-header__button">
           <div></div>
         </div> */}
-        <div className="sidebar-user__info">
+        <div
+          className="sidebar-user__info"
+          onClick={() => {
+            toggleContextMenuHeader();
+          }}
+        >
           <span className="sidebar-user__name">{localStorage.login}</span>
-          <div
-            className="sidebar-img__container"
-            onClick={() => {
-              document.getElementById("context__menu").classList.toggle("hide");
-            }}
-          >
-            <img
-              src="https://www.pixsy.com/wp-content/uploads/2021/04/ben-sweet-2LowviVHZ-E-unsplash-1.jpeg"
-              alt=""
-            />
+          <div className="sidebar-img__container">
+            <div id="background" className="user__no-img main">
+              <span className="name">{localStorage.login.slice(0, 2)}</span>
+            </div>
           </div>
         </div>
-        <div id="context__menu" className="context__menu hide modal">
+        <div
+          ref={contextMenuRef}
+          id="context__menu"
+          className="context__menu hide modal"
+        >
           <ul>
             <li
               onClick={() => {

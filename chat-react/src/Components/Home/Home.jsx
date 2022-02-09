@@ -22,10 +22,13 @@ const Home = (props) => {
     typeStatus,
     sendMsgWithPhoto,
     lastActivity,
-	 removeUser,
+    removeUser,
     connectStatus,
   } = props.chat;
   const history = useHistory();
+  if (!chosenDialog) {
+    history.push("/home");
+  }
   history.location.state = history.location.pathname.split("/")[2];
   return (
     <div className="home__container">
@@ -47,10 +50,10 @@ const Home = (props) => {
         className="main__block"
         getMessages={getMessages}
         messages={messages}
-		  searchUsers={searchUsers}
+        searchUsers={searchUsers}
         dialogs={dialogs}
         sendMessage={sendMessage}
-		  removeUser={removeUser}
+        removeUser={removeUser}
         sendMsgWithPhoto={sendMsgWithPhoto}
         chosenDialog={chosenDialog}
         usersInGroups={usersInGroups}

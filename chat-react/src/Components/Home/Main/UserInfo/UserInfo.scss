@@ -18,10 +18,23 @@
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+  & .more__modal {
+    position: absolute;
+    right: 10%;
+    bottom: 25%;
+    padding: 10px 15px;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
 
+    border: 0.5px solid #d9d4d4;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+      rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  }
   & .user__info-main {
     display: flex;
     align-items: center;
+    position: relative;
 
     & .user__info-back {
       display: none;

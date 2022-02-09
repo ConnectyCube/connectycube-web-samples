@@ -114,6 +114,7 @@ const NewChat = (props) => {
                   users.push(user.id);
                 });
                 context.addUsersToGroup(users);
+                close();
               }}
               className="add-users__btn"
             >

@@ -8,6 +8,7 @@ const GroupMember = (props) => {
   const onRemoveUser = () => {
     context.removeUser(userInfo.id);
   };
+
   return (
     <div className="member">
       <div className="member__photo-container">
@@ -28,22 +29,27 @@ const GroupMember = (props) => {
         )}
       </div>
       <div className="member__info-container">
-        <p>{userInfo.full_name ? userInfo.full_name : userInfo.login}</p>
+        <div className="member__name-activity">
+          <p>{userInfo.full_name ? userInfo.full_name : userInfo.login}</p>
+          <p className="last__activity">
+            {userInfo.id !== parseInt(localStorage.userId)
+              ? lastActivity[userInfo.id]
+              : ""}
+          </p>
+        </div>
 
         {userInfo.id !== parseInt(localStorage.userId) &&
           chosenDialog.user_id === parseInt(localStorage.userId) && (
-            <div className="remove__user-container">
+            <div className="remove__user-container" onClick={onRemoveUser}>
               <MdPersonRemoveAlt1
                 className="remove__user"
                 color={"#747474"}
                 size={28}
-                onClick={onRemoveUser}
               />
             </div>
           )}
-        {userInfo.id === parseInt(localStorage.userId) && <span>admin</span>}
+        {userInfo.id === chosenDialog.user_id && <span>admin</span>}
       </div>
-      <p className="last__activity">{lastActivity}</p>
     </div>
   );
 };
