@@ -1,5 +1,4 @@
 import ConnectyCube from "connectycube";
-//import CryptoJS from "crypto-js";
 
 class AuthService {
   arr = [];

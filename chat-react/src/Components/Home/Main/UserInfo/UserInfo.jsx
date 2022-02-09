@@ -64,9 +64,9 @@ const UserInfo = (props) => {
   return (
     <div
       className="user__info"
-      // onMouseLeave={() => {
-      //   toggleMore(true);
-      // }}
+      onMouseLeave={() => {
+        toggleMore(true);
+      }}
     >
       {userInfoModal && (
         <ul className="more__modal">

@@ -1,8 +1,7 @@
 /* eslint-disable */
 import ConnectyCube from "connectycube";
 import { createContext, useRef, useState } from "react";
-// import { isiOS } from "./heplers";
-//import sound from "../sounds/notification_sound.mp3";
+
 
 const ChatContext = createContext();
 export default ChatContext;
@@ -12,7 +11,7 @@ export const ChatProvider = ({ children }) => {
   const chosenDialogRef = useRef();
   const [chosenDialog, setChosenDialog] = useState();
   const [dialogs, setDialogs] = useState();
-  //   const messagesRef = useRef([]);
+ 
   const [connectStatus, setConnectStatus] = useState(false);
   const messagesRef = useRef({});
   const lastActivityRef = useRef({});
@@ -124,19 +123,7 @@ export const ChatProvider = ({ children }) => {
       } else {
         addMessageToStore(message, message.dialog_id, userId);
       }
-      // if (!isiOS()) {
-      //   if (userId !== chatParticipantsRef.current[0].userId) {
-      //     let audio = new Audio(sound);
-      //     audio.play();
-      //   }
-      // }
-      // message.sender_id = userId;
-      // message.message = message.body;
-      // processMessages([message], chatParticipantsRef.current).then((msgs) => {
-      //   console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
-      //   messagesRef.current = messagesRef.current.concat(msgs);
-      //   setMessages(messagesRef.current);
-      // });
+     
     };
 
     ConnectyCube.chat.onSystemMessageListener = (msg) => {
@@ -162,9 +149,7 @@ export const ChatProvider = ({ children }) => {
             }
           })
           .catch((error) => {});
-        // chatsRef.current.unshift(dialog);
-        // setDialogs([...chatsRef.current]);
-        // setDialog(dialog);
+        
       } else if (msg.body === "dialog/UPDATE_DIALOG_PARTICIPANTS") {
         if (msg.extension.addedParticipantsIds) {
           let userId = msg.extension.addedParticipantsIds.split(",");
@@ -332,12 +317,7 @@ export const ChatProvider = ({ children }) => {
           );
         });
 
-        //   let dialogToUpdate = chatsRef.current.find((e) => {
-        //     return e._id === dialog._id;
-        //   });
-        //   dialogToUpdate.occupants_ids = dialog.occupants_ids;
-        //   dialogToUpdate.occupants_count = dialog.occupants_ids.length;
-        //   setDialogs([...chatsRef.current]);
+        
       })
       .catch((error) => {
         console.log(error);
@@ -699,10 +679,7 @@ export const ChatProvider = ({ children }) => {
 
       chosenDialogRef.current = dialog;
       setChosenDialog(dialog);
-      // chosenDialogRef.current.type === 2
-      //   ? setLastActivity("")
-      //   : lastActivityCheck();
-
+    
       chatsRef.current.find((el) => {
         if (el._id === dialog._id) {
           el.unread_messages_count = 0;
@@ -806,7 +783,7 @@ export const ChatProvider = ({ children }) => {
           ConnectyCube.chat.message
             .list(params)
             .then((messages) => {
-              // messagesRef.current = [];
+             
               if (messages.items) {
                 messagesRef.current[key] = new Array();
 

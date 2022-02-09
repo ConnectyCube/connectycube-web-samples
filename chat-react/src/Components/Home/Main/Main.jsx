@@ -40,13 +40,7 @@ const Main = (props) => {
   useEffect(() => {
     setAllMessages();
     setTypingPrevStatus(false);
-    //  if (dialog) {
-    //    getMessages(dialog)
-    //      .then((messages) => {})
-    //      .catch((error) => {
-    //        console.error(error);
-    //      });
-    //  }
+  
   }, [dialog]);
 
   useEffect(() => {
@@ -108,7 +102,6 @@ const Main = (props) => {
     animateScroll.scrollToBottom({
       containerId: messagesRef.current.id,
     });
-    //  messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
 
   useEffect(() => {

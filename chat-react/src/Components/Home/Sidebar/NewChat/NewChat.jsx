@@ -99,7 +99,6 @@ const NewChat = (props) => {
               className="create__group-btn"
               onClick={() => {
                 setCreate(true);
-                //  startGroupChat(groupOccupants.current);
               }}
               type="button"
             >
