@@ -1,3 +1,8 @@
+<div *ngIf="isGroupChat && senderName" class="participant-avatar"
+     [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
+                 'background-color': avatar?'':'skyblue'}">
+  <p>{{senderName.slice(0, 2).toUpperCase()}}</p>
+</div>
 <div [ngClass]="senderName?'them':'me'"
      class="message">
             <span class="message-name" [ngClass]="senderName?'them':'me'">

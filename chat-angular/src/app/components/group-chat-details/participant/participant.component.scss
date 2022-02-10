@@ -51,6 +51,18 @@
   font-size: 11px;
 }
 
+.participant-remove {
+  position: absolute;
+  background: transparent;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  mat-icon {
+    color: red;
+  }
+}
+
 .participant-creator {
   position: absolute;
   right: 0;

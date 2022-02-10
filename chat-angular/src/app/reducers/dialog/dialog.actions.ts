@@ -66,9 +66,14 @@ export const updateDialogLastMessage = createAction(
   props<{ dialogId: string, lastMessage: string, lastMessageDate: number, lastMessageUserId: number }>()
 )
 
+export const updateDialogParticipant = createAction(
+  '[DIALOG] update dialog participant',
+  props<{ dialogId: string, userId: number }>()
+)
+
 export const updateDialogParticipants = createAction(
   '[DIALOG] update dialog participants',
-  props<{ dialogId: string, userId: number }>()
+  props<{ dialogId: string, userIds: Array<number> }>()
 )
 
 export const addDialogParticipants = createAction(

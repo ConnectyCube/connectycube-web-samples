@@ -1,3 +1,28 @@
+.participant-avatar {
+  position: absolute;
+  bottom: 50%;
+  left: -45px;
+  transform: scale(1, -1) translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  p {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .message-container {
   display: flex;
   justify-content: flex-end;
@@ -116,4 +141,10 @@ cdk-virtual-scroll-viewport {
   position: absolute;
   bottom: -11px;
   right: -7px;
+}
+
+@media screen and (max-width: 576px) {
+  .participant-avatar{
+    display: none;
+  }
 }

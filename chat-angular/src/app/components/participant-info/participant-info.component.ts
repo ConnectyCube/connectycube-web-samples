@@ -15,13 +15,14 @@ export class ParticipantInfoComponent implements OnInit {
   @Input() avatar: string | null;
   @Input() isMe: boolean;
   @Input() participant: participant;
+  @Input() unselected: boolean | undefined;
 
   @Output() removeParticipantEvent: EventEmitter<participant> = new EventEmitter<participant>();
 
   constructor(private store$: Store) {
   }
 
-  removeParticipant() {
+  removeParticipant(e: any) {
     this.removeParticipantEvent.emit(this.participant);
   }
 

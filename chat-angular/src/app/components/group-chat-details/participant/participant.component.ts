@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {isToday} from "../../../services/utilities";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs";
@@ -19,11 +19,18 @@ export class ParticipantComponent implements OnInit, OnChanges {
   @Input() meId: number
   @Input() creatorId: number
 
+  @Output() removeParticipantEvent: EventEmitter<number> = new EventEmitter<number>();
+
   public lastActivityStatus: string = "";
   public lastActivity$: Observable<number>;
   public isCreator: boolean;
+  public meIsCreator: boolean;
 
   constructor(private store$: Store, private chatService: ChatService) {
+  }
+
+  public removeParticipant(participantId: number) {
+    this.removeParticipantEvent.emit(participantId);
   }
 
   public getLastActivity() {
@@ -62,6 +69,7 @@ export class ParticipantComponent implements OnInit, OnChanges {
     console.warn(changes);
     if (changes.creatorId) {
       this.isCreator = this.id === this.creatorId;
+      this.meIsCreator = this.creatorId === this.meId;
     }
     if (changes.lastActivity && changes.lastActivity.currentValue !== changes.lastActivity.previousValue) {
       this.getLastActivity();

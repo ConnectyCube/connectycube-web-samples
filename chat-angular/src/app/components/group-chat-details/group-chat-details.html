@@ -10,7 +10,7 @@
           <mat-icon>person_add</mat-icon>
           Add members
         </button>
-        <button (click)="exitFromDialog(data.dialog.id,meId)" mat-dialog-close="" mat-menu-item>
+        <button (click)="removeFromDialog(data.dialog.id,meId)" mat-dialog-close="" mat-menu-item>
           <mat-icon>exit_to_app</mat-icon>
           Exit Chat
         </button>
@@ -41,6 +41,7 @@
         <app-participant class="participant-item"
                          *cdkVirtualFor="let user of (dialogParticipants$ | async); index as i;
                          trackBy: participantsTrackBy"
+                         (removeParticipantEvent)="removeFromDialog(data.dialog.id,$event)"
                          [id]="user.id"
                          [avatar]="user.avatar"
                          [full_name]="user.full_name"

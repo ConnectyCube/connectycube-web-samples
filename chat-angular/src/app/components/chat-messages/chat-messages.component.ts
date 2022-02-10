@@ -260,7 +260,11 @@ export class ChatMessagesComponent implements OnInit {
           this.dialog.open(GroupChatDetails, {panelClass: 'dialog-details', disableClose: true, data: {dialog}});
         }
         else {
-          this.dialog.open(UserProfile, {panelClass: 'user-profile', disableClose: true, data: {dialog}});
+          this.dialog.open(UserProfile, {
+            panelClass: 'user-profile',
+            disableClose: true,
+            data: {dialog, meId: this.meId}
+          });
         }
       }
     })

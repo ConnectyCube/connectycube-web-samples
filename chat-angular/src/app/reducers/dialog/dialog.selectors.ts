@@ -36,7 +36,12 @@ export const getDialogsParticipantIds = createSelector(
   getDialogEntities,
   selectedConversationSelector,
   (dialogs: any, dialogId: any) => {
-    return dialogs[dialogId].participantIds;
+    const participantsIds: Array<number> = dialogs[dialogId].participantIds;
+    const creatorId = dialogs[dialogId].creatorId;
+    if (participantsIds.includes(creatorId)) {
+      return [...new Set([...[creatorId, ...participantsIds]])];
+    }
+    return participantsIds;
   }
 )
 

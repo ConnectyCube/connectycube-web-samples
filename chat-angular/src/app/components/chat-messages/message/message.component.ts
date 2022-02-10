@@ -7,13 +7,14 @@ import {
   OnInit,
   SimpleChanges
 } from '@angular/core';
+import {Store} from "@ngrx/store";
 
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnChanges {
 
   @Input() id: string;
   @Input() senderId: number;
@@ -27,9 +28,12 @@ export class MessageComponent implements OnInit {
   @Input() meId: number;
   @Input() isGroupChat: boolean;
 
-  public h = 100;
+  public avatar: string;
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private store$: Store
+  ) {
   }
 
   public getDateMessage(date_sent: number): string {
@@ -50,6 +54,14 @@ export class MessageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.senderId) {
+      if (changes.senderId.currentValue !== changes.senderId.previousValue) {
+
+      }
+    }
   }
 
 }

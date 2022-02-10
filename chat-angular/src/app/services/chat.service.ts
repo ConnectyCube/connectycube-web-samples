@@ -10,7 +10,12 @@ import {
   addOneUnreadMessage,
   removeTypingParticipant,
   updateDialogLastMessage,
-  readDialogAllMessages, updateMessageId, updateDialogParticipants, addDialogParticipants
+  readDialogAllMessages,
+  updateMessageId,
+  updateDialogParticipant,
+  addDialogParticipants,
+  updateDialogParticipants,
+  removeDialog, setNullConverastion
 } from "../reducers/dialog/dialog.actions";
 import {
   dialogsSelector,
@@ -226,8 +231,8 @@ export class ChatService {
         case "dialog/NEW_DIALOG":
           this.addDialog(dialogId, +msg.extension.msgCount);
           break;
-        case "dialog/REMOVE_DIALOG_PARTICIPANTS":
-          this.store$.dispatch(updateDialogParticipants({dialogId, userId: msg.userId}));
+        case "dialog/REMOVE_DIALOG_PARTICIPANT":
+          this.store$.dispatch(updateDialogParticipant({dialogId, userId: msg.userId}));
           break;
         case "dialog/ADD_DIALOG_PARTICIPANTS":
           const addedParticipantsIds = msg.extension.addedParticipantsIds.split(',').map(Number);
@@ -250,6 +255,20 @@ export class ChatService {
               console.error(error);
             })
           this.store$.dispatch(addDialogParticipants({dialogId, userIds: addedParticipantsIds}));
+          break;
+        case "dialog/UPDATE_DIALOG_PARTICIPANTS":
+          const updatedParticipants = msg.extension.updatedParticipants.split(',').map(Number);
+          this.store$.dispatch(updateDialogParticipants({dialogId, userIds: updatedParticipants}));
+          break;
+        case "dialog/REMOVED_FROM_DIALOG":
+          this.store$.select(selectedConversationSelector)
+            .pipe(take(1)).subscribe(selectedConversation => {
+            if (selectedConversation === dialogId) {
+              this.router.navigateByUrl("/chat/");
+              this.store$.dispatch(setNullConverastion());
+            }
+            this.store$.dispatch(removeDialog({id: dialogId}));
+          })
           break;
       }
     };
@@ -679,7 +698,8 @@ export class ChatService {
       extension: {
         id: dialogId,
         addedParticipantsIds: params?.addedParticipantsIds?.join(),
-        msgCount: params?.msgCount
+        msgCount: params?.msgCount,
+        updatedParticipants: params?.updatedParticipants?.join()
       }
     };
 
@@ -770,7 +790,7 @@ export class ChatService {
     }
   }
 
-  public exitFromChat(dialogId: string, ocupantsIds: Array<number>) {
+  public removeParticipantFromChat(dialogId: string, ocupantsIds: Array<number>) {
     const toUpdateParams = {pull_all: {occupants_ids: ocupantsIds}};
 
     return ConnectyCube.chat.dialog

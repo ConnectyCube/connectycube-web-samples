@@ -52,6 +52,14 @@
   right: 7px;
   bottom: 21px;
 
+  &:focus{
+    color: red;
+  }
+
+  &:active{
+    color: blue;
+  }
+
   mat-icon {
     width: 14px;
     height: 14px;

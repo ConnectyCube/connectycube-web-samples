@@ -48,15 +48,29 @@ export class GroupChatDetails implements OnInit {
       if (result) {
         if (dialogId && id) {
           this.chatService.sendStopTypingStatus(this.data.dialog);
-          this.chatService.exitFromChat(dialogId, [id])
+          this.chatService.removeParticipantFromChat(dialogId, [id])
             .then((dialog: any) => {
               console.warn(dialog);
-              dialog.occupants_ids.forEach((id: number) => {
-                const command = "dialog/REMOVE_DIALOG_PARTICIPANTS";
+              //Participant exit
+              if (id === this.meId) {
+                dialog.occupants_ids.forEach((id: number) => {
+                  const command = "dialog/REMOVE_DIALOG_PARTICIPANT";
+                  this.chatService.sendSystemMsg(id, dialogId, command);
+                })
+                this.setNullConversation();
+                this.store$.dispatch(removeDialog({id: dialogId}));
+              }
+              //Admin delete participant
+              else {
+                const command = "dialog/REMOVED_FROM_DIALOG";
                 this.chatService.sendSystemMsg(id, dialogId, command);
-              })
-              this.setNullConversation();
-              this.store$.dispatch(removeDialog({id: dialogId}));
+
+                dialog.occupants_ids.forEach((id: number) => {
+                  const command = "dialog/UPDATE_DIALOG_PARTICIPANTS";
+                  const updatedParticipants: Array<number> = dialog.occupants_ids;
+                  this.chatService.sendSystemMsg(id, dialogId, command, {updatedParticipants});
+                })
+              }
             })
             .catch((error: any) => {
               console.error(error);
@@ -68,6 +82,7 @@ export class GroupChatDetails implements OnInit {
 
   public addMembers() {
     this.dialogParticipants$.pipe(take(1)).subscribe(participants => {
+      console.warn(participants)
       if (participants) {
         participants = participants.map((p: participant) => {
           return {...p, unselect: true};
@@ -81,7 +96,7 @@ export class GroupChatDetails implements OnInit {
     })
   }
 
-  public exitFromDialog(dialogId: string, id: number) {
+  public removeFromDialog(dialogId: string, id: number) {
     this.openDialog(dialogId, id);
   }
 

@@ -2,7 +2,7 @@
      [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
                  'background-color': avatar?'':'skyblue'}">
   <p>{{full_name.slice(0, 2).toUpperCase()}}</p>
-  <button *ngIf="!isMe" (click)="removeParticipant()" class="remove-participant-btn">
+  <button *ngIf="!unselected" type="button" (click)="removeParticipant($event)" class="remove-participant-btn">
     <mat-icon>close</mat-icon>
   </button>
 </div>

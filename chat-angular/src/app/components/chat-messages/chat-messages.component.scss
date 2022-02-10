@@ -22,12 +22,12 @@
         background: transparent;
       }
 
-      &__wrap{
+      &__wrap {
         display: flex;
         align-items: center;
         width: 100%;
 
-        &:hover{
+        &:hover {
           cursor: pointer;
         }
       }
@@ -110,6 +110,10 @@
   overflow-y: hidden;
 }
 
+app-message {
+  position: relative;
+}
+
 .chat-form {
   width: 100%;
   padding: 10px;
@@ -128,7 +132,6 @@
   border-radius: 6px;
   padding: 9px 10px;
   min-height: 46px !important;
-  font-family: "Source Sans Pro";
   font-size: 16px;
   -webkit-appearance: none;
   resize: none;
@@ -187,15 +190,15 @@
   }
 }
 
-.message-container.me{
+.message-container.me {
   justify-content: flex-end;
 }
-.message-container.them{
+
+.message-container.them {
   justify-content: flex-start;
 }
 
 .message {
-  max-width: 100%;
   transform: scale(1, -1);
   line-height: 1.25;
   max-width: 80%;
