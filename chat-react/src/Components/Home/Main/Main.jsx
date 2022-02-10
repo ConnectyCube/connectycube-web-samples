@@ -10,6 +10,7 @@ import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
 import Profile from "./Profile/Profile";
 import { useHistory } from "react-router";
+import { useRef } from "react";
 
 const Main = (props) => {
   const {
@@ -33,14 +34,25 @@ const Main = (props) => {
   const messageRef = React.createRef();
   const messagesRef = React.createRef();
   const [typingPrevStatus, setTypingPrevStatus] = useState();
+  const typingPrevStatusRef = useRef();
   const [allMessages, setAllMessages] = useState();
   const history = useHistory();
   let timer;
-
+  window.onbeforeunload = function (event) {
+    if (typingPrevStatusRef.current) {
+      if (dialog.type === 3) {
+        const occupant = dialog.occupants_ids.filter((e) => {
+          return e !== parseInt(localStorage.userId);
+        });
+        sendTypingStatus(false, occupant[0]);
+      } else {
+        sendTypingStatus(false, dialog._id);
+      }
+    }
+  };
   useEffect(() => {
     setAllMessages();
     setTypingPrevStatus(false);
-  
   }, [dialog]);
 
   useEffect(() => {
@@ -48,8 +60,9 @@ const Main = (props) => {
   }, [allMessages]);
   const startTyping = () => {
     clearTimeout(timer);
-    if (!typingPrevStatus) {
-      setTypingPrevStatus(true);
+
+    if (!typingPrevStatusRef.current) {
+      typingPrevStatusRef.current = true;
       if (dialog.type === 3) {
         const occupant = dialog.occupants_ids.filter((e) => {
           return e !== parseInt(localStorage.userId);
@@ -60,16 +73,18 @@ const Main = (props) => {
       }
     }
     timer = setTimeout(() => {
-      if (dialog.type === 3) {
-        const occupant = dialog.occupants_ids.filter((e) => {
-          return e !== parseInt(localStorage.userId);
-        });
-        sendTypingStatus(false, occupant[0]);
-      } else {
-        sendTypingStatus(false, dialog._id);
+      if (typingPrevStatusRef.current) {
+        typingPrevStatusRef.current = false;
+        if (dialog.type === 3) {
+          const occupant = dialog.occupants_ids.filter((e) => {
+            return e !== parseInt(localStorage.userId);
+          });
+          sendTypingStatus(false, occupant[0]);
+        } else {
+          sendTypingStatus(false, dialog._id);
+        }
       }
-      setTypingPrevStatus(false);
-    }, 5000);
+    }, 3000);
   };
 
   const toggleProfile = () => {
@@ -92,6 +107,16 @@ const Main = (props) => {
       type === "jpeg"
     ) {
       sendMsgWithPhoto(file, url);
+      if (typingPrevStatusRef.current) {
+        if (dialog.type === 3) {
+          const occupant = dialog.occupants_ids.filter((e) => {
+            return e !== parseInt(localStorage.userId);
+          });
+          sendTypingStatus(false, occupant[0]);
+        } else {
+          sendTypingStatus(false, dialog._id);
+        }
+      }
     } else {
       alert("File format is not supported");
     }
@@ -124,12 +149,19 @@ const Main = (props) => {
         }
       }
     }
-  }, [messages]);
+  }, [messages, usersInGroups]);
 
   const onSendMessage = (e) => {
     const opponentId = dialog.occupants_ids.filter(
       (id) => id !== parseInt(localStorage.userId)
     )[0];
+    if (typingPrevStatusRef.current) {
+      if (dialog.type === 3) {
+        sendTypingStatus(false, opponentId);
+      } else {
+        sendTypingStatus(false, dialog._id);
+      }
+    }
     if (messageRef.current.value.trim()) {
       let message = messageRef.current.value.replaceAll("\n+", "\n");
       message = message.replaceAll("((?!\n+)\\s+)", " ");

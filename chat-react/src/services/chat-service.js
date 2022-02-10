@@ -2,7 +2,6 @@
 import ConnectyCube from "connectycube";
 import { createContext, useRef, useState } from "react";
 
-
 const ChatContext = createContext();
 export default ChatContext;
 
@@ -11,7 +10,7 @@ export const ChatProvider = ({ children }) => {
   const chosenDialogRef = useRef();
   const [chosenDialog, setChosenDialog] = useState();
   const [dialogs, setDialogs] = useState();
- 
+  const [gettingUsers, setGettingUsers] = useState(false);
   const [connectStatus, setConnectStatus] = useState(false);
   const messagesRef = useRef({});
   const lastActivityRef = useRef({});
@@ -123,7 +122,6 @@ export const ChatProvider = ({ children }) => {
       } else {
         addMessageToStore(message, message.dialog_id, userId);
       }
-     
     };
 
     ConnectyCube.chat.onSystemMessageListener = (msg) => {
@@ -148,9 +146,26 @@ export const ChatProvider = ({ children }) => {
               setDialogs([...chatsRef.current]);
             }
           })
-          .catch((error) => {});
-        
+          .catch((error) => {
+            console.log(error);
+          });
       } else if (msg.body === "dialog/UPDATE_DIALOG_PARTICIPANTS") {
+        if (msg.extension.updatedParticipants) {
+          let userIds = msg.extension.updatedParticipants.split(",");
+          userIds = userIds.map((e) => {
+            return parseInt(e);
+          });
+          const dialog = chatsRef.current.find((e) => {
+            return e._id === msg.extension.id;
+          });
+          userIds.forEach((user) => {
+            user = parseInt(user);
+          });
+          dialog.occupants_ids = userIds;
+          setDialogs([...chatsRef.current]);
+          console.log(userIds);
+        }
+      } else if (msg.body === "dialog/ADD_DIALOG_PARTICIPANTS") {
         if (msg.extension.addedParticipantsIds) {
           let userId = msg.extension.addedParticipantsIds.split(",");
           userId = userId.map((e) => {
@@ -166,20 +181,6 @@ export const ChatProvider = ({ children }) => {
           dialog.occupants_ids = dialogUsers;
           setDialogs([...chatsRef.current]);
           console.log(userId);
-        } else {
-          let userIds = msg.extension.updatedParticipants.split(",");
-          userIds = userIds.map((e) => {
-            return parseInt(e);
-          });
-          const dialog = chatsRef.current.find((e) => {
-            return e._id === msg.extension.id;
-          });
-          userIds.forEach((user) => {
-            user = parseInt(user);
-          });
-          dialog.occupants_ids = userIds;
-          setDialogs([...chatsRef.current]);
-          console.log(userIds);
         }
       } else if (msg.body === "dialog/REMOVE_DIALOG_PARTICIPANT") {
         chatsRef.current.forEach((dialog) => {
@@ -244,6 +245,7 @@ export const ChatProvider = ({ children }) => {
         ConnectyCube.users
           .get(params)
           .then((result) => {
+            debugger;
             result.items.forEach((user) => {
               usersInGroupsRef.current[user.user.id] = user.user;
               setUsersInGroups({ ...usersInGroupsRef.current });
@@ -302,7 +304,7 @@ export const ChatProvider = ({ children }) => {
         const msgCount = messagesRef.current[dialogId].length;
         usersToSendSystemMessage.forEach((id) => {
           updateDialogParticipantsSystemMessage(
-            "dialog/UPDATE_DIALOG_PARTICIPANTS",
+            "dialog/ADD_DIALOG_PARTICIPANTS",
             dialogId,
             { addedParticipantsIds: userId },
             id
@@ -316,8 +318,6 @@ export const ChatProvider = ({ children }) => {
             id
           );
         });
-
-        
       })
       .catch((error) => {
         console.log(error);
@@ -498,7 +498,6 @@ export const ChatProvider = ({ children }) => {
     return new Promise((resolve, reject) => {
       chatsRef.current = result.items;
       setDialogs([...chatsRef.current]);
-
       result.items.forEach((dialog) => {
         if (dialog.type === 2) {
           dialog.occupants_ids.forEach((userId) => {
@@ -617,7 +616,6 @@ export const ChatProvider = ({ children }) => {
         });
         chatsRef.current.unshift(dialog);
         setDialogs([...chatsRef.current]);
-        setDialog(dialog);
       })
       .catch((error) => {});
   };
@@ -643,6 +641,8 @@ export const ChatProvider = ({ children }) => {
       .catch((error) => {});
   };
 
+  const addDeletedUsers = () => {};
+
   const setDialog = (dialog) => {
     if (dialog === "close") {
       chosenDialogRef.current = undefined;
@@ -662,6 +662,17 @@ export const ChatProvider = ({ children }) => {
           for (let i = 1; i <= was_unread; i += 1) {
             users.push(messages[messages.length - i].sender_id);
           }
+          let deletedUsers = [];
+          messagesRef.current[dialog._id].forEach((message) => {
+            if (!usersInGroupsRef.current[message.sender_id]) {
+              deletedUsers.push(message.sender_id);
+            }
+          });
+          deletedUsers = new Set(deletedUsers);
+          if (deletedUsers) {
+            updateGroupUsers(deletedUsers);
+          }
+
           const uniqueUsers = new Set(users);
           uniqueUsers.forEach((id) => {
             if (id !== parseInt(localStorage.userId)) {
@@ -679,7 +690,7 @@ export const ChatProvider = ({ children }) => {
 
       chosenDialogRef.current = dialog;
       setChosenDialog(dialog);
-    
+
       chatsRef.current.find((el) => {
         if (el._id === dialog._id) {
           el.unread_messages_count = 0;
@@ -783,7 +794,6 @@ export const ChatProvider = ({ children }) => {
           ConnectyCube.chat.message
             .list(params)
             .then((messages) => {
-             
               if (messages.items) {
                 messagesRef.current[key] = new Array();
 

@@ -3,9 +3,14 @@ import "./Message.scss";
 import { getTime } from "../../../../services/helpers";
 /* eslint-disable */
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
+import { useEffect } from "react";
 const Message = (props) => {
   const { message, dialogInfo, usersInGroups } = props;
   const time = getTime(message.date_sent);
+  const noName = "NoName";
+
+  
+
   return (
     <div
       className={`message ${
@@ -15,12 +20,16 @@ const Message = (props) => {
       {dialogInfo.type === 2 && (
         <div className="user__img-container">
           {dialogInfo.type === 2 ? (
-            usersInGroups[message.sender_id].avatar ? (
-              <img src={`${usersInGroups[message.sender_id].avatar}`} />
+            usersInGroups[message.sender_id] ? (
+              usersInGroups[message.sender_id].avatar ? (
+                <img src={`${usersInGroups[message.sender_id].avatar}`} />
+              ) : (
+                <div className="user-no-img">
+                  {usersInGroups[message.sender_id].full_name.slice(0, 2)}
+                </div>
+              )
             ) : (
-              <div className="user-no-img">
-                {usersInGroups[message.sender_id].full_name.slice(0, 2)}
-              </div>
+              <div className="user-no-img">{noName.slice(0, 2)}</div>
             )
           ) : (
             ""
@@ -32,9 +41,11 @@ const Message = (props) => {
           {message.sender_id === parseInt(localStorage.userId)
             ? "You"
             : dialogInfo.type === 2
-            ? usersInGroups[message.sender_id].full_name
+            ? usersInGroups[message.sender_id]
               ? usersInGroups[message.sender_id].full_name
-              : usersInGroups[message.sender_id].login
+                ? usersInGroups[message.sender_id].full_name
+                : usersInGroups[message.sender_id].login
+              : noName
             : dialogInfo.name}
         </span>
         <div>
