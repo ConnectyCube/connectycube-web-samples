@@ -794,6 +794,7 @@ export const ChatProvider = ({ children }) => {
           ConnectyCube.chat.message
             .list(params)
             .then((messages) => {
+              debugger;
               if (messages.items) {
                 messagesRef.current[key] = new Array();
 
