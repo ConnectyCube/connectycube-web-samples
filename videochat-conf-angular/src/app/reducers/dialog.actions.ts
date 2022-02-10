@@ -13,3 +13,6 @@ export const addMessages = createAction(
   '[DIALOG] add dialog messages',
   props<{ dialogMessages: Array<Message> }>()
 )
+export const removeAllMessages = createAction(
+  '[DIALOG] remove all messages'
+)

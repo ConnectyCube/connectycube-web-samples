@@ -21,6 +21,7 @@ import {LoadingService} from "../../services/loading.service";
 import {addChatOpenStatus, addControlButtonsStatus, addSwitchVideoStatus} from "../../reducers/interface.actions";
 import {take} from "rxjs/operators";
 import {ChatService} from "../../services/chat.service";
+import {removeAllMessages} from "../../reducers/dialog.actions";
 
 @Component({
   selector: 'app-videochat',
@@ -185,6 +186,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
       .then(() => {
         this.router.navigateByUrl("/")
           .then(() => {
+            this.store$.dispatch(removeAllMessages());
             this.store$.dispatch(removeAllUsers());
           })
       })

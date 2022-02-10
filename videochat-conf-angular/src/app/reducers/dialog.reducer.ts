@@ -1,5 +1,5 @@
 import {createReducer, on} from "@ngrx/store";
-import {addMessages, setActiveDialogId, addMessage} from "./dialog.actions";
+import {addMessages, setActiveDialogId, addMessage, removeAllMessages} from "./dialog.actions";
 import {concat} from "rxjs";
 import {SafeHtml} from "@angular/platform-browser";
 
@@ -43,5 +43,9 @@ export const dialogReducer = createReducer(
       dialogId: state.dialog.dialogId,
       dialogMessages: dialogMessages
     }
+  })),
+  on(removeAllMessages, (state) => ({
+    ...state,
+    dialog: {dialogId: "", dialogMessages: []}
   }))
 )

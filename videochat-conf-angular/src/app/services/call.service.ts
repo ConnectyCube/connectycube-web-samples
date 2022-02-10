@@ -318,6 +318,7 @@ export class CallService {
   }
 
   public stopCall() {
+
     return this.OurSession.leave();
   }
 

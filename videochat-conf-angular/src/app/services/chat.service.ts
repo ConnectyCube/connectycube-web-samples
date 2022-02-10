@@ -94,7 +94,7 @@ export class ChatService {
             sound.play();
             console.warn("[ConnectyCube.chat.onMessageListener] callback:", userId, message);
             const senderName: string = user.name;
-            const body: string = CommonUtilities.escapeHTMLString(message.body);
+            const body: string = message.body;
             const time = new Date(message.extension.date_sent * 1000).toLocaleDateString() + ' ' +
               new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
