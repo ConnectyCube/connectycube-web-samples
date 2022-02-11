@@ -4,19 +4,26 @@ import { getTime } from "../../../../services/helpers";
 /* eslint-disable */
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 const Message = (props) => {
+  const [ref, inView] = useInView();
   const { message, dialogInfo, usersInGroups } = props;
   const time = getTime(message.date_sent);
   const noName = "NoName";
+  if (inView) {
+    console.log("IN VIEW" + message.message);
+  }
 
-  
+  const weRead = () => {};
 
   return (
     <div
+      ref={ref}
       className={`message ${
         message.sender_id === parseInt(localStorage.userId) ? "my" : "opponent"
       }`}
     >
+      {inView ? console.log("Message in view" + message.body) : null}
       {dialogInfo.type === 2 && (
         <div className="user__img-container">
           {dialogInfo.type === 2 ? (

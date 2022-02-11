@@ -27,6 +27,7 @@ const Main = (props) => {
     removeUser,
     searchUsers,
   } = props;
+  debugger;
 
   const dialog = chosenDialog;
   const [showProfile, setShowProfile] = useState();

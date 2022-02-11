@@ -102,7 +102,7 @@ export const ChatProvider = ({ children }) => {
         ConnectyCube.chat.sendReadStatus(params);
         chatsRef.current.find((el) => {
           if (el._id === message.dialog_id) {
-            el.unread_messages_count = 0;
+            el.unread_messages_count++;
           }
           return 0;
         });
@@ -245,7 +245,6 @@ export const ChatProvider = ({ children }) => {
         ConnectyCube.users
           .get(params)
           .then((result) => {
-            debugger;
             result.items.forEach((user) => {
               usersInGroupsRef.current[user.user.id] = user.user;
               setUsersInGroups({ ...usersInGroupsRef.current });
@@ -643,6 +642,7 @@ export const ChatProvider = ({ children }) => {
 
   const addDeletedUsers = () => {};
 
+
   const setDialog = (dialog) => {
     if (dialog === "close") {
       chosenDialogRef.current = undefined;
@@ -719,7 +719,15 @@ export const ChatProvider = ({ children }) => {
       })
       .catch((error) => {});
   };
-  const addMessageToStore = (message, dialogId, userId, fileUrl, loading) => {
+  const addMessageToStore = (
+    message,
+    dialogId,
+    userId,
+    fileUrl,
+    loading,
+    message_id
+  ) => {
+    debugger;
     let chat = chatsRef.current.find((e) => e._id === dialogId);
     chat.last_message_date_sent = parseInt(new Date().getTime() / 1000);
     if (typeof message === "object") {
@@ -762,6 +770,7 @@ export const ChatProvider = ({ children }) => {
   };
 
   const sendMessage = (dialog, message, opponentId) => {
+    let message_id;
     const messageToSend = {
       type: dialog.type === 3 ? "chat" : "groupchat",
       body: message,
@@ -771,10 +780,10 @@ export const ChatProvider = ({ children }) => {
       },
     };
     if (dialog.type === 3) {
-      addMessageToStore(message, dialog._id);
-      ConnectyCube.chat.send(opponentId, messageToSend);
+      message_id = ConnectyCube.chat.send(opponentId, messageToSend);
+      addMessageToStore(message, dialog._id, null, null, null, message_id);
     } else {
-      ConnectyCube.chat.send(dialog._id, messageToSend);
+      message_id = ConnectyCube.chat.send(dialog._id, messageToSend);
     }
   };
 
@@ -794,7 +803,6 @@ export const ChatProvider = ({ children }) => {
           ConnectyCube.chat.message
             .list(params)
             .then((messages) => {
-              debugger;
               if (messages.items) {
                 messagesRef.current[key] = new Array();
 
