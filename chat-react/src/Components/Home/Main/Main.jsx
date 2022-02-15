@@ -27,7 +27,6 @@ const Main = (props) => {
     removeUser,
     searchUsers,
   } = props;
-  debugger;
 
   const dialog = chosenDialog;
   const [showProfile, setShowProfile] = useState();
@@ -57,7 +56,7 @@ const Main = (props) => {
   }, [dialog]);
 
   useEffect(() => {
-    scrollToBottom();
+    //  scrollToBottom();
   }, [allMessages]);
   const startTyping = () => {
     clearTimeout(timer);

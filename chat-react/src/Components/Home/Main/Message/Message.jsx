@@ -4,7 +4,10 @@ import { getTime } from "../../../../services/helpers";
 /* eslint-disable */
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useEffect } from "react";
+
 import { useInView } from "react-intersection-observer";
+import ConnectyCube from "connectycube";
+
 const Message = (props) => {
   const [ref, inView] = useInView();
   const { message, dialogInfo, usersInGroups } = props;
@@ -12,6 +15,12 @@ const Message = (props) => {
   const noName = "NoName";
   if (inView) {
     console.log("IN VIEW" + message.message);
+    let params = {
+      messageId: message._id,
+      userId: message.sender_id,
+      dialogId: message.chat_dialog_id,
+    };
+    ConnectyCube.chat.sendReadStatus(params);
   }
 
   const weRead = () => {};

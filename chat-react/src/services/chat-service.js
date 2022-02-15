@@ -99,7 +99,7 @@ export const ChatProvider = ({ children }) => {
           dialogId: message.dialog_id,
         };
 
-        ConnectyCube.chat.sendReadStatus(params);
+        //   ConnectyCube.chat.sendReadStatus(params);
         chatsRef.current.find((el) => {
           if (el._id === message.dialog_id) {
             el.unread_messages_count++;
@@ -642,7 +642,6 @@ export const ChatProvider = ({ children }) => {
 
   const addDeletedUsers = () => {};
 
-
   const setDialog = (dialog) => {
     if (dialog === "close") {
       chosenDialogRef.current = undefined;
@@ -727,7 +726,6 @@ export const ChatProvider = ({ children }) => {
     loading,
     message_id
   ) => {
-    debugger;
     let chat = chatsRef.current.find((e) => e._id === dialogId);
     chat.last_message_date_sent = parseInt(new Date().getTime() / 1000);
     if (typeof message === "object") {
