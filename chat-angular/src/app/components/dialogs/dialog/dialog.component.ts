@@ -54,7 +54,7 @@ export class DialogComponent implements OnInit, OnChanges {
   public getUsersFromSDK(participantId: number) {
     this.chatService.searchUsersById([participantId]).then((result: any) => {
       console.warn("[searchUserById]", result);
-      if (result.length > 0) {
+      if (result.items.length > 0) {
         const participants: Array<participant> = result.items.map((u: any) => {
           return {
             id: u.user.id,

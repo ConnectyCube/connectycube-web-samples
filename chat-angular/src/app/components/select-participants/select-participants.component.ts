@@ -48,7 +48,6 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
   })
 
   public SearchSubmit() {
-    debugger
     this.chatService.searchMethod(this.SearchForm, this.selectedParticipant);
   }
 
@@ -59,7 +58,6 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
   }
 
   public unselectParticipant(user: participant) {
-    debugger
     this.store$.dispatch(unSelectParticipant({p: user}));
     this.selectedParticipant = this.selectedParticipant.filter((p: participant) => p.id !== user.id);
   }
