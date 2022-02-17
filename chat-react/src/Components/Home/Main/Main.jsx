@@ -7,10 +7,11 @@ import Message from "./Message/Message";
 import UserInfo from "./UserInfo/UserInfo";
 import { animateScroll } from "react-scroll";
 import { IoMdAttach } from "react-icons/io";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import Profile from "./Profile/Profile";
 import { useHistory } from "react-router";
 import { useRef } from "react";
+import ChatContext from "../../../services/chat-service";
 
 const Main = (props) => {
   const {
@@ -217,6 +218,17 @@ const Main = (props) => {
                 allMessages
               ) : (
                 <span className="no-msg">NO MESSAGES YET</span>
+              )}
+              {chosenDialog.unread_messages_count > 0 && (
+                <div
+                  onClick={scrollToBottom}
+                  className="unread__messages-scroll"
+                >
+                  <IoIosArrowDown size={26} />
+                  <div className="unread__messages-counter">
+                    <span>{chosenDialog.unread_messages_count}</span>
+                  </div>
+                </div>
               )}
             </div>
           )}

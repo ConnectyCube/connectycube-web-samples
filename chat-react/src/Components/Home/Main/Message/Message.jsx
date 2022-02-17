@@ -7,20 +7,28 @@ import { useEffect } from "react";
 
 import { useInView } from "react-intersection-observer";
 import ConnectyCube from "connectycube";
+import { useContext } from "react";
+import ChatContext from "../../../../services/chat-service";
 
 const Message = (props) => {
   const [ref, inView] = useInView();
   const { message, dialogInfo, usersInGroups } = props;
   const time = getTime(message.date_sent);
   const noName = "NoName";
+  const context = useContext(ChatContext);
   if (inView) {
-    console.log("IN VIEW" + message.message);
+    console.log("Message in view " + message.message+" read status is " + message.read);
     let params = {
       messageId: message._id,
       userId: message.sender_id,
       dialogId: message.chat_dialog_id,
     };
-    ConnectyCube.chat.sendReadStatus(params);
+    if (
+      message.read === 0 &&
+      message.sender_id !== parseInt(localStorage.userId)
+    ) {
+      context.readMessage(params);
+    }
   }
 
   const weRead = () => {};
@@ -30,7 +38,7 @@ const Message = (props) => {
       ref={ref}
       className={`message ${
         message.sender_id === parseInt(localStorage.userId) ? "my" : "opponent"
-      }`}
+      } ${inView ? "view" : "no"}`}
     >
       {inView ? console.log("Message in view" + message.body) : null}
       {dialogInfo.type === 2 && (

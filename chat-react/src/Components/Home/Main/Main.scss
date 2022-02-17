@@ -104,6 +104,32 @@
       flex-direction: column;
       width: 90%;
       margin: 0 auto;
+      & .unread__messages-scroll {
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 83%;
+        cursor: pointer;
+        left: 96%;
+        border: 1px solid;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        & .unread__messages-counter {
+          position: absolute;
+          width: 25px;
+          height: 25px;
+          /* border: 1px solid; */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          top: -76%;
+          background: #6aacee;
+          color: white;
+        }
+      }
 
       & .no-msg {
         position: absolute;
