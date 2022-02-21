@@ -17,7 +17,9 @@ const Message = (props) => {
   const noName = "NoName";
   const context = useContext(ChatContext);
   if (inView) {
-    console.log("Message in view " + message.message+" read status is " + message.read);
+    console.log(
+      "Message in view " + message.message + " read status is " + message.read
+    );
     let params = {
       messageId: message._id,
       userId: message.sender_id,

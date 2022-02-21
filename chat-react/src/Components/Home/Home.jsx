@@ -1,8 +1,9 @@
 import React from "react";
-import { useHistory } from "react-router";
+import { useHistory, Redirect } from "react-router";
 import "./Home.scss";
 import Main from "./Main/Main";
 import Sidebar from "./Sidebar/Sidebar";
+import { useEffect } from "react";
 
 const Home = (props) => {
   const {
@@ -26,9 +27,13 @@ const Home = (props) => {
     connectStatus,
   } = props.chat;
   const history = useHistory();
-  if (!chosenDialog) {
-    history.push("/home");
-  }
+
+  useEffect(() => {
+    if (!chosenDialog) {
+      return <Redirect to="/home" />;
+    }
+  }, []);
+
   history.location.state = history.location.pathname.split("/")[2];
   return (
     <div className="home__container">

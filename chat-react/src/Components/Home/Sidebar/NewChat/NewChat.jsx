@@ -9,6 +9,7 @@ import FoundUser from "./FoundUser/FoundUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 import { BsBoxArrowInUpLeft } from "react-icons/bs";
 import ChatContext from "../../../../services/chat-service";
+import UserInGroup from "./CreateGroupChat/UserInGroup/UserInGroup";
 const NewChat = (props) => {
   const {
     close,
@@ -23,7 +24,7 @@ const NewChat = (props) => {
   const userRef = React.createRef();
 
   const [create, setCreate] = useState(false);
-
+  let usersInGroup = [];
   const [foundedUsers, setFoundedUsers] = useState([]);
   let groupOccupants = useRef([]);
 
@@ -40,6 +41,10 @@ const NewChat = (props) => {
     }
     console.log(groupOccupants.current);
   };
+  
+  usersInGroup = groupOccupants.current.map((user) => {
+    return <UserInGroup user={user} />;
+  });
 
   const finding = (e) => {
     e.preventDefault();
@@ -94,6 +99,7 @@ const NewChat = (props) => {
           </div>
 
           <div className="found__users">{foundedUsers}</div>
+          {type === 2 && occupants > 0 && <div className="added__users-container">{usersInGroup}</div>}
           {type === 2 && occupants > 0 && (
             <button
               className="create__group-btn"
@@ -122,6 +128,7 @@ const NewChat = (props) => {
           )}
         </form>
       )}
+
       {create && (
         <CreateGroupChat
           close={close}

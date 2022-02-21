@@ -77,7 +77,7 @@ export const ChatProvider = ({ children }) => {
         userId,
         message
       );
-
+      debugger;
       if (
         !chosenDialogRef.current ||
         chosenDialogRef.current._id !== message.dialog_id
@@ -101,22 +101,28 @@ export const ChatProvider = ({ children }) => {
           }
           return 0;
         });
+        if (message.extension.hasOwnProperty("attachments")) {
+          if (
+            message.extension.attachments.length > 0 &&
+            userId !== parseInt(localStorage.userId)
+          ) {
+            const fileUID = message.extension.attachments[0].uid;
+            const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
+
+            addMessageToStore(
+              message,
+              message.dialog_id,
+              userId,
+              fileUrl,
+              false
+            );
+            // insert the imageHTML as HTML template
+          }
+        } else {
+          addMessageToStore(message, message.dialog_id, userId);
+        }
       }
       setDialogs([...chatsRef.current]);
-      if (message.extension.hasOwnProperty("attachments")) {
-        if (
-          message.extension.attachments.length > 0 &&
-          userId !== parseInt(localStorage.userId)
-        ) {
-          const fileUID = message.extension.attachments[0].uid;
-          const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
-
-          addMessageToStore(message, message.dialog_id, userId, fileUrl, false);
-          // insert the imageHTML as HTML template
-        }
-      } else {
-        addMessageToStore(message, message.dialog_id, userId);
-      }
     };
 
     ConnectyCube.chat.onSystemMessageListener = (msg) => {
@@ -478,7 +484,6 @@ export const ChatProvider = ({ children }) => {
       .catch((error) => {
         lastActivityRef.current[id] = `last seen recently`;
         setLastActivity({ ...lastActivityRef.current });
-        console.error(error);
       });
   };
 
@@ -570,7 +575,6 @@ export const ChatProvider = ({ children }) => {
               });
           })
           .catch((error) => {
-            console.error(error);
             console.log("ОШИБКА");
           });
       })
@@ -610,34 +614,14 @@ export const ChatProvider = ({ children }) => {
         });
         chatsRef.current.unshift(dialog);
         setDialogs([...chatsRef.current]);
+        chosenDialogRef.current = dialog;
+        setChosenDialog(chosenDialogRef.current);
       })
       .catch((error) => {});
   };
-
-  const startChat = (userId) => {
-    const params = {
-      type: 3,
-      occupants_ids: [userId],
-    };
-    ConnectyCube.chat.dialog
-      .create(params)
-      .then((dialog) => {
-        let dialogIs = chatsRef.current.find((e) => {
-          return e._id === dialog._id;
-        });
-        if (!dialogIs) {
-          dialogSystemMessage(userId, dialog._id);
-          chatsRef.current.unshift(dialog);
-          setDialogs([...chatsRef.current]);
-        }
-        setDialog(dialog);
-      })
-      .catch((error) => {});
-  };
-
-  const addDeletedUsers = () => {};
 
   const setDialog = (dialog) => {
+    debugger;
     if (dialog === "close") {
       chosenDialogRef.current = undefined;
       setChosenDialog(chosenDialogRef.current);
@@ -692,6 +676,30 @@ export const ChatProvider = ({ children }) => {
       setDialogs([...chatsRef.current]);
     }
   };
+
+  const startChat = (userId) => {
+    const params = {
+      type: 3,
+      occupants_ids: [userId],
+    };
+    ConnectyCube.chat.dialog
+      .create(params)
+      .then((dialog) => {
+        let dialogIs = chatsRef.current.find((e) => {
+          return e._id === dialog._id;
+        });
+        if (!dialogIs) {
+          dialogSystemMessage(userId, dialog._id);
+          chatsRef.current.unshift(dialog);
+          setDialogs([...chatsRef.current]);
+        }
+
+        setDialog(dialog);
+      })
+      .catch((error) => {});
+  };
+
+  const addDeletedUsers = () => {};
 
   const readMessage = (params) => {
     //  messagesRef.current[params];
