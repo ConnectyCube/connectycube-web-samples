@@ -6,7 +6,7 @@ export const CREDENTIALS: Readonly<any> = {
   authSecret: environment.AUTH_SECRET,
 };
 
-export const appConfig: Readonly<any>  = {
+export const appConfig: Readonly<any> = {
   debug: {mode: 1},
   conference: {server: environment.CONFERENCE_SERVER_ENDPOINT},
   chat: {
@@ -61,6 +61,7 @@ export const imageMIMETypes: ReadonlyArray<string> = [
   "image/gif",
   "image/ief",
   "image/jpeg",
+  "image/png",
   "image/pipeg",
   "image/svg+xml",
   "image/tiff",

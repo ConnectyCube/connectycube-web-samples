@@ -9,8 +9,7 @@ import {FormBuilder, FormControl} from "@angular/forms";
 import {participant} from "../../reducers/participants/participants.reducer";
 import {ChatService} from "../../services/chat.service";
 import {
-  addParticipants,
-  addSearchParticipants, addSelectedParticipants,
+  addParticipants, addSelectedParticipants,
   removeAllSearchParticipants,
   selectParticipant,
   unSelectParticipant
@@ -54,7 +53,7 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
   public selectParticipant(e: any, user: participant) {
     this.store$.dispatch(selectParticipant({id: user.id}));
     this.selectedParticipant = [...this.selectedParticipant, ...[user]];
-    console.warn(this.selectedParticipant)
+    console.log(this.selectedParticipant)
   }
 
   public unselectParticipant(user: participant) {
@@ -63,7 +62,7 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
   }
 
   public select() {
-    console.warn(this.data.isCreateDialog)
+    console.log(this.data.isCreateDialog)
     if (this.data.isCreateDialog) {
       this.selectAll();
     }
@@ -86,12 +85,10 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
       this.store$.select(selectedConversationSelector).pipe(take(1)).subscribe(selectedConversation => {
         if (selectedConversation) {
           this.chatService.addMembersToGroupChat(selectedConversation, addedParticipantsIds).then((dialog: any) => {
-            console.warn(dialog);
             dialog.occupants_ids.forEach((id: number) => {
               // add dialog participants to old participants
               if (!addedParticipantsIds.includes(id)) {
                 const command = "dialog/ADD_DIALOG_PARTICIPANTS";
-                console.warn(addedParticipantsIds);
                 this.chatService.sendSystemMsg(id, selectedConversation, command, {addedParticipantsIds});
               }
               // add dialog to added participants
@@ -109,7 +106,6 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.warn(this.data);
     if (this.data) {
       this.selectedParticipant = this.data.participants;
     }

@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {removeSelectedParticipant} from "../../reducers/participants/participants.actions";
 import {Store} from "@ngrx/store";
 import {participant} from "../../reducers/participants/participants.reducer";
 

@@ -43,7 +43,6 @@ export const getLastMessageParticipantName = createSelector(
   getParticipantsEntities,
   (participants: any, {participantId}: any) => {
     if (participants[participantId]) {
-      console.warn("[participants[participantId]]", participants[participantId])
       return participants[participantId].me ? "You" : participants[participantId].full_name;
     }
     return "";

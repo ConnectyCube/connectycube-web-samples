@@ -87,7 +87,6 @@ export class DialogsComponent implements OnInit {
     this.store$.select(meSelector).pipe(takeWhile(res => !res, true),).subscribe(res => {
       if (res) {
         this.userMe = res;
-        console.warn(res);
       }
     });
   }

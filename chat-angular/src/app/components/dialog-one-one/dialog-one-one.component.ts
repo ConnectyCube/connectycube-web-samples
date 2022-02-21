@@ -42,8 +42,8 @@ export class DialogOneOneComponent implements OnInit, OnDestroy {
   })
 
   public SearchSubmit() {
-    this.store$.select(meSelector).pipe(take(1)).subscribe(userMe=>{
-      if(userMe){
+    this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
+      if (userMe) {
         this.chatService.searchMethod(this.SearchForm, [userMe]);
       }
     })

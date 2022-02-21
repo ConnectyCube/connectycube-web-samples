@@ -145,7 +145,7 @@ export class ChatMessagesComponent implements OnInit {
   private windowResize() {
     this.measureService.resetAllHeightCalculation();
     this.messages.pipe(take(1)).pipe(take(1)).subscribe(msgs => {
-      console.warn("RESIZE");
+      console.log("RESIZE");
       this.calculateVirtualScrollHeight(msgs);
     })
   }
@@ -157,7 +157,7 @@ export class ChatMessagesComponent implements OnInit {
       this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat, this.selectedDialog.id).then((res: any) => {
         if (res) {
           const itemsheight: ItemsHeight = res;
-          console.warn(itemsheight);
+          console.log(itemsheight);
           this.items = itemsheight.items;
           this.itemsTotalHeight = itemsheight.itemsTotalHeight;
           this.scrollBarContent.nativeElement.style.height =
@@ -222,11 +222,9 @@ export class ChatMessagesComponent implements OnInit {
 
   private getUserStatus(userId: number) {
     return new Promise<void>((resolve, reject) => {
-      console.warn(userId)
       this.chatService.getLastActivity(userId)?.then((result: any) => {
         const seconds = result.seconds;
         this.store$.dispatch(updateParticipantLastActivity({participantId: userId, lastActivity: seconds}));
-        console.warn(result);
         resolve()
       })
         .catch((error: any) => {
@@ -247,6 +245,16 @@ export class ChatMessagesComponent implements OnInit {
     this.scrollBar.nativeElement.scrollTop =
       this.itemsTotalHeight -
       (vsScrolled + this.scrollBar.nativeElement.clientHeight);
+  }
+
+  private setItemsHeight(res: any) {
+    const itemsheight: ItemsHeight = res;
+    this.items = itemsheight.items;
+    this.itemsTotalHeight = itemsheight.itemsTotalHeight;
+    this.scrollBarContent.nativeElement.style.height =
+      this.itemsTotalHeight + 'px';
+    this.virtualScroll.scrollToOffset(0);
+    this.scrollTrack();
   }
 
   messagesTrackBy(index: number, message: Message) {
@@ -271,11 +279,10 @@ export class ChatMessagesComponent implements OnInit {
   }
 
   public onFileSelected(e: any) {
-    console.warn(e)
     const file: any = e.target.files[0];
-    console.warn(file);
+    console.log(file);
     const isValidFile: boolean = !!file && imageMIMETypes.includes(file.type);
-    console.error(isValidFile);
+    console.log("[isValidFile]", isValidFile);
     if (isValidFile) {
       this.chatService.sendMsgWithPhoto(file, this.selectedDialog, this.meId);
       this.inputFile.nativeElement.value = '';
@@ -341,8 +348,8 @@ export class ChatMessagesComponent implements OnInit {
       };
 
       if (trigger === 'area') {
+        if (e.preventDefault) e.preventDefault();
         if (!this.isMobile && !this.isTablet) {
-          console.warn(this.selectedDialog)
           this.chatService.sendMessage(this.selectedDialog, message)
             .then(() => {
               this.messages.pipe(take(1)).subscribe(msgs => {
@@ -351,14 +358,7 @@ export class ChatMessagesComponent implements OnInit {
                   const isGroupChat = this.isGroupChat;
                   this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat, this.selectedDialog.id).then((res: any) => {
                     if (res) {
-                      const itemsheight: ItemsHeight = res;
-                      console.warn(itemsheight);
-                      this.items = itemsheight.items;
-                      this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-                      this.scrollBarContent.nativeElement.style.height =
-                        this.itemsTotalHeight + 'px';
-                      this.virtualScroll.scrollToOffset(0);
-                      this.scrollTrack();
+                      this.setItemsHeight(res);
                     }
                   });
                 }
@@ -377,14 +377,7 @@ export class ChatMessagesComponent implements OnInit {
             const isGroupChat = this.isGroupChat;
             this.measureService.measureMessages(msgs, msgContainerWidth, isGroupChat, this.selectedDialog.id).then((res: any) => {
               if (res) {
-                const itemsheight: ItemsHeight = res;
-                console.warn(itemsheight);
-                this.items = itemsheight.items;
-                this.itemsTotalHeight = itemsheight.itemsTotalHeight;
-                this.scrollBarContent.nativeElement.style.height =
-                  this.itemsTotalHeight + 'px';
-                this.virtualScroll.scrollToOffset(0);
-                this.scrollTrack();
+                this.setItemsHeight(res);
               }
             });
           }

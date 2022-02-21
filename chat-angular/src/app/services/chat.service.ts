@@ -163,7 +163,7 @@ export class ChatService {
 
     if (message.id) {
       message.photo = ConnectyCube.storage.privateUrl(file.uid);
-      console.warn(message);
+      console.log(message);
       if (message.photo) {
         this.store$.dispatch(updateMessageId({dialogId: dialog.id, currentMsgIds: tempMsgId, newMsgIds: message.id}));
         this.store$.dispatch(updateMessagePhoto({msgId: tempMsgId, photo: message.photo, id: message.id}));
@@ -173,7 +173,7 @@ export class ChatService {
 
   public init() {
     ConnectyCube.chat.onMessageListener = (userId: any, msg: any) => {
-      console.warn(userId, msg);
+      console.log(userId, msg);
 
       this.store$.dispatch(updateDialogLastMessage({
         dialogId: msg.extension.dialog_id,
@@ -200,7 +200,6 @@ export class ChatService {
 
       this.store$.select(getParticipant, {participantId: userId})
         .pipe(take(1)).subscribe(p => {
-        console.warn(p)
         if (p !== undefined && !p.me) {
           const message: Message = {
             id: msg.id,
@@ -225,7 +224,7 @@ export class ChatService {
       });
     }
     ConnectyCube.chat.onSystemMessageListener = (msg: any) => {
-      console.warn(msg);
+      console.log(msg);
       const dialogId = msg.extension.id;
       switch (msg.body) {
         case "dialog/NEW_DIALOG":
@@ -296,13 +295,8 @@ export class ChatService {
       }
     };
     ConnectyCube.chat.onSentMessageCallback = (messageLost: any, messageSent: any) => {
-      console.warn("[onSentMessageCallback]", messageLost, messageSent);
-      if (messageSent) {
-        this.store$.dispatch(updateMessageStatus({msgId: messageSent.id, status: "sent"}));
-      }
-      else {
-        this.store$.dispatch(updateMessageStatus({msgId: messageSent.id, status: "error"}));
-      }
+      console.log("[onSentMessageCallback]", messageLost, messageSent);
+      this.store$.dispatch(updateMessageStatus({msgId: messageSent.id, status: messageSent ? "sent" : "error"}));
     };
     ConnectyCube.chat.onReadStatusListener = (messageId: string, dialogId: string, userId: number) => {
       console.log("[ConnectyCube.chat.onReadStatusListener] callback:", messageId, dialogId, userId);
@@ -330,7 +324,7 @@ export class ChatService {
         })
     };
     ConnectyCube.chat.onLastUserActivityListener = (userId: number, seconds: number) => {
-      console.warn("[onLastUserActivityListener]", userId, seconds)
+      console.log("[onLastUserActivityListener]", userId, seconds);
       this.store$.dispatch(updateParticipantLastActivity({participantId: userId, lastActivity: seconds}));
     };
   }
@@ -348,9 +342,9 @@ export class ChatService {
           }
           return builtDialog(d);
         })
-        console.warn("[lastMessageUserIds]", lastMessageUserIds)
+        console.log("[lastMessageUserIds]", lastMessageUserIds)
         this.searchUsersById(lastMessageUserIds).then((result: any) => {
-          console.warn("[searchUsersById]", result);
+          console.log("[searchUsersById]", result);
           if (result.items.length > 0) {
             const participants: Array<participant> = result.items.map((u: any) => {
               return {
@@ -362,7 +356,7 @@ export class ChatService {
               }
             })
             this.store$.dispatch(addParticipants({participants}));
-            console.warn("[Processed dialogs]", dialogs);
+            console.log("[Processed dialogs]", dialogs);
           }
           this.store$.dispatch(addDialogs({dialogs}));
         })
@@ -385,9 +379,9 @@ export class ChatService {
     };
 
     const urlImage = URL.createObjectURL(file);
-    console.warn(urlImage);
+    console.log(urlImage);
     this.measureService.measureImage(urlImage).then(({height, width}) => {
-      console.warn(height, width);
+      console.log(height, width);
 
       const message: Message = {
         id: makeid(12),
@@ -400,14 +394,14 @@ export class ChatService {
         width,
         height
       }
-      console.warn(message.id)
+
       this.store$.dispatch(addMessageId({dialogId: dialog.id, msgIds: [message.id]}));
       this.store$.dispatch(addMessage({message}));
 
       ConnectyCube.storage
         .createAndUpload(fileParams)
         .then((result: any) => {
-          console.warn(result);
+          console.log(result);
           this.prepareMessageWithAttachmentAndSend(result, dialog, senderId, message.id, width, height);
         })
         .catch((error: any) => {
@@ -449,11 +443,11 @@ export class ChatService {
   public searchMethod(searchForm: any, selectedParticipant: Array<participant>) {
     if (searchForm.valid) {
       const sValue = searchForm.value.name;
-      console.warn('[Search Value]', sValue);
+      console.log('[Search Value]', sValue);
       const promiseF = this.searchUsersByFullName(sValue);
       const promiseL = this.searchUsersByLogin(sValue);
       Promise.allSettled([promiseF, promiseL]).then((result: any) => {
-        console.warn(result);
+        console.log(result);
         const participants: Map<string, any> = new Map();
         result.forEach((item: any) => {
           if (item.hasOwnProperty("value")) {
@@ -483,8 +477,8 @@ export class ChatService {
             })
           }
         });
-        console.warn(participants);
-        console.warn(participantArray);
+        console.log(participants);
+        console.log(participantArray);
         this.store$.dispatch(addSearchParticipants({participantArray}))
       })
     }
@@ -502,9 +496,7 @@ export class ChatService {
     ConnectyCube.chat.dialog
       .create(params)
       .then((d: any) => {
-        console.warn(d);
         const dialog: Dialog = builtDialog(d);
-        console.warn(dialog)
         idArray.forEach((ocupantId: number, index: number) => {
           if (index !== 0) {
             const command = "dialog/NEW_DIALOG";
@@ -529,7 +521,6 @@ export class ChatService {
       .create(params)
       .then((d: any) => {
         const dialog: Dialog = builtDialog(d);
-        console.warn(dialog)
 
         this.store$.select(dialogsSelector).pipe(take(1)).subscribe(res => {
           if (res !== undefined) {
@@ -563,7 +554,6 @@ export class ChatService {
       if (!isActivated) {
         this.getChatParticipants(dialog.participantIds).then((result: any) => {
           if (result) {
-            console.warn("[RESULT]", result)
             this.processParticipants(result.items)
           }
           resolve();
@@ -571,7 +561,7 @@ export class ChatService {
             .list(params)
             .then((result: any) => {
               const msgs = result.items;
-              console.warn(msgs)
+              console.log(msgs)
               const messages: Array<Message> = [];
               const msgIds: Array<string> = [];
               const unfindedUserIds: Array<{ msgId: string, userId: number }> = [];
@@ -607,12 +597,12 @@ export class ChatService {
                   msgIds.push(m._id);
                 });
               })
-              console.warn("[MESSAGES]", messages);
-              console.warn("[IDS]", msgIds);
+              console.log("[MESSAGES]", messages);
+              console.log("[IDS]", msgIds);
 
               this.searchUsersById(unfindedUserIds.map((item) => item.userId))
                 .then((result: any) => {
-                  console.warn("[unfindedUsers]", result);
+                  console.log("[unfindedUsers]", result);
                   if (result.items.length > 0) {
                     const participants: Array<participant> = result.items.map((u: any) => {
                       return {
@@ -672,7 +662,6 @@ export class ChatService {
         this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
           if (userMe) {
             const opponentId = dialog.participantIds.find((id: number) => id !== userMe.id);
-            console.warn(opponentId);
             this.store$.dispatch(updateDialogLastMessage({
               dialogId: dialog.id,
               lastMessage: message.body,
@@ -707,7 +696,6 @@ export class ChatService {
   }
 
   public sendStartTypingStatus(dialog: Dialog) {
-    console.log("[START] 111111")
     //Group dialog
     if (dialog.type === 2) {
       ConnectyCube.chat.sendIsTypingStatus(dialog.id);
@@ -748,7 +736,6 @@ export class ChatService {
       .subscribe(unreadMessageList => {
         if (unreadMessageList.length !== 0) {
           const userIds: Array<any> = [...new Set(unreadMessageList.map((msg: Message) => msg.senderId))];
-          console.warn(userIds);
           userIds.forEach((userId: number) => {
             this.sendReadStatus('', userId, dialogId)
           });
@@ -763,14 +750,13 @@ export class ChatService {
 
   public sendReadStatus(messageId: string, userId: number, dialogId: string) {
     if (userId) {
-      console.warn(userId, '[IDDDD]')
       ConnectyCube.chat.sendReadStatus({messageId, userId, dialogId});
     }
   }
 
   public getLastActivity(userId: number) {
     if (ConnectyCube.chat.isConnected) {
-      console.warn("[userId]", userId);
+      console.log("[userId]", userId);
       return ConnectyCube.chat
         .getLastUserActivity(userId)
     }
@@ -778,14 +764,14 @@ export class ChatService {
 
   public subscribeToUserLastActivity(userId: number) {
     if (ConnectyCube.chat.isConnected) {
-      console.warn("[subscribeToUserLastActivity]", userId)
+      console.log("[subscribeToUserLastActivity]", userId)
       ConnectyCube.chat.subscribeToUserLastActivityStatus(userId);
     }
   }
 
   public unsubscribeFromUserLastActivity(userId: number) {
     if (ConnectyCube.chat.isConnected) {
-      console.warn("[unsubscribeFromUserLastActivity]", userId)
+      console.log("[unsubscribeFromUserLastActivity]", userId)
       ConnectyCube.chat.unsubscribeFromUserLastActivityStatus(userId);
     }
   }

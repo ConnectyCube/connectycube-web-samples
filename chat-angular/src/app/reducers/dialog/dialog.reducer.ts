@@ -155,7 +155,6 @@ export const dialogReducer = createReducer(
       return state;
     }),
     on(updateDialogLastMessage, (state, {dialogId, lastMessage, lastMessageDate, lastMessageUserId}) => {
-      console.warn(lastMessage)
       return dialogsAdapter.updateOne({
         id: dialogId,
         changes: {

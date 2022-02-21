@@ -66,7 +66,6 @@ export class ParticipantComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.warn(changes);
     if (changes.creatorId) {
       this.isCreator = this.id === this.creatorId;
       this.meIsCreator = this.creatorId === this.meId;

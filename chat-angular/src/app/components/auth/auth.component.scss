@@ -30,12 +30,12 @@
     justify-content: space-between;
     align-items: center;
 
-    .input__container{
+    .input__container {
       width: 100%;
       height: 85px;
     }
 
-    &-error{
+    &-error {
       margin-right: auto;
       color: red;
     }
@@ -70,13 +70,16 @@
     text-align: center;
     font-size: 18px;
     color: #000;
-    p{
+
+    p {
       margin: 10px 0 15px 0;
     }
-    a{
+
+    a {
       font-weight: bold;
       border-bottom: 1px solid #000;
-      &:hover{
+
+      &:hover {
         border: none;
         cursor: pointer;
       }

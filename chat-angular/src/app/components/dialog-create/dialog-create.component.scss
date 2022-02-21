@@ -204,7 +204,8 @@
   outline: none;
   padding: 0 12px;
   text-align: center;
-  &:disabled{
+
+  &:disabled {
     color: #ffffff;
     cursor: not-allowed;
   }

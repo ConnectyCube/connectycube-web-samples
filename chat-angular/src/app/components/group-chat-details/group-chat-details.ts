@@ -50,7 +50,7 @@ export class GroupChatDetails implements OnInit {
           this.chatService.sendStopTypingStatus(this.data.dialog);
           this.chatService.removeParticipantFromChat(dialogId, [id])
             .then((dialog: any) => {
-              console.warn(dialog);
+              console.log(dialog);
               //Participant exit
               if (id === this.meId) {
                 dialog.occupants_ids.forEach((id: number) => {
@@ -82,7 +82,6 @@ export class GroupChatDetails implements OnInit {
 
   public addMembers() {
     this.dialogParticipants$.pipe(take(1)).subscribe(participants => {
-      console.warn(participants)
       if (participants) {
         participants = participants.map((p: participant) => {
           return {...p, unselect: true};
@@ -101,7 +100,6 @@ export class GroupChatDetails implements OnInit {
   }
 
   ngOnInit(): void {
-    console.warn(this.data.dialog)
     this.store$.select(meSelector).pipe(take(1)).subscribe(userMe => {
       if (userMe) {
         this.meId = userMe.id;

@@ -3,7 +3,7 @@ import {FormBuilder, FormControl} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import {appConfig, CREDENTIALS} from "../../services/config";
 import {Router} from "@angular/router";
-import {MatDialog, MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {ModalComponent} from "../modal/modal.component";
 
 @Component({
@@ -13,7 +13,7 @@ import {ModalComponent} from "../modal/modal.component";
 })
 export class AuthComponent implements OnInit {
 
-  private authDoor: boolean = true;
+  private authAllowed: boolean = true;
 
   public authStatus: string = 'Log in';
   public authStatusText: string = 'Sign up';
@@ -43,12 +43,11 @@ export class AuthComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (!this.authDoor) return;
+    if (!this.authAllowed) return;
     if (this.authForm.valid) {
-      this.authDoor = false;
-      console.log("VALID")
+      this.authAllowed = false;
       if (this.authStatus === "Log in") {
-        console.warn("[Login]", this.authForm.value);
+        console.log("[Login]", this.authForm.value);
         this.authService.createSession().then((session: any) => {
           localStorage.setItem('token', btoa(session.token));
           this.authService.login(this.authForm.value.login, this.authForm.value.password)
@@ -57,7 +56,7 @@ export class AuthComponent implements OnInit {
             })
             .catch((error: any) => {
               this.invalid = true;
-              this.authDoor = true;
+              this.authAllowed = true;
               console.log(error);
               localStorage.removeItem('token')
               localStorage.removeItem('user')
@@ -66,14 +65,14 @@ export class AuthComponent implements OnInit {
         })
       }
       else if (this.authStatus === "Sign up") {
-        console.warn("[Sign up]", this.authForm.value);
+        console.log("[Sign up]", this.authForm.value);
         this.authService.register(this.authForm.value.name, this.authForm.value.login, this.authForm.value.password)
           .then(() => {
             this.router.navigateByUrl('/chat');
           })
           .catch((error: any) => {
             this.invalid = true;
-            this.authDoor = true;
+            this.authAllowed = true;
             console.log(error);
             localStorage.removeItem('token')
             localStorage.removeItem('user')
@@ -81,7 +80,7 @@ export class AuthComponent implements OnInit {
           });
       }
     }
-    else{
+    else {
       this.invalid = true;
     }
   }

@@ -1,10 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {AuthService} from "./services/auth.service";
-import {appConfig, CREDENTIALS} from "./services/config";
 import {Store} from "@ngrx/store";
-import {selectCurrentRoute, selectFragment, selectUrl} from "./reducers/router.selector";
-import {take} from "rxjs/operators";
+import {selectUrl} from "./reducers/router.selector";
 
 @Component({
   selector: 'app-root',
@@ -26,7 +24,6 @@ export class AppComponent implements OnInit {
     const token = atob(localStorage.getItem('token') || "");
 
     this.sub = this.store$.select(selectUrl).subscribe(res => {
-      console.warn(res);
       if (res !== undefined) {
         if (token && res !== '/auth') {
           this.authService.initSessionFromToken(token);

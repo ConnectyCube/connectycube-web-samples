@@ -33,20 +33,21 @@
 }
 
 @media screen and (max-width: 767px) {
-  .selected{
-    app-dialogs{
+  .selected {
+    app-dialogs {
       display: none !important;
     }
-    app-chat-messages{
+
+    app-chat-messages {
       display: flex !important;
       width: 100% !important;
     }
   }
-  app-dialogs{
+  app-dialogs {
     display: flex !important;
     width: 100% !important;
   }
-  app-chat-messages{
+  app-chat-messages {
     display: none !important;
   }
 }

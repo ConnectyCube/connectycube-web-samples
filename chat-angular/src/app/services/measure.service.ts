@@ -62,7 +62,7 @@ export class MeasureService {
 
     for (const msg of messages) {
       if (changeDialog) {
-        console.warn("[Change Dialog]");
+        console.log("[Change Dialog]");
         return null;
       }
       const msgCachHeight = this.idHeightCach.get(msg.id);
@@ -72,7 +72,7 @@ export class MeasureService {
         index++;
       }
       else {
-        console.warn("[CALCULATE MESSAGE]", msg.id);
+        console.log("[CALCULATE MESSAGE]", msg.id);
         //first element + container padding
         let msgHeight: number = index === 0 ? 14 : 0;
         let maxWidth = (msgContainerWidth - 20) * 0.8;
@@ -100,18 +100,16 @@ export class MeasureService {
             }
           })
           if (storeHeight) {
-            console.warn("[STORE HEIGHT]")
             msgHeight += storeHeight;
           }
           else {
-            console.warn("[CALC HEIGHT]")
             const getImagePromise: Promise<any> = this.idPromiseCach.get(msg.id) || this.measureImage(msg.photo)
             this.setIdPromiseValue(msg.id, getImagePromise);
 
             const {height, width} = await getImagePromise
 
             this.deleteIdPromiseValue(msg.id);
-            console.warn(height, width);
+            console.log(height, width);
             msgHeight += height;
           }
           msgHeight += 5;
