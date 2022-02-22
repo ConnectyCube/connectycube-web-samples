@@ -1,0 +1,96 @@
+<div class="chat__right-panel">
+  <div *ngIf="selectedConversation$ | async" class="header">
+    <div class="user">
+      <button (click)="setNullConversation()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="user__wrap" (click)="dialogDetailsHandler(isGroupChat,selectedDialog.id)">
+        <div class="user__avatar"
+             [ngStyle]="{'background-image': selectedDialog.photo?'url('+ selectedDialog.photo +')':'none',
+                 'background-color': selectedDialog.photo?'':'skyblue'}">
+          <p class="unselectable" *ngIf="!selectedDialog.photo">{{selectedDialog.name.slice(0, 2).toUpperCase()}}</p>
+        </div>
+        <div class="user__info">
+          <p class="user__fullname">
+            {{selectedDialog.name}}
+          </p>
+          <small *ngIf="typingParticipants" class="user__status">
+            Typing: {{(typingParticipants.split(',')).length > 3 ? "more than 3" : typingParticipants}} <img
+            src="assets/typing.gif"/>
+          </small>
+          <small *ngIf="selectedDialog.type === 3 && !typingParticipants" class="user__status">
+            {{lastActivity !== (lastActivity$ | async) ? getLastSeen(lastActivity$ | async) : lastActivityStatus}}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="messages-container" #messagesContainer>
+      <cdk-virtual-scroll-viewport
+        #viewport
+        customVirtualScrollStrategy
+        [itemHeights]="items"
+      >
+        <app-message #messageContainer
+                     *cdkVirtualFor="let message of messages | async;index as i; trackBy: messagesTrackBy"
+                     [ngClass]="message.senderName?'them':'me'"
+                     class="message-container"
+                     [id]="message.id"
+                     [senderId]="message.senderId"
+                     [senderName]="message.senderName"
+                     [status]="message.status"
+                     [body]="message.body"
+                     [date_sent]="message.date_sent"
+                     [photo]="message.photo"
+                     [width]="message.width"
+                     [height]="message.height"
+                     [meId]="meId"
+                     [isGroupChat]="isGroupChat">
+        </app-message>
+      </cdk-virtual-scroll-viewport>
+      <div #scrollBar id="scroll-bar">
+        <div #scrollBarContent></div>
+      </div>
+    </div>
+    <form *ngIf="selectedConversation$ | async" action="#" class="chat-form">
+      <div class="send-container">
+        <textarea
+          #areaElement
+          (input)="typing($event)"
+          (keydown.enter)="sendMessage($event,'area')"
+          (keydown.pageDown)="pageUpDown($event)"
+          (keydown.pageUp)="pageUpDown($event)"
+          maxlength="20000" class="message-area"
+          name="Message"
+          id="message-area"
+          placeholder="Enter your message"
+        ></textarea>
+        <div class="button-group">
+          <input
+            #inputFile
+            type="file" class="attache-file-input"
+            matTooltip="Attach file"
+            matTooltipShowDelay="500"
+            matTooltipClass="tooltip"
+            accept="image/*"
+            (change)="onFileSelected($event)">
+          <button class="attache-file"
+                  type="button">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+        </div>
+        <button
+          type="button"
+          (click)="sendMessage($event, 'button')"
+          mat-mini-fab color="primary"
+          matTooltip="Send message"
+          matTooltipShowDelay="500"
+          matTooltipClass="tooltip"
+          class="send-message-btn">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
