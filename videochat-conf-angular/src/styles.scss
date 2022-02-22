@@ -265,6 +265,13 @@ app-videochat {
   background: #555;
 }
 
+.tooltip{
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 @media screen and (max-width: 991px){
   app-chat{
     height: 100%;

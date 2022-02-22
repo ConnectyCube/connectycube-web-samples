@@ -1,6 +1,10 @@
 @import "sidebar-templates";
 @import "grid-templates";
 
+button:disabled{
+  cursor: not-allowed;
+}
+
 .videochat-streams {
   height: 100%;
   width: 100%;

@@ -17,8 +17,10 @@
         <span class="message-name" [ngClass]="message.senderName?'them':'me'">
           {{message.senderName}}
         </span>
-          <p class="message-text">{{message.body}}
-            <span style="display: inline-block; width: 35px; height: 5px"></span></p>
+          <p class="message-text">
+            <span [innerHTML]="message.body"></span>
+            <span style="display: inline-block; width: 105px; height: 5px"></span>
+          </p>
           <p class="message-time">{{message.time}}</p>
         </div>
       </cdk-virtual-scroll-viewport>

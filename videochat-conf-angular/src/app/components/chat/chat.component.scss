@@ -177,8 +177,9 @@ cdk-virtual-scroll-viewport {
     width: 100%;
   }
 }
+
 @media screen and (min-width: 767px) {
-  cdk-virtual-scroll-viewport{
+  cdk-virtual-scroll-viewport {
     overflow: hidden;
   }
 }
