@@ -1,0 +1,67 @@
+<div class="create-wrap">
+  <div class="create-header">
+    <h1 class="header-title" mat-dialog-title>Create Group Chat</h1>
+    <button class="create-close" mat-dialog-close="">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="create-body">
+    <h2 class="content-title">Group chat info</h2>
+    <form [formGroup]="CreateForm" action="#" class="create-form">
+      <div class="form-header">
+        <div class="form-group">
+          <button matTooltip="Add group chat avatar" matTooltipClass="tooltip" type="button" class="add-photo">
+            <mat-icon>add_a_photo</mat-icon>
+          </button>
+          <div class="info-form">
+            <input required minlength="4" placeholder="Dialog name" type="text" class="dialog-input dialog-name"
+                   formControlName="name">
+            <small class="info-form-error"
+                   *ngIf="getErrors('name')?.errors?.required || getErrors('name')?.errors?.minlength">
+              {{getErrors('name')?.errors?.minlength ?
+              '* dialog name length must be longer then 4' : '* dialog name is required'}}
+            </small>
+          </div>
+        </div>
+        <div class="form-group">
+          <input placeholder="Dialog description" type="text"
+                 class="dialog-input dialog-description"
+                 formControlName="description">
+        </div>
+      </div>
+      <div class="form-body">
+        <div (click)="addParticipants()" *ngIf="(participants$ | async)!.length > 1" class="edit-participants">Edit
+          participants
+        </div>
+        <h2 class="body-title">
+          Participants
+          <sub>*</sub>
+          <span class="total-participants">{{(participants$ | async)?.length}}</span>
+        </h2>
+        <div class="selected-participants">
+          <app-participant-info *ngFor="let user of (participants$ | async); index as i; trackBy: participantsTrackBy"
+                                class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip"
+                                (removeParticipantEvent)="removeParticipant($event.id)"
+                                [full_name]="user.full_name"
+                                [isMe]="user.me"
+                                [unselected]="user.unselect"
+                                [avatar]="user.avatar"
+                                [id]="user.id"
+                                [participant]="user"
+          >
+          </app-participant-info>
+          <button *ngIf="(participants$ | async)!.length === 1" (click)="addParticipants()"
+                  class="participant-avatar add-participant-btn">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="create-footer">
+    <button class="footer-close-btn" mat-button mat-dialog-close="">Cancel</button>
+    <button class="footer-create-btn" (click)="createDialog()" mat-button mat-dialog-close=""
+            [disabled]="(participants$ | async)!.length < 2 || !CreateForm.valid">Create
+    </button>
+  </div>
+</div>

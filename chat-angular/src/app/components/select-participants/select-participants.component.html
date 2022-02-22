@@ -1,0 +1,50 @@
+<div class="select-wrap">
+  <div class="select-header">
+    <h1 class="header-title" mat-dialog-title>Select participants</h1>
+    <button class="select-close" mat-dialog-close="">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="select-body">
+    <span class="select-info">
+      You can invite from one to ten participants by selecting the names from the list, search,
+      or invite them by entering their login or full name in the search bar.
+    </span>
+    <form [formGroup]="SearchForm" (ngSubmit)="SearchSubmit()" action="#" class="search-form">
+      <input required minlength="3" formControlName="name" placeholder="Search..." type="text" class="search-input">
+      <div class="selected-participants">
+        <app-participant-info
+          *ngFor="let user of selectedParticipant; index as i; trackBy: participantsTrackBy"
+          class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip"
+          (removeParticipantEvent)="unselectParticipant($event)"
+          [full_name]="user.full_name"
+          [isMe]="user.me"
+          [avatar]="user.avatar"
+          [id]="user.id"
+          [participant]="user"
+          [unselected]="user.unselect"
+        >
+        </app-participant-info>
+      </div>
+    </form>
+    <cdk-virtual-scroll-viewport class="searched-participants"
+                                 itemSize="56">
+      <div class="participant-item-search"
+           *cdkVirtualFor="let user of searchedParticipants$; index as i;
+            trackBy: participantsTrackBy"
+           (click)="selectParticipant($event,user)">
+        <div class="participant-avatar-search"
+             [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
+                 'background-color': user.avatar?'':'skyblue'}"
+        >
+          <p *ngIf="!user.avatar">{{user.full_name.slice(0, 2).toUpperCase()}}</p>
+        </div>
+        <h3 class="participant-name-search">{{user.full_name}}</h3>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+  <div class="selected-footer">
+    <button mat-button mat-dialog-close="">Cancel</button>
+    <button (click)="select()" mat-button mat-dialog-close="">{{data.isCreateDialog ? "Select" : "Add"}}</button>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<div class="participant-avatar"
+     [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
+                 'background-color': avatar?'':'skyblue'}">
+  <p *ngIf="!avatar" class="unselectable">{{full_name.slice(0, 2).toUpperCase()}}</p>
+</div>
+<div class="participant-info-wrap">
+  <div class="participant-info">
+    <h3 class="participant-name">{{full_name}}</h3>
+    <small class="participant__status">
+      {{ lastActivityStatus }}
+    </small>
+    <button *ngIf="meIsCreator && !isCreator" class="participant-remove"
+            (click)="removeParticipant(id)"
+            matTooltip="Remove from chat"
+            matTooltipClass="tooltip"
+            matTooltipShowDelay="500"
+            matTooltipHideDelay="200"
+    >
+      <mat-icon>delete_forever</mat-icon>
+    </button>
+  </div>
+  <div *ngIf="isCreator" class="participant-creator">Creator</div>
+</div>

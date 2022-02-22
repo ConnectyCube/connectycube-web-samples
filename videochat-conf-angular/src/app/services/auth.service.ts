@@ -1,6 +1,7 @@
-import {Injectable} from '@angular/core';
-import {CommonUtilities} from "../utilities/common.utilities";
+import { Injectable } from '@angular/core';
+import { CommonUtilities } from "../utilities/common.utilities";
 import ConnectyCube from "connectycube";
+
 
 // declare let ConnectyCube: any;
 
@@ -58,10 +59,10 @@ export class AuthService {
               if (userName !== localStorage.getItem('userName')) {
                 localStorage.setItem('userName', userName);
                 ConnectyCube.users
-                  .update({full_name: userName});
+                  .update({ full_name: userName });
               }
               console.log("logging user", user);
-              this.connectToChat({userId: user.id, password: userLocalStorage.password})
+              this.connectToChat({ userId: user.id, password: userLocalStorage.password })
                 .then(() => {
                   resolve(user.id)
                 });
@@ -83,7 +84,7 @@ export class AuthService {
             this.login(userProfileLogin)
               .then((user: any) => {
                 console.log("logging user", user);
-                this.connectToChat({userId: user.id, password: password})
+                this.connectToChat({ userId: user.id, password: password })
                   .then(() => {
                     resolve(user.id)
                   });
@@ -101,7 +102,7 @@ export class AuthService {
                 this.login(userProfileLogin)
                   .then((user: any) => {
                     console.log("logging user", user);
-                    this.connectToChat({userId: user.id, password: password})
+                    this.connectToChat({ userId: user.id, password: password })
                       .then(() => {
                         resolve(user.id)
                       });
