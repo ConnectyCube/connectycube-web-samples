@@ -25,7 +25,7 @@
              [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
                  'background-color': user.avatar?'':'skyblue'}"
         >
-          <p>{{user.full_name.slice(0, 2).toUpperCase()}}</p>
+          <p *ngIf="!user.avatar">{{user.full_name.slice(0, 2).toUpperCase()}}</p>
         </div>
         <h3 class="participant-name-search">{{user.full_name}}</h3>
       </div>

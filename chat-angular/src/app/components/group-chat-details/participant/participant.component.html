@@ -1,7 +1,7 @@
 <div class="participant-avatar"
      [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
                  'background-color': avatar?'':'skyblue'}">
-  <p class="unselectable">{{full_name.slice(0, 2).toUpperCase()}}</p>
+  <p *ngIf="!avatar" class="unselectable">{{full_name.slice(0, 2).toUpperCase()}}</p>
 </div>
 <div class="participant-info-wrap">
   <div class="participant-info">
