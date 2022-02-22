@@ -20,8 +20,6 @@ import {ChatService} from "./chat.service";
 import {isRecordingSelector} from "../reducers/interface.selectors";
 import ConnectyCube from "connectycube";
 
-// declare let ConnectyCube: any;
-
 @Injectable({
   providedIn: 'root'
 })

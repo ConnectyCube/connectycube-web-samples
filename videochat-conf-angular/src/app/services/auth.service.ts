@@ -2,9 +2,6 @@ import { Injectable } from '@angular/core';
 import { CommonUtilities } from "../utilities/common.utilities";
 import ConnectyCube from "connectycube";
 
-
-// declare let ConnectyCube: any;
-
 @Injectable({
   providedIn: 'root'
 })
