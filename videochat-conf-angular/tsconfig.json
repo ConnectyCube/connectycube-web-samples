@@ -31,6 +31,7 @@
     "node_modules/@types"
   ],
   "exclude": ["node_modules", "typings", "./node_modules/@types","src/local-types/**"],
+  "include": ["src","index.d.ts"],
   "angularCompilerOptions": {
     "types" : [],
     "enableI18nLegacyMessageIdFormat": false,

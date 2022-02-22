@@ -26,6 +26,7 @@ import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {ChatComponent} from './components/chat/chat.component';
 import {ScrollingModule} from "@angular/cdk/scrolling";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [

@@ -6,6 +6,10 @@ import {
 } from '@angular/core';
 import {Subject} from "rxjs";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {Store} from "@ngrx/store";
+import {findParticipantSelector} from "../../reducers/participant.selectors";
+import {take} from "rxjs/operators";
+import {addImageNum} from "../../reducers/participant.actions";
 
 @Component({
   selector: 'app-stream-container',
@@ -38,6 +42,7 @@ export class StreamContainerComponent implements OnInit {
   constructor(
     private elementRef: ElementRef,
     private deviceService: DeviceDetectorService,
+    private store$: Store,
   ) {
   }
 
@@ -50,7 +55,7 @@ export class StreamContainerComponent implements OnInit {
   }
 
   toFullScreen(e: any) {
-    const videoTagID = [...e.target.closest('.fullscreen').classList]
+    const videoTagID = [...e.target.closest('.user-fullscreen').classList]
       .find((className: string) => className.includes('btn-')).replace('btn-', 'stream-');
     const videoTag = this.elementRef.nativeElement.querySelector('#' + videoTagID);
     if (videoTag.requestFullscreen) {
@@ -65,9 +70,24 @@ export class StreamContainerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.bgImageNum = this.randomNumber(1, 10)
-
-    console.warn(this.userStream);
+    if(this.userBitrate !== undefined){
+      this.store$.select(findParticipantSelector, {userId: this.userId}).pipe(take(1))
+        .subscribe(res => {
+          if (res) {
+            if (res.imageNum) {
+              this.bgImageNum = res.imageNum;
+            }
+            else {
+              this.bgImageNum = this.randomNumber(1, 10);
+              this.store$.dispatch(addImageNum({id: this.userId, imageNum: this.bgImageNum}));
+            }
+          }
+        })
+    }
+    else{
+      this.bgImageNum = this.randomNumber(1, 10);
+    }
+    console.warn(this.userId, this.userStream);
   }
 
 }

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, SecurityContext} from '@angular/core';
 import {State} from "../reducers";
 import {Store} from "@ngrx/store";
 import {findParticipantSelector, participantSelector} from "../reducers/participant.selectors";
@@ -7,15 +7,17 @@ import {addMessage} from "../reducers/dialog.actions";
 import {addRecordingStatus} from "../reducers/interface.actions";
 import {addUser, updateVideoStatus} from "../reducers/participant.actions";
 import {User} from "../reducers/participant.reducer";
-
-declare let ConnectyCube: any;
+import * as ConnectyCube from "ConnectyCube";
+import {CommonUtilities} from "../utilities/common.utilities";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
 
-  constructor(private store$: Store<State>) {
+  constructor(private store$: Store<State>,
+              private sanitizer: DomSanitizer) {
   }
 
   private processMessages(messagesInput: any) {
@@ -25,8 +27,8 @@ export class ChatService {
       const messages = messagesInput.map((item: any) => {
         const message: any = {senderName: '', body: '', time: ''};
         // console.log("message item", item)
-        message.body = item.message;
-        message.time = new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
+        message.body = this.sanitizer.sanitize(SecurityContext.HTML, CommonUtilities.escapeHTMLString(item.message));
+        message.time = new Date(item.date_sent * 1000).toLocaleDateString() + ' ' + new Date(item.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
         this.store$.select(findParticipantSelector, {userId: item.sender_id}).pipe(take(1))
           .subscribe(user => {
@@ -92,10 +94,15 @@ export class ChatService {
             sound.play();
             console.warn("[ConnectyCube.chat.onMessageListener] callback:", userId, message);
             const senderName: string = user.name;
-            const body: string = message.body;
-            const time = new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
+            const body: string = CommonUtilities.escapeHTMLString(message.body);
+            const time = new Date(message.extension.date_sent * 1000).toLocaleDateString() + ' ' +
+              new Date(message.extension.date_sent * 1000).toLocaleTimeString().slice(0, 5);
 
-            this.store$.dispatch(addMessage({senderName, body: body, time: time}))
+            this.store$.dispatch(addMessage({
+              senderName,
+              body: this.sanitizer.sanitize(SecurityContext.HTML, CommonUtilities.escapeHTMLString(body)),
+              time: time
+            }))
           }
         })
     }

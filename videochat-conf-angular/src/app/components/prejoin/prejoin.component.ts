@@ -46,6 +46,7 @@ export class PrejoinComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement') videoTag: any;
   @ViewChild('userName') userName: any;
 
+  public userNameFromLocaleStorage = localStorage.getItem('userName');
   public videoIconName: string = 'videocam';
   public meetingId$ = this.store$.pipe(select(selectMeetingIdRouterParam));
   public meetId: string = '';

@@ -1,4 +1,13 @@
-import {AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  SecurityContext,
+  ViewChild
+} from '@angular/core';
 import {State} from "../../reducers";
 import {Store} from "@ngrx/store";
 import {take} from "rxjs/operators";
@@ -8,6 +17,8 @@ import {dialogIdSelector, dialogMessagesSelector} from "../../reducers/dialog.se
 import {addMessage} from "../../reducers/dialog.actions";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {Message} from "../../reducers/dialog.reducer";
+import {DomSanitizer} from "@angular/platform-browser";
+import {CommonUtilities} from "../../utilities/common.utilities";
 
 @Component({
   selector: 'app-chat',
@@ -27,11 +38,12 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked {
   public isScrollBarPressed = false;
   public dialogMessages$ = this.store$.select(dialogMessagesSelector);
   public itemsTotalHeight = 0;
-
+  public span = `<span></span>`;
 
   constructor(
     private store$: Store<State>,
     private chatService: ChatService,
+    private sanitizer: DomSanitizer
   ) {
     this.store$.select(dialogMessagesSelector).pipe(take(1)).subscribe(res => {
       this.items = res.map((msg: Message) => {
@@ -52,16 +64,21 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked {
     this.store$.dispatch(addChatOpenStatus({chatOpenStatus: false}));
   }
 
-  public sendMessage(e:any) {
+  public sendMessage(e: any) {
     e.preventDefault();
+    this.messageArea?.nativeElement.focus();
     const msg = this.messageArea?.nativeElement.value.trim();
     if (msg) {
       console.log(msg);
 
       const message_text: string = msg;
-      const message_time = new Date().toLocaleTimeString().slice(0, 5);
+      const message_time = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString().slice(0, 5);
 
-      this.store$.dispatch(addMessage({time: message_time, body: message_text}))
+      this.store$.dispatch(addMessage({
+          time: message_time,
+          body: this.sanitizer.sanitize(SecurityContext.HTML, CommonUtilities.escapeHTMLString(message_text))
+        })
+      )
 
       this.alignScrollToBottom();
 

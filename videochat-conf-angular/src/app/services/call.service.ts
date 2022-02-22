@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../reducers";
 import {
+  addActiveSpeaker,
   addBitrate,
   addMicrophoneLevel,
   addUser,
@@ -17,8 +18,9 @@ import {setActiveDialogId} from "../reducers/dialog.actions";
 import {addRecordingStatus, addShowRecordButtonStatus} from "../reducers/interface.actions";
 import {ChatService} from "./chat.service";
 import {isRecordingSelector} from "../reducers/interface.selectors";
+import * as ConnectyCube from "ConnectyCube";
 
-declare let ConnectyCube: any;
+// declare let ConnectyCube: any;
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +63,15 @@ export class CallService {
     const videoTrack = Object.assign(stream.getVideoTracks()[0], {enabled: true});
     console.log("[createDummyVideoTrack] videoTrack", videoTrack);
     return videoTrack;
+  }
+
+  private getByValue(map: Map<number, number>, searchValue: number) {
+    for (let [key, value] of map.entries()) {
+      if (value === searchValue) {
+        return key;
+      }
+    }
+    return -1;
   }
 
   public init() {
@@ -212,10 +223,19 @@ export class CallService {
     const idVolumeLevelMap: Map<number, number> = new Map;
     this.participantArray.forEach((user: User) => {
       if (user.volumeLevel !== undefined) {
-        idVolumeLevelMap.set(user.id,
-          Math.round((Number(session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100));
+        let level = Math.trunc((Number(session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100);
+        if (level < 6) {
+          level = 0;
+        }
+        idVolumeLevelMap.set(user.id, level);
       }
     })
+
+    let maxVolume = Math.max(...idVolumeLevelMap.values());
+    if (maxVolume !== 0) {
+      this.store.dispatch(addActiveSpeaker({id: this.getByValue(idVolumeLevelMap, maxVolume)}));
+    }
+
     this.store.dispatch(addMicrophoneLevel({idVolumeLevelMap: idVolumeLevelMap}));
   }
 
@@ -245,7 +265,7 @@ export class CallService {
 
 
   public muteOrUnmuteVideo(videoWork: boolean) {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       try {
         const mediaParamsDeviceId = {
           audio: true,
@@ -257,10 +277,11 @@ export class CallService {
         console.log("Video work status", videoWork)
 
         if (!videoWork) {
-          this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
           console.warn("IF St", session.localStream.getVideoTracks())
           session.getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
+              this.store.dispatch(updateVideoStatus({id: 77777, videoStatus: true}));
+              resolve(false);
               this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
                 res.forEach((user: User) => {
                   if (!user.me) {
@@ -276,7 +297,7 @@ export class CallService {
           session.getUserMedia({audio: true}, true)
             .then((stream: any) => {
               stream.addTrack(this.createDummyVideoTrack());
-
+              resolve(false);
               this.store.select(participantSelector).pipe(take(1)).subscribe(res => {
                 res.forEach((user: User) => {
                   if (!user.me) {
@@ -288,7 +309,6 @@ export class CallService {
         }
 
         console.log("LOCAL STREAM", session.localStream.getVideoTracks());
-        resolve();
       }
       catch (error: any) {
         console.log("MuteOrUnmuteVideo Error!", error);
@@ -298,7 +318,6 @@ export class CallService {
   }
 
   public stopCall() {
-    this.stopCheckUserMicLevel();
     return this.OurSession.leave();
   }
 
@@ -352,6 +371,15 @@ export class CallService {
       video: {deviceId: this.OurDeviceId}
     }
     const session = this.OurSession;
+    if (videoPermission === false) {
+      console.log("STOP SHARE CATCH IF")
+      session.getUserMedia({audio: true}, true).then((stream: any) => {
+        stream.addTrack(this.createDummyVideoTrack());
+      });
+
+      this.OurSharingStatus = false;
+      return;
+    }
     session.getUserMedia(mediaParamsDeviceId, true)
       .then((stream: any) => {
         console.log("STOP SHARE GET USER MEDIA")
@@ -361,14 +389,6 @@ export class CallService {
       })
       .catch(() => {
         console.log("STOP SHARE CATCH GET USER MEDIA", videoPermission)
-        if (videoPermission === false) {
-          console.log("STOP SHARE CATCH IF")
-          session.getUserMedia({audio: true}, true).then((stream: any) => {
-            stream.addTrack(this.createDummyVideoTrack());
-          });
-
-          this.OurSharingStatus = false;
-        }
       })
   }
 
@@ -418,6 +438,7 @@ export class CallService {
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
+
       this.OurSession = session;
 
 
@@ -464,7 +485,13 @@ export class CallService {
               else {
                 this.store.dispatch(addShowRecordButtonStatus({showRecordButtonStatus: false}));
               }
-              session.join(confRoomId, userId, userDisplayName);
+              session.join(confRoomId, userId, userDisplayName).then((res: any) => {
+                console.warn(res)
+              }).catch((error: any) => {
+                console.error(error)
+              })
+
+
             })
 
           resolve(CallService.generateMeetRoomURL(confRoomId));
