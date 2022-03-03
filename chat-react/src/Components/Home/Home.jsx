@@ -4,6 +4,7 @@ import "./Home.scss";
 import Main from "./Main/Main";
 import Sidebar from "./Sidebar/Sidebar";
 import { useEffect } from "react";
+/* eslint-disable */
 
 const Home = (props) => {
   const {

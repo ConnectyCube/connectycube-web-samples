@@ -90,7 +90,12 @@ const UserInfo = (props) => {
           className="user__info-back"
         />
 
-        <div className="user__avatar-dialog">
+        <div
+          className="user__avatar-dialog"
+          onClick={() => {
+            toggleProfile();
+          }}
+        >
           {userInfo.photo ? (
             <img
               className="user__avatar-img"

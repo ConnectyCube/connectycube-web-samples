@@ -131,7 +131,7 @@ const Main = (props) => {
   };
 
   useEffect(() => {
-    if (messages) {
+    try {
       if (messages[chosenDialog._id]) {
         console.table("MESSAGES: ", messages[chosenDialog._id]);
         for (let i = 0; i < messages[chosenDialog._id].length; i++) {
@@ -149,6 +149,8 @@ const Main = (props) => {
           });
         }
       }
+    } catch {
+      console.error("some error");
     }
   }, [messages, usersInGroups]);
 

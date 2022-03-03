@@ -41,7 +41,7 @@ const NewChat = (props) => {
     }
     console.log(groupOccupants.current);
   };
-  
+
   usersInGroup = groupOccupants.current.map((user) => {
     return <UserInGroup user={user} />;
   });
@@ -57,17 +57,19 @@ const NewChat = (props) => {
         setFoundedUsers(() => {
           let array = userFiltered.map((user) => {
             allUsers.push(user.id);
-            return (
-              <FoundUser
-                startChat={startChat}
-                close={close}
-                getChats={getChats}
-                userInfo={user}
-                type={type}
-                groupChatUsers={groupChatUsers}
-                groupOccupants={groupOccupants.current}
-              />
-            );
+            if (user.id !== parseInt(localStorage.userId)) {
+              return (
+                <FoundUser
+                  startChat={startChat}
+                  close={close}
+                  getChats={getChats}
+                  userInfo={user}
+                  type={type}
+                  groupChatUsers={groupChatUsers}
+                  groupOccupants={groupOccupants.current}
+                />
+              );
+            }
           });
           return array;
         });
@@ -99,7 +101,9 @@ const NewChat = (props) => {
           </div>
 
           <div className="found__users">{foundedUsers}</div>
-          {type === 2 && occupants > 0 && <div className="added__users-container">{usersInGroup}</div>}
+          {type === 2 && occupants > 0 && (
+            <div className="added__users-container">{usersInGroup}</div>
+          )}
           {type === 2 && occupants > 0 && (
             <button
               className="create__group-btn"
