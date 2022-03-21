@@ -19,11 +19,15 @@ const Chats = (props) => {
       }
     } catch {}
   }, [chosenDialog, dialogs]);
-  if (history.location.state === userInfo._id && !chosenDialog) {
-    setDialog(userInfo);
-  }
+  useEffect(() => {
+    if (history.location.state === userInfo._id && !chosenDialog) {
+      setDialog(userInfo);
+    }
+  }, []);
+
   const retrieveChat = () => {
     history.push(`/home/${userInfo._id}`);
+
     setDialog(userInfo);
   };
   return (

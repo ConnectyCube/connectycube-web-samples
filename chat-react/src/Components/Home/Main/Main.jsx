@@ -131,7 +131,7 @@ const Main = (props) => {
   };
 
   useEffect(() => {
-    try {
+    if (messages) {
       if (messages[chosenDialog._id]) {
         console.table("MESSAGES: ", messages[chosenDialog._id]);
         for (let i = 0; i < messages[chosenDialog._id].length; i++) {
@@ -149,8 +149,6 @@ const Main = (props) => {
           });
         }
       }
-    } catch {
-      console.error("some error");
     }
   }, [messages, usersInGroups]);
 
@@ -174,6 +172,7 @@ const Main = (props) => {
       messageRef.current.style.height = "45px";
       messageRef.current.value = "";
     }
+    scrollToBottom();
   };
 
   const onEnterPress = (e) => {

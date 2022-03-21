@@ -81,9 +81,9 @@ export const ChatProvider = ({ children }) => {
         !chosenDialogRef.current ||
         chosenDialogRef.current._id !== message.dialog_id
       ) {
+        debugger;
         chatsRef.current.find((el) => {
           if (el._id === message.dialog_id) {
-            debugger;
             if (el.unread_messages_count === undefined) {
               el.unread_messages_count = 0;
             }
@@ -91,7 +91,19 @@ export const ChatProvider = ({ children }) => {
             el.unread_messages_count = el.unread_messages_count + 1;
             el.last_message = message.body;
             el.last_message_date_sent = parseInt(message.extension.date_sent);
-            if (!messagesRef.current[message.dialog_id]) {
+            debugger;
+            if (message.body === "attachment") {
+              const fileUID = message.extension.attachments[0].uid;
+              const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
+              addMessageToStore(
+                message,
+                message.dialog_id,
+                userId,
+                fileUrl,
+                false,
+                message.id
+              );
+            } else {
               addMessageToStore(message, message.dialog_id, userId);
             }
           }
@@ -120,7 +132,8 @@ export const ChatProvider = ({ children }) => {
               message.dialog_id,
               userId,
               fileUrl,
-              false
+              false,
+              message.id
             );
             // insert the imageHTML as HTML template
           }
@@ -128,7 +141,6 @@ export const ChatProvider = ({ children }) => {
           addMessageToStore(message, message.dialog_id, userId);
         }
       }
-      debugger;
       setDialogs([...chatsRef.current]);
     };
 
@@ -392,6 +404,15 @@ export const ChatProvider = ({ children }) => {
       const fileUrl = ConnectyCube.storage.privateUrl(fileUID);
       message.extension.date_sent = parseInt(new Date().getTime() / 1000);
     }
+
+    let img =
+      messagesRef.current[chosenDialog._id][
+        messagesRef.current[chosenDialog._id].length - 1
+      ];
+    img._id = message.id;
+
+    setMessages({ ...messagesRef.current });
+    debugger;
   };
 
   const sendMsgWithPhoto = (file, url) => {
@@ -745,6 +766,7 @@ export const ChatProvider = ({ children }) => {
 
   const readMessage = (params) => {
     //  messagesRef.current[params];
+    debugger;
     messagesRef.current[params.dialogId].forEach((message) => {
       if (message._id === params.messageId) {
         message.read = 1;
@@ -787,6 +809,7 @@ export const ChatProvider = ({ children }) => {
     loading,
     message_id
   ) => {
+    debugger;
     let chat = chatsRef.current.find((e) => e._id === dialogId);
     chat.last_message_date_sent = parseInt(new Date().getTime() / 1000);
     if (typeof message === "object") {
@@ -797,10 +820,13 @@ export const ChatProvider = ({ children }) => {
           chat.last_message = "Photo";
           chat.last_message_user_id = userId;
           messagesRef.current[dialogId].push({
+            chat_dialog_id: dialogId,
+            _id: message.id,
             fileUrl: fileUrl,
             sender_id: userId,
             date_sent: parseInt(message.extension.date_sent),
             loading: loading,
+            read: 0,
           });
           setMessages({ ...messagesRef.current });
           return dialogId;
@@ -849,7 +875,14 @@ export const ChatProvider = ({ children }) => {
       message_id = ConnectyCube.chat.send(opponentId, messageToSend);
       addMessageToStore(message, dialog._id, null, null, null, message_id);
     } else {
-      message_id = ConnectyCube.chat.send(dialog._id, messageToSend);
+      message_id = ConnectyCube.chat.send(
+        dialog._id,
+        messageToSend,
+        null,
+        null,
+        null,
+        message_id
+      );
     }
   };
 
@@ -871,7 +904,7 @@ export const ChatProvider = ({ children }) => {
             .then((messages) => {
               if (messages.items) {
                 messagesRef.current[key] = new Array();
-
+                debugger;
                 messages.items.map((e) => {
                   if (e.attachments.length > 0) {
                     const fileUrl = ConnectyCube.storage.privateUrl(
@@ -881,6 +914,9 @@ export const ChatProvider = ({ children }) => {
                       fileUrl: fileUrl,
                       sender_id: e.sender_id,
                       date_sent: e.date_sent,
+                      read: e.read,
+                      _id: e._id,
+                      chat_dialog_id: e.chat_dialog_id,
                     });
                   } else {
                     messagesRef.current[key].unshift(e);

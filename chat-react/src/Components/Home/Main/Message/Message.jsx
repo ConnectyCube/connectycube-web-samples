@@ -25,10 +25,12 @@ const Message = (props) => {
       userId: message.sender_id,
       dialogId: message.chat_dialog_id,
     };
+
     if (
       message.read === 0 &&
       message.sender_id !== parseInt(localStorage.userId)
     ) {
+      debugger;
       context.readMessage(params);
     }
   }
