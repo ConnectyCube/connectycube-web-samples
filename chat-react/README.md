@@ -22,7 +22,7 @@ ConnectyCube Messaging API documentation - https://developers.connectycube.com/j
 
 # **Screenshots**
 
-<img src = "./screenshot.png">
+<img src = "./src/images/screenshot.png">
 
 # **Build your own Chat app**
 
