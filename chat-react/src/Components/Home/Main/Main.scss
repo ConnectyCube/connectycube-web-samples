@@ -36,7 +36,7 @@
 		position: relative;
 		width: 90%;
 		margin: 0 auto;
-		padding-top: 30px;
+		padding-top: 10px;
 		border-top: 1px solid #e7e7e7;
 		padding-bottom: 10px;
 		& input[type="file"] {
@@ -92,6 +92,7 @@
 		display: flex;
 		height: 100%;
 		flex-direction: column-reverse;
+		padding-bottom: 5px;
 		overflow-x: hidden;
 		width: 100%;
 		position: relative;
