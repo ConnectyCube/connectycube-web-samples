@@ -1,0 +1,41 @@
+<div class="auth">
+  <div class="auth__logo">
+    <img src="../../../assets/logo.png" alt="Connectycube Logo">
+  </div>
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()" action="#" class="auth__form">
+    <div class="input__container" *ngIf="authStatus === 'Sign up'">
+      <input required type="text" placeholder="Name"
+             class="auth__form-input auth__form-name" formControlName="name"
+             [ngClass]="{'valids':!invalid,'invalids':invalid}">
+      <small class="auth__form-error"
+             *ngIf="getErrors('name')?.errors?.required && invalid">
+        * name is required
+      </small>
+    </div>
+    <div class="input__container">
+      <input required minlength="3" type="text" placeholder="Login"
+             class="auth__form-input auth__form-login"
+             [ngClass]="{'valids':!invalid,'invalids':invalid}" formControlName="login">
+      <small class="auth__form-error"
+             *ngIf="(getErrors('login')?.errors?.required || getErrors('login')?.errors?.minlength) && invalid">
+        {{getErrors('login')?.errors?.minlength ?
+        '* login length must be longer then 3' : '* login is required'}}
+      </small>
+    </div>
+    <div class="input__container">
+      <input required minlength="6" type="password" placeholder="Password"
+             [ngClass]="{'valids':!invalid,'invalids':invalid}"
+             class="auth__form-input auth__form-password" formControlName="password">
+      <small class="auth__form-error"
+             *ngIf="(getErrors('password')?.errors?.required || getErrors('password')?.errors?.minlength) && invalid">
+        {{getErrors('password')?.errors?.minlength ?
+        '* login lenght must be longer then 6' : '* password is required'}}
+      </small>
+    </div>
+    <button class="auth__form-btn">{{authStatus}}</button>
+  </form>
+  <div class="auth__footer">
+    <p>Don`t have an account</p>
+    <a (click)="toggleAuthStatus()">{{authStatusText}}</a>
+  </div>
+</div>

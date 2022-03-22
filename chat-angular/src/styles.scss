@@ -1,0 +1,266 @@
+* {
+
+  font: 400 15px/1 'Source Sans Pro', sans-serif;
+  box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap');
+
+/** RESET */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  /* min-height: 640px;
+  min-width: 320px; */
+  font: 400 15px/1 "Open Sans", sans-serif;
+  color: #808080;
+}
+
+body {
+  background-color: white;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:active {
+  border-style: none;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rotate {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  touch-action: none;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+
+.mat-focused .mat-form-field-label {
+  /*change color of label*/
+  color: green !important;
+}
+
+.mat-form-field-underline {
+  /*change color of underline*/
+  background-color: green !important;
+}
+
+.mat-form-field-ripple {
+  /*change color of underline when focused*/
+  background-color: green !important;;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(241, 241, 241, 0.5);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.5);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 136, 136, 0.75);
+}
+
+cdk-virtual-scroll-viewport > div {
+  max-width: 100% !important;
+}
+
+.tooltip {
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.create-dialog .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.select-dialog .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.create-dialog-one .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.dialog-details .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.confirm-delete .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.private-dialog-details .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.user-profile .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.mat-menu-content:not(:empty) {
+  padding: 0 !important;
+}
+
+.valids {
+  border-left: 10px solid #42A948 !important; /* green */
+}
+
+.invalids {
+  border-left: 10px solid #a94442 !important; /* red */
+}
+
+.unselectable {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Chrome/Safari/Opera */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently */
+}
+
+.mat-menu-panel {
+  min-height: 48px !important;
+}

@@ -1,0 +1,20 @@
+<div *ngIf="isGroupChat && senderName" class="participant-avatar"
+     [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
+                 'background-color': avatar?'':'skyblue'}">
+  <p>{{senderName.slice(0, 2).toUpperCase()}}</p>
+</div>
+<div [ngClass]="senderName?'them':'me'"
+     class="message">
+            <span class="message-name" [ngClass]="senderName?'them':'me'">
+              {{isGroupChat ? senderName : ''}}
+            </span>
+  <p *ngIf="!photo" class="message-text">{{body}}
+    <span style="display: inline-block; width: 90px; height: 5px"></span></p>
+  <div style="max-height: 205px">
+    <img *ngIf="photo" [ngStyle]="{'height':height + 'px'}"
+         [src]="photo" alt="photo" class="message-photo">
+  </div>
+  <p class="message-time">{{getDateMessage(date_sent)}}</p>
+  <mat-icon *ngIf="senderId === meId"
+            class="message-status">{{getMessageStatus(status)}}</mat-icon>
+</div>

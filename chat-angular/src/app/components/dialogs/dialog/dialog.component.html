@@ -1,0 +1,16 @@
+<li class="dialog__list-item" [ngClass]="{'active':(selectedConversation$ | async) === id}">
+  <a (click)="dialogHandler($event, id)">
+    <div *ngIf="unreadMessage !== 0" class="item-badge">{{unreadMessage}}</div>
+    <div class="item-avatar"
+         [ngStyle]="{'background-image': photo?'url('+ photo +')':'none',
+                 'background-color': photo?'':'skyblue'}">
+      <p *ngIf="!photo">{{name.slice(0, 2).toUpperCase()}}</p>
+    </div>
+    <div class="item-info">
+      <h4 class="item-name">{{name}}</h4>
+      <small
+        class="item-last-message">{{itemLastMessage}}</small>
+      <small class="item-time">{{getDateMessages(lastMessageDate, createAt)}}</small>
+    </div>
+  </a>
+</li>
