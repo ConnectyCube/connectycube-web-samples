@@ -1,0 +1,173 @@
+@import "sidebar-templates";
+@import "grid-templates";
+
+button:disabled{
+  cursor: not-allowed;
+}
+
+.videochat-streams {
+  height: 100%;
+  width: 100%;
+}
+
+app-stream-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#videochat-buttons-container {
+  width: 320px;
+  height: 50px;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 25px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 200;
+  overflow: visible;
+
+  .videochat-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 7px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  .mat-button-disabled {
+    color: white;
+  }
+
+  .user-device {
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    right: 0;
+    flex-direction: column;
+    bottom: 110%;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    z-index: 9999;
+    animation-duration: 350ms;
+    transition-duration: 350ms;
+  }
+
+  .user-device.active {
+    opacity: 1;
+    visibility: initial;
+  }
+
+  .device-btn {
+    border: 1px solid #a7a7a7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    height: 40px;
+    margin: 2px;
+    width: 100%;
+
+    &:not(:last-child) {
+      margin-bottom: 5px;
+    }
+  }
+
+}
+
+#mute-video {
+  background-color: #404fff;
+}
+
+#switch-video {
+  background-color: #ffd640e8;
+}
+
+#toggle-chat {
+  background-color: #166CC7;
+}
+
+#stop-call {
+  background-color: #C3002F;
+}
+
+#share-screen {
+  background-color: #fff;
+
+  mat-icon {
+    color: black;
+  }
+}
+
+#record {
+  background: #dc143c;
+  border: 6px solid #fff;
+
+  mat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 36px;
+  }
+}
+
+.change-view {
+  position: absolute;
+  right: 10px;
+  z-index: 10;
+}
+
+mat-progress-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
+
+.rec-container {
+  display: flex;
+  background: red;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  top: 55px;
+  right: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 9;
+}
+
+.rec-icon {
+  color: #ffffff;
+}
+
+.rec-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+@media screen and (max-width: 576px) {
+  #videochat-buttons-container {
+    .videochat-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+    }
+  }
+}

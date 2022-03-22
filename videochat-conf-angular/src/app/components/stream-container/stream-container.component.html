@@ -1,0 +1,49 @@
+<div class="user-connection" (mouseenter)="statsHide = false" (mouseleave)="statsHide = true">
+  <mat-icon
+    [ngClass]="{'good':userConnectionStatus === 'good' || userBitrate === undefined
+    ,'average':userConnectionStatus === 'average'}"
+    svgIcon="connection">
+  </mat-icon>
+</div>
+<button class="user-fullscreen"
+        *ngIf="!(userBitrate === undefined || isMobile || isTablet)"
+        (click)="toFullScreen($event)"
+        [disabled]="!userVideoStatus"
+        [ngClass]="'btn-'+userId">
+  <mat-icon
+    class="fullscreen"
+    svgIcon="fullscreen">
+  </mat-icon>
+</button>
+<div class="user-stats user-stats-{{userId}}" [hidden]="isMobile || isTablet? true: statsHide">
+  <span>
+    Connection: {{userConnectionStatus || 'good'}} <br>
+    {{userMicrophoneLevel !== undefined ? 'Microphone level: ' + userMicrophoneLevel + '%' : ''}}
+    <br *ngIf="userMicrophoneLevel">
+    {{userBitrate ? 'Bitrate: ' + userBitrate : ''}}
+  </span>
+</div>
+<div [ngClass]="userVideoStatus?'':'show-bg-image'" class="user-placeholder">
+  <div class="user-image"
+       [style.background]="'url(../../../assets/animals/animals_'+bgImageNum
+       +'.jpg) center center / contain no-repeat rgb(255, 255, 255)'"
+  ></div>
+</div>
+<div class="container-full-screen">
+  <video [srcObject]="userStream"
+         [ngClass]="{'mirror':shareScreenIconName !== 'stop_screen_share' &&
+          !switchDone &&
+           userMicrophoneLevel === undefined}"
+         [style.object-fit]="userVideoStatus==='share'?'contain':'cover'"
+         playsinline
+         preload="auto"
+         autoplay
+         [muted]="userMicrophoneLevel === undefined"
+         (canplaythrough)="unDisableButton()"
+         id="stream-{{userId}}"
+         class="videochat-stream"
+  ></video>
+</div>
+<div class="display-user-name">
+  <p class="user-name">{{userMicrophoneLevel === undefined ? 'me' : userName}}</p>
+</div>

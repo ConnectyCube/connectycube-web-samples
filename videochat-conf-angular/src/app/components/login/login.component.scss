@@ -1,0 +1,50 @@
+.login {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+
+#login-image {
+  margin-top: 10px;
+  height: 110px;
+  width: 110px;
+}
+
+#login-caption {
+  font-size: 28px;
+  height: 32px;
+  width: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#guest-room-join-btn {
+  height: 50px;
+  min-width: 270px;
+  max-height: 90%;
+  margin: 5px 0;
+  border-radius: 25px;
+  font-size: 20px;
+  color: #ffffff;
+  background-color: #9e0f73;
+  padding: 10px;
+  border: none;
+}
+
+
+
+

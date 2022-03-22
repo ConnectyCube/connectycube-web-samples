@@ -1,0 +1,73 @@
+<div class="chat__left-panel">
+  <div class="user-profile">
+    <div class="user-profile__info">
+      <div class="user-profile__avatar"
+           [ngStyle]="{'background-image': userMe.avatar?'url('+ userMe.avatar +')':'none',
+                 'background-color': userMe.avatar?'':'skyblue'}">
+        <p *ngIf="!userMe.avatar" class="unselectable">{{userMe.full_name.slice(0, 2).toUpperCase()}}</p>
+      </div>
+      <p class="user-profile__fullname">{{userMe.full_name}}</p>
+    </div>
+    <button (click)="moreHandler()" type="button" class="user-profile__setting-btn">
+      <mat-icon>{{moreIcon}}</mat-icon>
+    </button>
+    <div [ngClass]="moreIcon==='expand_less'?'active':''" class="more">
+      <ul class="more-list">
+        <li (click)="logout()" class="more-list__item">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </li>
+        <li class="more-list__item">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="dialog">
+    <form action="#" class="dialog__search">
+      <mat-icon class="search__icon">search</mat-icon>
+      <input [formControl]="dialog_name" type="text" placeholder="Search">
+      <button
+        [matMenuTriggerFor]="menu"
+        matTooltip="Add dialog"
+        matTooltipPosition="above"
+        matTooltipShowDelay="500"
+        matTooltipClass="tooltip"
+        type="button" class="dialog__add">
+        <mat-icon class="add__icon">person_add</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button type="button" (click)="addOneDialogEvent()" mat-menu-item>
+          <mat-icon>chat</mat-icon>
+          <span>New chat</span>
+        </button>
+        <button type="button" (click)="addGroupDialogEvent()" mat-menu-item>
+          <mat-icon>3p</mat-icon>
+          <span>New group chat</span>
+        </button>
+      </mat-menu>
+    </form>
+
+    <ul class="dialog__list">
+      <cdk-virtual-scroll-viewport
+        #viewport
+        itemSize="73"
+      >
+        <app-dialog
+          *cdkVirtualFor="let dialog of (dialogs$ | async); index as i; trackBy: dialogTrackBy"
+          [id]="dialog.id"
+          [createAt]="dialog.createAt"
+          [lastMessage]="dialog.lastMessage"
+          [lastMessageDate]="dialog.lastMessageDate"
+          [lastMessageUserId]="dialog.lastMessageUserId"
+          [name]="dialog.name"
+          [photo]="dialog.photo"
+          [type]="dialog.type"
+          [unreadMessage]="dialog.unreadMessage"
+        >
+        </app-dialog>
+      </cdk-virtual-scroll-viewport>
+    </ul>
+  </div>
+</div>

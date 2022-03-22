@@ -1,0 +1,144 @@
+<mat-form-field class="change-view" appearance="fill">
+  <mat-select
+    [(ngModel)]="selectedValue"
+    (ngModelChange)="changeView()"
+  >
+    <mat-select-trigger>
+      <mat-icon style="margin-right: 10px">{{gridStatus ? 'view_module' : 'view_sidebar'}}</mat-icon>
+      {{gridStatus ? 'Grid View' : 'Speaker View'}}
+    </mat-select-trigger>
+    <mat-option value="grid">
+      <mat-icon>view_module</mat-icon>
+      Grid View
+    </mat-option>
+    <mat-option [disabled]="(participantArray$ | async)?.length === 1 || isIOS || isSafari" value="sidebar">
+      <mat-icon>view_sidebar</mat-icon>
+      Speaker View
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<div *ngIf="isRecording" class="rec-container">
+  <mat-icon class="rec-icon">circle</mat-icon>
+  <p class="rec-text">REC</p>
+</div>
+<div (click)="toggleControlButtons()" [attr.data-meetId]="meetingId$ | async"
+     (mouseleave)="switchVideoActive = false"
+     class="videochat-streams"
+     [ngClass]="{'grid-view':gridStatus, 'sidebar-view':sidebarStatus}">
+  <mat-progress-spinner *ngIf="loading$ | async" [mode]="'indeterminate'"></mat-progress-spinner>
+  <div class="speaker-stream" *ngIf="sidebarStatus">
+    <app-stream-container
+      (videoLoaded)="ChangeDisable($event)"
+      *ngFor="
+      let user of (participantArray$ | async | slice:startSliceSide:endSliceSide);
+      index as i;
+      trackBy:trackById
+      "
+      [className]="'stream'+i"
+      [shareScreenIconName]="shareScreenIconName"
+      [switchDone]="switchDone"
+      [userStream]="user.stream"
+      [userId]="user.id"
+      [userIndex]="(participantArray$ | async)?.length === 1?i:i+1"
+      [userName]="user.name"
+      [userMicrophoneLevel]="user.volumeLevel"
+      [userBitrate]="user.bitrate"
+      [userConnectionStatus]="user.connectionStatus"
+      [userVideoStatus]="user.videoStatus"
+    ></app-stream-container>
+  </div>
+  <div class="users-streams" [ngClass]="setNgClassProperty((participantArray$ | async)?.length)">
+    <app-stream-container
+      (videoLoaded)="ChangeDisable($event)"
+      *ngFor="
+      let user of (participantArray$ | async | slice:startSliceGrid);
+      index as i;
+      trackBy:trackById
+      "
+      [className]="'stream'+i"
+      [shareScreenIconName]="shareScreenIconName"
+      [switchDone]="switchDone"
+      [userStream]="user.stream"
+      [userId]="user.id"
+      [userIndex]="i"
+      [userName]="user.name"
+      [userMicrophoneLevel]="user.volumeLevel"
+      [modeGrid]="gridStatus"
+      [userBitrate]="user.bitrate"
+      [userConnectionStatus]="user.connectionStatus"
+      [userVideoStatus]="user.videoStatus"
+    ></app-stream-container>
+  </div>
+</div>
+<div [style.visibility]="hideButtons?'hidden':'visible'" id="videochat-buttons-container">
+  <div id="user-device"
+       class="user-device"
+       [ngClass]="switchVideoActive ? 'active':''"
+       (mouseenter)="switchVideoActive = true"
+       (mouseleave)="switchVideoActive = false"
+  >
+    <input *ngFor="let dev of mediaDevice"
+           [name]="dev.deviceId"
+           [value]="dev.label"
+           (click)="switchCamera($event)"
+           class="device-btn"
+           type="button">
+  </div>
+  <button matTooltip="Mute/Unmute Microphone"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          [disabled]="DisableButton || !MicroConnect" (click)="muteOrUnmuteMicro()" id="mute-micro" mat-fab
+          color="primary"
+          class="videochat-button"
+          aria-label="Mute Microphone">
+    <mat-icon>{{microphoneIconName}}</mat-icon>
+  </button>
+  <button matTooltip="Mute/Unmute Camera"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          [disabled]="DisableButton || !CameraConnect || !videoPermission"
+          (click)="muteOrUnmuteVideo($event)" id="mute-video"
+          mat-fab class="videochat-button"
+          aria-label="Mute Video">
+    <mat-icon>{{videoIconName}}</mat-icon>
+  </button>
+  <button matTooltip="Toggle Chat"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          (click)="toggleChat()"
+          [disabled]="DisableButton"
+          id="toggle-chat" mat-fab class="videochat-button" aria-label="toggle chat">
+    <mat-icon>question_answer</mat-icon>
+  </button>
+  <button matTooltip="Stop Call"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          (click)="stopCall()"
+          id="stop-call" mat-fab color="warn" class="videochat-button" aria-label="Stop Call">
+    <mat-icon>phone_missed</mat-icon>
+  </button>
+  <button matTooltip="Switch Camera"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          [disabled]="DisableButton || mediaDevice?.length < 2 || !CameraConnect || !videoPermission"
+          (click)="switchVideoActive = !switchVideoActive"
+          (mouseleave)="switchVideoActive = false"
+          id="switch-video" mat-fab
+          class="videochat-button" aria-label="Switch Video">
+    <mat-icon>switch_video</mat-icon>
+  </button>
+  <button matTooltip="Share Screen"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          [disabled]="DisableButton || isMobile || isTablet" (click)="shareScreen()"
+          id="share-screen" mat-fab class="videochat-button" aria-label="Share Screen">
+    <mat-icon>{{shareScreenIconName}}</mat-icon>
+  </button>
+  <button matTooltip="Recording"
+          matTooltipClass="tooltip"
+          matTooltipShowDelay="700"
+          *ngIf="(showRecord | async)" [style.background]="recordBtnBg" [disabled]="DisableButton" (click)="recording()"
+          id="record" mat-fab class="videochat-button" aria-label="Record">
+    <mat-icon [style.color]="recordIconBg">{{recordIconName}}</mat-icon>
+  </button>
+</div>
