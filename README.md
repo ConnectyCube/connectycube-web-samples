@@ -4,7 +4,11 @@ This project contains chat and video chat code samples for JavaScript Web enviro
 
 The following code samples are available:
 
-- [P2P Calling code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat) - [LIVE demo](https://connectycube.github.io/connectycube-web-samples/videochat/dist)
+- [Chat code sample (React)](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat-react)
+
+- [Chat code sample (Angular)](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat-angular)
+
+- [P2P Calling code sample (vanilla JS)](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat) - [LIVE demo](https://connectycube.github.io/connectycube-web-samples/videochat/dist)
 
 - [Conference Calling (React) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf-react)
 
@@ -12,7 +16,7 @@ The following code samples are available:
 
 - [Conference Calling (vanilla JS) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo TeaTalk](https://teatalk.connectycube.com)
 
-- [Chat code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat)
+
 
 ## Documentation
 
