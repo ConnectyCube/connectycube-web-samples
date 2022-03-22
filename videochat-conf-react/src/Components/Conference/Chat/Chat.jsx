@@ -92,7 +92,7 @@ const Chat = (props) => {
               ref={messageRef}
               onChange={messageArea}
               onKeyDown={onEnterPress}
-              onClic={(e) => {
+              onClick={(e) => {
                 e.stopPropagation();
               }}
               required={true}
