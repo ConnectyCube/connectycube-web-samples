@@ -277,6 +277,32 @@ class CallService {
         this.setActiveDeviceId(stream);
         this._prepareVideoElement("localStream");
       });
+
+      // send push notification when calling
+
+      const currentUserName = this._getUserById(this._session.initiatorID, "name");
+      const params = {
+        message: `Incoming call from ${currentUserName}`,
+        ios_voip: 1,
+        callerName: currentUserName,
+        handle: currentUserName,
+        uuid: this.uuidv4(),
+        callType: "video"
+      };
+      const payload = JSON.stringify(params);
+      const pushParameters = {
+        notification_type: "push",
+        user: { ids: opponentsIds },
+        message: ConnectyCube.pushnotifications.base64Encode(payload),
+      };
+
+      ConnectyCube.pushnotifications.events.create(pushParameters)
+        .then(result => {
+          console.log("[sendPushNotification] Ok");
+        }).catch(error => {
+          console.warn("[sendPushNotification] Error", error);
+        });
+
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
     }
@@ -516,6 +542,13 @@ class CallService {
       $video.style.backgroundColor = "";
       $video.style.zIndex = -1;
     }
+  };
+
+  uuidv4 = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   };
 }
 
