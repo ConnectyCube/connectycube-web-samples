@@ -286,7 +286,7 @@ class CallService {
         ios_voip: 1,
         callerName: currentUserName,
         handle: currentUserName,
-        uuid: this.uuidv4(),
+        uuid: this._session.ID,
         callType: "video"
       };
       const payload = JSON.stringify(params);
@@ -542,13 +542,6 @@ class CallService {
       $video.style.backgroundColor = "";
       $video.style.zIndex = -1;
     }
-  };
-
-  uuidv4 = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
   };
 }
 
