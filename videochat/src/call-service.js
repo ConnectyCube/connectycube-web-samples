@@ -285,6 +285,8 @@ class CallService {
         message: `Incoming call from ${currentUserName}`,
         ios_voip: 1,
         callerName: currentUserName,
+        initiatorId: this._session.initiatorID,
+        opponentsIds: opponentsIds.join(","),
         handle: currentUserName,
         uuid: this._session.ID,
         callType: "video"
