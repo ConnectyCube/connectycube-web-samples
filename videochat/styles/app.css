@@ -176,8 +176,12 @@
   visibility: hidden;
 }
 
-#call-start {
+#call-start-audio {
   background: forestgreen url("../images/call.svg") no-repeat center;
+}
+
+#call-start-video {
+  background: forestgreen url("../images/video-call.svg") no-repeat center;
 }
 
 #videochat-mute-unmute {

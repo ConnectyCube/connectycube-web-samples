@@ -208,7 +208,7 @@ class CallService {
 
   acceptCall = () => {
     const extension = {};
-    const { opponentsIDs, initiatorID, currentUserID } = this._session;
+    const { opponentsIDs, initiatorID, currentUserID, callType } = this._session;
     const opponentsIds = [initiatorID, ...opponentsIDs].filter(
       (userId) => currentUserID !== userId
     );
@@ -219,8 +219,14 @@ class CallService {
     this.defaultSettings();
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
-    this._session.getUserMedia(this.mediaParams).then((stream) => {
-      if (!this._session.getDisplayMedia) {
+
+    const mediaOptions = {...this.mediaParams};
+    if (callType === ConnectyCube.videochat.CallType.AUDIO) {
+      mediaOptions.video = false;
+    }
+    //
+    this._session.getUserMedia(mediaOptions).then((stream) => {
+      if (!this._session.getDisplayMedia || callType === ConnectyCube.videochat.CallType.AUDIO) {
         this.$switchSharingScreenButton.disabled = true;
       }
 
@@ -240,11 +246,19 @@ class CallService {
     }
   };
 
-  startCall = () => {
+  startAudioCall = () => {
+    this.startCall(ConnectyCube.videochat.CallType.AUDIO)
+  }
+
+  startVideoCall = () => {
+    this.startCall(ConnectyCube.videochat.CallType.VIDEO)
+  }
+
+  startCall = (callType) => {
     const options = {};
     const opponents = [];
     const opponentsIds = [];
-    const type = ConnectyCube.videochat.CallType.VIDEO; // AUDIO is also possible
+
     this.defaultSettings();
 
     document.querySelectorAll(".select-user-checkbox").forEach(($checkbox) => {
@@ -265,11 +279,17 @@ class CallService {
       this.addStreamElements(opponents);
       this._session = ConnectyCube.videochat.createNewSession(
         opponentsIds,
-        type,
+        callType,
         options
       );
-      this._session.getUserMedia(this.mediaParams).then((stream) => {
-        if (!this._session.getDisplayMedia) {
+
+      const mediaOptions = {...this.mediaParams};
+      if (callType === ConnectyCube.videochat.CallType.AUDIO) {
+        mediaOptions.video = false;
+      }
+      //
+      this._session.getUserMedia(mediaOptions).then((stream) => {
+        if (!this._session.getDisplayMedia || callType === ConnectyCube.videochat.CallType.AUDIO) {
           this.$switchSharingScreenButton.disabled = true;
         }
 
@@ -288,7 +308,7 @@ class CallService {
         opponentsIds: opponentsIds.join(","),
         handle: currentUserName,
         uuid: this._session.ID,
-        callType: "video"
+        callType: callType === ConnectyCube.videochat.CallType.VIDEO ? "video" : "audio"
       };
       const payload = JSON.stringify(params);
       const pushParameters = {
@@ -366,7 +386,7 @@ class CallService {
       .then((mediaDevices) => {
         this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
 
-        if (this.mediaDevicesIds.length < 2) {
+        if (this.mediaDevicesIds.length < 2 || this._session.callType === ConnectyCube.videochat.CallType.AUDIO) {
           this.$switchCameraButton.disabled = true;
 
           if (
