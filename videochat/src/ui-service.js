@@ -11,7 +11,8 @@ class UIService {
   };
 
   addEventListenersForCallButtons = () => {
-    document.getElementById("call-start").addEventListener("click", () => CallService.startCall());
+    document.getElementById("call-start-audio").addEventListener("click", () => CallService.startAudioCall());
+    document.getElementById("call-start-video").addEventListener("click", () => CallService.startVideoCall());
     document.getElementById("videochat-stop-call").addEventListener("click", () => CallService.stopCall());
     document.getElementById("videochat-mute-unmute").addEventListener("click", () => CallService.setAudioMute());
     document.getElementById("videochat-switch-camera").addEventListener("click", () => CallService.switchCamera());
