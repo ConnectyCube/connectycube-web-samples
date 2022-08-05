@@ -1,3 +1,5 @@
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
+
 # ConnectyCube Chat and Video Chat code samples for Web
 
 This project contains chat and video chat code samples for JavaScript Web environments and based on [ConnectyCube](https://connectycube.com/) communication platform.
