@@ -222,7 +222,7 @@ class CallService {
 
     const mediaOptions = {...this.mediaParams};
     if (callType === ConnectyCube.videochat.CallType.AUDIO) {
-      mediaOptions.video = false;
+      delete mediaOptions.video;
     }
     //
     this._session.getUserMedia(mediaOptions).then((stream) => {
@@ -283,9 +283,11 @@ class CallService {
         options
       );
 
+      console.log("startCall", {callType}, ConnectyCube.videochat.CallType.AUDIO)
+
       const mediaOptions = {...this.mediaParams};
       if (callType === ConnectyCube.videochat.CallType.AUDIO) {
-        mediaOptions.video = false;
+        delete mediaOptions.video;
       }
       //
       this._session.getUserMedia(mediaOptions).then((stream) => {
@@ -350,6 +352,12 @@ class CallService {
         $videochatStreams.classList.value = "grid-2-1";
       }
     } else if (this._session) {
+      // stop tracks
+      const video = document.getElementById("localStream");
+      for (const track of video.srcObject.getTracks()) {
+        track.stop();
+      }
+
       this._session.stop({});
       ConnectyCube.videochat.clearSession(this._session.ID);
       this.$dialing.pause();
@@ -389,7 +397,7 @@ class CallService {
         if (this.mediaDevicesIds.length < 2 || this._session.callType === ConnectyCube.videochat.CallType.AUDIO) {
           this.$switchCameraButton.disabled = true;
 
-          if (
+          if (this.activeDeviceId &&
             this.mediaDevicesIds?.[0] !== this.activeDeviceId &&
             !this.isSharingScreen
           ) {
@@ -416,9 +424,9 @@ class CallService {
   setActiveDeviceId = (stream) => {
     if (stream && !iOS) {
       const videoTracks = stream.getVideoTracks();
-      const videoTrackSettings = videoTracks[0].getSettings();
+      const videoTrackSettings = videoTracks[0]?.getSettings();
 
-      this.activeDeviceId = videoTrackSettings.deviceId;
+      this.activeDeviceId = videoTrackSettings?.deviceId;
     }
   };
 
