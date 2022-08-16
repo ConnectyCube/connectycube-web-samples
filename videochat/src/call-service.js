@@ -312,6 +312,18 @@ class CallService {
         uuid: this._session.ID,
         callType: callType === ConnectyCube.videochat.CallType.VIDEO ? "video" : "audio"
       };
+
+      // uncomment if you use Web <-> Flutter
+      // const params = {
+      //   message: `Incoming call from ${currentUserName}`,
+      //   ios_voip: 1,
+      //   caller_id: this._session.initiatorID,
+      //   call_opponents: opponentsIds.join(","),
+      //   caller_name: currentUserName,
+      //   session_id: this._session.ID,
+      //   call_type: callType,
+      //   signal_type: 'startCall'
+      // };
       const payload = JSON.stringify(params);
       const pushParameters = {
         notification_type: "push",
