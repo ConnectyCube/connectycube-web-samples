@@ -66,14 +66,12 @@ export const CallProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    setInterval(() => {
-      participantRef.current.forEach((p) => {
+    setInterval(async () => {
+      for (let p of participantRef.current) {
         if (p.name !== "me") {
           try {
             let bitrate = _session.current.getRemoteUserBitrate(p.userId);
-            let micLevel =
-              (_session.current.getRemoteUserVolume(p.userId) / MAX_MIC_LEVEL) *
-              100;
+            let micLevel = (await _session.current.getRemoteUserVolume(p.userId) || 0) * 100;
             if (detectBrowser() === "Safari") {
               let safariBitrate = parseInt(bitrate);
               p.bitrate = Math.round(safariBitrate / 1000) + " kbits/sec";
@@ -85,7 +83,7 @@ export const CallProvider = ({ children }) => {
         } else {
           p.bitrate = null;
         }
-      });
+      }
       setParticipants([...participantRef.current]);
     }, 4000);
   }, []);
@@ -494,6 +492,7 @@ export const CallProvider = ({ children }) => {
   };
 
   const disableVideo = () => {
+
     participantRef.current.forEach((p) => {
       const userId = p.userId;
       const msg = {
@@ -506,9 +505,7 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.chat.sendSystemMessage(userId, msg);
     });
 
-    console.log("[disableVideo]");
     let params = { video: false, audio: true };
-    participantRef.current[0].stream.getVideoTracks()[0].stop();
     setParticipants([...participantRef.current]);
     return new Promise((resolve, reject) => {
       _session.current.getUserMedia(params, true).then(

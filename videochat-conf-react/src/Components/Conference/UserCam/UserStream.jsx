@@ -37,7 +37,6 @@ const UserStream = (props) => {
 
     [stream]
   );
-
   return (
     <div
       id="user__cam-container"
