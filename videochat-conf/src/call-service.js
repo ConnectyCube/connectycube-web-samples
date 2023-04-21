@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import {
   users,
-  NO_ASNWER_TIMER,
+  NO_ANSWER_TIMER,
   messages,
   appConfig,
   defaultAvatarlist,
@@ -42,9 +42,14 @@ class CallService {
   avatarIndex = {};
   usersStatsList = {};
   updateStatsTimer = null;
-  conectedParticipantIds = [];
+  connectedParticipantIds = [];
   isSharingScreen = false;
   startEventSharinScreen = null;
+
+  streams = {};
+  videoEnabled = {};
+  updateVideoTrackTimeout = null
+
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -54,6 +59,8 @@ class CallService {
       this.onStopCallListener.bind(this);
     ConnectyCube.videochatconference.onRemoteStreamListener =
       this.onRemoteStreamListener.bind(this);
+    ConnectyCube.videochatconference.onRemoteTracksUpdatedListener =
+      this.onRemoteTracksUpdatedListener.bind(this);
     ConnectyCube.videochatconference.onSlowLinkListener =
       this.onSlowLinkListener.bind(this);
     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener =
@@ -188,10 +195,10 @@ class CallService {
 
     clearInterval(this.updateStatsTimer);
 
-    this.conectedParticipantIds.push(userId);
+    this.connectedParticipantIds.push(userId);
 
     this.updateStatsTimer = setInterval(() => {
-      this.conectedParticipantIds.forEach((user_id) => {
+      this.connectedParticipantIds.forEach((user_id) => {
         this.getUserStat(user_id);
       });
     }, GET_USERS_STATS_TIME_INTERVAL);
@@ -199,11 +206,11 @@ class CallService {
 
   stopMonitoringUserStats = (userId) => {
     if (userId) {
-      let updateConectedParticipantIds = [];
-      this.conectedParticipantIds.forEach((element) => {
-        element !== userId && updateConectedParticipantIds.push(element);
+      let updateConnectedParticipantIds = [];
+      this.connectedParticipantIds.forEach((element) => {
+        element !== userId && updateConnectedParticipantIds.push(element);
       });
-      this.conectedParticipantIds = updateConectedParticipantIds;
+      this.connectedParticipantIds = updateConnectedParticipantIds;
     } else {
       clearInterval(this.updateStatsTimer);
     }
@@ -456,16 +463,22 @@ class CallService {
   };
 
   onRemoteStreamListener = (session, userId, stream) => {
-    console.warn("[onRemoteStreamListener]", userId);
+    console.warn("[onRemoteStreamListener]", userId, stream);
     if (!this._session) {
       return false;
     }
 
+    this.streams[userId] = stream
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId);
-    const isStremaWithVideo = stream.getVideoTracks().length > 0;
-    this._prepareVideoElement(userId, isStremaWithVideo);
+    this._prepareVideoElement(userId, true);
   };
+
+  onRemoteTracksUpdatedListener = (session, userId, track) => {
+    if (track.kind === 'video') {
+      // this._prepareVideoElement(userId, !track.muted);
+    }
+  }
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn("[onSlowLinkListener]", userId, uplink, nacks);
@@ -757,7 +770,7 @@ class CallService {
       // this.mediaParams = {video: true, audio: true}
       this.mediaParams = { video: { width: 1280, height: 720 }, audio: true };
       this.usersStatsList = {};
-      this.conectedParticipantIds = [];
+      this.connectedParticipantIds = [];
       this.stopMonitoringUserStats();
       this.startEventSharinScreen = null;
       if (this.isSharingScreen) {
@@ -959,8 +972,8 @@ class CallService {
     $streamBblock.remove();
   }
 
-  _prepareVideoElement = (user_id, isStremaWithVideo) => {
-    if (!isStremaWithVideo) {
+  _prepareVideoElement = (user_id, isStreamWithVideo) => {
+    if (!isStreamWithVideo) {
       return this.toggleUserPlaceholder(user_id, true);
     }
     const $video = document.getElementById(this.getStreamIdByUserId(user_id));
@@ -1023,7 +1036,7 @@ class CallService {
     participantIds.forEach((user_id) => {
       this._answerUserTimers[user_id] = setTimeout(
         () => this.onUserNotAnswerListener(this._session, user_id),
-        NO_ASNWER_TIMER
+        NO_ANSWER_TIMER
       );
     });
   }
