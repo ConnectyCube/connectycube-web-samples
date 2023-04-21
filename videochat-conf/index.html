@@ -2,31 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" viewport-fit="cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+      viewport-fit="cover" />
 
     <title>ConnectyCube Video Chat code sample</title>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons-connectycube-touchicon-180.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-borderless.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css">                                               
+    <link rel="manifest" href="/manifest.json" />
+    <link
+      rel="apple-touch-icon"
+      href="/images/icons-connectycube-touchicon-180.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-borderless.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/js/tooltipster.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/tooltipster.bundle.min.css">
-
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/jquery.tooltipster/4.0.5/css/tooltipster.bundle.min.css" />
 
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-32x32.png"
-    />
+      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-32x32.png" />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-16x16.png"
-    />
+      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-16x16.png" />
     <!-- app styles -->
     <link rel="stylesheet" href="/styles/index.css" />
   </head>
@@ -34,9 +44,12 @@
   <body>
     <div id="main">
       <!-- LOGIN SCREEN -->
-      <section id="login">       
+      <section id="login">
         <div id="login-logo">
-          <img id="login-image" src="/images/icons-connectycube-512.png" alt="ConnectyCube" />
+          <img
+            id="login-image"
+            src="/images/icons-connectycube-512.png"
+            alt="ConnectyCube" />
           <div id="login-caption">Conference calling</div>
           <div id="login-loader" class="hidden">
             <div id="login-loader-text">Connecting...</div>
@@ -44,12 +57,16 @@
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
-                style="margin: auto; background: none; display: block; shape-rendering: auto;"
+                style="
+                  margin: auto;
+                  background: none;
+                  display: block;
+                  shape-rendering: auto;
+                "
                 width="20px"
                 height="20px"
                 viewBox="0 0 100 100"
-                preserveAspectRatio="xMidYMid"
-              >
+                preserveAspectRatio="xMidYMid">
                 <circle
                   r="36"
                   cx="50"
@@ -58,16 +75,14 @@
                   stroke="#1198d4"
                   stroke-width="10"
                   stroke-dasharray="169.64600329384882 58.548667764616276"
-                  transform="rotate(113.674 50 50)"
-                >
+                  transform="rotate(113.674 50 50)">
                   <animateTransform
                     attributeName="transform"
                     type="rotate"
                     repeatCount="indefinite"
                     dur="1s"
                     values="0 50 50;360 50 50"
-                    keyTimes="0;1"
-                  ></animateTransform>
+                    keyTimes="0;1"></animateTransform>
                 </circle>
               </svg>
             </div>
@@ -84,10 +99,22 @@
         </div>
         <div id="call-icoming"></div>
         <div id="call-modal-icoming" tabindex="-1">
-          <div class="call-modal-header">Incoming call from <strong id="call-modal-initiator"></strong></div>
+          <div class="call-modal-header">
+            Incoming call from <strong id="call-modal-initiator"></strong>
+          </div>
           <div class="call-modal-footer">
-            <button id="call-modal-reject" class="call-modal-button" type="button">Reject</button>
-            <button id="call-modal-accept" class="call-modal-button" type="button">Accept</button>
+            <button
+              id="call-modal-reject"
+              class="call-modal-button"
+              type="button">
+              Reject
+            </button>
+            <button
+              id="call-modal-accept"
+              class="call-modal-button"
+              type="button">
+              Accept
+            </button>
           </div>
         </div>
       </section>
@@ -96,19 +123,26 @@
       <section id="videochat" class="hidden">
         <div id="videochat-streams"></div>
         <div id="videochat-buttons-container">
-          <button id="videochat-mute-unmute" class="videochat-button" disabled></button>
-          <button id="videochat-mute-unmute-video" class="videochat-button" disabled></button>
+          <button
+            id="videochat-mute-unmute"
+            class="videochat-button"
+            disabled></button>
+          <button
+            id="videochat-mute-unmute-video"
+            class="videochat-button"
+            disabled></button>
           <button id="videochat-stop-call" class="videochat-button"></button>
-            <button 
-              id="videochat-switch-camera" 
-              class="videochat-button videochat-switch-camera-list tooltip-container-list-camera" 
-              disabled
-              data-tooltipster="" 
-            >
-              <div class="videochat-button-mini">
-                <i id="videochat-sharing-screen-icon" class="fas fa-chevron-down"></i>
-              </div>
-            </button> 
+          <button
+            id="videochat-switch-camera"
+            class="videochat-button videochat-switch-camera-list tooltip-container-list-camera"
+            disabled
+            data-tooltipster="">
+            <div class="videochat-button-mini">
+              <i
+                id="videochat-sharing-screen-icon"
+                class="fas fa-chevron-down"></i>
+            </div>
+          </button>
           <button id="videochat-sharing-screen" class="videochat-button">
             <i id="videochat-sharing-screen-icon" class="fas fa-tv"></i>
           </button>
@@ -122,104 +156,120 @@
       <script type="text/x-handlebars-template" id="login-buttons-template">
         {{#if drawUsers}}
           {{#each users}}
-            <button class="login-button {{this.name}}-bg-color" data-id="{{this.id}}">Login as {{this.name}}</button>
+            <button
+              class='login-button {{this.name}}-bg-color'
+              data-id='{{this.id}}'
+            >Login as {{this.name}}</button>
           {{/each}}
         {{/if}}
         <div>
           {{#if drawJoinGuestRoomButton}}
-            <h2 class="guest-title">Or create and join</h2>
-            <button id="guest-room-join-btn" class="login-button">{{guestButtonText}}</button>
+            <h2 class='guest-title'>Or create and join</h2>
+            <button
+              id='guest-room-join-btn'
+              class='login-button'
+            >{{guestButtonText}}</button>
           {{/if}}
         </div>
       </script>
 
       <script type="text/x-handlebars-template" id="select-users-template">
-        <h2 id="select-header">Select users to start Videocall</h2>
+        <h2 id='select-header'>Select users to start Videocall</h2>
         {{#each usersForSelect}}
-          <label for="select-{{this.id}}" id="select-{{this.name}}" class="{{this.name}}-bg-color select-user">
+          <label
+            for='select-{{this.id}}'
+            id='select-{{this.name}}'
+            class='{{this.name}}-bg-color select-user'
+          >
             <span>{{this.name}}</span>
-            <input type="checkbox" id="select-{{this.id}}" class="select-user-checkbox" data-id="{{this.id}}" />
+            <input
+              type='checkbox'
+              id='select-{{this.id}}'
+              class='select-user-checkbox'
+              data-id='{{this.id}}'
+            />
           </label>
         {{/each}}
       </script>
 
       <script type="text/x-handlebars-template" id="videochat-streams-template">
-          <div class="videochat-stream-loader" data-id="{{id}}">
-            <div class="videochat-stream-loader-text">{{name}} </div>
-            <div class="videochat-stream-loader-spinner">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                style="margin: auto; background: none; display: block; shape-rendering: auto;"
-                width="20px"
-                height="20px"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="xMidYMid"
+        <div class='videochat-stream-loader' data-id='{{id}}'>
+          <div class='videochat-stream-loader-text'>{{name}} </div>
+          <div class='videochat-stream-loader-spinner'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              xmlns:xlink='http://www.w3.org/1999/xlink'
+              style='margin: auto; background: none; display: block; shape-rendering: auto;'
+              width='20px'
+              height='20px'
+              viewBox='0 0 100 100'
+              preserveAspectRatio='xMidYMid'
+            >
+              <circle
+                r='36'
+                cx='50'
+                cy='50'
+                fill='none'
+                stroke='#1198d4'
+                stroke-width='10'
+                stroke-dasharray='169.64600329384882 58.548667764616276'
+                transform='rotate(113.674 50 50)'
               >
-                <circle
-                  r="36"
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  stroke="#1198d4"
-                  stroke-width="10"
-                  stroke-dasharray="169.64600329384882 58.548667764616276"
-                  transform="rotate(113.674 50 50)"
-                >
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    repeatCount="indefinite"
-                    dur="1s"
-                    values="0 50 50;360 50 50"
-                    keyTimes="0;1"
-                  ></animateTransform>
-                </circle>
-              </svg>
-            </div>
-          </div>  
-          <div 
-            data-id="{{id}}" 
-            class="display-popup" 
-            data-tooltipster="" 
+                <animateTransform
+                  attributeName='transform'
+                  type='rotate'
+                  repeatCount='indefinite'
+                  dur='1s'
+                  values='0 50 50;360 50 50'
+                  keyTimes='0;1'
+                ></animateTransform>
+              </circle>
+            </svg>
+          </div>
+        </div>
+        <div data-id='{{id}}' class='display-popup' data-tooltipster=''>
+          <div
+            data-id='{{id}}'
+            class='display-signal-icon tooltip-container'
+            data-tooltipster=''
           >
-            <div
-              data-id="{{id}}"  
-              class="display-signal-icon tooltip-container"
-              data-tooltipster=""
-            >
-              <i class="fa fa-signal" aria-hidden="true"></i>
-              <div class="tool-tip-content">
-                <ul>
-                  <li>Connection: - </li>
-                  <li>Bitrate: - </li>
-                  <li>Mic level: - </li>
-                </ul>
-              </div>
+            <i class='fa fa-signal' aria-hidden='true'></i>
+            <div class='tool-tip-content'>
+              <ul>
+                <li>Connection: - </li>
+                <li>Bitrate: - </li>
+                <li>Mic level: - </li>
+              </ul>
             </div>
-            <div
-              class="display-full-screen-icon"
-              data-id="{{id}}"
-              onclick="UIUsersEvents.showFullscreen({{id}})"
-            >
-              <i class="fas fa-expand"></i>
-            </div>
-          </div>  
+          </div>
+          <div
+            class='display-full-screen-icon'
+            data-id='{{id}}'
+            onclick='UIUsersEvents.showFullscreen({{id}})'
+          >
+            <i class='fas fa-expand'></i>
+          </div>
+        </div>
 
-          <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({{id}})">         
-            <div class="user-image"></div>
-          </div>
-            <div class="container-full-screen stream-{{id}}" >
-              <video 
-                playsinline 
-                id="stream-{{id}}" 
-                class="videochat-stream" 
-                onmouseover="UIUsersEvents._renderSignalStat({{id}})">
-              </video>
-            </div>      
-          <div data-id="{{id}}" class="display-user-name">
-            <p class="user-name">{{name}}</p>
-          </div>
+        <div
+          data-id='{{id}}'
+          class='user-placeholder'
+          onmouseover='UIUsersEvents._renderSignalStat({{id}})'
+        >
+          <div class='user-image'></div>
+        </div>
+        <div class='container-full-screen stream-{{id}}'>
+          <video
+            playsinline
+            id='stream-{{id}}'
+            class='videochat-stream'
+            onmouseover='UIUsersEvents._renderSignalStat({{id}})'
+          >
+          </video>
+        </div>
+        <div data-id='{{id}}' class='display-user-name'>
+          <p class='user-name'>{{name}}</p>
+        </div>
       </script>
       <!-- SOUNDS -->
       <audio id="signal-end" preload="auto">
@@ -237,8 +287,12 @@
     <div id="e2e-ice-state" hidden></div>
   </body>
 
-<script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/connectycube@3.4.0/dist/connectycube.min.js"></script>
-<script type="text/javascript" src="/main.js"></script>
-<script type="text/javascript" src="/events-service.js"></script>
+  <script
+    type="text/javascript"
+    src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script
+    type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/connectycube@3.26.0/dist/connectycube.min.js"></script>
+  <script type="text/javascript" src="/main.js"></script>
+  <script type="text/javascript" src="/events-service.js"></script>
 </html>

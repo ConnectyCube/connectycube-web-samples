@@ -1,17 +1,17 @@
-const path = require("path");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = (env) => ({
-  mode: env.production ? "production" : "development",
+  mode: env.production ? 'production' : 'development',
   entry: env.production
-    ? "./src/index.js"
-    : ["webpack/hot/dev-server", "./src/index.js"],
+    ? './src/index.js'
+    : ['webpack/hot/dev-server', './src/index.js'],
   output: {
-    path: path.resolve(__dirname, "./dist"),
-    filename: "main.js",
-    sourceMapFilename: "main.map",
-    libraryTarget: "umd",
+    path: path.resolve(__dirname, './dist'),
+    filename: 'main.js',
+    sourceMapFilename: 'main.map',
+    libraryTarget: 'umd',
   },
   optimization: {
     minimize: !env.non_minimize,
@@ -19,23 +19,22 @@ module.exports = (env) => ({
   plugins: [
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
-      { from: "index.html", to: "index.html" },
-      { from: "src/events-service.js", to: "events-service.js" },
-      { from: "manifest.json", to: "manifest.json" },
-      { from: "styles", to: "styles" },
-      { from: "images", to: "images" },
-      { from: "audio", to: "audio" },
+      { from: 'index.html', to: 'index.html' },
+      { from: 'src/events-service.js', to: 'events-service.js' },
+      { from: 'manifest.json', to: 'manifest.json' },
+      { from: 'styles', to: 'styles' },
+      { from: 'images', to: 'images' },
+      { from: 'audio', to: 'audio' },
     ]),
   ],
   watch: env.development,
-  devtool: env.production ? false : "source-map",
+  devtool: env.production ? false : 'source-map',
   devServer: {
     open: true,
     writeToDisk: true,
-    contentBase: [path.join(__dirname, "./"), path.join(__dirname, "./dist")],
+    contentBase: [path.join(__dirname, './'), path.join(__dirname, './dist')],
     historyApiFallback: true,
-    https: true,
-    host: "127.0.0.1",
+    host: '127.0.0.1',
     port: 8000,
     hot: true,
   },
@@ -47,13 +46,13 @@ module.exports = (env) => ({
         exclude: /node_modules/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: ["@babel/preset-env"],
+              presets: ['@babel/preset-env'],
               plugins: [
-                "@babel/plugin-proposal-object-rest-spread",
-                "@babel/plugin-proposal-class-properties",
-                "@babel/plugin-proposal-optional-chaining",
+                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-proposal-optional-chaining',
               ],
             },
           },
@@ -61,5 +60,5 @@ module.exports = (env) => ({
       },
     ],
   },
-  externals: ["node-fetch", "form-data"],
+  externals: ['node-fetch', 'form-data'],
 });
