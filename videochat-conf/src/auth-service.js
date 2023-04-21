@@ -1,34 +1,39 @@
-import { credentials, appConfig } from "./config";
+import { credentials, appConfig } from './config';
 
 class AuthService {
-  $loginScreen = document.getElementById("login");
-  $callScreen = document.getElementById("call");
-  $loader = document.getElementById("login-loader");
-  $caption = document.getElementById("login-caption");
+  $loginScreen = document.getElementById('login');
+  $callScreen = document.getElementById('call');
+  $loader = document.getElementById('login-loader');
+  $caption = document.getElementById('login-caption');
 
   init = (janusServerEndpoint = null) => {
     if (janusServerEndpoint) {
-      appConfig.conference.server = janusServerEndpoint
+      appConfig.conference.server = janusServerEndpoint;
     }
-    ConnectyCube.init(credentials, appConfig)
-  }
+    ConnectyCube.init(credentials, appConfig);
+  };
 
   createSession(user) {
-    return ConnectyCube.createSession(user)
+    return ConnectyCube.createSession(user);
   }
-  parseJoinRoom = 
-  login = user => {
+
+  login = (user) => {
     return new Promise((resolve, reject) => {
-      this.$loader.classList.remove("hidden");
-      this.$caption.classList.add("hidden");
+      this.$loader.classList.remove('hidden');
+      this.$caption.classList.add('hidden');
 
       this.createSession(user)
-        .then(() => ConnectyCube.chat.connect({ userId: user.id, password: user.password }))
+        .then(() =>
+          ConnectyCube.chat.connect({
+            userId: user.id,
+            password: user.password,
+          })
+        )
         .then(() => {
-          this.hideLoginScreen()
-          this.$callScreen.classList.remove("hidden");
-          this.$loader.classList.add("hidden");
-          this.$caption.classList.remove("hidden");
+          this.hideLoginScreen();
+          this.$callScreen.classList.remove('hidden');
+          this.$loader.classList.add('hidden');
+          this.$caption.classList.remove('hidden');
           resolve();
         })
         .catch(reject);
@@ -36,15 +41,15 @@ class AuthService {
   };
 
   hideLoginScreen = () => {
-    this.$loginScreen.classList.add("hidden");
-  }
+    this.$loginScreen.classList.add('hidden');
+  };
 
   logout = () => {
     ConnectyCube.chat.disconnect();
     ConnectyCube.destroySession();
 
-    this.$callScreen.classList.add("hidden");
-    this.$loginScreen.classList.remove("hidden");
+    this.$callScreen.classList.add('hidden');
+    this.$loginScreen.classList.remove('hidden');
   };
 }
 
