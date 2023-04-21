@@ -1,20 +1,21 @@
 /* eslint-disable no-undef */
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { CallProvider } from "./services/call-service";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import { CallProvider } from './services/call-service';
 
 export const rerenderTree = () => {
-  ReactDOM.render(
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+
+  root.render(
     <BrowserRouter>
       <CallProvider>
         <App />
       </CallProvider>
-    </BrowserRouter>,
-    document.getElementById("root")
+    </BrowserRouter>
   );
 };
 rerenderTree();
