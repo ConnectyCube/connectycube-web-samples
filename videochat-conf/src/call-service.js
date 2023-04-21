@@ -46,10 +46,6 @@ class CallService {
   isSharingScreen = false;
   startEventSharinScreen = null;
 
-  streams = {};
-  videoEnabled = {};
-  updateVideoTrackTimeout = null
-
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
