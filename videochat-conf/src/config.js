@@ -21,9 +21,9 @@ export const messages = {
 export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state';
 
 export const credentials = {
-  appId: 3828,
-  authKey: 'p4PLLLkYecpHGaY',
-  authSecret: 'zmjQkGgZakVLnU6',
+  appId: 385,
+  authKey: "DFBMs5-dKBBCXcd",
+  authSecret: "SkCW-ThdnmRg9Za"
 };
 
 export const appConfig = {
@@ -33,28 +33,28 @@ export const appConfig = {
 
 export const users = [
   {
-    id: 2850769,
+    id: 72780,
     name: 'Alice',
     login: 'videouser1',
     password: 'videouser1',
     color: '#34ad86',
   },
   {
-    id: 2850781,
+    id: 72781,
     name: 'Bob',
     login: 'videouser2',
     password: 'videouser2',
     color: '#077988',
   },
   {
-    id: 2850784,
+    id: 590565,
     name: 'Ciri',
     login: 'videouser3',
     password: 'videouser3',
     color: '#13aaae',
   },
   {
-    id: 2850786,
+    id: 590583,
     name: 'Dexter',
     login: 'videouser4',
     password: 'videouser4',
@@ -67,7 +67,7 @@ const isCordovaEnv = !!window.cordova;
 export const GUEST_ROOM_ONLY_MODE = false;
 export const CALLING_ONLY_MODE = isCordovaEnv;
 
-export const NO_ASNWER_TIMER = 30000; // 30 sec
+export const NO_ANSWER_TIMER = 30000; // 30 sec
 
 export const GET_USERS_STATS_TIME_INTERVAL = 3000;
 
@@ -75,7 +75,7 @@ export const MAX_MIC_LEVEL = 20000;
 
 export const CLEANING_SLOW_LINK_INTERVAL = 10; //sec
 
-export const defaultAvatarlist = [
+export const defaultAvatarsList = [
   'animals_1.jpg',
   'animals_2.jpg',
   'animals_3.jpg',

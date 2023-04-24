@@ -43,7 +43,7 @@ class CallService {
   $dialing = document.getElementById("signal-out");
   $endCall = document.getElementById("signal-end");
 
-  $modal = document.getElementById("call-modal-icoming");
+  $modal = document.getElementById("call-modal-incoming");
 
   $muteUnmuteButton = document.getElementById("videochat-mute-unmute");
   $switchCameraButton = document.getElementById("videochat-switch-camera");
