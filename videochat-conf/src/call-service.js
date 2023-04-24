@@ -1,10 +1,10 @@
 import Handlebars from "handlebars";
 import {
   users,
-  NO_ASNWER_TIMER,
+  NO_ANSWER_TIMER,
   messages,
   appConfig,
-  defaultAvatarlist,
+  defaultAvatarsList,
   GET_USERS_STATS_TIME_INTERVAL,
   MAX_MIC_LEVEL,
   CLEANING_SLOW_LINK_INTERVAL,
@@ -42,9 +42,9 @@ class CallService {
   avatarIndex = {};
   usersStatsList = {};
   updateStatsTimer = null;
-  conectedParticipantIds = [];
+  connectedParticipantIds = [];
   isSharingScreen = false;
-  startEventSharinScreen = null;
+  startEventSharingScreen = null;
 
   init = () => {
     ConnectyCube.chat.onSystemMessageListener = this.onSystemMessage.bind(this);
@@ -54,6 +54,8 @@ class CallService {
       this.onStopCallListener.bind(this);
     ConnectyCube.videochatconference.onRemoteStreamListener =
       this.onRemoteStreamListener.bind(this);
+    ConnectyCube.videochatconference.onRemoteTracksUpdatedListener =
+      this.onRemoteTracksUpdatedListener.bind(this);
     ConnectyCube.videochatconference.onSlowLinkListener =
       this.onSlowLinkListener.bind(this);
     ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener =
@@ -113,7 +115,7 @@ class CallService {
   $dialing = document.getElementById("signal-out");
   $endCall = document.getElementById("signal-end");
 
-  $modal = document.getElementById("call-modal-icoming");
+  $modal = document.getElementById("call-modal-incoming");
 
   $muteUnmuteAudioButton = document.getElementById("videochat-mute-unmute");
   $muteUnmuteVideoButton = document.getElementById(
@@ -153,7 +155,7 @@ class CallService {
       opponents = [opponents];
     }
 
-    const curretActiveCallUsersCout = this._getActiveCallUsers().length;
+    const currentActiveCallUsersCount = this._getActiveCallUsers().length;
     const documentFragment = document.createDocumentFragment();
 
     opponents.forEach((opponent, index) => {
@@ -168,12 +170,12 @@ class CallService {
       streamBlock.innerHTML = videochatStreamsTemplate(opponent);
       streamBlock.classList.add("videochat-stream-container");
       streamBlock.dataset.id = `${opponent.id}`;
-      streamBlock.style.gridArea = `stream${index + curretActiveCallUsersCout}`;
+      streamBlock.style.gridArea = `stream${index + currentActiveCallUsersCount}`;
       documentFragment.appendChild(streamBlock);
     });
 
     $videochatStreams.classList.value = `grid-${
-      opponents.length + curretActiveCallUsersCout
+      opponents.length + currentActiveCallUsersCount
     }`;
 
     $videochatStreams.appendChild(documentFragment);
@@ -188,10 +190,10 @@ class CallService {
 
     clearInterval(this.updateStatsTimer);
 
-    this.conectedParticipantIds.push(userId);
+    this.connectedParticipantIds.push(userId);
 
     this.updateStatsTimer = setInterval(() => {
-      this.conectedParticipantIds.forEach((user_id) => {
+      this.connectedParticipantIds.forEach((user_id) => {
         this.getUserStat(user_id);
       });
     }, GET_USERS_STATS_TIME_INTERVAL);
@@ -199,11 +201,11 @@ class CallService {
 
   stopMonitoringUserStats = (userId) => {
     if (userId) {
-      let updateConectedParticipantIds = [];
-      this.conectedParticipantIds.forEach((element) => {
-        element !== userId && updateConectedParticipantIds.push(element);
+      let updateConnectedParticipantIds = [];
+      this.connectedParticipantIds.forEach((element) => {
+        element !== userId && updateConnectedParticipantIds.push(element);
       });
-      this.conectedParticipantIds = updateConectedParticipantIds;
+      this.connectedParticipantIds = updateConnectedParticipantIds;
     } else {
       clearInterval(this.updateStatsTimer);
     }
@@ -282,7 +284,7 @@ class CallService {
       },
 
       functionInit: (instance, helper) => {
-        this.initToolTispterUI(instance, helper);
+        this.initToolTipsterUI(instance, helper);
       },
 
       functionBefore: (instance) => {
@@ -328,7 +330,7 @@ class CallService {
       this.avatarIndex[user_id] = Math.floor(Math.random() * 10);
     }
     $avatar.style.background = `#ffffff url("../images/animals/${
-      defaultAvatarlist[this.avatarIndex[user_id]]
+      defaultAvatarsList[this.avatarIndex[user_id]]
     }") no-repeat center`;
     $avatar.style.backgroundSize = "contain";
   };
@@ -350,20 +352,20 @@ class CallService {
     const { extension, userId } = msg;
     if (extension.callStart) {
       const { participantIds, janusRoomId } = extension;
-      const oponentIds = participantIds
+      const opponentIds = participantIds
         .split(",")
         .map((user_id) => +user_id)
         .filter((user_id) => user_id != this.currentUserID);
       if (this.janusRoomId) {
         return this.sendRejectCallMessage(
-          [...oponentIds, userId],
+          [...opponentIds, userId],
           janusRoomId,
           true
         );
       }
       this.janusRoomId = janusRoomId;
       this.initiatorID = userId;
-      this.participantIds = oponentIds;
+      this.participantIds = opponentIds;
       this.showIncomingCallModal();
     } else if (extension.callRejected) {
       const { janusRoomId } = extension;
@@ -456,16 +458,21 @@ class CallService {
   };
 
   onRemoteStreamListener = (session, userId, stream) => {
-    console.warn("[onRemoteStreamListener]", userId);
+    console.warn("[onRemoteStreamListener]", userId, stream);
     if (!this._session) {
       return false;
     }
 
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId);
-    const isStremaWithVideo = stream.getVideoTracks().length > 0;
-    this._prepareVideoElement(userId, isStremaWithVideo);
+    this.onRemoteTracksUpdatedListener(session, userId, stream.getTracks()[0])
   };
+
+  onRemoteTracksUpdatedListener = (session, userId, track) => {
+    if (track.kind === 'video') {
+      this._prepareVideoElement(userId, !track.muted);
+    }
+  }
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn("[onSlowLinkListener]", userId, uplink, nacks);
@@ -589,7 +596,7 @@ class CallService {
       },
 
       functionInit: (instance, helper) => {
-        this.initToolTispterUI(instance, helper);
+        this.initToolTipsterUI(instance, helper);
       },
 
       functionBefore: (instance) => {
@@ -628,7 +635,7 @@ class CallService {
     });
   };
 
-  initToolTispterUI = (instance, helper) => {
+  initToolTipsterUI = (instance, helper) => {
     const $origin = $(helper.origin);
     const content = $origin.find(".tool-tip-content").detach();
     instance.content(content);
@@ -648,7 +655,7 @@ class CallService {
     this._session
       .switchMediaTracks({ video: event.toElement.value })
       .then((newLocalStream) => {
-        this.toggelStreamMirror(this.currentUserID);
+        this.toggleStreamMirror(this.currentUserID);
         if (isMobile) {
           this._session.attachMediaStream(
             this.getStreamIdByUserId(this.currentUserID),
@@ -661,7 +668,7 @@ class CallService {
     $(".tooltip-container-list-camera").tooltipster("close");
   };
 
-  toggelStreamMirror(user_id) {
+  toggleStreamMirror(user_id) {
     const $stream = document.getElementById(this.getStreamIdByUserId(user_id));
     $stream.classList.toggle("mirror");
   }
@@ -686,7 +693,7 @@ class CallService {
           { muted: true }
         );
         this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
-        this.toggelStreamMirror(this.currentUserID);
+        this.toggleStreamMirror(this.currentUserID);
         return this._session
           .join(janusRoomId, this.currentUserID, this.currentUserName)
           .then(() => this.postJoinActions());
@@ -754,12 +761,11 @@ class CallService {
       this.participantIds = [];
       this.janusRoomId = void 0;
       this.currentUserName = void 0;
-      // this.mediaParams = {video: true, audio: true}
       this.mediaParams = { video: { width: 1280, height: 720 }, audio: true };
       this.usersStatsList = {};
-      this.conectedParticipantIds = [];
+      this.connectedParticipantIds = [];
       this.stopMonitoringUserStats();
-      this.startEventSharinScreen = null;
+      this.startEventSharingScreen = null;
       if (this.isSharingScreen) {
         this.isSharingScreen = false;
         this.updateSharingScreenBtn();
@@ -840,7 +846,7 @@ class CallService {
             this.isSharingScreen = true;
             this.updateSharingScreenBtn();
             this.$muteUnmuteVideoButton.disabled = true;
-            this.startEventSharinScreen = stream
+            this.startEventSharingScreen = stream
               .getVideoTracks()[0]
               .addEventListener("ended", () => this.stopSharingScreen());
           },
@@ -860,7 +866,7 @@ class CallService {
       this.$muteUnmuteVideoButton.disabled = false;
       this.isSharingScreen = false;
       this.updateSharingScreenBtn();
-      this.startEventSharinScreen = null;
+      this.startEventSharingScreen = null;
     });
   };
 
@@ -871,7 +877,7 @@ class CallService {
       { muted: true }
     );
     this._prepareVideoElement(this.currentUserID, this.mediaParams.video);
-    this.toggelStreamMirror(this.currentUserID);
+    this.toggleStreamMirror(this.currentUserID);
     this.postJoinActions();
   };
 
@@ -953,16 +959,19 @@ class CallService {
   }
 
   removeStreamBlockByUserId(user_id) {
-    const $streamBblock = document.querySelector(
+    const $streamBlock = document.querySelector(
       `.videochat-stream-container[data-id="${user_id}"]`
     );
-    $streamBblock.remove();
+    $streamBlock.remove();
   }
 
-  _prepareVideoElement = (user_id, isStremaWithVideo) => {
-    if (!isStremaWithVideo) {
-      return this.toggleUserPlaceholder(user_id, true);
+  _prepareVideoElement = (user_id, hasVideo) => {
+    this.toggleUserPlaceholder(user_id, !hasVideo);
+
+    if (!hasVideo) {
+      return;
     }
+
     const $video = document.getElementById(this.getStreamIdByUserId(user_id));
 
     $video.style.visibility = "visible";
@@ -1023,7 +1032,7 @@ class CallService {
     participantIds.forEach((user_id) => {
       this._answerUserTimers[user_id] = setTimeout(
         () => this.onUserNotAnswerListener(this._session, user_id),
-        NO_ASNWER_TIMER
+        NO_ANSWER_TIMER
       );
     });
   }
