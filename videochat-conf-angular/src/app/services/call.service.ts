@@ -515,7 +515,8 @@ export class CallService {
           {id: user.id}
         ],
         record: false,
-        chat: true
+        chat: true,
+        public: true
       };
 
 
