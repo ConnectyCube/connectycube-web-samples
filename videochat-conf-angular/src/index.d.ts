@@ -1,2 +1,2 @@
-declare module "ConnectyCube"
+declare module "connectycube"
 declare module "html-escaper"
