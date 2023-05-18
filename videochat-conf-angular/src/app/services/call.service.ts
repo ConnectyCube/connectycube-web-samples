@@ -208,7 +208,7 @@ export class CallService {
     this.store.dispatch(addBitrate({idBitrateMap: idBitrateMap}))
   }
 
-  public getUsersMicLevel() {
+  public async getUsersMicLevel() {
     const session = this.OurSession;
     //Get listener to Participants array and get participantArray if change
     this.subscribeParticipantArray = this.participantArray$.pipe(take(1)).subscribe(res => {
@@ -221,15 +221,15 @@ export class CallService {
 
     console.log("[getUsersMicLevel 4s]");
     const idVolumeLevelMap: Map<number, number> = new Map;
-    this.participantArray.forEach((user: User) => {
+    for (const user of this.participantArray) {
       if (user.volumeLevel !== undefined) {
-        let level = Math.trunc((Number(session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100);
+        let level = Math.trunc((Number(await session.getRemoteUserVolume(user.id)) / this.MAX_VOLUME_VALUE) * 100);
         if (level < 6) {
           level = 0;
         }
         idVolumeLevelMap.set(user.id, level);
       }
-    })
+    }
 
     let maxVolume = Math.max(...idVolumeLevelMap.values());
     if (maxVolume !== 0) {
