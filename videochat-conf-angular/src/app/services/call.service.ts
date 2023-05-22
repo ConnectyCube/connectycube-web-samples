@@ -187,7 +187,7 @@ export class CallService {
 
   public startCheckUsersMicLevel() {
     console.log("[StartCheckUsersMic]");
-    this.OurIntervalId = setInterval(this.getUsersMicLevel.bind(this), this.UPDATE_STREAM_TIME);
+    this.OurIntervalId = 1//setInterval(this.getUsersMicLevel.bind(this), this.UPDATE_STREAM_TIME);
   }
 
   public stopCheckUserMicLevel() {
