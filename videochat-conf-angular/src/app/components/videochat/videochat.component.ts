@@ -340,6 +340,8 @@ export class VideochatComponent implements OnInit, OnDestroy {
 
 
     this.participantArray$.subscribe(res => {
+      console.log("participantArray$ Change", this.participantArray$)
+      console.log("Participant Array Change", res)
       if (res.length === 1 && this.sidebarStatus) {
         this.gridView();
       }
