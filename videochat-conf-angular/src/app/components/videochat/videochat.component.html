@@ -48,7 +48,7 @@
     ></app-stream-container>
   </div>
   <div class="users-streams" [ngClass]="setNgClassProperty((participantArray$ | async)?.length)">
-    <!-- <app-stream-container
+    <app-stream-container
       (videoLoaded)="ChangeDisable($event)"
       *ngFor="
       let user of (participantArray$ | async | slice:startSliceGrid);
@@ -67,7 +67,7 @@
       [userBitrate]="user.bitrate"
       [userConnectionStatus]="user.connectionStatus"
       [userVideoStatus]="user.videoStatus"
-    ></app-stream-container> -->
+    ></app-stream-container>
   </div>
 </div>
 <!-- <div [style.visibility]="hideButtons?'hidden':'visible'" id="videochat-buttons-container">
