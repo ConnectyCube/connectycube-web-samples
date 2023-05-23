@@ -22,13 +22,13 @@ class AuthService {
     const appConfig = {
       debug: {
         mode: 1,
-        conference: {
-          server: process.env.REACT_APP_CONNECTYCUBE_MULTIPARTY_SERVER_ENDPOINT,
-        },
       },
       endpoints: {
         api: process.env.REACT_APP_CONNECTYCUBE_API_ENDPOINT,
         chat: process.env.REACT_APP_CONNECTYCUBE_CHAT_ENDPOINT,
+      },
+      conference: {
+        server: process.env.REACT_APP_CONNECTYCUBE_MULTIPARTY_SERVER_ENDPOINT,
       },
     };
     ConnectyCube.init(credentials, appConfig);

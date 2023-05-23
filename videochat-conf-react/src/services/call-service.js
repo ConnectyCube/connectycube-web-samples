@@ -6,7 +6,7 @@ const CallContext = createContext();
 export default CallContext;
 
 export const CallProvider = ({ children }) => {
-  const meetingIsRecording = useRef(true);
+  const meetingIsRecording = useRef(false);
   const [view, setView] = useState("grid");
   const [preJoinScreen] = useState(false);
   const [choosedCam, setChoosedCam] = useState();
@@ -66,14 +66,13 @@ export const CallProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    setInterval(() => {
-      participantRef.current.forEach((p) => {
+    setInterval(async () => {
+      for (const p of participantRef.current) {
         if (p.name !== "me") {
           try {
             let bitrate = _session.current.getRemoteUserBitrate(p.userId);
-            let micLevel =
-              (_session.current.getRemoteUserVolume(p.userId) / MAX_MIC_LEVEL) *
-              100;
+            let micLevel = await _session.current.getRemoteUserVolume(p.userId)
+            micLevel = (micLevel / MAX_MIC_LEVEL) * 100
             if (detectBrowser() === "Safari") {
               let safariBitrate = parseInt(bitrate);
               p.bitrate = Math.round(safariBitrate / 1000) + " kbits/sec";
@@ -81,11 +80,13 @@ export const CallProvider = ({ children }) => {
               p.bitrate = bitrate;
             }
             p.micLevel = micLevel.toFixed(2) + "%";
-          } catch {}
+          } catch (error) {
+            console.log('[error]', error)
+          }
         } else {
           p.bitrate = null;
         }
-      });
+      }
       setParticipants([...participantRef.current]);
     }, 4000);
   }, []);
