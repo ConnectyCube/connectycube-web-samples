@@ -11,7 +11,7 @@
     "crypto-js": "^4.1.1",
     "env-cmd": "^10.1.0",
     "netlify-cli": "^6.14.10",
-    "node-sass": "^6.0.1",
+    "node-sass": "^9.0.0",
     "random-username-generator": "^1.0.4",
     "react": "^18.0.0-alpha-00ced1e2b-20211102",
     "react-dom": "^18.0.0-alpha-00ced1e2b-20211102",
