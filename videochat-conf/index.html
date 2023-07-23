@@ -200,13 +200,13 @@
             <div
               class="display-full-screen-icon"
               data-id="{{id}}"
-              onclick="UIUsersEvents.showFullscreen({{id}})"
+              onclick="UIUsersEvents.showFullscreen({id})"
             >
               <i class="fas fa-expand"></i>
             </div>
           </div>  
 
-          <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({{id}})">         
+          <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({id})">         
             <div class="user-image"></div>
           </div>
             <div class="container-full-screen stream-{{id}}" >
@@ -214,7 +214,7 @@
                 playsinline 
                 id="stream-{{id}}" 
                 class="videochat-stream" 
-                onmouseover="UIUsersEvents._renderSignalStat({{id}})">
+                onmouseover="UIUsersEvents._renderSignalStat({id})">
               </video>
             </div>      
           <div data-id="{{id}}" class="display-user-name">
