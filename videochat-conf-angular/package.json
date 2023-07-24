@@ -42,6 +42,7 @@
     "html-escaper": "^3.0.3",
     "ngx-device-detector": "^2.1.1",
     "node-fetch": "^2.6.7",
+    "npm-prepare-dist": "^0.4.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "yargs": "^17.2.1",
