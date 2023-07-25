@@ -241,6 +241,7 @@
                 <li>Mic level: - </li>
               </ul>
             </div>
+<<<<<<< HEAD
           </div>
           <div
             class='display-full-screen-icon'
@@ -270,6 +271,31 @@
         <div data-id='{{id}}' class='display-user-name'>
           <p class='user-name'>{{name}}</p>
         </div>
+=======
+            <div
+              class="display-full-screen-icon"
+              data-id="{{id}}"
+              onclick="UIUsersEvents.showFullscreen({id})"
+            >
+              <i class="fas fa-expand"></i>
+            </div>
+          </div>  
+
+          <div data-id="{{id}}" class="user-placeholder" onmouseover="UIUsersEvents._renderSignalStat({id})">         
+            <div class="user-image"></div>
+          </div>
+            <div class="container-full-screen stream-{{id}}" >
+              <video 
+                playsinline 
+                id="stream-{{id}}" 
+                class="videochat-stream" 
+                onmouseover="UIUsersEvents._renderSignalStat({id})">
+              </video>
+            </div>      
+          <div data-id="{{id}}" class="display-user-name">
+            <p class="user-name">{{name}}</p>
+          </div>
+>>>>>>> 269504b94a5f7193f6b4cbcf58dd28ebf3d25773
       </script>
       <!-- SOUNDS -->
       <audio id="signal-end" preload="auto">

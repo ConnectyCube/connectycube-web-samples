@@ -30,9 +30,14 @@ build
 #vscode
 .vscode
 
+<<<<<<< HEAD
 #env
 .env
 
 #environment
 environment.ts
 environment.prod.ts
+=======
+.config.js
+
+>>>>>>> 269504b94a5f7193f6b4cbcf58dd28ebf3d25773
