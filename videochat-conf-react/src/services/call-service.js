@@ -658,12 +658,12 @@ export const CallProvider = ({ children }) => {
       });
       return _session.current
         .getUserMedia({ video: false, audio: true }, true)
-        .then((stream) => {});
+        .then((_stream) => {});
     }
   };
 
   const startScreenSharing = () => {
-    sharingRef.current = true;
+    sharingRef.current =true;
     return new Promise((resolve, reject) => {
       const constraints = {
         video: {
@@ -671,13 +671,13 @@ export const CallProvider = ({ children }) => {
           height: 1080,
           frameRate: { ideal: 10, max: 15 },
         },
-        audio: true,
+        audio:true,
       };
 
       const blockVideo = document.getElementById("video_btn");
-      blockVideo.disable = "true";
+      blockVideo.disable ="true";
       _session.current
-        .getDisplayMedia(constraints, true)
+        .getDisplayMedia(constraints,true)
         .then((stream) => {
           prevIsVideoRef.current = participantRef.current[0].isVideo;
 
@@ -691,7 +691,7 @@ export const CallProvider = ({ children }) => {
               },
             };
 
-            ConnectyCube.chat.sendSystemMessage(userId, msg);
+            ConnectyCube.chat.sendSystemMessage(userId,msg);
           });
 
           stream.getVideoTracks()[0].enabled = true;

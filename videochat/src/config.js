@@ -14,9 +14,9 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: 4947,
+  authKey: "YvMuL6GOSWuY7Nm",
+  authSecret: "DAmmSEtJwTm2-Mr"
 };
 
 export const appConfig = {
@@ -31,31 +31,52 @@ export const appConfig = {
 
 export const users = [
   {
-    id: 72780,
-    name: "Alice",
-    login: "videouser1",
-    password: "videouser1",
+    id: 11297071,
+    name: "Lucas freire",
+    login: "lucas.tecladoxps10@gmail.com",
+    password: "81999631781",
     color: "#34ad86"
   },
   {
-    id: 72781,
-    name: "Bob",
-    login: "videouser2",
-    password: "videouser2",
+    id: 11297080,
+    name: "fernando",
+    login: "fernandoweep968@gmail.com",
+    password: "81999075663",
     color: "#077988"
   },
   {
-    id: 590565,
-    name: "Ciri",
-    login: "videouser3",
-    password: "videouser3",
+    id: 11297149,
+    name: "Gabriel",
+    login: "Lorrangabriel053@gmail.com",
+    password: "81985712469",
     color: "#13aaae"
   },
   {
-    id: 590583,
-    name: "Dexter",
-    login: "videouser4",
-    password: "videouser4",
+    id: 11297238,
+    name: "Igor Queiroz",
+    login: "igorqueiroz172@gmail.com",
+    password: "81986978802",
+    color: "#056a96"
+  },
+  {
+    id: 11297274,
+    name: "Renato Silvio",
+    login: "renatosilvio85607921@gmail.com",
+    password: "81981804848",
+    color: "#056a96"
+  },
+  {
+    id: 11302134,
+    name: "Murilo Felipe",
+    login: "murilofelypee@gmail.com",
+    password: "81984645535",
+    color: "#056a96"
+  },
+  {
+    id: 11302138,
+    name: "Josué alexandrino",
+    login: "josuealexandrino1998@gmail.com",
+    password: "81984595654",
     color: "#056a96"
   }
 ];

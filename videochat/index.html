@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>ConnectyCube Video Chat code sample</title>
+    <title>Filadelfia Bem Vido a Video Chat</title>
 
     <link
       rel="icon"
@@ -31,7 +31,7 @@
           <img id="login-image" src="./images/logo.png" alt="ConnectyCube" />
           <div id="login-caption">Video Chat</div>
           <div id="login-loader" class="hidden">
-            <div id="login-loader-text">Connecting...</div>
+            <div id="login-loader-text">Filadelfia...</div>
             <div id="login-loader-spinner">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -77,10 +77,10 @@
         </div>
         <div id="call-incoming"></div>
         <div id="call-modal-incoming" tabindex="-1">
-          <div class="call-modal-header">Incoming call from <strong id="call-modal-initiator"></strong></div>
+          <div class="call-modal-header">Chamada recebida <strong id="call-modal-initiator"></strong></div>
           <div class="call-modal-footer">
-            <button id="call-modal-reject" class="call-modal-button" type="button">Reject</button>
-            <button id="call-modal-accept" class="call-modal-button" type="button">Accept</button>
+            <button id="call-modal-reject" class="call-modal-button" type="button">Rejeitar</button>
+            <button id="call-modal-accept" class="call-modal-button" type="button">Aceitar</button>
           </div>
         </div>
       </section>
@@ -109,7 +109,7 @@
       </script>
 
       <script type="text/x-handlebars-template" id="select-users-template">
-        <h2 id="select-header">Select users to start Videocall</h3>
+        <h2 id="select-header">Selecione usuários para iniciar a videochamada</h3>
         {{#each usersForSelect}}
           <label for="select-{{this.id}}" id="select-{{this.name}}" class="{{this.name}}-bg-color select-user">
             <span>{{this.name}}</span>
