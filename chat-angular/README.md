@@ -24,7 +24,7 @@ ConnectyCube Messaging API documentation - [https://developers.connectycube.com/
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_chat_angular1.png" width="1374" alt="Conference Call code sample demo image active call screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_chat_angular1.png" width="1374" alt="Conference Call code sample demo image active call screen">
 </p>
 
 ## Build your own Chat app
