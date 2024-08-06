@@ -20,15 +20,15 @@ ConnectyCube P2P Calling API documentation - [https://developers.connectycube.co
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_login.png" width="720" alt="Video Chat code sample demo image login screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_login.png" width="720" alt="Video Chat code sample demo image login screen">
 </p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_select_users.png" width="720" alt="Video Chat code sample demo image select users screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_select_users.png" width="720" alt="Video Chat code sample demo image select users screen">
 </p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/docs/_images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720" alt="Video Chat code sample demo image active call screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720" alt="Video Chat code sample demo image active call screen">
 </p>
 
 ## Build your own VideoChat app
