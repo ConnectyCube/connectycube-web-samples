@@ -1,4 +1,4 @@
-// import ConnectyCube from "connectycube";
+import ConnectyCube from "connectycube";
 import Handlebars from "handlebars";
 import { users } from "./config";
 
@@ -12,6 +12,8 @@ const isMobile =
   );
 
 class CallService {
+  isOnline = window.navigator.onLine;
+
   init = () => {
     console.log("[CallService][init]");
 
@@ -37,6 +39,16 @@ class CallService {
     document
       .getElementById("call-modal-accept")
       .addEventListener("click", () => this.acceptCall());
+
+    window.onoffline = () => {
+      this.isOnline = false;
+    };
+    window.ononline = () => {
+      if (!this.isOnline && this._session) {
+        this._session.iceRestart();
+        this.isOnline = true;
+      }
+    };
   };
 
   $calling = document.getElementById("signal-in");
@@ -67,7 +79,7 @@ class CallService {
     elementId: "localStream",
     options: {
       muted: true,
-      mirror: true,
+      mirror: false,
     },
   };
 
@@ -163,9 +175,8 @@ class CallService {
 
     const isStoppedByInitiator = session.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
-    const infoText = `${userName} has ${
-      isStoppedByInitiator ? "stopped" : "left"
-    } the call`;
+    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
+      } the call`;
 
     this.showSnackbar(infoText);
 
@@ -220,7 +231,7 @@ class CallService {
     this.addStreamElements(opponents);
     this.hideIncomingCallModal();
 
-    const mediaOptions = {...this.mediaParams};
+    const mediaOptions = { ...this.mediaParams };
     if (callType === ConnectyCube.videochat.CallType.AUDIO) {
       delete mediaOptions.video;
     }
@@ -247,12 +258,12 @@ class CallService {
   };
 
   startAudioCall = () => {
-    this.startCall(ConnectyCube.videochat.CallType.AUDIO)
-  }
+    this.startCall(ConnectyCube.videochat.CallType.AUDIO);
+  };
 
   startVideoCall = () => {
-    this.startCall(ConnectyCube.videochat.CallType.VIDEO)
-  }
+    this.startCall(ConnectyCube.videochat.CallType.VIDEO);
+  };
 
   startCall = (callType) => {
     const options = {};
@@ -283,9 +294,9 @@ class CallService {
         options
       );
 
-      console.log("startCall", {callType}, ConnectyCube.videochat.CallType.AUDIO)
+      console.log("startCall", { callType }, ConnectyCube.videochat.CallType.AUDIO);
 
-      const mediaOptions = {...this.mediaParams};
+      const mediaOptions = { ...this.mediaParams };
       if (callType === ConnectyCube.videochat.CallType.AUDIO) {
         delete mediaOptions.video;
       }
