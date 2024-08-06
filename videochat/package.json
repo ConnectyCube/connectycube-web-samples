@@ -14,7 +14,6 @@
   "author": "ConnectyCube",
   "license": "Apache-2.0",
   "dependencies": {
-    "@appandflow/react-native-google-autocomplete": "^2.0.1",
     "connectycube": "^3.31.0",
     "handlebars": "^4.7.8"
   },
