@@ -36,7 +36,7 @@ module.exports = (env) => {
         path.join(__dirname, "./dist")
       ],
       historyApiFallback: true,
-      server: 'https', // Обратите внимание, что 'https' переместился в 'server'
+      server: 'http',
       port: 3000,
       hot: true
     },
