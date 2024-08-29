@@ -14,6 +14,9 @@ const isMobile =
 class CallService {
   isOnline = window.navigator.onLine;
 
+  iceRestartTimeout = null;
+  needIceRestartForUsersIds = [];
+
   init = () => {
     console.log("[CallService][init]");
 
@@ -42,12 +45,26 @@ class CallService {
 
     window.onoffline = () => {
       this.isOnline = false;
+      console.log("OFFLINE")
     };
     window.ononline = () => {
-      if (!this.isOnline && this._session) {
-        this._session.iceRestart();
-        this.isOnline = true;
+      console.log("ONLINE");
+      if (!this.isOnline) {
+        if (this._session && this.needIceRestartForUsersId.length > 0) {
+          for (let userID of this.needIceRestartForUsersId) {
+            console.log(
+              "[online] canInitiateIceRestart: ",
+              session.canInitiateIceRestart(userID)
+            );
+
+            if (session.canInitiateIceRestart(userID)) {
+              console.log("[online] do ICE restart");
+              session.iceRestart(userID);
+            }
+          }
+        }
       }
+      this.isOnline = true;
     };
   };
 
@@ -442,6 +459,29 @@ class CallService {
       userID,
       connectionState
     );
+
+    if (connectionState === "disconnected" || connectionState === "failed") {
+      this.iceRestartTimeout = setTimeout(() => {
+        console.log(
+          "Connection not restored within 30 seconds, trying ICE restart..."
+        );
+        if (this.isOnline) {
+          console.log("canInitiateIceRestart: ", session.canInitiateIceRestart(userID));
+
+          if (session.canInitiateIceRestart(userID)) {
+            session.iceRestart(userID);
+          }
+        } else {
+          console.log("Skip ICE restart, no Internet connection ");
+          this.needIceRestartForUsersIds.push(userID);
+        }
+      }, 30000)
+    } else if (connectionState === "connected") {
+      clearTimeout(this.iceRestartTimeout);
+      this.iceRestartTimeout = null;
+    } else if (connectionState === "closed") {
+      this.needIceRestartForUsersIds = [];
+    }
   };
 
   setActiveDeviceId = (stream) => {
