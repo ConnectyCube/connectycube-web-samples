@@ -47,23 +47,6 @@ class CallService {
       .getElementById("call-modal-accept")
       .addEventListener("click", () => this.acceptCall());
 
-    if ("connection" in navigator) {
-      const connection =
-        navigator.connection ||
-        navigator.mozConnection ||
-        navigator.webkitConnection;
-
-      console.log("Current connection type:", connection.effectiveType);
-
-      // Add an event listener to detect changes
-      connection.addEventListener("change", () => {
-        console.log("Connection type changed to:", connection.effectiveType);
-        // You can implement additional logic here based on the network type
-      });
-    } else {
-      console.log("Network Information API is not supported in this browser.");
-    }
-
     window.onoffline = () => {
       this.isOnline = false;
       console.log("OFFLINE");
@@ -502,7 +485,7 @@ class CallService {
     if (connectionState === DISCONNECTED || connectionState === FAILED) {
       this.iceRestartTimeout = setTimeout(() => {
         console.log(
-          "Connection not restored within 30 seconds, trying ICE restart..."
+          "Connection not restored within 30 seconds, trying ICE restart.."
         );
         if (this.isOnline) {
           this.maybeDoIceRestart(session, userID);
@@ -521,48 +504,47 @@ class CallService {
     }
   };
 
-  maybeDoIceRestart(session, userID) {
+  async maybeDoIceRestart(session, userID) {
     console.log("[maybeDoIceRestart] Chat PING");
     //
-    ConnectyCube.chat.pingWithTimeout()
-      .then(() => {
-        console.log("[maybeDoIceRestart] Chat PONG");
+    try {
+      await ConnectyCube.chat.pingWithTimeout();
 
-        console.log(
-          "[maybeDoIceRestart] canInitiateIceRestart: ",
-          session.canInitiateIceRestart(userID)
-        );
+      console.log("[maybeDoIceRestart] Chat PONG");
 
-        if (session.canInitiateIceRestart(userID)) {
-          console.log("[maybeDoIceRestart] do ICE restart");
-          session.iceRestart(userID);
-        }
+      console.log(
+        "[maybeDoIceRestart] canInitiateIceRestart: ",
+        session.canInitiateIceRestart(userID)
+      );
+
+      if (session.canInitiateIceRestart(userID)) {
+        console.log("[maybeDoIceRestart] do ICE restart");
+        session.iceRestart(userID);
+      }
+    } catch (error) {
+      console.error(error.message);
+
+      console.log("[maybeDoIceRestart] do Chat restart");
+
+      await ConnectyCube.chat.disconnect();
+
+      await ConnectyCube.chat.connect({
+        userId: this.currentUser.id,
+        password: this.currentUser.password,
       })
-      .catch((error) => {
-        console.error(error.message);
 
-        console.log("[maybeDoIceRestart] do Chat restart");
-        ConnectyCube.chat.disconnect();
+      console.log("[maybeDoIceRestart] Chat restarted");
 
-        ConnectyCube.chat
-          .connect({
-            userId: this.currentUser.id,
-            password: this.currentUser.password,
-          })
-          .then(() => {
-            console.log("[maybeDoIceRestart] Chat restarted");
+      console.log(
+        "[maybeDoIceRestart] canInitiateIceRestart: ",
+        session.canInitiateIceRestart(userID)
+      );
 
-            console.log(
-              "[maybeDoIceRestart] canInitiateIceRestart: ",
-              session.canInitiateIceRestart(userID)
-            );
-
-            if (session.canInitiateIceRestart(userID)) {
-              console.log("[maybeDoIceRestart] do ICE restart");
-              session.iceRestart(userID);
-            }
-          });
-      });
+      if (session.canInitiateIceRestart(userID)) {
+        console.log("[maybeDoIceRestart] do ICE restart");
+        session.iceRestart(userID);
+      }
+    }
   }
 
   setActiveDeviceId = (stream) => {
