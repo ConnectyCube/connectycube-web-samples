@@ -24,7 +24,7 @@ class UIService {
     const currentUser = users.find(({ id }) => currentUserId === id);
 
     AuthService.login(currentUser).then(() => {
-      CallService.init();
+      CallService.init(currentUser);
       this.renderSelectUsers(currentUserId);
       this.addEventListenersForCallButtons();
     });

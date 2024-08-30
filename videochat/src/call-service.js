@@ -17,8 +17,12 @@ class CallService {
   iceRestartTimeout = null;
   needIceRestartForUsersIds = [];
 
-  init = () => {
+  currentUser;
+
+  init = (user) => {
     console.log("[CallService][init]");
+
+    this.currentUser = user;
 
     ConnectyCube.videochat.onCallListener = this.onCallListener.bind(this);
     ConnectyCube.videochat.onAcceptCallListener =
@@ -43,24 +47,33 @@ class CallService {
       .getElementById("call-modal-accept")
       .addEventListener("click", () => this.acceptCall());
 
+    if ("connection" in navigator) {
+      const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+      console.log("Current connection type:", connection.effectiveType);
+
+      // Add an event listener to detect changes
+      connection.addEventListener("change", () => {
+        console.log("Connection type changed to:", connection.effectiveType);
+        // You can implement additional logic here based on the network type
+      });
+    } else {
+      console.log("Network Information API is not supported in this browser.");
+    }
+
     window.onoffline = () => {
       this.isOnline = false;
-      console.log("OFFLINE")
+      console.log("OFFLINE");
     };
     window.ononline = () => {
       console.log("ONLINE");
       if (!this.isOnline) {
         if (this._session && this.needIceRestartForUsersIds.length > 0) {
           for (let userID of this.needIceRestartForUsersIds) {
-            console.log(
-              "[online] canInitiateIceRestart: ",
-              this._session.canInitiateIceRestart(userID)
-            );
-
-            if (this._session.canInitiateIceRestart(userID)) {
-              console.log("[online] do ICE restart");
-              this._session.iceRestart(userID);
-            }
+            this.maybeDoIceRestart(this._session, userID);
           }
         }
       }
@@ -192,8 +205,9 @@ class CallService {
 
     const isStoppedByInitiator = session.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
-    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
-      } the call`;
+    const infoText = `${userName} has ${
+      isStoppedByInitiator ? "stopped" : "left"
+    } the call`;
 
     this.showSnackbar(infoText);
 
@@ -236,7 +250,8 @@ class CallService {
 
   acceptCall = () => {
     const extension = {};
-    const { opponentsIDs, initiatorID, currentUserID, callType } = this._session;
+    const { opponentsIDs, initiatorID, currentUserID, callType } =
+      this._session;
     const opponentsIds = [initiatorID, ...opponentsIDs].filter(
       (userId) => currentUserID !== userId
     );
@@ -254,7 +269,10 @@ class CallService {
     }
     //
     this._session.getUserMedia(mediaOptions).then((stream) => {
-      if (!this._session.getDisplayMedia || callType === ConnectyCube.videochat.CallType.AUDIO) {
+      if (
+        !this._session.getDisplayMedia ||
+        callType === ConnectyCube.videochat.CallType.AUDIO
+      ) {
         this.$switchSharingScreenButton.disabled = true;
       }
 
@@ -311,7 +329,11 @@ class CallService {
         options
       );
 
-      console.log("startCall", { callType }, ConnectyCube.videochat.CallType.AUDIO);
+      console.log(
+        "startCall",
+        { callType },
+        ConnectyCube.videochat.CallType.AUDIO
+      );
 
       const mediaOptions = { ...this.mediaParams };
       if (callType === ConnectyCube.videochat.CallType.AUDIO) {
@@ -319,7 +341,10 @@ class CallService {
       }
       //
       this._session.getUserMedia(mediaOptions).then((stream) => {
-        if (!this._session.getDisplayMedia || callType === ConnectyCube.videochat.CallType.AUDIO) {
+        if (
+          !this._session.getDisplayMedia ||
+          callType === ConnectyCube.videochat.CallType.AUDIO
+        ) {
           this.$switchSharingScreenButton.disabled = true;
         }
 
@@ -330,7 +355,10 @@ class CallService {
 
       // send push notification when calling
 
-      const currentUserName = this._getUserById(this._session.initiatorID, "name");
+      const currentUserName = this._getUserById(
+        this._session.initiatorID,
+        "name"
+      );
       const params = {
         message: `Incoming call from ${currentUserName}`,
         ios_voip: 1,
@@ -338,7 +366,10 @@ class CallService {
         opponentsIds: opponentsIds.join(","),
         handle: currentUserName,
         uuid: this._session.ID,
-        callType: callType === ConnectyCube.videochat.CallType.VIDEO ? "video" : "audio"
+        callType:
+          callType === ConnectyCube.videochat.CallType.VIDEO
+            ? "video"
+            : "audio",
       };
 
       // uncomment if you use Web <-> Flutter
@@ -359,13 +390,14 @@ class CallService {
         message: ConnectyCube.pushnotifications.base64Encode(payload),
       };
 
-      ConnectyCube.pushnotifications.events.create(pushParameters)
-        .then(result => {
+      ConnectyCube.pushnotifications.events
+        .create(pushParameters)
+        .then((result) => {
           console.log("[sendPushNotification] Ok");
-        }).catch(error => {
+        })
+        .catch((error) => {
           console.warn("[sendPushNotification] Error", error);
         });
-
     } else {
       this.showSnackbar("Select at less one user to start Videocall");
     }
@@ -434,10 +466,14 @@ class CallService {
       .then((mediaDevices) => {
         this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
 
-        if (this.mediaDevicesIds.length < 2 || this._session.callType === ConnectyCube.videochat.CallType.AUDIO) {
+        if (
+          this.mediaDevicesIds.length < 2 ||
+          this._session.callType === ConnectyCube.videochat.CallType.AUDIO
+        ) {
           this.$switchCameraButton.disabled = true;
 
-          if (this.activeDeviceId &&
+          if (
+            this.activeDeviceId &&
             this.mediaDevicesIds?.[0] !== this.activeDeviceId &&
             !this.isSharingScreen
           ) {
@@ -469,14 +505,7 @@ class CallService {
           "Connection not restored within 30 seconds, trying ICE restart..."
         );
         if (this.isOnline) {
-          console.log(
-            "canInitiateIceRestart: ",
-            session.canInitiateIceRestart(userID)
-          );
-
-          if (session.canInitiateIceRestart(userID)) {
-            session.iceRestart(userID);
-          }
+          this.maybeDoIceRestart(session, userID);
         } else {
           console.log("Skip ICE restart, no Internet connection ");
           this.needIceRestartForUsersIds.push(userID);
@@ -491,6 +520,50 @@ class CallService {
       this.needIceRestartForUsersIds = [];
     }
   };
+
+  maybeDoIceRestart(session, userID) {
+    console.log("[maybeDoIceRestart] Chat PING");
+    //
+    ConnectyCube.chat.pingWithTimeout()
+      .then(() => {
+        console.log("[maybeDoIceRestart] Chat PONG");
+
+        console.log(
+          "[maybeDoIceRestart] canInitiateIceRestart: ",
+          session.canInitiateIceRestart(userID)
+        );
+
+        if (session.canInitiateIceRestart(userID)) {
+          console.log("[maybeDoIceRestart] do ICE restart");
+          session.iceRestart(userID);
+        }
+      })
+      .catch((error) => {
+        console.error(error.message);
+
+        console.log("[maybeDoIceRestart] do Chat restart");
+        ConnectyCube.chat.disconnect();
+
+        ConnectyCube.chat
+          .connect({
+            userId: this.currentUser.id,
+            password: this.currentUser.password,
+          })
+          .then(() => {
+            console.log("[maybeDoIceRestart] Chat restarted");
+
+            console.log(
+              "[maybeDoIceRestart] canInitiateIceRestart: ",
+              session.canInitiateIceRestart(userID)
+            );
+
+            if (session.canInitiateIceRestart(userID)) {
+              console.log("[maybeDoIceRestart] do ICE restart");
+              session.iceRestart(userID);
+            }
+          });
+      });
+  }
 
   setActiveDeviceId = (stream) => {
     if (stream && !iOS) {
