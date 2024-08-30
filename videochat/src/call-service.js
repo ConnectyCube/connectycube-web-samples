@@ -50,16 +50,16 @@ class CallService {
     window.ononline = () => {
       console.log("ONLINE");
       if (!this.isOnline) {
-        if (this._session && this.needIceRestartForUsersId.length > 0) {
-          for (let userID of this.needIceRestartForUsersId) {
+        if (this._session && this.needIceRestartForUsersIds.length > 0) {
+          for (let userID of this.needIceRestartForUsersIds) {
             console.log(
               "[online] canInitiateIceRestart: ",
-              session.canInitiateIceRestart(userID)
+              this._session.canInitiateIceRestart(userID)
             );
 
-            if (session.canInitiateIceRestart(userID)) {
+            if (this._session.canInitiateIceRestart(userID)) {
               console.log("[online] do ICE restart");
-              session.iceRestart(userID);
+              this._session.iceRestart(userID);
             }
           }
         }
@@ -460,13 +460,19 @@ class CallService {
       connectionState
     );
 
-    if (connectionState === "disconnected" || connectionState === "failed") {
+    const { DISCONNECTED, FAILED, CONNECTED, CLOSED } =
+      ConnectyCube.videochat.SessionConnectionState;
+
+    if (connectionState === DISCONNECTED || connectionState === FAILED) {
       this.iceRestartTimeout = setTimeout(() => {
         console.log(
           "Connection not restored within 30 seconds, trying ICE restart..."
         );
         if (this.isOnline) {
-          console.log("canInitiateIceRestart: ", session.canInitiateIceRestart(userID));
+          console.log(
+            "canInitiateIceRestart: ",
+            session.canInitiateIceRestart(userID)
+          );
 
           if (session.canInitiateIceRestart(userID)) {
             session.iceRestart(userID);
@@ -475,11 +481,13 @@ class CallService {
           console.log("Skip ICE restart, no Internet connection ");
           this.needIceRestartForUsersIds.push(userID);
         }
-      }, 30000)
-    } else if (connectionState === "connected") {
+      }, 30000);
+    } else if (connectionState === CONNECTED) {
       clearTimeout(this.iceRestartTimeout);
       this.iceRestartTimeout = null;
-    } else if (connectionState === "closed") {
+
+      this.needIceRestartForUsersIds = [];
+    } else if (connectionState === CLOSED) {
       this.needIceRestartForUsersIds = [];
     }
   };
