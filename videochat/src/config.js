@@ -21,12 +21,12 @@ export const credentials = {
 
 export const appConfig = {
   debug: { mode: 1 },
-  videocalling: {
-  //   answerTimeInterval: 30,
-  //   dialingTimeInterval: 5,
+  videochat: {
+    //   answerTimeInterval: 30,
+    //   dialingTimeInterval: 5,
     disconnectTimeInterval: 300,
-  //   statsReportTimeInterval: 5
-  }
+    //   statsReportTimeInterval: 5
+  },
 };
 
 export const users = [
