@@ -485,7 +485,7 @@ class CallService {
     if (connectionState === DISCONNECTED || connectionState === FAILED) {
       this.iceRestartTimeout = setTimeout(() => {
         console.log(
-          "Connection not restored within 30 seconds, trying ICE restart..."
+          "Connection not restored within 30 seconds, trying ICE restart.."
         );
         if (this.isOnline) {
           this.maybeDoIceRestart(session, userID);
@@ -525,7 +525,7 @@ class CallService {
       console.error(error.message);
 
       console.log("[maybeDoIceRestart] do Chat restart");
-      
+
       await ConnectyCube.chat.disconnect();
 
       await ConnectyCube.chat.connect({
