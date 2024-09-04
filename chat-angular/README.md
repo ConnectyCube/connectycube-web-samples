@@ -31,9 +31,11 @@ ConnectyCube Messaging API documentation - [https://developers.connectycube.com/
 
 To make the sample works for your own app, please do the following:
 
-1.  Register new account at `https://connectycube.com/signup/`. Then go to Admin panel, create Application and  put Application credentials from 'Overview' page into `.env` file (you need to create it from `.env.example`):
-2.  Install node modules - `npm install`
-3.  Run `npm run start` and open `https://localhost:4200`
+1. Run `cp .env.example .env`;
+2. Register new account at `https://connectycube.com/signup/`;
+3. Then go to Admin panel, create Application and  put Application credentials from 'Overview' page into `.env` file;
+4. Install node modules - `npm install`;
+5. Run `npm run start` and open `http://localhost:4200`.
 
 ## Can't build yourself?
 

@@ -746,6 +746,7 @@ export class ChatService {
 
     ConnectyCube.chat.message
       .update(messageIds, params)
+      .catch(() => {});
   }
 
   public sendReadStatus(messageId: string, userId: number, dialogId: string) {
