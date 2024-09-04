@@ -111,6 +111,5 @@
         }
       }
     }
-  },
-  "defaultProject": "chat-angular"
+  }
 }

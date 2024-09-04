@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import {appConfig, CREDENTIALS} from "../../services/config";
 import {Router} from "@angular/router";
@@ -24,14 +24,14 @@ export class AuthComponent implements OnInit {
   }
 
   public authForm = this.fb.group({
-    login: new FormControl(''),
-    password: new FormControl('')
+    login: new UntypedFormControl(''),
+    password: new UntypedFormControl('')
   })
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     public dialog: MatDialog,
   ) {
   }
@@ -88,17 +88,17 @@ export class AuthComponent implements OnInit {
   public toggleAuthStatus() {
     if (this.authStatus === 'Log in') {
       this.authForm = this.fb.group({
-        name: new FormControl(''),
-        login: new FormControl(''),
-        password: new FormControl('')
+        name: new UntypedFormControl(''),
+        login: new UntypedFormControl(''),
+        password: new UntypedFormControl('')
       })
       this.authStatus = 'Sign up';
       this.authStatusText = 'Sign in';
     }
     else {
       this.authForm = this.fb.group({
-        login: new FormControl(''),
-        password: new FormControl('')
+        login: new UntypedFormControl(''),
+        password: new UntypedFormControl('')
       })
       this.authStatus = 'Log in';
       this.authStatusText = 'Sign up';
