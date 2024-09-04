@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {Store} from "@ngrx/store";
-import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {ChatService} from "../../services/chat.service";
 import {participant} from "../../reducers/participants/participants.reducer";
 import {

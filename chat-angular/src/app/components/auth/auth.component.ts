@@ -3,7 +3,7 @@ import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import {appConfig, CREDENTIALS} from "../../services/config";
 import {Router} from "@angular/router";
-import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {ModalComponent} from "../modal/modal.component";
 
 @Component({

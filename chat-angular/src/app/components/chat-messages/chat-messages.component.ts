@@ -22,7 +22,7 @@ import {updateParticipantLastActivity} from "../../reducers/participants/partici
 import {chatConnectedSelector} from "../../reducers/interface/interface.selectors";
 import {MeasureService} from "../../services/measure.service";
 import {throttle} from "throttle-typescript";
-import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {GroupChatDetails} from "../group-chat-details/group-chat-details";
 import {UserProfile} from "../user-profile/user-profile";
 
