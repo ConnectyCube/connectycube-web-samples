@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {AuthService} from "../../services/auth.service";
 import {Store} from "@ngrx/store";
-import {MatDialog} from "@angular/material/dialog";
+import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
 import {DialogCreateComponent} from "../dialog-create/dialog-create.component";
 import {ChatService} from "../../services/chat.service";
 import {

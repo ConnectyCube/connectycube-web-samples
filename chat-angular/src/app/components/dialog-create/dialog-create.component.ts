@@ -3,7 +3,7 @@ import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {Store} from "@ngrx/store";
 import {selectedParticipantsSelector} from "../../reducers/participants/participants.selectors";
 import {participant} from "../../reducers/participants/participants.reducer";
-import {MatDialog} from "@angular/material/dialog";
+import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
 import {SelectParticipantsComponent} from "../select-participants/select-participants.component";
 import {Observable} from "rxjs";
 import {take} from "rxjs/operators";
