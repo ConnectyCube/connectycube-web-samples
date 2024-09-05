@@ -14,45 +14,50 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: 5,
+  authKey: "fESpBfG6KS4yhO7",
+  authSecret: "FEcQedvDA36U5nx"
 };
 
 export const appConfig = {
-  debug: { mode: 1 }
-  // videocalling: {
-  //   answerTimeInterval: 30,
-  //   dialingTimeInterval: 5,
-  //   disconnectTimeInterval: 35,
-  //   statsReportTimeInterval: 5
-  // }
+  debug: { mode: 1 },
+  videochat: {
+    //   answerTimeInterval: 30,
+    //   dialingTimeInterval: 5,
+    disconnectTimeInterval: 300,
+    //   statsReportTimeInterval: 5
+  },
+  endpoints: {
+    api: "apidev.connectycube.com",
+    chat: "chatdev.connectycube.com"
+  },
+  conference: { "server": "wss://janusdev.connectycube.com:8989" },
 };
 
 export const users = [
   {
-    id: 72780,
+    id: 422,
     name: "Alice",
     login: "videouser1",
     password: "videouser1",
     color: "#34ad86"
   },
   {
-    id: 72781,
+    id: 424,
     name: "Bob",
     login: "videouser2",
     password: "videouser2",
     color: "#077988"
   },
   {
-    id: 590565,
+    id: 425,
     name: "Ciri",
     login: "videouser3",
     password: "videouser3",
     color: "#13aaae"
   },
   {
-    id: 590583,
+    id: 426,
     name: "Dexter",
     login: "videouser4",
     password: "videouser4",
