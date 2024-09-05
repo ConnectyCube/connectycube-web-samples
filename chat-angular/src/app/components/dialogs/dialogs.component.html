@@ -4,9 +4,9 @@
       <div class="user-profile__avatar"
            [ngStyle]="{'background-image': userMe.avatar?'url('+ userMe.avatar +')':'none',
                  'background-color': userMe.avatar?'':'skyblue'}">
-        <p *ngIf="!userMe.avatar" class="unselectable">{{userMe?.full_name?.slice(0, 2)?.toUpperCase()}}</p>
+        <p *ngIf="!userMe.avatar" class="unselectable">{{userMe!.full_name!.slice(0, 2).toUpperCase()}}</p>
       </div>
-      <p class="user-profile__fullname">{{userMe.full_name ?? "Unknown"}}</p>
+      <p class="user-profile__fullname">{{userMe.full_name || "Unknown"}}</p>
     </div>
     <button (click)="moreHandler()" type="button" class="user-profile__setting-btn">
       <mat-icon>{{moreIcon}}</mat-icon>

@@ -1,13 +1,13 @@
 <div class="participant-avatar"
      [ngStyle]="{'background-image': avatar?'url('+ avatar +')':'none',
                  'background-color': avatar?'':'skyblue'}">
-  <p *ngIf="!avatar">{{full_name?.slice(0, 2)?.toUpperCase()}}</p>
+  <p *ngIf="!avatar">{{full_name!.slice(0, 2).toUpperCase()}}</p>
   <button *ngIf="!unselected" type="button" (click)="removeParticipant($event)" class="remove-participant-btn">
     <mat-icon>close</mat-icon>
   </button>
 </div>
 <div class="participant-info">
-  <div class="participant-name">{{full_name ?? "Unknown"}}</div>
+  <div class="participant-name">{{full_name || "Unknown"}}</div>
   <mat-icon [ngStyle]="{'color': isMe?'#fea929':'#28b3f2'}">
     {{isMe ? 'stars' : 'person'}}
   </mat-icon>
