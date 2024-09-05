@@ -57,7 +57,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     StoreModule.forRoot(reducers, {
       metaReducers
     }),
-    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
+    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production, connectInZone: true}),
     EffectsModule.forRoot([AppEffects]),
     StoreRouterConnectingModule.forRoot(),
     BrowserAnimationsModule,
