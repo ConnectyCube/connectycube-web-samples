@@ -15,7 +15,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
+    "target": "es2020",
     "typeRoots": [ "./types", "./node_modules/@types"],
     "paths":{
       "connectycube": ["./src/local-types/connectyCube"]
