@@ -15,16 +15,22 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
-    "typeRoots": [ "./types", "./node_modules/@types"],
-    "paths":{
-      "connectycube": ["./src/local-types/connectyCube"]
+    "target": "ES2022",
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
+    "paths": {
+      "connectycube": [
+        "./src/local-types/connectyCube"
+      ]
     },
     "module": "es2020",
     "lib": [
       "es2018",
       "dom"
     ],
+    "useDefineForClassFields": false
   },
   "typeRoots": [
     "src/local-types",

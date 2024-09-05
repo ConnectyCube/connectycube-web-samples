@@ -1,4 +1,4 @@
-import {getSelectors} from '@ngrx/router-store';
+import {getRouterSelectors} from '@ngrx/router-store';
 
 export const {
   selectCurrentRoute, // select the current route
@@ -9,6 +9,6 @@ export const {
   selectRouteParam, // factory function to select a route param
   selectRouteData, // select the current route data
   selectUrl, // select the current url
-} = getSelectors();
+} = getRouterSelectors();
 
 export const selectMeetingIdRouterParam = selectRouteParam('hashCode');
