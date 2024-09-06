@@ -15,16 +15,22 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
-    "typeRoots": [ "./types", "./node_modules/@types"],
-    "paths":{
-      "connectycube": ["./src/local-types/connectyCube"]
+    "target": "ES2022",
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
+    "paths": {
+      "connectycube": [
+        "./src/local-types/connectyCube"
+      ]
     },
     "module": "es2020",
     "lib": [
-      "es2018",
+      "es2020",
       "dom"
     ],
+    "useDefineForClassFields": false
   },
   "typeRoots": [
     "src/local-types",
@@ -33,7 +39,6 @@
   "exclude": ["node_modules", "typings", "./node_modules/@types","src/local-types/**"],
   "include": ["src","index.d.ts"],
   "angularCompilerOptions": {
-    "types" : [],
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,

@@ -190,25 +190,26 @@ app-videochat {
 
 
 app-videochat {
+  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   .mat-form-field-appearance-fill .mat-form-field-flex {
     background: #fff;
     opacity: 0.6;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   .mat-form-field-wrapper {
     margin-bottom: -1.25em;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   .mat-form-field-appearance-fill .mat-form-field-flex {
     padding: 15px 10px !important;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   .mat-form-field-infix {
     display: flex !important;
     padding: 0 !important;
     border: none;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
   .mat-select-trigger {
     cursor: pointer;
     position: relative;
@@ -217,7 +218,7 @@ app-videochat {
     align-items: center !important;
     justify-content: space-between !important;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
   .mat-select-value {
     display: flex !important;
     width: 100%;
@@ -226,11 +227,11 @@ app-videochat {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
   .mat-select-arrow-wrapper {
     display: flex !important;
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
   mat-select-trigger {
     display: flex !important;
     align-items: center !important;
