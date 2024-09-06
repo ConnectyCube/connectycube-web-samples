@@ -159,16 +159,19 @@ body {
 }
 
 
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .mat-focused .mat-form-field-label {
   /*change color of label*/
   color: green !important;
 }
 
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .mat-form-field-underline {
   /*change color of underline*/
   background-color: green !important;
 }
 
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .mat-form-field-ripple {
   /*change color of underline when focused*/
   background-color: green !important;;
@@ -205,42 +208,42 @@ cdk-virtual-scroll-viewport > div {
   font-weight: 500;
 }
 
-.create-dialog .mat-dialog-container {
+.create-dialog .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.select-dialog .mat-dialog-container {
+.select-dialog .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.create-dialog-one .mat-dialog-container {
+.create-dialog-one .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.dialog-details .mat-dialog-container {
+.dialog-details .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.confirm-delete .mat-dialog-container {
+.confirm-delete .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.private-dialog-details .mat-dialog-container {
+.private-dialog-details .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.user-profile .mat-dialog-container {
+.user-profile .mat-mdc-dialog-container {
   padding: 0;
   overflow: hidden;
 }
 
-.mat-menu-content:not(:empty) {
+.mat-mdc-menu-content:not(:empty) {
   padding: 0 !important;
 }
 
@@ -261,6 +264,6 @@ cdk-virtual-scroll-viewport > div {
   user-select: none; /* Non-prefixed version, currently */
 }
 
-.mat-menu-panel {
+.mat-mdc-menu-panel {
   min-height: 48px !important;
 }

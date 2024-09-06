@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {Store} from "@ngrx/store";
 import {selectedParticipantsSelector} from "../../reducers/participants/participants.selectors";
 import {participant} from "../../reducers/participants/participants.reducer";
@@ -28,12 +28,12 @@ export class DialogCreateComponent implements OnInit, OnDestroy {
   }
 
   public CreateForm = this.fb.group({
-    name: new FormControl(''),
-    description: new FormControl('')
+    name: new UntypedFormControl(''),
+    description: new UntypedFormControl('')
   })
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private store$: Store,
     private dialog: MatDialog,
     private chatService: ChatService

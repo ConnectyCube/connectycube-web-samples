@@ -5,7 +5,7 @@ import {
   searchedParticipantSelector
 } from "../../reducers/participants/participants.selectors";
 import {Store} from "@ngrx/store";
-import {FormBuilder, FormControl} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {participant} from "../../reducers/participants/participants.reducer";
 import {ChatService} from "../../services/chat.service";
 import {
@@ -32,7 +32,7 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { participants: Array<participant>, isCreateDialog: boolean },
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private store$: Store,
     private chatService: ChatService
   ) {
@@ -43,7 +43,7 @@ export class SelectParticipantsComponent implements OnInit, OnDestroy {
   }
 
   public SearchForm = this.fb.group({
-    name: new FormControl(''),
+    name: new UntypedFormControl(''),
   })
 
   public SearchSubmit() {

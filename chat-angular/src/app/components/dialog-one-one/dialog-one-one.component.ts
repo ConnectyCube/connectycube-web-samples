@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
 import {Store} from "@ngrx/store";
 import {MatDialog} from "@angular/material/dialog";
 import {ChatService} from "../../services/chat.service";
@@ -26,7 +26,7 @@ export class DialogOneOneComponent implements OnInit, OnDestroy {
   public searchedParticipants$ = this.store$.select(searchedParticipantSelector);
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private store$: Store,
     private dialog: MatDialog,
     private chatService: ChatService
@@ -38,7 +38,7 @@ export class DialogOneOneComponent implements OnInit, OnDestroy {
   }
 
   public SearchForm = this.fb.group({
-    name: new FormControl(''),
+    name: new UntypedFormControl(''),
   })
 
   public SearchSubmit() {
