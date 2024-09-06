@@ -43,7 +43,7 @@ import {
   getUnreadMessageListByBadge,
   getUnreadMessageListByStatus
 } from "../reducers/messages/messages.selectors";
-import ConnectyCube from "connectycube";
+import * as ConnectyCube from "connectycube";
 import {MeasureService} from "./measure.service";
 
 @Injectable({
@@ -746,6 +746,7 @@ export class ChatService {
 
     ConnectyCube.chat.message
       .update(messageIds, params)
+      .catch(() => {});
   }
 
   public sendReadStatus(messageId: string, userId: number, dialogId: string) {
@@ -760,6 +761,7 @@ export class ChatService {
       return ConnectyCube.chat
         .getLastUserActivity(userId)
     }
+    return Promise.reject();
   }
 
   public subscribeToUserLastActivity(userId: number) {

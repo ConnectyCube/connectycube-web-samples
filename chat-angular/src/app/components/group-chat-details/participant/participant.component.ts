@@ -59,8 +59,7 @@ export class ParticipantComponent implements OnInit, OnChanges {
         const seconds = result.seconds;
         this.store$.dispatch(updateParticipantLastActivity({participantId: this.id, lastActivity: seconds}));
       })
-    }
-    else {
+    } else {
       this.lastActivityStatus = "Online";
     }
   }

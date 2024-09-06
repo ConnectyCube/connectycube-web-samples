@@ -320,8 +320,8 @@ export class ChatMessagesComponent implements OnInit {
       if (this.timerId === undefined) {
         this.chatService.sendStartTypingStatus(this.selectedDialog);
       }
-      clearTimeout(this.timerId);
-      this.timerId = setTimeout(() => {
+      window.clearTimeout(this.timerId);
+      this.timerId = window.setTimeout(() => {
         this.sendIsStopTypingStatus();
       }, 3000);
     }
