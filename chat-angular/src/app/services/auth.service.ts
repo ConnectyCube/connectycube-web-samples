@@ -7,7 +7,7 @@ import {addMeParticipant} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
 import {ChatService} from "./chat.service";
 import {chatConnected} from "../reducers/interface/interface.actions";
-import ConnectyCube from "connectycube";
+import * as ConnectyCube from "connectycube";
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   public createSession() {
-    return ConnectyCube.createSession();
+    return ConnectyCube.createSession(undefined);
   }
 
   public initSessionFromToken(token: string) {

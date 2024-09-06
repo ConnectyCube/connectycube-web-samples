@@ -111,7 +111,8 @@ mat-progress-spinner {
   z-index: 3;
 }
 
-.mat-fab.mat-button-disabled {
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
+.mat-mdc-fab.mat-button-disabled {
   cursor: not-allowed;
   color: white;
   background-color: #FF4081;

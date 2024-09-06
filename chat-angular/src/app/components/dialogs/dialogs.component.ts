@@ -12,7 +12,7 @@ import {
 } from "../../reducers/dialog/dialog.selectors";
 import {Observable} from "rxjs";
 import {Dialog} from "../../services/config";
-import {FormControl} from "@angular/forms";
+import {UntypedFormControl} from "@angular/forms";
 import {meSelector} from "../../reducers/participants/participants.selectors";
 import {participant} from "../../reducers/participants/participants.reducer";
 import {DialogOneOneComponent} from "../dialog-one-one/dialog-one-one.component";
@@ -33,7 +33,7 @@ export class DialogsComponent implements OnInit {
   public isScrollBarPressed = false;
   public moreIcon = 'expand_more';
 
-  public dialog_name = new FormControl('');
+  public dialog_name = new UntypedFormControl('');
 
   constructor(
     private authService: AuthService,

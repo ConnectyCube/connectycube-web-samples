@@ -33,7 +33,7 @@ export class AuthService {
   public auth(userName: string) {
     return new Promise<any>((resolve, reject) => {
 
-      ConnectyCube.createSession().then((session: any) => {
+      ConnectyCube.createSession(undefined).then((session: any) => {
         const login: string = CommonUtilities.randomLogin() + CommonUtilities.randomLogin();
         const password: string = CommonUtilities.hashCode(login);
 

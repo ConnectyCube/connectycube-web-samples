@@ -23,55 +23,47 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {DialogWarningComponent} from './components/dialog-warning/dialog-warning.component';
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule} from "@angular/forms";
-import {HttpClientModule} from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {ChatComponent} from './components/chat/chat.component';
 import {ScrollingModule} from "@angular/cdk/scrolling";
 import {MatTooltipModule} from "@angular/material/tooltip";
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    VideochatComponent,
-    StreamContainerComponent,
-    PrejoinComponent,
-    VideochatWrapComponent,
-    DialogWarningComponent,
-    ChatComponent,
-  ],
-  imports: [
-    BrowserModule,
-    RouterModule.forRoot([
-        {
-          path: '',
-          component: LoginComponent
-        },
-        {
-          path: 'join/:hashCode',
-          component: VideochatWrapComponent,
-        },
-      ],
-      {
-        preloadingStrategy: PreloadAllModules
-      }),
-    StoreModule.forRoot(reducers, {
-      metaReducers
-    }),
-    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
-    EffectsModule.forRoot([AppEffects]),
-    StoreRouterConnectingModule.forRoot(),
-    BrowserAnimationsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatDialogModule,
-    MatSelectModule,
-    FormsModule,
-    HttpClientModule,
-    ScrollingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        VideochatComponent,
+        StreamContainerComponent,
+        PrejoinComponent,
+        VideochatWrapComponent,
+        DialogWarningComponent,
+        ChatComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        RouterModule.forRoot([
+            {
+                path: '',
+                component: LoginComponent
+            },
+            {
+                path: 'join/:hashCode',
+                component: VideochatWrapComponent,
+            },
+        ], {
+            preloadingStrategy: PreloadAllModules
+        }),
+        StoreModule.forRoot(reducers, {
+            metaReducers
+        }),
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production, connectInZone: true }),
+        EffectsModule.forRoot([AppEffects]),
+        StoreRouterConnectingModule.forRoot(),
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
+        MatSelectModule,
+        FormsModule,
+        ScrollingModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {
 }

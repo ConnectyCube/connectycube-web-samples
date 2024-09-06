@@ -261,7 +261,7 @@ cdk-virtual-scroll-viewport {
   height: calc(100% - 58px);
 }
 
-@media screen and (min-width: 768px) and(max-width: 960px) {
+@media screen and (min-width: 768px) and (max-width: 960px) {
   .chat__left-panel {
     min-width: 280px;
   }
