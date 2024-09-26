@@ -14,9 +14,9 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: 5,
-  authKey: "fESpBfG6KS4yhO7",
-  authSecret: "FEcQedvDA36U5nx"
+  appId: 385,
+  authKey: "DFBMs5-dKBBCXcd",
+  authSecret: "SkCW-ThdnmRg9Za"
 };
 
 export const appConfig = {
@@ -28,36 +28,36 @@ export const appConfig = {
     //   statsReportTimeInterval: 5
   },
   endpoints: {
-    api: "apidev.connectycube.com",
-    chat: "chatdev.connectycube.com"
+    api: "api.connectycube.com",
+    chat: "chat.connectycube.com"
   },
-  conference: { "server": "wss://janusdev.connectycube.com:8989" },
+  conference: { "server": "wss://janus.connectycube.com:8989" },
 };
 
 export const users = [
   {
-    id: 422,
+    id: 72780,
     name: "Alice",
     login: "videouser1",
     password: "videouser1",
     color: "#34ad86"
   },
   {
-    id: 424,
+    id: 72781,
     name: "Bob",
     login: "videouser2",
     password: "videouser2",
     color: "#077988"
   },
   {
-    id: 425,
+    id: 590565,
     name: "Ciri",
     login: "videouser3",
     password: "videouser3",
     color: "#13aaae"
   },
   {
-    id: 426,
+    id: 590583,
     name: "Dexter",
     login: "videouser4",
     password: "videouser4",
