@@ -39,7 +39,7 @@
     "@ngrx/router-store": "^18.0.2",
     "@ngrx/store": "^18.0.2",
     "@ngrx/store-devtools": "^18.0.2",
-    "connectycube": "3.33.2",
+    "connectycube": "3.34.0",
     "dotenv": "^16.4.5",
     "ngx-device-detector": "^8.0.0",
     "rxjs": "6.6.7",
