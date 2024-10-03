@@ -3,10 +3,7 @@ import "./Message.scss";
 import { getTime } from "../../../../services/helpers";
 /* eslint-disable */
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
-import { useEffect } from "react";
-
 import { useInView } from "react-intersection-observer";
-import ConnectyCube from "connectycube";
 import { useContext } from "react";
 import ChatContext from "../../../../services/chat-service";
 
@@ -17,10 +14,7 @@ const Message = (props) => {
   const noName = "NoName";
   const context = useContext(ChatContext);
   if (inView) {
-    console.log(
-      "Message in view " + message.message + " read status is " + message.read
-    );
-    let params = {
+    const params = {
       messageId: message._id,
       userId: message.sender_id,
       dialogId: message.chat_dialog_id,
@@ -30,12 +24,9 @@ const Message = (props) => {
       message.read === 0 &&
       message.sender_id !== parseInt(localStorage.userId)
     ) {
-      debugger;
       context.readMessage(params);
     }
   }
-
-  const weRead = () => {};
 
   return (
     <div
@@ -44,7 +35,6 @@ const Message = (props) => {
         message.sender_id === parseInt(localStorage.userId) ? "my" : "opponent"
       } ${inView ? "view" : "no"}`}
     >
-      {inView ? console.log("Message in view" + message.body) : null}
       {dialogInfo.type === 2 && (
         <div className="user__img-container">
           {dialogInfo.type === 2 ? (

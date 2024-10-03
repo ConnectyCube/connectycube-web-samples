@@ -4,6 +4,7 @@ import "./FoundUser.scss";
 const FoundUser = (props) => {
   const { userInfo, close, type, groupChatUsers, startChat, groupOccupants } =
     props;
+  
   const [checked, setChecked] = useState(false);
   useEffect(() => {
     setChecked(
@@ -17,7 +18,10 @@ const FoundUser = (props) => {
     startChat(userInfo.id);
   };
   return (
-    <div className={`found__user ${checked ? "checked" : "not-checked"}`}>
+    <div
+      className={`found__user ${checked ? "checked" : "not-checked"}`}
+      key={userInfo.id}
+    >
       <div className="user__main-info">
         <div className="user__avatar">
           <img

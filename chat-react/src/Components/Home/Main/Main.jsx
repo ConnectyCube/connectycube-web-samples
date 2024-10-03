@@ -132,7 +132,7 @@ const Main = (props) => {
 
   useEffect(() => {
     if (messages) {
-      if (messages[chosenDialog._id]) {
+      if (chosenDialog && messages[chosenDialog._id]) {
         console.table("MESSAGES: ", messages[chosenDialog._id]);
         for (let i = 0; i < messages[chosenDialog._id].length; i++) {
           setAllMessages(() => {
