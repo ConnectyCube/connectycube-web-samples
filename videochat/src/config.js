@@ -31,7 +31,6 @@ export const appConfig = {
     api: "api.connectycube.com",
     chat: "chat.connectycube.com"
   },
-  conference: { "server": "wss://janus.connectycube.com:8989" },
 };
 
 export const users = [
