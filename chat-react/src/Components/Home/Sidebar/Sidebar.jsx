@@ -112,7 +112,6 @@ const Sidebar = (props) => {
     let modal = createModalRef.current;
     modal.classList.add("hide");
   };
-  console.warn(chosenDialog);
 
   const toggleContextMenuHeader = (leave) => {
     if (leave === "leave") {
