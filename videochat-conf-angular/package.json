@@ -37,7 +37,7 @@
     "@ngrx/store": "^18.0.2",
     "@ngrx/store-devtools": "^18.0.2",
     "colors": "^1.4.0",
-    "connectycube": "3.34.0",
+    "connectycube": "3.35.1",
     "dotenv": "^16.4.5",
     "html-escaper": "^3.0.3",
     "ngx-device-detector": "^8.0.0",
