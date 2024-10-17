@@ -2,6 +2,13 @@
   "name": "react-real",
   "version": "0.2.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "serve": "npx serve -s build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "connectycube": "^3.35.1",
     "react": "^18.3.1",
@@ -11,15 +18,17 @@
     "react-router": "^6.27.0",
     "react-router-dom": "^6.27.0",
     "react-scripts": "^5.0.1",
-    "react-scroll": "^1.9.0",
-    "sass": "^1.80.1"
+    "react-scroll": "^1.9.0"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "serve": "npx serve -s build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.25.8",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
+    "eslint-plugin-react": "^7.37.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "sass": "^1.80.1"
   },
   "eslintConfig": {
     "extends": [
@@ -38,14 +47,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@babel/eslint-parser": "^7.25.8",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jsx-a11y": "^6.10.0",
-    "eslint-plugin-react": "^7.37.1",
-    "eslint-plugin-react-hooks": "^4.6.2"
   }
 }
