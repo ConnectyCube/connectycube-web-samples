@@ -1,15 +1,16 @@
 import React from "react";
-import "./Chats.scss";
 import { useEffect } from "react";
 import { getTime } from "../../../../services/helpers";
 import { TiGroup } from "react-icons/ti";
-import { useHistory } from "react-router";
-/* eslint-disable */
+import { useLocation, useNavigate } from "react-router";
+import "./Chats.scss";
 
 const Chats = (props) => {
   const chatRef = React.createRef();
-  const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { userInfo, setDialog, chosenDialog, dialogs } = props;
+
   useEffect(() => {
     try {
       if (userInfo._id === chosenDialog._id) {
@@ -19,17 +20,19 @@ const Chats = (props) => {
       }
     } catch {}
   }, [chosenDialog, dialogs]);
+
   useEffect(() => {
-    if (history.location.state === userInfo._id && !chosenDialog) {
+    if (location.state === userInfo._id && !chosenDialog) {
       setDialog(userInfo);
     }
   }, []);
 
   const retrieveChat = () => {
-    history.push(`/home/${userInfo._id}`);
-
+    navigate(`/home/${userInfo._id}`);
+    localStorage.setItem("chosenDialogId", userInfo._id);
     setDialog(userInfo);
   };
+
   return (
     <div className="chat__block" onClick={retrieveChat} ref={chatRef}>
       <div className="user__info-chats">

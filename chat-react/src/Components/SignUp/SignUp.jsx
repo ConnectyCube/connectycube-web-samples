@@ -1,12 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
-import "./SignUp.scss";
 import logo from "../../images/logo.png";
 import Auth from "../../services/auth-service";
-import { useHistory } from "react-router";
+import "./SignUp.scss";
 
 const SignUp = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const signUp = () => {
     const userName = userNameRef.current.value;
@@ -17,7 +17,7 @@ const SignUp = () => {
     userPasswordRef.current.value = "";
     Auth.signup(userName, login, password)
       .then(() => {
-        history.push("/home");
+        navigate("/home");
       })
       .catch((error) => {
         console.log(error);
@@ -48,7 +48,7 @@ const SignUp = () => {
       </form>
       <div className="login__block">
         <p>Already have an account?</p>
-        <NavLink to="/">Sign in</NavLink>
+        <NavLink to="/login">Sign in</NavLink>
       </div>
     </div>
   );

@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Chats from "./Chats/Chats";
 import "./Sidebar.scss";
 import NewChat from "./NewChat/NewChat";
 import { BsPencil } from "react-icons/bs";
 import Auth from "../../../services/auth-service";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
+import ChatContext from "../../../services/chat-service";
 
-/* eslint-disable */
-
-const Sidebar = (props) => {
-  const [searching, setSearching] = useState(false);
-  const [searchFor, setSearchFor] = useState();
+const Sidebar = () => {
   const {
     dialogs,
-    connect,
+    connectToChat,
+    disconnectFromChat,
     connectStatus,
     getChats,
     setDialog,
@@ -22,23 +20,24 @@ const Sidebar = (props) => {
     startChat,
     searchUsers,
     lastActivity,
-  } = props;
+  } = useContext(ChatContext);
+  const navigate = useNavigate();
+  const [searching, setSearching] = useState(false);
+  const [searchFor, setSearchFor] = useState();
   const [newChatForm, setNewChatForm] = useState(false);
   const createModalRef = React.createRef();
   const [chatType, setChatType] = useState();
   const createChatRef = React.createRef();
+
   useEffect(() => {
     if (localStorage.token) {
-      connect({
+      connectToChat({
         userId: localStorage.userId,
-        password: JSON.parse(localStorage.token),
+        password: localStorage.token,
       });
     }
-
-    //eslint-disable-next-line
   }, []);
 
-  const history = useHistory();
   const chatsRender = (dialogs, search) => {
     if (search) {
       chats = dialogs.map((dialog) => {
@@ -55,8 +54,9 @@ const Sidebar = (props) => {
               key={dialog._id}
             />
           );
+        } else {
+          return null;
         }
-        return;
       });
     } else {
       chats = dialogs.map((dialog) => {
@@ -144,7 +144,7 @@ const Sidebar = (props) => {
           <span className="sidebar-user__name">{localStorage.login}</span>
           <div className="sidebar-img__container">
             <div id="background" className="user__no-img main">
-              <span className="name">{localStorage.login.slice(0, 2)}</span>
+              <span className="name">{localStorage.login?.slice(0, 2)}</span>
             </div>
           </div>
         </div>
@@ -158,12 +158,13 @@ const Sidebar = (props) => {
               onClick={() => {
                 Auth.logout()
                   .then(() => {
-                    history.go("/login");
+                    navigate("/login");
+                    disconnectFromChat()
                   })
                   .catch((error) => {
                     console.error(error);
                   });
-              }}
+            }}
             >
               Logout
             </li>

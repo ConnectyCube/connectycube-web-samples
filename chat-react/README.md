@@ -16,9 +16,9 @@ Project contains the following features implemented:
 
 # Documentation
 
-ConnectyCube JS SDK getting started - https://developers.connectycube.com/js
+ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
 
-ConnectyCube Messaging API documentation - https://developers.connectycube.com/js/messaging
+ConnectyCube Messaging API documentation - [https://developers.connectycube.com/js/messaging](https://developers.connectycube.com/js/messaging)
 
 # Screenshots
 
@@ -28,10 +28,10 @@ ConnectyCube Messaging API documentation - https://developers.connectycube.com/j
 
 To make the sample works for your own app, please do the following:
 
-1. Register new account at https://connectycube.com/signup/. Then go to Admin panel, create Application and check Application credentials from 'Overview'
-2. Create an .env file and copy information from .env.example, then replace APP_ID, SERCRET_KEY and AUTH_KEY
-3. Install node modules - npm install
-4. Run npm run start and open https://localhost:3000 or http://localhost:3000
+1. Register new account at <https://connectycube.com/signup/>. Then go to Admin panel, create Application and check Application credentials from 'Overview';
+2. Set your credentials in `chat-react/src/config.js` file;
+3. Run  `npm install` to install node modules;
+4. Run `npm run start`.
 
 # Can't build yourself?
 

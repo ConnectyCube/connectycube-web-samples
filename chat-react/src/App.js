@@ -1,28 +1,30 @@
-import { Redirect, Route } from "react-router";
-import "./App.css";
+import React, { StrictMode } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router";
 import Login from "./Components/Login/Login";
 import SignUp from "./Components/SignUp/SignUp";
 import Home from "./Components/Home/Home";
-import ChatContext from "./services/chat-service";
-
-import React, { useContext } from "react";
+import { ChatProvider } from "./services/chat-service";
+import "./App.css";
 
 function App() {
-  const chat = useContext(ChatContext);
+  const initialPath = localStorage.token ? "/home" : "/login";
+
   return (
     <div className="wrapper">
-      <Route exact path="/">
-        {localStorage.token ? <Redirect to="/home" /> : <Login chat={chat} />}
-      </Route>
-      <Route exact path="/login">
-        {localStorage.token ? <Redirect to="/home" /> : <Login chat={chat} />}
-      </Route>
-      <Route exact path="/signup">
-        <SignUp chat={chat} />
-      </Route>
-      <Route path="/home">
-        {!localStorage.token ? <Redirect to="/" /> : <Home chat={chat} />}
-      </Route>
+      <StrictMode>
+        <ChatProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Navigate to={initialPath} />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/home/:id" element={<Home />} />
+            </Routes>
+          </BrowserRouter>
+        </ChatProvider>
+      </StrictMode>
     </div>
   );
 }

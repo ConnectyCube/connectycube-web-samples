@@ -60,6 +60,7 @@ const NewChat = (props) => {
             if (user.id !== parseInt(localStorage.userId)) {
               return (
                 <FoundUser
+                  key={user.id}
                   startChat={startChat}
                   close={close}
                   getChats={getChats}
