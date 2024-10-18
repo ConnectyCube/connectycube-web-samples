@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import "./Login.scss";
 import logo from "../../images/logo.png";
 import Auth from "../../services/auth-service";
-import { useHistory } from "react-router";
-const Login = (props) => {
-  const history = useHistory();
+import { useNavigate } from "react-router";
+import ChatContext from "../../services/chat-service";
+import "./Login.scss";
+
+const Login = () => {
+  const {connectToChat} = useContext(ChatContext);
+  const navigate = useNavigate();
+  
   const login = () => {
     const login = userLogin.current.value;
     const password = userPassword.current.value;
@@ -13,10 +17,10 @@ const Login = (props) => {
       .then((userCredentials) => {
         let chatCredentials = {
           userId: userCredentials.userInfo.id,
-          password: { token: userCredentials.password },
+          password: userCredentials.password,
         };
-        props.chat.connectToChat(chatCredentials);
-        history.push("/home");
+        connectToChat(chatCredentials);
+        navigate("/home");
       })
       .catch((error) => {
         console.log(error);
@@ -47,8 +51,7 @@ const Login = (props) => {
       </form>
       <div className="signup__block">
         <p>Don't have an account?</p>
-
-        <NavLink to="signup">Sign up</NavLink>
+        <NavLink to="/signup">Sign up</NavLink>
       </div>
     </div>
   );

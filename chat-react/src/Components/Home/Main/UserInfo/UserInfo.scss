@@ -38,7 +38,7 @@
 
     & .user__info-back {
       display: none;
-      @media screen and(max-width:767px) {
+      @media screen and (max-width:767px) {
         display: block;
         padding-right: 10px;
       }

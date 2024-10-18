@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
-import "./GroupMember.scss";
 import { MdPersonRemoveAlt1 } from "react-icons/md";
 import ChatContext from "../../../../../services/chat-service";
+import "./GroupMember.scss";
+
 const GroupMember = (props) => {
   const { userInfo, lastActivity, chosenDialog } = props;
   const context = useContext(ChatContext);

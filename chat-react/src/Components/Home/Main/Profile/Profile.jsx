@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiUserPlus } from "react-icons/fi";
 import GroupMember from "./GroupMember/GroupMember";
-import "./Profile.scss";
-
 import NewChat from "../../Sidebar/NewChat/NewChat";
-/* eslint-disable */
+import "./Profile.scss";
 
 const Profile = (props) => {
   const {
