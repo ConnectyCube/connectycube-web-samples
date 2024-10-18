@@ -240,7 +240,9 @@ export const ChatProvider = ({ children }) => {
       })
       .catch((error) => {
         console.log(`Failed connection due to ${error}`);
+        localStorage.clear();
         setConnectStatus(false);
+        window.location.reload();
       });
   };
 

@@ -1,7 +1,7 @@
 export const credentials = {
-  appId: '7916',
-  authKey: 'mjOfDFLVyX9P5Z6',
-  authSecret: 'HjJ2wabfap96bwf',
+  appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
+  authKey: process.env.REACT_APP_CONNECTYCUBE_AUTH_KEY,
+  authSecret: process.env.REACT_APP_CONNECTYCUBE_AUTH_SECRET,
 };
 
 export const appConfig = {
@@ -9,8 +9,8 @@ export const appConfig = {
     mode: 1,
   },
   endpoints: {
-    api: "api.connectycube.com",
-    chat: "chat.connectycube.com"
+    api: process.env.REACT_APP_CONNECTYCUBE_API_ENDPOINT,
+    chat: process.env.REACT_APP_CONNECTYCUBE_CHAT_ENDPOINT,
   },
   chat: {
     streamManagement: {
