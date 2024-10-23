@@ -97,11 +97,11 @@ class CallService {
   };
 
   _session = null;
-  mediaDevicesIds = [];
-  activeDeviceId = null;
+  videoDevicesIds = [];
+  activeVideoDeviceId = null;
   isAudioMuted = false;
   isSharingScreen = false;
-  startEventSharinScreen = null;
+  startEventSharingScreen = null;
 
   defaultSettings = () => {
     if (isMobile) {
@@ -188,9 +188,8 @@ class CallService {
 
     const isStoppedByInitiator = session.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
-    const infoText = `${userName} has ${
-      isStoppedByInitiator ? "stopped" : "left"
-    } the call`;
+    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
+      } the call`;
 
     this.showSnackbar(infoText);
 
@@ -421,8 +420,8 @@ class CallService {
       this.$muteUnmuteButton.disabled = true;
       this.$switchCameraButton.disabled = true;
       this._session = null;
-      this.mediaDevicesIds = [];
-      this.activeDeviceId = null;
+      this.videoDevicesIds = [];
+      this.activeVideoDeviceId = null;
       this.isAudioMuted = false;
       $videochatStreams.innerHTML = "";
       $videochatStreams.classList.value = "";
@@ -446,18 +445,18 @@ class CallService {
 
     ConnectyCube.videochat
       .getMediaDevices("videoinput")
-      .then((mediaDevices) => {
-        this.mediaDevicesIds = mediaDevices?.map(({ deviceId }) => deviceId);
+      .then((videoDevices) => {
+        this.videoDevicesIds = videoDevices?.map(({ deviceId }) => deviceId);
 
         if (
-          this.mediaDevicesIds.length < 2 ||
+          this.videoDevicesIds.length < 2 ||
           this._session.callType === ConnectyCube.videochat.CallType.AUDIO
         ) {
           this.$switchCameraButton.disabled = true;
 
           if (
-            this.activeDeviceId &&
-            this.mediaDevicesIds?.[0] !== this.activeDeviceId &&
+            this.activeVideoDeviceId &&
+            this.videoDevicesIds?.[0] !== this.activeVideoDeviceId &&
             !this.isSharingScreen
           ) {
             this.switchCamera();
@@ -531,7 +530,7 @@ class CallService {
       await ConnectyCube.chat.connect({
         userId: this.currentUser.id,
         password: this.currentUser.password,
-      })
+      });
 
       console.log("[maybeDoIceRestart] Chat restarted");
 
@@ -552,7 +551,7 @@ class CallService {
       const videoTracks = stream.getVideoTracks();
       const videoTrackSettings = videoTracks[0]?.getSettings();
 
-      this.activeDeviceId = videoTrackSettings?.deviceId;
+      this.activeVideoDeviceId = videoTrackSettings?.deviceId;
     }
   };
 
@@ -571,12 +570,12 @@ class CallService {
   };
 
   switchCamera = () => {
-    const mediaDevicesId = this.mediaDevicesIds.find(
-      (deviceId) => deviceId !== this.activeDeviceId
+    const videoDevicesId = this.videoDevicesIds.find(
+      (deviceId) => deviceId !== this.activeVideoDeviceId
     );
 
-    this._session.switchMediaTracks({ video: mediaDevicesId }).then(() => {
-      this.activeDeviceId = mediaDevicesId;
+    this._session.switchMediaTracks({ video: videoDevicesId }).then(() => {
+      this.activeVideoDeviceId = videoDevicesId;
 
       if (this.isAudioMuted) {
         this._session.mute("audio");
@@ -593,7 +592,7 @@ class CallService {
             this.updateStream(stream);
             this.isSharingScreen = true;
             this.updateSharingScreenBtn();
-            this.startEventSharinScreen = stream
+            this.startEventSharingScreen = stream
               .getVideoTracks()[0]
               .addEventListener("ended", () => this.stopSharingScreen());
           },
@@ -635,7 +634,7 @@ class CallService {
       this.updateStream(stream);
       this.isSharingScreen = false;
       this.updateSharingScreenBtn();
-      this.startEventSharinScreen = null;
+      this.startEventSharingScreen = null;
     });
   };
 
