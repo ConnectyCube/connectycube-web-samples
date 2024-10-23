@@ -1,15 +1,11 @@
 import React from "react";
-import "./UserInfo.scss";
-/* eslint-disable */
-
-import { FiPhoneCall, FiMoreHorizontal } from "react-icons/fi";
-import { BsCameraVideo } from "react-icons/bs";
+import {  FiMoreHorizontal } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
-import { debug } from "connectycube/lib/cubeConfig";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useContext } from "react";
 import ChatContext from "../../../../services/chat-service";
+import "./UserInfo.scss";
 
 const UserInfo = (props) => {
   const {
@@ -22,7 +18,7 @@ const UserInfo = (props) => {
   } = props;
   const context = useContext(ChatContext);
   const [userInfoModal, setUserInfoModal] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   let opponentId;
   let typersName = [];
   let typingStatus = { isTyping: false };
@@ -73,7 +69,7 @@ const UserInfo = (props) => {
           <li
             onClick={() => {
               context.leaveGroupChat(parseInt(localStorage.userId));
-              history.push("/home");
+              navigate("/home");
             }}
           >
             Exit chat
@@ -84,7 +80,7 @@ const UserInfo = (props) => {
         <IoIosArrowBack
           size={32}
           onClick={() => {
-            history.push("/home");
+            navigate("/home");
             setDialog("close");
           }}
           className="user__info-back"

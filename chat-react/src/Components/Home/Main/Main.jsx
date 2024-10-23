@@ -1,23 +1,20 @@
-import React from "react";
-import "./Main.scss";
-/* eslint-disable */
-
+import React, { useContext } from "react";
 import { useEffect, useState } from "react";
 import Message from "./Message/Message";
 import UserInfo from "./UserInfo/UserInfo";
 import { animateScroll } from "react-scroll";
 import { IoMdAttach } from "react-icons/io";
-import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import Profile from "./Profile/Profile";
-import { useHistory } from "react-router";
 import { useRef } from "react";
 import ChatContext from "../../../services/chat-service";
+import "./Main.scss";
 
-const Main = (props) => {
+
+const Main = () => {
   const {
     sendMessage,
     chosenDialog,
-    getMessages,
     messages,
     usersInGroups,
     sendTypingStatus,
@@ -25,9 +22,8 @@ const Main = (props) => {
     sendMsgWithPhoto,
     lastActivity,
     setDialog,
-    removeUser,
     searchUsers,
-  } = props;
+  } = useContext(ChatContext);
 
   const dialog = chosenDialog;
   const [showProfile, setShowProfile] = useState();
@@ -37,8 +33,9 @@ const Main = (props) => {
   const [typingPrevStatus, setTypingPrevStatus] = useState();
   const typingPrevStatusRef = useRef();
   const [allMessages, setAllMessages] = useState();
-  const history = useHistory();
+
   let timer;
+
   window.onbeforeunload = function (event) {
     if (typingPrevStatusRef.current) {
       if (dialog.type === 3) {

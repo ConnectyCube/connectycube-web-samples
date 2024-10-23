@@ -1,11 +1,10 @@
 import React from "react";
-import "./Message.scss";
 import { getTime } from "../../../../services/helpers";
-/* eslint-disable */
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
 import { useContext } from "react";
 import ChatContext from "../../../../services/chat-service";
+import "./Message.scss";
 
 const Message = (props) => {
   const [ref, inView] = useInView();
