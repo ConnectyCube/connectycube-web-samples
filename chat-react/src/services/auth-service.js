@@ -15,6 +15,8 @@ class AuthService {
   init = () => {
     ConnectyCube.init(credentials, appConfig);
 
+    console.log({ credentials, appConfig });
+
     if (localStorage.token) {
       ConnectyCube.setSession({ token: localStorage.token });
     }
@@ -29,7 +31,7 @@ class AuthService {
       localStorage.setItem("userId", session.user_id);
       return { userInfo: session.user, password: password };
     } catch (error) {
-      localStorage.clean();
+      localStorage.clear();
       console.error(error);
     }
   };
@@ -37,23 +39,19 @@ class AuthService {
   logout = async () => {
     try {
       await ConnectyCube.logout();
-      localStorage.clean();
+      localStorage.clear();
     } catch (error) {
       console.error(error);
     }
   };
 
   signup = async (full_name, login, password) => {
-    try {
-      await ConnectyCube.createSession(); // create empty session to register user
-      await ConnectyCube.users.signup({ login, full_name, password }); // register user
-      const session = await ConnectyCube.createSession({ login, password }); // create session for registered user
-      localStorage.setItem("login", login);
-      localStorage.setItem("token", session.token);
-      localStorage.setItem("userId", session.user_id);
-    } catch (error) {
-      console.error(error);
-    }
+    await ConnectyCube.createSession(); // create empty session to register user
+    await ConnectyCube.users.signup({ login, full_name, password }); // register user
+    const session = await ConnectyCube.createSession({ login, password }); // create session for registered user
+    localStorage.setItem("login", login);
+    localStorage.setItem("token", session.token);
+    localStorage.setItem("userId", session.user_id);
   };
 }
 

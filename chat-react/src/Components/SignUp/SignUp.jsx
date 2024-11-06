@@ -21,6 +21,7 @@ const SignUp = () => {
       })
       .catch((error) => {
         console.log(error);
+        alert(JSON.stringify(error))
       });
   };
 
