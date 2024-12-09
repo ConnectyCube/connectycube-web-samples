@@ -3,13 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "config": "ts-node set-env.ts",
-    "start": "npm run config -- --environment=dev && ng serve",
-    "build": "npm run config -- --environment=prod && ng build",
-    "build:stats": "npm run config -- --environment=prod && ng build --stats-json",
+    "start": "ng serve",
+    "build": "ng build",
+    "build:stats": "ng build --stats-json",
     "analyze": "webpack-bundle-analyzer dist/chat-angular/stats.json",
-    "watch": "npm run config && ng build --watch --configuration development",
-    "test": "npm run config && ng test"
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
   },
   "browser": {
     "http": false,

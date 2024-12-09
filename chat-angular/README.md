@@ -33,7 +33,7 @@ To make the sample works for your own app, please do the following:
 
 1. Run `cp .env.example .env`;
 2. Register new account at `https://connectycube.com/signup/`;
-3. Then go to Admin panel, create Application and  put Application credentials from 'Overview' page into `.env` file;
+3. Then go to Admin panel, create Application and  put Application credentials from 'Overview' page into `src/environments/environment.ts` file;
 4. Install node modules - `npm install`;
 5. Run `npm run start` and open `http://localhost:4200`.
 
