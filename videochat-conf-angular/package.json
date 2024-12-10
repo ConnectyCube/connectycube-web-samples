@@ -3,11 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "config": "ts-node set-env.ts",
-    "start": "npm run config -- --environment=dev && ng serve",
-    "build": "npm run config -- --environment=prod && ng build",
-    "watch": "npm run config && ng build --watch --configuration development",
-    "test": "npm run config && ng test"
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
   },
   "browser": {
     "http": false,

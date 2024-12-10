@@ -21,45 +21,49 @@ export const messages = {
 export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state';
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: REPLACE_APP_ID,
+  authKey: "REPLACE_APP_AUTH_KEY",
+  authSecret: "REPLACE_APP_AUTH_SECRET"
 };
 
 export const appConfig = {
   debug: { mode: 1 },
-  conference: { server: 'wss://janus.connectycube.com:8989' },
+  conference: { server: 'wss://REPLACE_APP_JANUS_DOMAIN:8989' },
+  endpoints: {
+    api: "REPLACE_APP_API_DOMAIN",
+    chat: "REPLACE_APP_CHAT_DOMAIN"
+  },
 };
 
 export const users = [
   {
-    id: 72780,
-    name: 'Alice',
-    login: 'videouser1',
-    password: 'videouser1',
-    color: '#34ad86',
+    id: REPLACE_USER_1_ID,
+    name: "REPLACE_USER_1_FULL_NAME",
+    login: "REPLACE_USER_1_LOGIN",
+    password: "REPLACE_USER_1_PASSWORD",
+    color: "#34ad86"
   },
   {
-    id: 72781,
-    name: 'Bob',
-    login: 'videouser2',
-    password: 'videouser2',
-    color: '#077988',
+    id: REPLACE_USER_2_ID,
+    name: "REPLACE_USER_2_FULL_NAME",
+    login: "REPLACE_USER_2_LOGIN",
+    password: "REPLACE_USER_2_PASSWORD",
+    color: "#077988"
   },
   {
-    id: 590565,
-    name: 'Ciri',
-    login: 'videouser3',
-    password: 'videouser3',
-    color: '#13aaae',
+    id: REPLACE_USER_3_ID,
+    name: "REPLACE_USER_3_FULL_NAME",
+    login: "REPLACE_USER_3_LOGIN",
+    password: "REPLACE_USER_3_PASSWORD",
+    color: "#13aaae"
   },
   {
-    id: 590583,
-    name: 'Dexter',
-    login: 'videouser4',
-    password: 'videouser4',
-    color: '#056a96',
-  },
+    id: REPLACE_USER_4_ID,
+    name: "REPLACE_USER_4_FULL_NAME",
+    login: "REPLACE_USER_4_LOGIN",
+    password: "REPLACE_USER_4_PASSWORD",
+    color: "#056a96"
+  }
 ];
 
 const isCordovaEnv = !!window.cordova;
