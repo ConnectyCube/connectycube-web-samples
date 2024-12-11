@@ -23,14 +23,8 @@ class AuthService {
       debug: {
         mode: 1,
       },
-      conference: {
-        server: 'wss://REPLACE_APP_JANUS_DOMAIN:8989',
-      },
-      endpoints: {
-        api: 'REPLACE_APP_API_DOMAIN',
-        chat: 'REPLACE_APP_CHAT_DOMAIN',
-      },
     };
+
     ConnectyCube.init(credentials, appConfig);
   };
   connectToChat = (chatCredentials) => {

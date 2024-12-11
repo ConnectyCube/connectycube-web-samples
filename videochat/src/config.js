@@ -27,10 +27,6 @@ export const appConfig = {
     disconnectTimeInterval: 300,
     //   statsReportTimeInterval: 5
   },
-  endpoints: {
-    api: "REPLACE_APP_API_DOMAIN",
-    chat: "REPLACE_APP_CHAT_DOMAIN"
-  },
 };
 
 export const users = [

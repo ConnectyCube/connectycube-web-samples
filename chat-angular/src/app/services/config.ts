@@ -8,15 +8,10 @@ export const CREDENTIALS: Readonly<any> = {
 
 export const appConfig: Readonly<any> = {
   debug: {mode: 1},
-  conference: {server: environment.CONFERENCE_SERVER_ENDPOINT},
   chat: {
     streamManagement: {
       enable: true
     }
-  },
-  endpoints: {
-    api: environment.API_ENDPOINT,
-    chat: environment.CHAT_ENDPOINT
   }
 }
 
