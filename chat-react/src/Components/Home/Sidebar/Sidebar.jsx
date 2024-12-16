@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import Chats from "./Chats/Chats";
 import "./Sidebar.scss";
 import NewChat from "./NewChat/NewChat";
@@ -21,9 +21,9 @@ const Sidebar = () => {
     searchUsers,
     lastActivity,
   } = useContext(ChatContext);
+
   const navigate = useNavigate();
-  const [searching, setSearching] = useState(false);
-  const [searchFor, setSearchFor] = useState();
+  const [searchTerm, setSearchTerm] = useState();
   const [newChatForm, setNewChatForm] = useState(false);
   const createModalRef = React.createRef();
   const [chatType, setChatType] = useState();
@@ -38,12 +38,12 @@ const Sidebar = () => {
     }
   }, []);
 
-  const chatsRender = (dialogs, search) => {
-    if (search) {
-      chats = dialogs.map((dialog) => {
-        let name = dialog.name.toLowerCase();
-        let filter = name.includes(search.toLowerCase());
-        if (filter) {
+  const chats = useMemo(() => {
+    if (searchTerm) {
+      return dialogs?.map((dialog) => {
+        const name = dialog.name.toLowerCase();
+        const includesSearchTerm = name.includes(searchTerm.toLowerCase());
+        if (includesSearchTerm) {
           return (
             <Chats
               userInfo={dialog}
@@ -59,7 +59,7 @@ const Sidebar = () => {
         }
       });
     } else {
-      chats = dialogs.map((dialog) => {
+      return dialogs?.map((dialog) => {
         return (
           <Chats
             userInfo={dialog}
@@ -72,17 +72,7 @@ const Sidebar = () => {
         );
       });
     }
-  };
-
-  let chats;
-
-  if (dialogs) {
-    if (searching) {
-      chatsRender(dialogs, searchFor);
-    } else {
-      chatsRender(dialogs);
-    }
-  }
+  }, [dialogs, searchTerm]);
 
   const contextMenuRef = React.createRef();
 
@@ -92,12 +82,14 @@ const Sidebar = () => {
     setNewChatForm(true);
     setChatType(1);
   };
+
   const groupChat = () => {
     let modal = createModalRef.current;
     modal.classList.toggle("hide");
     setNewChatForm(true);
     setChatType(2);
   };
+
   const newChatClose = () => {
     setNewChatForm(false);
   };
@@ -132,9 +124,6 @@ const Sidebar = () => {
           toggleContextMenuHeader("leave");
         }}
       >
-        {/* <div className="sidebar-header__button">
-          <div></div>
-        </div> */}
         <div
           className="sidebar-user__info"
           onClick={() => {
@@ -159,12 +148,12 @@ const Sidebar = () => {
                 Auth.logout()
                   .then(() => {
                     navigate("/login");
-                    disconnectFromChat()
+                    disconnectFromChat();
                   })
                   .catch((error) => {
                     console.error(error);
                   });
-            }}
+              }}
             >
               Logout
             </li>
@@ -186,12 +175,7 @@ const Sidebar = () => {
       <input
         type="text"
         onChange={(e) => {
-          if (e.target.value) {
-            setSearchFor(e.target.value);
-            setSearching(true);
-          } else {
-            setSearching(false);
-          }
+          setSearchTerm(e.target.value);
         }}
         className="sidebar-search__chat"
         placeholder="Search..."
