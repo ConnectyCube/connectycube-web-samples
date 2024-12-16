@@ -265,7 +265,7 @@ export const ChatProvider = ({ children }) => {
           ids.push(userId);
         }
       });
-      if (users.length > 0) {
+      if (ids.length > 0) {
         const params = {
           page: 1,
           limit: 30,
@@ -281,7 +281,7 @@ export const ChatProvider = ({ children }) => {
             resolve(usersInGroupsRef.current);
           })
           .catch((error) => {
-            reject();
+            reject(error);
           });
       } else {
         resolve();
