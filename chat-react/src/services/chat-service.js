@@ -543,35 +543,31 @@ export const ChatProvider = ({ children }) => {
     });
   };
 
-  const leaveGroupChat = () => {
+  const leaveGroupChat = async () => {
     const dialogId = chosenDialogRef.current._id;
-    const msg = {
-      body: "dialog/REMOVE_DIALOG_PARTICIPANT",
-      extension: { id: dialogId },
-    };
-    const toUpdateParams = {
-      pull_all: { occupants_ids: [parseInt(localStorage.userId)] },
-    };
 
-    ConnectyCube.chat.dialog
-      .update(dialogId, toUpdateParams)
-      .then((dialog) => {
-        chosenDialogRef.current.occupants_ids.forEach((id) => {
-          if (id !== parseInt(localStorage.userId)) {
-            ConnectyCube.chat.sendSystemMessage(id, msg);
-          }
-        });
-        chatsRef.current = chatsRef.current.filter((dialog) => {
-          return dialog._id !== chosenDialogRef.current._id;
-        });
-        setDialogs([...chatsRef.current]);
-        chosenDialogRef.current = undefined;
-        setChosenDialog(chosenDialogRef.current);
-      })
+    // delete chat
+    await ConnectyCube.chat.dialog.delete(dialogId);
 
-      .catch((error) => {
-        console.log(error);
-      });
+    // notify participants with system message
+    chosenDialogRef.current.occupants_ids.forEach((id) => {
+      if (id !== parseInt(localStorage.userId)) {
+        const msg = {
+          body: "dialog/REMOVE_DIALOG_PARTICIPANT",
+          extension: { id: dialogId },
+        };
+        ConnectyCube.chat.sendSystemMessage(id, msg);
+      }
+    });
+
+    // clear storage
+    chatsRef.current = chatsRef.current.filter((dialog) => {
+      return dialog._id !== chosenDialogRef.current._id;
+    });
+    setDialogs([...chatsRef.current]);
+    
+    chosenDialogRef.current = undefined;
+    setChosenDialog(chosenDialogRef.current);
   };
 
   const getChats = () => {

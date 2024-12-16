@@ -4,8 +4,9 @@ import "./FoundUser.scss";
 const FoundUser = (props) => {
   const { userInfo, close, type, groupChatUsers, startChat, groupOccupants } =
     props;
-  
+
   const [checked, setChecked] = useState(false);
+
   useEffect(() => {
     setChecked(
       groupOccupants.find((e) => {
@@ -13,10 +14,12 @@ const FoundUser = (props) => {
       })
     );
   }, [userInfo, groupOccupants]);
+
   const startChatting = () => {
     close();
     startChat(userInfo.id);
   };
+
   return (
     <div
       className={`found__user ${checked ? "checked" : "not-checked"}`}
@@ -35,7 +38,7 @@ const FoundUser = (props) => {
         </div>
         <div className="user__name-info">
           <p className="user__full-name">
-            {userInfo.full_name ? userInfo.full_name : "No name"}
+            {userInfo.full_name || userInfo.login}
           </p>
           <span className="user__login">@{userInfo.login}</span>
         </div>

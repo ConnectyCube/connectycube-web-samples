@@ -1,5 +1,5 @@
 import React from "react";
-import {  FiMoreHorizontal } from "react-icons/fi";
+import { FiMoreHorizontal } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -16,13 +16,20 @@ const UserInfo = (props) => {
     toggleProfile,
     usersInGroups,
   } = props;
+
   const context = useContext(ChatContext);
-  const [userInfoModal, setUserInfoModal] = useState(false);
+
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
+
   const navigate = useNavigate();
+
   let opponentId;
   let typersName = [];
   let typingStatus = { isTyping: false };
-  if (userInfo.type === 2) {
+
+  const isGroupChat = userInfo.type === 2;
+
+  if (isGroupChat) {
     userInfo.occupants_ids.filter((e) => {
       if (typeStatus[e]) {
         if (
@@ -51,9 +58,9 @@ const UserInfo = (props) => {
 
   const toggleMore = (close) => {
     if (close) {
-      setUserInfoModal(false);
+      setActionMenuOpen(false);
     } else {
-      userInfoModal ? setUserInfoModal(false) : setUserInfoModal(true);
+      setActionMenuOpen(!actionMenuOpen);
     }
   };
 
@@ -64,7 +71,7 @@ const UserInfo = (props) => {
         toggleMore(true);
       }}
     >
-      {userInfoModal && (
+      {actionMenuOpen && (
         <ul className="more__modal">
           <li
             onClick={() => {
