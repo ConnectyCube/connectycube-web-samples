@@ -70,9 +70,9 @@ export const ChatProvider = ({ children }) => {
     chatParticipantsRef.current = participants;
   };
 
-  const getMessages = (chat_id) => {
+  const getMessages = (dialogId) => {
     const params = {
-      chat_dialog_id: chat_id,
+      chat_dialog_id: dialogId,
       sort_desc: "date_sent",
       limit: 100,
       skip: 0,
