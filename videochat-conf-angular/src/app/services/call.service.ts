@@ -25,8 +25,6 @@ import { ChatService } from './chat.service';
 import { isRecordingSelector } from '../reducers/interface.selectors';
 import ConnectyCube from 'connectycube';
 
-// declare let ConnectyCube: any;
-
 @Injectable({
   providedIn: 'root',
 })
@@ -80,8 +78,8 @@ export class CallService {
     return -1;
   }
 
-  public init() {
-    ConnectyCube.videochatconference!.onParticipantJoinedListener = (
+  public init() {    
+    ConnectyCube.videochatconference.onParticipantJoinedListener = (
       session: any,
       userId: number,
       userDisplayName: string,
@@ -144,7 +142,7 @@ export class CallService {
 
       this.startCheckUsersMicLevel();
     };
-    ConnectyCube.videochatconference!.onParticipantLeftListener = (
+    ConnectyCube.videochatconference.onParticipantLeftListener = (
       session: any,
       userId: number
     ) => {
@@ -162,14 +160,14 @@ export class CallService {
         this.startCheckUsersMicLevel();
       }
     };
-    ConnectyCube.videochatconference!.onRemoteStreamListener = (
+    ConnectyCube.videochatconference.onRemoteStreamListener = (
       session: any,
       userId: number,
       stream: any
     ) => {
       this.store.dispatch(updateUser({ id: userId, stream: stream }));
     };
-    ConnectyCube.videochatconference!.onSlowLinkListener = (
+    ConnectyCube.videochatconference.onSlowLinkListener = (
       session: any,
       userId: number | null,
       uplink: any,
@@ -195,12 +193,12 @@ export class CallService {
         );
       }, this.CONNECTION_UPDATE_STATUS_TIME);
     };
-    ConnectyCube.videochatconference!.onRemoteConnectionStateChangedListener = (
+    ConnectyCube.videochatconference.onRemoteConnectionStateChangedListener = (
       session: any,
       userId: any,
       iceState: any
     ) => {};
-    ConnectyCube.videochatconference!.onSessionConnectionStateChangedListener =
+    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener =
       (session: any, iceState: any) => {};
   }
 
@@ -370,8 +368,8 @@ export class CallService {
 
   public getListDevices() {
     console.log();
-    return ConnectyCube.videochatconference!.getMediaDevices(
-      ConnectyCube.videochatconference!.DEVICE_INPUT_TYPES.VIDEO
+    return ConnectyCube.videochatconference.getMediaDevices(
+      ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
     );
   }
 
@@ -571,7 +569,7 @@ export class CallService {
   }
 
   public createSession() {
-    return ConnectyCube.videochatconference!.createNewSession();
+    return ConnectyCube.videochatconference.createNewSession();
   }
 
   public createMeetingAndJoin(user: any) {
