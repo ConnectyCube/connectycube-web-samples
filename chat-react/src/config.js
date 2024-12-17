@@ -1,7 +1,6 @@
 export const credentials = {
   appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
-  authKey: process.env.REACT_APP_CONNECTYCUBE_AUTH_KEY,
-  authSecret: process.env.REACT_APP_CONNECTYCUBE_AUTH_SECRET,
+  authKey: process.env.REACT_APP_CONNECTYCUBE_AUTH_KEY
 };
 
 export const appConfig = {

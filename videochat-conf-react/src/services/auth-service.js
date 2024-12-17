@@ -10,8 +10,7 @@ class AuthService {
   init = () => {
     const credentials = {
       appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
-      authKey: process.env.REACT_APP_CONNECTYCUBE_APP_AUTH_KEY,
-      authSecret: process.env.REACT_APP_CONNECTYCUBE_APP_SECRET,
+      authKey: process.env.REACT_APP_CONNECTYCUBE_AUTH_KEY,
       chat: {
         streamManagement: {
           enable: true,
