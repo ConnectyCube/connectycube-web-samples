@@ -19,7 +19,6 @@ export const environment = {
    production: ${isProduction},
    APP_ID: '${process.env.APP_ID}',
    AUTH_KEY: "${process.env.AUTH_KEY}",
-   AUTH_SECRET: "${process.env.AUTH_SECRET}",
    CONFERENCE_SERVER_ENDPOINT: "${process.env.CONFERENCE_SERVER_ENDPOINT}",
    CHAT_ENDPOINT: "${process.env.CHAT_ENDPOINT}",
    API_ENDPOINT: "${process.env.API_ENDPOINT}"

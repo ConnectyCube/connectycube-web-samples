@@ -129,7 +129,11 @@ export class PrejoinComponent implements OnInit, OnDestroy {
 
     navigator.mediaDevices.getUserMedia({video: true}).then((localStream) => {
 
-      console.warn("Local Stream", localStream);
+      console.warn(
+        'Local Stream',
+        localStream,
+        localStream.getVideoTracks()[0].getSettings()
+      );
 
       this.callService.SetOurDeviceId(localStream.getVideoTracks()[0].getSettings().deviceId);
 
