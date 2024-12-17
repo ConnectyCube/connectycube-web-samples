@@ -7,18 +7,21 @@ import {addMeParticipant} from "../reducers/participants/participants.actions";
 import {logout} from "../reducers/app.action";
 import {ChatService} from "./chat.service";
 import {chatConnected} from "../reducers/interface/interface.actions";
-import * as ConnectyCube from "connectycube";
+import ConnectyCube from "connectycube";
+import CC from 'connectycube/dist/types/types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
-  constructor(private router: Router, private store$: Store, private chatService: ChatService) {
-  }
+  constructor(
+    private router: Router,
+    private store$: Store,
+    private chatService: ChatService
+  ) {}
 
   public cleanTokenAndNavigateToLoginScreen() {
-    this.router.navigateByUrl("/auth");
+    this.router.navigateByUrl('/auth');
     localStorage.removeItem('token');
     localStorage.removeItem('login');
   }
@@ -39,33 +42,38 @@ export class AuthService {
   public initSessionFromToken(token: string) {
     const credentials = {
       appId: Number(environment.APP_ID),
-      token: token
-    }
+      token: token,
+    };
     const appConfigToken = {
-      ...appConfig, on: {
+      ...appConfig,
+      on: {
         sessionExpired: (handleResponse: any, retry: any) => {
           this.cleanTokenAndNavigateToLoginScreen();
         },
-      }
+      },
     };
 
-    const login = atob(localStorage.getItem('login') || "");
+    const login = atob(localStorage.getItem('login') || '');
 
     this.init(credentials, appConfigToken);
-    ConnectyCube.users.get({login}).then((u: any) => {
-      const user = u.user;
-      this.store$.dispatch(addMeParticipant({
-        me: true,
-        login: user.login,
-        id: user.id,
-        avatar: user.avatar,
-        full_name: user.full_name,
-        unselect: true,
-      }))
-      this.connectToChat(user.id, token).then(() => {
-        this.chatInit();
-      })
-    })
+    ConnectyCube.users
+      .getV2({ login } as any)
+      .then((response: CC.Users.Response.GetV2) => {
+        const user = response.items[0];
+        this.store$.dispatch(
+          addMeParticipant({
+            me: true,
+            login: user.login as string,
+            id: user.id,
+            avatar: user.avatar,
+            full_name: user.full_name || "",
+            unselect: true,
+          })
+        );
+        this.connectToChat(user.id, token).then(() => {
+          this.chatInit();
+        });
+      });
   }
 
   public chatInit() {
@@ -89,37 +97,42 @@ export class AuthService {
     return new Promise<void>((resolve, reject) => {
       const userProfileLogin = {
         login: login,
-        password: password
-      }
+        password: password,
+      };
 
-      ConnectyCube.login(userProfileLogin).then((u: any) => {
-        this.store$.dispatch(addMeParticipant({
-          me: true,
-          login: u.login,
-          id: u.id,
-          avatar: u.avatar,
-          full_name: u.full_name,
-          unselect: true
-        }))
-        localStorage.setItem('login', btoa(u.login));
-        this.connectToChat(u.id, password).then(() => {
-          this.chatInit();
-        });
-        resolve();
-      })
+      ConnectyCube.login(userProfileLogin)
+        .then((u: any) => {
+          this.store$.dispatch(
+            addMeParticipant({
+              me: true,
+              login: u.login,
+              id: u.id,
+              avatar: u.avatar,
+              full_name: u.full_name,
+              unselect: true,
+            })
+          );
+          localStorage.setItem('login', btoa(u.login));
+          this.connectToChat(u.id, password).then(() => {
+            this.chatInit();
+          });
+          resolve();
+        })
         .catch((error: any) => {
           reject(error);
         });
-    })
+    });
   }
 
-  public init(CREDENTIALS: object, appConfig: object) {
+  public init(
+    CREDENTIALS: CC.Config.Credentials,
+    appConfig: CC.Config.Options
+  ) {
     return ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
   public register(userName: string, login: string, password: string) {
     return this.createSession().then((session: any) => {
-
       const userProfile = {
         login: login,
         password: password,
@@ -128,10 +141,9 @@ export class AuthService {
 
       localStorage.setItem('token', btoa(session.token));
 
-      return ConnectyCube.users.signup(userProfile)
-        .then(() => {
-          return this.login(login, password);
-        })
+      return ConnectyCube.users.signup(userProfile).then(() => {
+        return this.login(login, password);
+      });
     });
   }
 }
