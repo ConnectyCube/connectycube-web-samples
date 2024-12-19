@@ -373,7 +373,7 @@ export const CallProvider = ({ children }) => {
               setParticipants(newParticipants);
               ConnectyCube.videochatconference
                 .getMediaDevices(
-                  ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+                  ConnectyCube.videochatconference.DeviceInputType.VIDEO
                 )
                 .then((videoDevices) => {
                   setChoosedCam(videoDevices[0].deviceId);
