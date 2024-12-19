@@ -15,8 +15,10 @@
   "author": "ConnectyCube",
   "license": "Apache-2.0",
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "dog-names": "^2.0.0",
-    "handlebars": "^4.7.3"
+    "handlebars": "^4.7.3",
+    "random-username-generator": "^1.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
