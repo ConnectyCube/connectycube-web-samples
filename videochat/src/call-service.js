@@ -188,8 +188,9 @@ class CallService {
 
     const isStoppedByInitiator = session.initiatorID === userId;
     const userName = this._getUserById(userId, "name");
-    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
-      } the call`;
+    const infoText = `${userName} has ${
+      isStoppedByInitiator ? "stopped" : "left"
+    } the call`;
 
     this.showSnackbar(infoText);
 

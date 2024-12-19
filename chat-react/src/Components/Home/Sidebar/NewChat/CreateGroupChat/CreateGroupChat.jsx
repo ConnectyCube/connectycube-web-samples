@@ -1,15 +1,17 @@
 /* eslint-disable */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./CreateGroupChat.scss";
 import { AiOutlineClose } from "react-icons/ai";
 import UserInGroup from "./UserInGroup/UserInGroup";
+import groupChatImage from "../../../../../images/group-chat.jpg";
+
 const CreateGroupChat = (props) => {
   const { groupOccupants, startGroupChat, close } = props;
-  const groupNameRef = React.createRef();
-  let usersInGroup = [];
 
-  usersInGroup = groupOccupants.map((user) => {
+  const groupNameRef = React.createRef();
+
+  const usersInGroup = groupOccupants.map((user) => {
     return <UserInGroup user={user} />;
   });
 
@@ -25,10 +27,7 @@ const CreateGroupChat = (props) => {
       method="POST"
     >
       <div className="chat__img">
-        <img
-          src={`https://wegotthiscovered.com/wp-content/uploads/2021/07/Sasuke-Boruto-670x335.jpg`}
-          alt=""
-        />
+        <img src={groupChatImage} alt="" />
       </div>
 
       <input

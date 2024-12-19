@@ -18,6 +18,7 @@
           class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip"
           (removeParticipantEvent)="unselectParticipant($event)"
           [full_name]="user.full_name"
+          [login]="user.login"
           [isMe]="user.me"
           [avatar]="user.avatar"
           [id]="user.id"
@@ -37,9 +38,9 @@
              [ngStyle]="{'background-image': user.avatar?'url('+ user.avatar +')':'none',
                  'background-color': user.avatar?'':'skyblue'}"
         >
-          <p *ngIf="!user.avatar">{{user!.full_name!.slice(0, 2).toUpperCase()}}</p>
+          <p *ngIf="!user.avatar">{{(user.full_name || user.login)!.slice(0, 2).toUpperCase()}}</p>
         </div>
-        <h3 class="participant-name-search">{{user.full_name}}</h3>
+        <h3 class="participant-name-search">{{user.full_name || user.login}}</h3>
       </div>
     </cdk-virtual-scroll-viewport>
   </div>

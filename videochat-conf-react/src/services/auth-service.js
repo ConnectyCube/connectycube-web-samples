@@ -1,8 +1,8 @@
 import CryptoJS from "crypto-js";
 import ConnectyCube from "connectycube";
+import RUG from "random-username-generator";
 
 class AuthService {
-  arr = [];
   constructor() {
     this.init();
   }
@@ -10,8 +10,7 @@ class AuthService {
   init = () => {
     const credentials = {
       appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
-      authKey: process.env.REACT_APP_CONNECTYCUBE_APP_AUTH_KEY,
-      authSecret: process.env.REACT_APP_CONNECTYCUBE_APP_SECRET,
+      authKey: process.env.REACT_APP_CONNECTYCUBE_AUTH_KEY,
       chat: {
         streamManagement: {
           enable: true,
@@ -33,74 +32,34 @@ class AuthService {
     };
     ConnectyCube.init(credentials, appConfig);
   };
-  connectToChat = (chatCredentials) => {
-    return ConnectyCube.chat.connect(chatCredentials);
-  };
-  login(userName) {
-    return new Promise((resolve, reject) => {
-      ConnectyCube.createSession()
-        .then((session) => {
-          if (!userName) {
-            ConnectyCube.destroySession().catch((error) => {});
-          } else if (localStorage.getItem("userName") === userName) {
-            const userCredentials = {
-              login: localStorage.getItem("userLogin"),
-              password: localStorage.getItem("userPass"),
-            };
 
-            ConnectyCube.login(userCredentials)
-              .then((user) => {
-                const chatCredentials = {
-                  userId: user.id,
-                  password: userCredentials.password,
-                };
-                this.connectToChat(chatCredentials).then(() => {
-                  resolve(user);
-                });
-              })
-              .catch((error) => {
-                console.log(error);
-                reject();
-              });
-          } else {
-            const rug = require("random-username-generator");
-            const new_username = rug.generate();
-            const userProfile = {
-              login: new_username,
-              password: CryptoJS.MD5(new_username).toString(),
-              full_name: userName,
-            };
-            ConnectyCube.users
-              .signup(userProfile)
-              .then((user) => {
-                localStorage.setItem("userName", userName);
-                localStorage.setItem("userPass", userProfile.password);
-                localStorage.setItem("userLogin", userProfile.login);
-                const userCredentials = {
-                  login: userProfile.login,
-                  password: userProfile.password,
-                };
-                ConnectyCube.login(userCredentials)
-                  .then((user) => {
-                    const chatCredentials = {
-                      userId: user.id,
-                      password: userCredentials.password,
-                    };
+  async login(userName) {
+    const login = localStorage.getItem("userLogin") || RUG.generate();
+    const userProfile = {
+      login,
+      password: CryptoJS.MD5(login).toString(),
+      full_name: userName,
+    };
 
-                    this.connectToChat(chatCredentials).then(() => {
-                      resolve(user);
-                    });
-                  })
-                  .catch((error) => {});
-              })
-              .catch((error) => {});
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    });
+    const session = await ConnectyCube.createSession(userProfile);
+    const user = session.user;
+
+    if (userName !== user.full_name) {
+      await ConnectyCube.users.update({ full_name: userName });
+    }
+
+    const chatCredentials = {
+      userId: user.id,
+      password: userProfile.password,
+    };
+    await ConnectyCube.chat.connect(chatCredentials);
+
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("userLogin", userProfile.login);
+
+    return user;
   }
 }
+
 const Auth = new AuthService();
 export default Auth;

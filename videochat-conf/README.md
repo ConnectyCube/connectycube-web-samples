@@ -13,11 +13,7 @@ Project contains the following features implemented:
 - Guest room mode up to 12 users
 - Share screen
 
-The sample provides 2 mods:
-  - Calling mode, with call/accept/reject signals
-  - Guest Room modde, where any user can join a call by link. To create a guest room you can click on a 'Guest Room' button and then share an url with other users. 
-  
-There is a live demo working in a 'Guest Room' mode available https://teatalk.connectycube.com
+There is a live demo available https://teatalk.connectycube.com
 
 ## Documentation
 
@@ -44,45 +40,9 @@ To make the sample works for your own app, please do the following:
 
     ```javascript
     const credentials = {
-      appId: 0,
-      authKey: "",
-      authSecret: ""
+      appId: 111,
+      authKey: "..."
     };
-    ```
-
-2.  At `https://admin.connectycube.com`, create from 2 to 4 users in 'Users' module and put them into `videochat-conf/src/config.js` file:
-
-    ```javascript
-    const users = [
-      {
-        id: 0,
-        name: "User1",
-        login: "videouser1",
-        password: "videouser1",
-        color: "#34ad86"
-      },
-      {
-        id: 1,
-        name: "User2",
-        login: "videouser2",
-        password: "videouser2",
-        color: "#077988"
-      },
-      {
-        id: 2,
-        name: "User3",
-        login: "videouser3",
-        password: "videouser3",
-        color: "#13aaae"
-      },
-      {
-        id: 3,
-        name: "User4",
-        login: "videouser4",
-        password: "videouser4",
-        color: "#056a96"
-      }
-    ];
     ```
 
 3.  (Optional) If you are at [Enterprise](https://connectycube.com/pricing/) plan - provide your API server and Chat server endpoints at `videochat/src/config.js` file to point the sample against your own server:

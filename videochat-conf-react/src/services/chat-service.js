@@ -9,50 +9,18 @@ export default ChatContext;
 
 export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
+
   const chatParticipantsRef = useRef([]);
-  console.log("MSGS", messages);
   const messagesRef = useRef([]);
 
-  const chatCallbaks = () => {
-    ConnectyCube.chat.onMessageListener = (userId, message) => {
-      console.log(
-        "[ConnectyCube.chat.onMessageListener] callback:",
-        userId,
-        message
-      );
-      if (!isiOS()) {
-        if (userId !== chatParticipantsRef.current[0].userId) {
-          let audio = new Audio(sound);
-          audio.play();
-        }
-      }
-      message.sender_id = userId;
-      message.message = message.body;
-      processMessages([message], chatParticipantsRef.current).then((msgs) => {
-        console.log("[ConnectyCube.chat.onMessageListener]:", messages, msgs);
-        messagesRef.current = messagesRef.current.concat(msgs);
-        setMessages(messagesRef.current);
-      });
-    };
-  };
+  const joinChat = async (roomId) => {
+    const meeting = await ConnectyCube.meeting.get({ _id: roomId });
 
-  const joinChat = (roomId) => {
-    return new Promise((resolve, reject) => {
-      ConnectyCube.meeting
-        .get({ _id: roomId })
-        .then((meeting) => {
-          ConnectyCube.chat.dialog
-            .subscribe(meeting.chat_dialog_id)
-            .then((dialog) => {
-              resolve(dialog);
-            })
-            .catch((error) => {
-              console.error(error);
-            })
-            .catch((error) => {});
-        })
-        .catch((error) => {});
-    });
+    const dialog = await ConnectyCube.chat.dialog.subscribe(
+      meeting.chat_dialog_id
+    );
+
+    return dialog;
   };
 
   const sendMessage = (messageText, dialogId) => {
@@ -70,26 +38,39 @@ export const ChatProvider = ({ children }) => {
     chatParticipantsRef.current = participants;
   };
 
-  const getMessages = (chat_id) => {
+  const getMessages = async (dialogId) => {
     const params = {
-      chat_dialog_id: chat_id,
+      chat_dialog_id: dialogId,
       sort_desc: "date_sent",
       limit: 100,
       skip: 0,
     };
-    ConnectyCube.chat.message
-      .list(params)
-      .then((resp) => {
-        console.table(resp.items);
-        processMessages(resp.items, chatParticipantsRef.current).then(
-          (msgs) => {
-            console.table(msgs);
-            messagesRef.current = msgs;
-            setMessages(msgs);
-          }
-        );
-      })
-      .catch((error) => {});
+    const response = await ConnectyCube.chat.message.list(params);
+
+    const msgs = await processMessages(
+      response.items,
+      chatParticipantsRef.current
+    );
+    messagesRef.current = msgs;
+    setMessages(msgs);
+  };
+
+  const chatCallbaks = () => {
+    ConnectyCube.chat.onMessageListener = (userId, message) => {
+      if (!isiOS()) {
+        if (userId !== chatParticipantsRef.current[0].userId) {
+          let audio = new Audio(sound);
+          audio.play();
+        }
+      }
+      message.sender_id = userId;
+      message.message = message.body;
+
+      processMessages([message], chatParticipantsRef.current).then((msgs) => {
+        messagesRef.current = messagesRef.current.concat(msgs);
+        setMessages(messagesRef.current);
+      });
+    };
   };
 
   const processMessages = async (records) => {
@@ -102,6 +83,7 @@ export const ChatProvider = ({ children }) => {
       msgs.push(m);
       messagesBySender[m.sender_id] = msgs;
     });
+
     for (let senderId of Object.keys(messagesBySender)) {
       // find user
       const notFoundUsersIds = [];
@@ -119,18 +101,15 @@ export const ChatProvider = ({ children }) => {
       }
       if (notFoundUsersIds.length > 0) {
         const params = {
-          filter: {
-            field: "id",
-            param: "in",
-            value: notFoundUsersIds.map((id) => parseInt(id)),
+          id: {
+            in: notFoundUsersIds.map((id) => parseInt(id)),
           },
         };
-        const users = await ConnectyCube.users.get(params);
-        users.items.forEach((rec) => {
-          const uID = rec.user.id;
-          console.log("messagesBySender", messagesBySender, uID);
+        const users = await ConnectyCube.users.getV2(params);
+        users.items.forEach((user) => {
+          const uID = user.id;
           messagesBySender[uID].forEach((m) => {
-            m.senderName = rec.user.full_name;
+            m.senderName = user.full_name;
           });
         });
       }

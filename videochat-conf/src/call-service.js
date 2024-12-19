@@ -170,7 +170,9 @@ class CallService {
       streamBlock.innerHTML = videochatStreamsTemplate(opponent);
       streamBlock.classList.add("videochat-stream-container");
       streamBlock.dataset.id = `${opponent.id}`;
-      streamBlock.style.gridArea = `stream${index + currentActiveCallUsersCount}`;
+      streamBlock.style.gridArea = `stream${
+        index + currentActiveCallUsersCount
+      }`;
       documentFragment.appendChild(streamBlock);
     });
 
@@ -465,14 +467,14 @@ class CallService {
 
     this._session.attachMediaStream(this.getStreamIdByUserId(userId), stream);
     this.removeStreamLoaderByUserId(userId);
-    this.onRemoteTracksUpdatedListener(session, userId, stream.getTracks()[0])
+    this.onRemoteTracksUpdatedListener(session, userId, stream.getTracks()[0]);
   };
 
   onRemoteTracksUpdatedListener = (session, userId, track) => {
-    if (track.kind === 'video') {
+    if (track.kind === "video") {
       this._prepareVideoElement(userId, !track.muted);
     }
-  }
+  };
 
   onSlowLinkListener = (session, userId, uplink, nacks) => {
     console.warn("[onSlowLinkListener]", userId, uplink, nacks);
@@ -556,15 +558,10 @@ class CallService {
     return ConnectyCube.chat.helpers.getBsonObjectId();
   }
 
-  _getUniqueUserId() {
-    const randomValue = `${Math.random()}`.replace("0.", "");
-    return parseInt(randomValue.slice(0, 3) + randomValue.slice(-3), 10);
-  }
-
   setSwitchDevice() {
     ConnectyCube.videochatconference
       .getMediaDevices(
-        ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+        ConnectyCube.videochatconference.DeviceInputType.VIDEO
       )
       .then((devices) => {
         this.$switchCameraButton.disabled = this.videoDevices.length < 1;
@@ -984,26 +981,10 @@ class CallService {
     }
   };
 
-  initGuestRoom = (janusRoomId) => {
-    this.currentUserID = this._getUniqueUserId();
-    const parseName = JSON.parse(
-      localStorage.getItem(CallService.USER_NAME_KEY)
-    );
-    const userName = parseName ? parseName : this.getRandomName();
+  initGuestRoom = (janusRoomId, userName, userId) => {
+    this.currentUserName = userName;
+    this.currentUserID = userId;
 
-    while (!this.currentUserName) {
-      this.currentUserName = prompt(messages.prompt_user_name, userName);
-      localStorage.setItem(
-        CallService.USER_NAME_KEY,
-        JSON.stringify(this.currentUserName)
-      );
-      if (this.currentUserName === null) {
-        if (confirm(messages.confirm_cancel)) {
-          window.location.href = window.location.origin;
-          return;
-        }
-      }
-    }
     this.isGuestMode = true;
     if (janusRoomId) {
       this.janusRoomId = janusRoomId;
@@ -1021,11 +1002,6 @@ class CallService {
     this.joinConf(this.janusRoomId).then(() =>
       this.showSnackbar(messages.share_call_link)
     );
-  };
-
-  getRandomName = () => {
-    const dogNames = require("dog-names");
-    return dogNames.allRandom();
   };
 
   startNoAnswerTimers(participantIds) {
