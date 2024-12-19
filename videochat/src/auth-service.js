@@ -9,22 +9,20 @@ class AuthService {
 
   init = () => ConnectyCube.init(credentials, appConfig);
 
-  login = user => {
-    return new Promise((resolve, reject) => {
-      this.$loader.classList.remove("hidden");
-      this.$caption.classList.add("hidden");
+  login = async (user) => {
+    this.$loader.classList.remove("hidden");
+    this.$caption.classList.add("hidden");
 
-      ConnectyCube.createSession(user)
-        .then(() => ConnectyCube.chat.connect({ userId: user.id, password: user.password }))
-        .then(() => {
-          this.$loginScreen.classList.add("hidden");
-          this.$callScreen.classList.remove("hidden");
-          this.$loader.classList.add("hidden");
-          this.$caption.classList.remove("hidden");
-          resolve();
-        })
-        .catch(reject);
+    await ConnectyCube.createSession(user);
+    await ConnectyCube.chat.connect({
+      userId: user.id,
+      password: user.password,
     });
+
+    this.$loginScreen.classList.add("hidden");
+    this.$callScreen.classList.remove("hidden");
+    this.$loader.classList.add("hidden");
+    this.$caption.classList.remove("hidden");
   };
 
   logout = () => {

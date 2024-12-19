@@ -40,8 +40,8 @@ To make the sample works for your own app, please do the following:
 
     ```javascript
     const credentials = {
-      appId: 0,
-      authKey: ""
+      appId: 111,
+      authKey: "..."
     };
     ```
 
