@@ -1,6 +1,6 @@
 {
-  "name": "react-real",
-  "version": "0.2.0",
+  "name": "connectycube-chat-react",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
