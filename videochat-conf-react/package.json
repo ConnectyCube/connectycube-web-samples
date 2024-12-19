@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "@mui/material": "^5.1.1",
-    "connectycube": "^3.26.0",
+    "connectycube": "^4.0.0",
+    "crypto-js": "^4.2.0",
     "env-cmd": "^10.1.0",
     "random-username-generator": "^1.0.4",
     "react": "18.3.0",
@@ -13,10 +14,9 @@
     "react-router": "^5.2.1",
     "react-router-dom": "^5.3.0",
     "react-scripts": "5.0.1",
-    "use-sound": "^4.0.1",
-    "crypto-js": "^4.2.0",
     "sass": "^1.77.4",
-    "sass-loader": "^8.0.2"
+    "sass-loader": "^8.0.2",
+    "use-sound": "^4.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
