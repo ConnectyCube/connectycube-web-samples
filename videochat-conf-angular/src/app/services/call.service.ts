@@ -24,6 +24,7 @@ import {
 import { ChatService } from './chat.service';
 import { isRecordingSelector } from '../reducers/interface.selectors';
 import ConnectyCube from 'connectycube';
+import { Meetings } from 'connectycube/dist/types/types';
 
 @Injectable({
   providedIn: 'root',
@@ -78,7 +79,7 @@ export class CallService {
     return -1;
   }
 
-  public init() {    
+  public init() {
     ConnectyCube.videochatconference.onParticipantJoinedListener = (
       session: any,
       userId: number,
@@ -198,8 +199,10 @@ export class CallService {
       userId: any,
       iceState: any
     ) => {};
-    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener =
-      (session: any, iceState: any) => {};
+    ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
+      session: any,
+      iceState: any
+    ) => {};
   }
 
   public updateUserVideoStatus(id: number, status: boolean) {
@@ -247,11 +250,8 @@ export class CallService {
         this.participantArray = res;
       });
 
-    console.warn('[PARTICIPANT ARRAY]', this.participantArray);
-
     this.getUsersBitrate(session);
 
-    console.log('[getUsersMicLevel 4s]');
     const idVolumeLevelMap: Map<number, number> = new Map();
     this.participantArray.forEach((user: User) => {
       if (user.volumeLevel !== undefined) {
@@ -295,8 +295,8 @@ export class CallService {
           resolve('mic_off');
         }
       } catch (error: any) {
-        console.log('MuteOrUnmuteMicro Error!', error);
-        reject();
+        console.error('MuteOrUnmuteMicro Error!', error);
+        reject(error);
       }
     });
   }
@@ -311,10 +311,7 @@ export class CallService {
 
         const session = this.OurSession;
 
-        console.log('Video work status', videoWork);
-
         if (!videoWork) {
-          console.warn('IF St', session.localStream.getVideoTracks());
           session
             .getUserMedia(mediaParamsDeviceId, true)
             .then((stream: any) => {
@@ -337,7 +334,6 @@ export class CallService {
           this.store.dispatch(
             updateVideoStatus({ id: 77777, videoStatus: false })
           );
-          console.warn('ELSE St', session.localStream.getVideoTracks());
           session.getUserMedia({ audio: true }, true).then((stream: any) => {
             stream.addTrack(this.createDummyVideoTrack());
             resolve(false);
@@ -356,8 +352,8 @@ export class CallService {
 
         console.log('LOCAL STREAM', session.localStream.getVideoTracks());
       } catch (error: any) {
-        console.log('MuteOrUnmuteVideo Error!', error);
-        reject();
+        console.error('MuteOrUnmuteVideo Error!', error);
+        reject(error);
       }
     });
   }
@@ -367,7 +363,6 @@ export class CallService {
   }
 
   public getListDevices() {
-    console.log();
     return ConnectyCube.videochatconference.getMediaDevices(
       ConnectyCube.videochatconference.DeviceInputType.VIDEO
     );
@@ -410,7 +405,7 @@ export class CallService {
             });
         })
         .catch((error: any) => {
-          console.log('Switch camera Error!', error);
+          console.error('Switch camera Error!', error);
         });
     });
   }
@@ -425,7 +420,6 @@ export class CallService {
     };
     const session = this.OurSession;
     if (videoPermission === false) {
-      console.log('STOP SHARE CATCH IF');
       session.getUserMedia({ audio: true }, true).then((stream: any) => {
         stream.addTrack(this.createDummyVideoTrack());
       });
@@ -436,13 +430,12 @@ export class CallService {
     session
       .getUserMedia(mediaParamsDeviceId, true)
       .then((stream: any) => {
-        console.log('STOP SHARE GET USER MEDIA');
         this.store.dispatch(updateUser({ id: 77777, stream: stream }));
 
         this.OurSharingStatus = false;
       })
       .catch(() => {
-        console.log('STOP SHARE CATCH GET USER MEDIA', videoPermission);
+        console.error('STOP SHARE CATCH GET USER MEDIA', videoPermission);
       });
   }
 
@@ -450,17 +443,12 @@ export class CallService {
     return new Promise<any>((resolve, reject) => {
       const shareStatus = this.OurSharingStatus;
       if (shareStatus) {
-        console.log('REJECT');
         reject();
       } else {
         const session = this.OurSession;
         session
           .getDisplayMedia(constraints, true)
           .then((localDesktopStream: any) => {
-            console.warn('ShareSTREAM', localDesktopStream);
-            localDesktopStream.getTracks().forEach((tr: any) => {
-              console.log(tr);
-            });
             this.store.dispatch(
               updateUser({ id: 77777, stream: localDesktopStream })
             );
@@ -480,11 +468,11 @@ export class CallService {
             resolve(localDesktopStream);
           })
           .catch((error: any) => {
-            console.log('Share Permission error', error);
+            console.error('Share Permission error', error);
             if (error.message.includes('Permission denied')) {
-              reject();
+              reject(error);
             } else {
-              console.log('Share screen Error!', error);
+              console.error('Share screen Error!', error);
               reject(error);
             }
           });
@@ -493,7 +481,6 @@ export class CallService {
   }
 
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {
-    console.log('joinUser', { confRoomId, userId, userDisplayName });
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
 
@@ -508,8 +495,6 @@ export class CallService {
         this.OurDeviceId && mediaParams.video
           ? mediaParamsDeviceId
           : mediaParams;
-
-      console.log('[joinUser] PARAMS', params);
 
       session
         .getUserMedia(params)
@@ -563,8 +548,8 @@ export class CallService {
           resolve(CallService.generateMeetRoomURL(confRoomId));
         })
         .catch((error: any) => {
-          console.log('Local stream Error!', error);
-          reject();
+          console.error('Local stream Error!', error);
+          reject(error);
         });
     });
   }
@@ -573,37 +558,23 @@ export class CallService {
     return ConnectyCube.videochatconference.createNewSession();
   }
 
-  public createMeetingAndJoin(user: any) {
-    return new Promise<string>((resolve, reject) => {
-      const params = {
-        name: 'My meeting',
-        attendees: [{ id: user.id }],
-        record: false,
-        chat: true,
-        public: true,
-      };
+  public async createMeetingAndJoin(user: any) {
+    const params = {
+      name: 'My meeting',
+      attendees: [{ id: user.id }],
+      record: false,
+      chat: true,
+      public: true,
+    };
 
-      ConnectyCube.meeting
-        .create(params)
-        .then((meeting: any) => {
-          console.warn(meeting);
-          const chatId = meeting.chat_dialog_id;
-          console.warn(chatId);
-          this.store.dispatch(setActiveDialogId({ dialogId: chatId }));
-          return meeting._id;
-        })
-        .then((confRoomId: string) => {
-          this.joinUser(confRoomId, user.id, user.name).then(
-            (roomUrl: string) => {
-              resolve(roomUrl);
-            }
-          );
-        })
-        .catch((error: any) => {
-          console.log('Create meeting Error!', error);
-          reject();
-        });
-    });
+    const meeting: Meetings.Meeting = await ConnectyCube.meeting.create(params);
+
+    const chatId = meeting.chat_dialog_id;
+    this.store.dispatch(setActiveDialogId({ dialogId: chatId! }));
+
+    const roomUrl = await this.joinUser(meeting._id, user.id, user.name);
+
+    return roomUrl;
   }
 
   public async recordingStart() {

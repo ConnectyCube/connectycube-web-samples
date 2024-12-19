@@ -205,29 +205,19 @@ export class ChatService {
     };
 
     return ConnectyCube.chat.message.list(params).then((dialog: any) => {
-      console.table('History', dialog.items);
       return this.processMessages(dialog.items);
     });
   }
 
-  public subscribeToDialog(meetingId: string) {
-    return new Promise<any>((resolve, reject) => {
-      ConnectyCube.meeting
-        .get({ _id: meetingId })
-        .then((meeting: Meetings.Meeting | Meetings.Meeting[]) => {
-          ConnectyCube.chat.dialog
-            .subscribe((meeting as Meetings.Meeting).chat_dialog_id!)
-            .then((dialog: any) => {
-              resolve(dialog);
-            })
-            .catch((error: any) => {
-              console.error('subscribe To Dialog', error);
-            });
-        })
-        .catch((error: any) => {
-          console.error('getMeeting', error);
-        });
-    });
+  public async subscribeToDialog(meetingId: string) {
+    const meeting: Meetings.Meeting | Meetings.Meeting[] =
+      await ConnectyCube.meeting.get({ _id: meetingId });
+
+    const dialog = await ConnectyCube.chat.dialog.subscribe(
+      (meeting as Meetings.Meeting).chat_dialog_id!
+    );
+
+    return dialog;
   }
 
   public sendMessage(messageText: string, dialogId: string) {
