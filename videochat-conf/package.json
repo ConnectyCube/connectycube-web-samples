@@ -1,5 +1,5 @@
 {
-  "name": "videochat",
+  "name": "connectycube-videochat",
   "version": "2.0.0",
   "description": "WebRTC Video Chat Sample",
   "main": "src/index.js",
