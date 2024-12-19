@@ -1,18 +1,17 @@
-import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormControl} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
-import {appConfig, CREDENTIALS} from "../../services/config";
-import {Router} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
-import {ModalComponent} from "../modal/modal.component";
+import { Component, OnInit } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { appConfig, CREDENTIALS } from '../../services/config';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalComponent } from '../modal/modal.component';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.scss']
+  styleUrls: ['./auth.component.scss'],
 })
 export class AuthComponent implements OnInit {
-
   private authAllowed: boolean = true;
 
   public authStatus: string = 'Log in';
@@ -25,20 +24,19 @@ export class AuthComponent implements OnInit {
 
   public authForm = this.fb.group({
     login: new UntypedFormControl(''),
-    password: new UntypedFormControl('')
-  })
+    password: new UntypedFormControl(''),
+  });
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private fb: UntypedFormBuilder,
-    public dialog: MatDialog,
-  ) {
-  }
+    public dialog: MatDialog
+  ) {}
 
   private ModalOn(icon: string, message: string) {
     this.dialog.open(ModalComponent, {
-      data: {icon: icon, message: message}
+      data: { icon: icon, message: message },
     });
   }
 
@@ -46,27 +44,12 @@ export class AuthComponent implements OnInit {
     if (!this.authAllowed) return;
     if (this.authForm.valid) {
       this.authAllowed = false;
-      if (this.authStatus === "Log in") {
-        console.log("[Login]", this.authForm.value);
-        this.authService.createSession().then((session: any) => {
-          localStorage.setItem('token', btoa(session.token));
-          this.authService.login(this.authForm.value.login, this.authForm.value.password)
-            .then(() => {
-              this.router.navigateByUrl('/chat');
-            })
-            .catch((error: any) => {
-              this.invalid = true;
-              this.authAllowed = true;
-              console.log(error);
-              localStorage.removeItem('token')
-              localStorage.removeItem('user')
-              this.ModalOn('error', JSON.stringify(error));
-            });
-        })
-      }
-      else if (this.authStatus === "Sign up") {
-        console.log("[Sign up]", this.authForm.value);
-        this.authService.register(this.authForm.value.name, this.authForm.value.login, this.authForm.value.password)
+      if (this.authStatus === 'Log in') {
+        this.authService
+          .login({
+            login: this.authForm.value.login,
+            password: this.authForm.value.password,
+          })
           .then(() => {
             this.router.navigateByUrl('/chat');
           })
@@ -74,13 +57,30 @@ export class AuthComponent implements OnInit {
             this.invalid = true;
             this.authAllowed = true;
             console.log(error);
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
+            localStorage.removeItem('token');
+            localStorage.removeItem('login');
+            this.ModalOn('error', JSON.stringify(error));
+          });
+      } else if (this.authStatus === 'Sign up') {
+        this.authService
+          .register(
+            this.authForm.value.name,
+            this.authForm.value.login,
+            this.authForm.value.password
+          )
+          .then(() => {
+            this.router.navigateByUrl('/chat');
+          })
+          .catch((error: any) => {
+            this.invalid = true;
+            this.authAllowed = true;
+            console.error(error);
+            localStorage.removeItem('token');
+            localStorage.removeItem('login');
             this.ModalOn('error', JSON.stringify(error));
           });
       }
-    }
-    else {
+    } else {
       this.invalid = true;
     }
   }
@@ -90,16 +90,15 @@ export class AuthComponent implements OnInit {
       this.authForm = this.fb.group({
         name: new UntypedFormControl(''),
         login: new UntypedFormControl(''),
-        password: new UntypedFormControl('')
-      })
+        password: new UntypedFormControl(''),
+      });
       this.authStatus = 'Sign up';
       this.authStatusText = 'Sign in';
-    }
-    else {
+    } else {
       this.authForm = this.fb.group({
         login: new UntypedFormControl(''),
-        password: new UntypedFormControl('')
-      })
+        password: new UntypedFormControl(''),
+      });
       this.authStatus = 'Log in';
       this.authStatusText = 'Sign up';
     }
@@ -107,13 +106,13 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     const appConfigToken = {
-      ...appConfig, on: {
+      ...appConfig,
+      on: {
         sessionExpired: (handleResponse: any, retry: any) => {
           this.authService.cleanTokenAndNavigateToLoginScreen();
         },
-      }
+      },
     };
-    this.authService.init(CREDENTIALS, appConfigToken)
+    this.authService.init(CREDENTIALS, appConfigToken);
   }
-
 }

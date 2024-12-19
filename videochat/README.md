@@ -39,9 +39,8 @@ To make the sample works for your own app, please do the following:
 
     ```javascript
     export const credentials = {
-      appId: 0,
-      authKey: "",
-      authSecret: ""
+      appId: 111,
+      authKey: "...",
     };
     ```
 

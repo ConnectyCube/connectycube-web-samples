@@ -14,10 +14,9 @@
   }
   & .chat__img {
     & img {
-      width: 150px;
+      width: 220px;
       height: 150px;
-      border-radius: 50%;
-      object-fit: cover;
+      object-fit: contain;
     }
   }
   & .chat__name {

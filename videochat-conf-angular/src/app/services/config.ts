@@ -2,8 +2,7 @@ import {environment} from "../../environments/environment";
 
 export const CREDENTIALS = {
   appId: Number(environment.APP_ID),
-  authKey: environment.AUTH_KEY,
-  authSecret: environment.AUTH_SECRET,
+  authKey: environment.AUTH_KEY
 };
 
 export const appConfig = {

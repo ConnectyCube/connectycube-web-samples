@@ -21,6 +21,7 @@ const Profile = (props) => {
   };
   let allUsers = [];
   let opponentId;
+
   if (userInfo) {
     opponentId = userInfo.occupants_ids.find((id) => {
       return id !== parseInt(localStorage.userId);

@@ -39,6 +39,7 @@ const Conference = (props) => {
   } = props.call;
 
   let [chatId, setChatId] = useState("");
+  
   const onPrejoinFinish = (userName, isVideo, isAudio) => {
     const hrefState = href.location.state;
     if (hrefState) {
@@ -276,25 +277,14 @@ const Conference = (props) => {
 
     if (mirror) {
       props.call.stopSharingScreen();
-      //   .then((mirror) => {
-      //     setMirror(mirror);
-      //   })
-      //   .catch((mirror) => {
-      //     setMirror(mirror);
-      //   });
     } else {
       props.call.startScreenSharing();
-      //   .then((mirror) => {
-      //     setMirror(mirror);
-      //   })
-      //   .catch((mirror) => {
-      //     setMirror(mirror);
-      //   });
     }
   };
   const devicesRef = React.createRef();
   const [locationKeys, setLocationKeys] = useState([]);
   const history = useHistory();
+
   useEffect(() => {
     return history.listen((location) => {
       if (history.action === "PUSH") {
@@ -353,7 +343,7 @@ const Conference = (props) => {
             <div className="chat__block">
               <Chat
                 chat={chat}
-                dialog={chatId}
+                dialogId={chatId}
                 messages={messages}
                 chatHide={chatToggle}
                 participants={participants}

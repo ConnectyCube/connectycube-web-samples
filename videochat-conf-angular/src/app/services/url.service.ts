@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from "rxjs";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UrlService {
   private previousUrl: BehaviorSubject<string> = new BehaviorSubject<any>(null);
@@ -12,6 +12,5 @@ export class UrlService {
     this.previousUrl.next(previousUrl);
   }
 
-  constructor() {
-  }
+  constructor() {}
 }

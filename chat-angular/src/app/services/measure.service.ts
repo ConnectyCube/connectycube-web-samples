@@ -10,8 +10,8 @@ import {selectedConversationSelector} from "../reducers/dialog/dialog.selectors"
 })
 export class MeasureService {
 
-  private idHeightCach: Map<string, number> = new Map<string, number>();
-  private idPromiseCach: Map<string, Promise<any>> = new Map<string, Promise<any>>();
+  private idHeightCache: Map<string, number> = new Map<string, number>();
+  private idPromiseCache: Map<string, Promise<any>> = new Map<string, Promise<any>>();
 
   constructor(private store$: Store) {
   }
@@ -65,14 +65,12 @@ export class MeasureService {
         console.log("[Change Dialog]");
         return null;
       }
-      const msgCachHeight = this.idHeightCach.get(msg.id);
-      if (msgCachHeight) {
-        itemsArray.push(msgCachHeight);
-        heightSum += msgCachHeight;
+      const msgCacheHeight = this.idHeightCache.get(msg.id);
+      if (msgCacheHeight) {
+        itemsArray.push(msgCacheHeight);
+        heightSum += msgCacheHeight;
         index++;
-      }
-      else {
-        console.log("[CALCULATE MESSAGE]", msg.id);
+      } else {
         //first element + container padding
         let msgHeight: number = index === 0 ? 14 : 0;
         let maxWidth = (msgContainerWidth - 20) * 0.8;
@@ -80,13 +78,12 @@ export class MeasureService {
         msgHeight += PADDING_MES;
         if (msg.senderName) {
           if (isGroupChat) {
-            msgHeight += 19
+            msgHeight += 19;
           }
           if (index < MAX_INDEX) {
             msgHeight += messages[index + 1].senderName ? 8 : 16;
           }
-        }
-        else {
+        } else {
           if (index < MAX_INDEX) {
             msgHeight += messages[index + 1].senderName ? 16 : 8;
           }
@@ -94,31 +91,33 @@ export class MeasureService {
 
         if (msg.photo) {
           let storeHeight;
-          this.store$.select(getMessageHeight, {msgId: msg.id}).pipe(take(1)).subscribe(height => {
-            if (height) {
-              storeHeight = height;
-            }
-          })
+          this.store$
+            .select(getMessageHeight, { msgId: msg.id })
+            .pipe(take(1))
+            .subscribe((height) => {
+              if (height) {
+                storeHeight = height;
+              }
+            });
           if (storeHeight) {
             msgHeight += storeHeight;
-          }
-          else {
-            const getImagePromise: Promise<any> = this.idPromiseCach.get(msg.id) || this.measureImage(msg.photo)
+          } else {
+            const getImagePromise: Promise<any> =
+              this.idPromiseCache.get(msg.id) || this.measureImage(msg.photo);
             this.setIdPromiseValue(msg.id, getImagePromise);
 
-            const {height, width} = await getImagePromise
+            const { height, width } = await getImagePromise;
 
             this.deleteIdPromiseValue(msg.id);
             console.log(height, width);
             msgHeight += height;
           }
           msgHeight += 5;
-        }
-        else {
+        } else {
           msgHeight += this.measureText(msg.body, maxWidth);
         }
 
-        this.idHeightCach.set(msg.id, msgHeight);
+        this.idHeightCache.set(msg.id, msgHeight);
 
         itemsArray.push(msgHeight);
         heightSum += msgHeight;
@@ -131,15 +130,15 @@ export class MeasureService {
   }
 
   public setIdPromiseValue(id: string, promise: Promise<any>) {
-    this.idPromiseCach.set(id, promise);
+    this.idPromiseCache.set(id, promise);
   }
 
   public deleteIdPromiseValue(id: string) {
-    this.idPromiseCach.delete(id);
+    this.idPromiseCache.delete(id);
   }
 
   public resetAllHeightCalculation() {
-    this.idHeightCach.clear();
-    this.idPromiseCach.clear();
+    this.idHeightCache.clear();
+    this.idPromiseCache.clear();
   }
 }

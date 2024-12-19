@@ -40,7 +40,7 @@ const SignUp = () => {
         <img src={logo} alt="Logo" className="logo__img" />
       </div>
       <form action="#" className="signup__form" onKeyDown={onEnterPress}>
-        <input ref={userNameRef} type="text" placeholder="Name" />
+        <input ref={userNameRef} type="text" placeholder="Full name" />
         <input ref={userLoginRef} type="text" placeholder="Login" />
         <input ref={userPasswordRef} type="password" placeholder="Password" />
         <button type="button" onClick={signUp}>

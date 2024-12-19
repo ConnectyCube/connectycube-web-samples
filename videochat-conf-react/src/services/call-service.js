@@ -298,6 +298,7 @@ export const CallProvider = ({ children }) => {
         name: "My meeting",
         attendees: [],
         record: false,
+        public: true,
         chat: true,
       };
       ConnectyCube.meeting
@@ -343,6 +344,7 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.videochatconference
         .getMediaDevices()
         .then((allDevices) => {
+          console.log("allDevices", allDevices);
           let mediaParams = mediaDevices(allDevices);
           if (!mediaParams.audio && !mediaParams.video) {
             reject("Error:You do not have any camera and microphone available");
@@ -371,7 +373,7 @@ export const CallProvider = ({ children }) => {
               setParticipants(newParticipants);
               ConnectyCube.videochatconference
                 .getMediaDevices(
-                  ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+                  ConnectyCube.videochatconference.DeviceInputType.VIDEO
                 )
                 .then((videoDevices) => {
                   setChoosedCam(videoDevices[0].deviceId);
