@@ -369,7 +369,7 @@ export class CallService {
   public getListDevices() {
     console.log();
     return ConnectyCube.videochatconference.getMediaDevices(
-      ConnectyCube.videochatconference.DEVICE_INPUT_TYPES.VIDEO
+      ConnectyCube.videochatconference.DeviceInputType.VIDEO
     );
   }
 
@@ -493,6 +493,7 @@ export class CallService {
   }
 
   public joinUser(confRoomId: string, userId: number, userDisplayName: string) {
+    console.log('joinUser', { confRoomId, userId, userDisplayName });
     return new Promise<string>((resolve, reject) => {
       const session = this.createSession();
 
