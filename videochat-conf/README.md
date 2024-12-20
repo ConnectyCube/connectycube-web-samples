@@ -13,7 +13,7 @@ Project contains the following features implemented:
 - Guest room mode up to 12 users
 - Share screen
 
-There is a live demo available https://teatalk.connectycube.com
+There is a LIVE demo available https://connectycube.github.io/connectycube-web-samples/videochat-conf/dist/
 
 ## Documentation
 
