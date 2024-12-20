@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import ConnectyCube from "connectycube";
 import {
   NO_ANSWER_TIMER,
   messages,

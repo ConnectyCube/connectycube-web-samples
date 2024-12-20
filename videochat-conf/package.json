@@ -15,6 +15,7 @@
   "author": "ConnectyCube",
   "license": "Apache-2.0",
   "dependencies": {
+    "connectycube": "^4.0.0",
     "crypto-js": "^4.2.0",
     "dog-names": "^2.0.0",
     "handlebars": "^4.7.3",

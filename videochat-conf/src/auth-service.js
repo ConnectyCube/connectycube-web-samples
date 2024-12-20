@@ -1,6 +1,7 @@
 import { credentials, appConfig } from "./config";
 import RUG from "random-username-generator";
 import CryptoJS from "crypto-js";
+import ConnectyCube from "connectycube";
 
 class AuthService {
   init = (janusServerEndpoint = null) => {
