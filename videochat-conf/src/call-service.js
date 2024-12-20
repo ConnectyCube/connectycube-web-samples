@@ -1,6 +1,5 @@
 import Handlebars from "handlebars";
 import {
-  users,
   NO_ANSWER_TIMER,
   messages,
   appConfig,
