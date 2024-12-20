@@ -16,7 +16,7 @@ The following code samples are available:
 
 - [Conference Calling (Angular) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf-angular)
 
-- [Conference Calling (vanilla JS) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo](https://connectycube.github.io/connectycube-web-samples/videochat-conf/dist/)
+- [Conference Calling (vanilla JS) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf) - [LIVE demo](https://teatalk.connectycube.com/)
 
 
 
