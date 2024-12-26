@@ -9,8 +9,8 @@ class AuthService {
 
   init = () => {
     const credentials = {
-      appId: process.env.REACT_APP_CONNECTYCUBE_APP_ID,
-      authKey: process.env.REACT_APP_CONNECTYCUBE_AUTH_KEY,
+      appId: REPLACE_APP_ID,
+      authKey: 'REPLACE_APP_AUTH_KEY',
       chat: {
         streamManagement: {
           enable: true,
@@ -22,14 +22,8 @@ class AuthService {
       debug: {
         mode: 1,
       },
-      conference: {
-        server: process.env.REACT_APP_CONNECTYCUBE_MULTIPARTY_SERVER_ENDPOINT,
-      },
-      endpoints: {
-        api: process.env.REACT_APP_CONNECTYCUBE_API_ENDPOINT,
-        chat: process.env.REACT_APP_CONNECTYCUBE_CHAT_ENDPOINT,
-      },
     };
+
     ConnectyCube.init(credentials, appConfig);
   };
 

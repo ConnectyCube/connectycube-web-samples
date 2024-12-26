@@ -32,7 +32,3 @@ build
 
 #env
 .env
-
-#environment
-environment.ts
-environment.prod.ts

@@ -21,8 +21,8 @@ export const messages = {
 export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state';
 
 export const credentials = {
-  appId: 7915,
-  authKey: "nf8zqNWwJQR95UY",
+  appId: REPLACE_APP_ID,
+  authKey: "REPLACE_APP_AUTH_KEY",
 };
 
 export const appConfig = {

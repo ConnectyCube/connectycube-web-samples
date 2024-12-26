@@ -12,10 +12,6 @@ export const appConfig: Readonly<any> = {
     streamManagement: {
       enable: true
     }
-  },
-  endpoints: {
-    api: environment.API_ENDPOINT,
-    chat: environment.CHAT_ENDPOINT
   }
 }
 
