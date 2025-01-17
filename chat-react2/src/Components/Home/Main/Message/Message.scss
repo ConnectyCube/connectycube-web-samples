@@ -1,0 +1,210 @@
+.lds-spinner {
+  color: official;
+  display: inline-block;
+  position: absolute;
+  width: 80px !important;
+  height: 80px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.lds-spinner div {
+  transform-origin: 40px 40px;
+  animation: lds-spinner 1.2s linear infinite;
+}
+.lds-spinner div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 3px;
+  left: 37px;
+  width: 6px;
+  height: 18px;
+  border-radius: 20%;
+  background: #000;
+}
+.lds-spinner div:nth-child(1) {
+  transform: rotate(0deg);
+  animation-delay: -1.1s;
+}
+.lds-spinner div:nth-child(2) {
+  transform: rotate(30deg);
+  animation-delay: -1s;
+}
+.lds-spinner div:nth-child(3) {
+  transform: rotate(60deg);
+  animation-delay: -0.9s;
+}
+.lds-spinner div:nth-child(4) {
+  transform: rotate(90deg);
+  animation-delay: -0.8s;
+}
+.lds-spinner div:nth-child(5) {
+  transform: rotate(120deg);
+  animation-delay: -0.7s;
+}
+.lds-spinner div:nth-child(6) {
+  transform: rotate(150deg);
+  animation-delay: -0.6s;
+}
+.lds-spinner div:nth-child(7) {
+  transform: rotate(180deg);
+  animation-delay: -0.5s;
+}
+.lds-spinner div:nth-child(8) {
+  transform: rotate(210deg);
+  animation-delay: -0.4s;
+}
+.lds-spinner div:nth-child(9) {
+  transform: rotate(240deg);
+  animation-delay: -0.3s;
+}
+.lds-spinner div:nth-child(10) {
+  transform: rotate(270deg);
+  animation-delay: -0.2s;
+}
+.lds-spinner div:nth-child(11) {
+  transform: rotate(300deg);
+  animation-delay: -0.1s;
+}
+.lds-spinner div:nth-child(12) {
+  transform: rotate(330deg);
+  animation-delay: 0s;
+}
+@keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.message {
+  display: flex;
+  text-align: left;
+  flex-direction: row;
+  align-items: center;
+  white-space: pre-wrap;
+  max-width: 90%;
+  position: relative;
+
+  & .user-message__info {
+    padding: 10px;
+    margin-left: 10px;
+    background-color: #eaeaeb !important;
+    display: flex;
+    border-radius: 15px;
+    flex-direction: column;
+    min-width: 150px;
+    word-wrap: break-word;
+
+    & .message__time-container {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+      font-style: italic;
+      color: #929293;
+      position: absolute;
+      bottom: -1px;
+      right: 10px;
+      justify-content: flex-end;
+    }
+
+    & > * {
+      &:not(:last-child) {
+        padding-bottom: 5px;
+      }
+    }
+  }
+  & .user__img-container {
+    max-width: 50px;
+    min-height: 50px;
+    min-width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #8b8bd9;
+    border-radius: 50%;
+    & .user-no-img {
+      border-radius: 50%;
+      text-align: center;
+      text-transform: uppercase;
+      color: white;
+    }
+    & img {
+      object-fit: cover;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+    }
+  }
+  & .message__avatar {
+    width: 60px;
+    height: 60px;
+  }
+  & div {
+    width: 100%;
+    white-space: pre-line;
+    & .message__photo-container {
+      &.full {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 20;
+        background-color: #000000de;
+
+        & .message__photo {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: scale(3) translate(-17%, -20%);
+        }
+      }
+      & .message__photo {
+        max-height: 200px;
+        transition: 0.2s;
+      }
+    }
+  }
+  & .message-user__name {
+    font-weight: 600;
+  }
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
+  &.my {
+    align-self: flex-end;
+    & .user__img-container {
+      order: 2;
+    }
+    & .user-message__info {
+      order: 1;
+      margin-right: 10px;
+      position: relative;
+    }
+  }
+  &.opponent {
+    align-self: flex-start;
+    & .message__time-container {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+      font-style: italic;
+      color: #929293;
+      position: absolute;
+      bottom: 2px;
+      right: 10px;
+      justify-content: flex-end;
+    }
+
+    & .user__img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+}
