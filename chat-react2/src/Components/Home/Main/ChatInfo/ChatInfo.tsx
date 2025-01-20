@@ -17,8 +17,8 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
 
   const [addUsers, setAddUsers] = useState(false);
 
-  const opponentId = getDialogOpponentId();
-  const isGroupChat = selectedDialog.type === 2;
+  const opponentId = selectedDialog ? getDialogOpponentId() : null;
+  const isGroupChat = selectedDialog?.type === 2;
 
   const close = () => {
     setAddUsers(false);
@@ -26,7 +26,7 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
 
   const usersView = useMemo(
     () =>
-      selectedDialog.occupants_ids.map((oId: number) => {
+      selectedDialog?.occupants_ids.map((oId: number) => {
         const user = users[oId];
         return (
           <GroupMember
@@ -71,7 +71,7 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
             )}
             <div className="profile__user-info">
               <p>{selectedDialog.name ? selectedDialog.name : "Unknown"}</p>
-              {!isGroupChat && (
+              {!isGroupChat && opponentId && (
                 <p className="last__activity">
                   {lastActivity[opponentId as number]}
                 </p>

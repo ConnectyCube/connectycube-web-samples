@@ -1,8 +1,8 @@
 import { Config } from "connectycube/dist/types/types";
 
 export const credentials = {
-  appId: 1,
-  authKey: "2",
+  appId: 7980,
+  authKey: "CmOpsbPmTjJbYjh",
 };
 
 export const appConfig: Config.Options = {
