@@ -94,12 +94,7 @@ const Sidebar = () => {
       </div>
 
       {newChatFormVisible && (
-        <NewChat
-          onClose={closeNewChatForm}
-          chatType={chatType}
-          startChat={startChat}
-          searchUsers={searchUsers}
-        />
+        <NewChat onClose={closeNewChatForm} chatType={chatType} />
       )}
 
       <input

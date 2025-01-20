@@ -5,21 +5,17 @@ import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import Message from "./Message/Message";
 import UserInfo from "./UserInfo/UserInfo";
-import Profile from "./Profile/Profile";
+import ChatInfo from "./ChatInfo/ChatInfo";
 import "./Main.scss";
 
 const Main = () => {
   const {
     sendMessage,
     selectedDialog,
-    selectDialog,
     messages,
     users,
     sendTypingStatus,
-    typingStatus,
     sendMessageWithAttachment,
-    lastActivity,
-    searchUsers,
   } = useChat();
 
   const [showProfile, setShowProfile] = useState(false);
@@ -118,28 +114,10 @@ const Main = () => {
 
   return (
     <div className={`main__container ${selectedDialog ? "show" : ""}`}>
-      <Profile
-        selectedDialog={selectedDialog}
-        toggleProfile={toggleProfile}
-        searchUsers={searchUsers}
-        setDialog={selectDialog}
-        userInfo={selectedDialog}
-        lastActivity={lastActivity}
-        usersInGroups={users}
-        showProfile={showProfile}
-      />
+      <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} />
       <div className={`main__content ${showProfile ? "small" : ""}`}>
         <div className="main__header">
-          {selectedDialog && (
-            <UserInfo
-              toggleProfile={toggleProfile}
-              setDialog={selectDialog}
-              userInfo={selectedDialog}
-              usersInGroups={users}
-              typeStatus={typingStatus}
-              lastActivity={lastActivity}
-            />
-          )}
+          {selectedDialog && <UserInfo toggleProfile={toggleProfile} />}
           {!selectedDialog && <div className="header-none">Chats</div>}
         </div>
         <div

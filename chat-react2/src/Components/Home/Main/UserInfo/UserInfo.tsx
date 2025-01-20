@@ -1,67 +1,51 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { useContext } from "react";
-import ChatContext from "../../../../services/chat-service";
+import { useChat } from "@connectycube/use-chat";
 import "./UserInfo.scss";
 
-const UserInfo = (props) => {
-  const {
-    userInfo,
-    typeStatus,
-    lastActivity,
-    setDialog,
-    toggleProfile,
-    usersInGroups,
-  } = props;
+export interface UserInfoProps {
+  toggleProfile: () => void;
+}
 
-  const context = useContext(ChatContext);
+const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
+  const navigate = useNavigate();
+  const {
+    selectedDialog,
+    leaveGroupChat,
+    lastActivity,
+    getDialogOpponentId,
+    typingStatus,
+    users,
+  } = useChat();
 
   const [actionMenuOpen, setActionMenuOpen] = useState(false);
 
-  const navigate = useNavigate();
+  const isGroupChat = selectedDialog.type === 2;
 
-  let opponentId;
-  let typersName = [];
-  let typingStatus = { isTyping: false };
+  const opponentId = getDialogOpponentId();
 
-  const isGroupChat = userInfo.type === 2;
-
-  if (isGroupChat) {
-    userInfo.occupants_ids.filter((e) => {
-      if (typeStatus[e]) {
-        if (
-          typeStatus[e].isTyping &&
-          typeStatus[e].dialogId === userInfo._id &&
-          e !== parseInt(localStorage.userId)
-        ) {
-          typersName.push(usersInGroups[e].full_name);
-        }
-      }
-    });
-  } else {
-    opponentId = userInfo.occupants_ids.find(
-      (el) => el !== parseInt(localStorage.userId)
-    );
-    if (typeStatus[opponentId]) {
-      if (
-        typeStatus[opponentId].isTyping &&
-        typeStatus[opponentId].dialogId === null
-      ) {
-        typingStatus.isTyping = true;
-        typersName.push(opponentId);
+  const typingLabel = useMemo(() => {
+    const names = [];
+    for (const [userIdString, isTyping] of Object.entries(
+      typingStatus[selectedDialog._id]
+    )) {
+      if (isTyping) {
+        const userId = +userIdString;
+        const user = users[userId];
+        names.push(user.full_name || user.login);
       }
     }
-  }
 
-  const toggleMore = (close) => {
-    if (close) {
-      setActionMenuOpen(false);
-    } else {
-      setActionMenuOpen(!actionMenuOpen);
-    }
+    return names.length > 0
+      ? `${names.join()} ${names.length > 1 ? "are" : "is"} typing`
+      : "";
+  }, [selectedDialog, typingStatus]);
+
+  const toggleMore = (close: boolean) => {
+    setActionMenuOpen(close ? false : !actionMenuOpen);
   };
 
   return (
@@ -75,7 +59,7 @@ const UserInfo = (props) => {
         <ul className="more__modal">
           <li
             onClick={() => {
-              context.leaveGroupChat(parseInt(localStorage.userId));
+              leaveGroupChat();
               navigate("/home");
             }}
           >
@@ -88,7 +72,6 @@ const UserInfo = (props) => {
           size={32}
           onClick={() => {
             navigate("/home");
-            setDialog("close");
           }}
           className="user__info-back"
         />
@@ -99,15 +82,15 @@ const UserInfo = (props) => {
             toggleProfile();
           }}
         >
-          {userInfo.photo ? (
+          {selectedDialog.photo ? (
             <img
               className="user__avatar-img"
-              src={userInfo.photo}
+              src={selectedDialog.photo}
               alt="User Photo"
             />
           ) : (
             <div id="background" className="user__no-img">
-              <span className="name">{userInfo.name.slice(0, 2)}</span>
+              <span className="name">{selectedDialog.name.slice(0, 2)}</span>
             </div>
           )}
         </div>
@@ -117,36 +100,28 @@ const UserInfo = (props) => {
               toggleProfile();
             }}
           >
-            {userInfo.name}
+            {selectedDialog.name}
           </span>
 
           <div className="typing-status">
-            {typingStatus && userInfo.type === 3 ? (
+            {typingStatus && !isGroupChat ? (
               typingStatus.isTyping ? (
                 "typing..."
-              ) : userInfo.type === 3 ? (
+              ) : !isGroupChat ? (
                 <span className="last__activity">
-                  {lastActivity[opponentId]}
+                  {lastActivity[opponentId as number]}
                 </span>
               ) : (
                 "ATAL TYPE 1"
               )
-            ) : userInfo.type === 3 ? (
-              <span className="last__activity">{lastActivity[opponentId]}</span>
-            ) : (
-              ""
-            )}
-            {userInfo.type === 2 ? (
-              <span>
-                {typersName.length > 0
-                  ? typersName.length > 1
-                    ? typersName.toString() + " are typing"
-                    : typersName.toString() + " is typing"
-                  : ""}
+            ) : !isGroupChat ? (
+              <span className="last__activity">
+                {lastActivity[opponentId as number]}
               </span>
             ) : (
               ""
             )}
+            {isGroupChat ? <span>{typingLabel}</span> : ""}
           </div>
         </div>
       </div>
