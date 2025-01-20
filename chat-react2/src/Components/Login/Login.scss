@@ -19,6 +19,9 @@ $darkblue: rgb(50, 50, 60);
   & .login__form {
     display: flex;
     flex-direction: column;
+    & .error {
+        color: red;
+      }
     & input {
       padding: 12px 20px;
       border: 1px solid #eee;

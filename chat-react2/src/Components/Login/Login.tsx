@@ -1,39 +1,48 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useChat } from "@connectycube/use-chat";
+import Loader from "../Shared/Loader";
 import { createUserSession } from "../../connectycube";
 import logo from "../../assets/logo.png";
 import "./Login.scss";
+import { useState } from "react";
+
+type FormValues = {
+  login: string;
+  password: string;
+};
 
 const Login = () => {
   const { connect } = useChat();
   const navigate = useNavigate();
 
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {
-    const session = await createUserSession(login, password);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
 
-    const chatCredentials = {
-      userId: session.user_id,
-      password: password,
-    };
-    await connect(chatCredentials);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setIsLoading(true);
 
-    navigate("/home");
-  };
+    try {
+      const session = await createUserSession(data.login, data.password);
 
-  const onEnterPress = (event: {
-    keyCode: number;
-    shiftKey: boolean;
-    preventDefault: () => void;
-  }) => {
-    if (event.keyCode === 13 && event.shiftKey === false) {
-      event.preventDefault();
+      const chatCredentials = {
+        userId: session.user_id,
+        password: data.password,
+      };
+      await connect(chatCredentials);
 
-      handleLogin();
+      navigate("/home");
+    } catch (e) {
+      console.error("Login error", e);
+      alert(JSON.stringify(e));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,24 +51,29 @@ const Login = () => {
       <div className="img__container">
         <img src={logo} alt="Logo" className="logo__img" />
       </div>
-      <form action="#" className="login__form" onKeyDown={onEnterPress}>
+      <form onSubmit={handleSubmit(onSubmit)} className="login__form">
         <input
           type="text"
           placeholder="Login"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
+          {...register("login", {
+            required: "Login is required",
+          })}
         />
         <input
           type="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...register("password", {
+            required: "Password is required",
+          })}
         />
-        <button type="button" onClick={handleLogin}>
-          Login
-        </button>
+        {errors.login && <span className="error">{errors.login.message}</span>}
+        {errors.password && (
+          <span className="error">{errors.password.message}</span>
+        )}
+        <button type="submit">Login</button>
       </form>
       <div className="signup__block">
+        {isLoading && <Loader />}
         <p>Don't have an account?</p>
         <NavLink to="/signup">Sign up</NavLink>
       </div>

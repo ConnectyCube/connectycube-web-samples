@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useState } from "react";
 import { userSignup } from "../../connectycube";
 import logo from "../../assets/logo.png";
+import Loader from "../Shared/Loader";
 import "./SignUp.scss";
-import { useForm, SubmitHandler } from "react-hook-form";
 
 type FormValues = {
   fullName: string;
@@ -13,6 +15,7 @@ type FormValues = {
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -21,9 +24,17 @@ const SignUp = () => {
   } = useForm<FormValues>();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    await userSignup(data.fullName, data.login, data.password);
+    setIsLoading(true);
 
-    navigate("/home");
+    try {
+      await userSignup(data.fullName, data.login, data.password);
+      navigate("/home");
+    } catch (e: any) {
+      console.error("SignUp error", e);
+      alert(e.info.errors.base);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,6 +98,7 @@ const SignUp = () => {
         <button type="submit">Register</button>
       </form>
       <div className="login__block">
+        {isLoading && <Loader />}
         <p>Already have an account?</p>
         <NavLink to="/login">Sign in</NavLink>
       </div>
