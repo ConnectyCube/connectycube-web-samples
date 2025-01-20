@@ -2,8 +2,6 @@ import ConnectyCube from "connectycube";
 import { appConfig, credentials } from "../config";
 
 class AuthService {
-  arr = [];
-
   constructor() {
     if (AuthService.instance) {
       return AuthService.instance;
@@ -20,7 +18,6 @@ class AuthService {
     }
   };
 
-
   login = async (login, password) => {
     try {
       const session = await ConnectyCube.createSession({ login, password });
@@ -29,31 +26,23 @@ class AuthService {
       localStorage.setItem("userId", session.user_id);
       return { userInfo: session.user, password: password };
     } catch (error) {
-      localStorage.clean();
+      localStorage.clear();
       console.error(error);
     }
   };
 
   logout = async () => {
     try {
-      await ConnectyCube.logout();
-      localStorage.clean();
+      await ConnectyCube.destroySession();
+      localStorage.clear();
     } catch (error) {
       console.error(error);
     }
   };
 
   signup = async (full_name, login, password) => {
-    try {
-      await ConnectyCube.createSession(); // create empty session to register user
-      await ConnectyCube.users.signup({ login, full_name, password }); // register user
-      const session = await ConnectyCube.createSession({ login, password }); // create session for registered user
-      localStorage.setItem("login", login);
-      localStorage.setItem("token", session.token);
-      localStorage.setItem("userId", session.user_id);
-    } catch (error) {
-      console.error(error);
-    }
+    await ConnectyCube.users.signup({ login, full_name, password }); // register user
+    this.login(login, password);
   };
 }
 

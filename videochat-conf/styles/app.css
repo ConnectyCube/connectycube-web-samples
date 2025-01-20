@@ -45,7 +45,7 @@
 #login-caption,
 #login-loader,
 .videochat-stream-loader {
-  height: 32px;
+  height: 35px;
   width: auto;
   display: flex;
   flex-direction: row;
@@ -55,7 +55,7 @@
 
 #login-caption,
 #login-loader-text {
-  line-height: 30px;
+  line-height: 32px;
 }
 
 #login-buttons-container {

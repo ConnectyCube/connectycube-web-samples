@@ -312,8 +312,7 @@ export class VideochatComponent implements OnInit, OnDestroy {
         this.recordBtnBg = '#2c2c2e';
         this.recordIconName = 'stop';
       })
-    }
-    else {
+    } else {
       this.callService.recordingStop().then(() => {
         this.recordBtnBg = '#dc143c';
         this.recordIconName = '';

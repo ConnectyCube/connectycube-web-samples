@@ -27,6 +27,22 @@ const Message = (props) => {
     }
   }
 
+  const sender = usersInGroups[message.sender_id];
+
+  const senderName =
+    message.sender_id === parseInt(localStorage.userId)
+      ? "You"
+      : dialogInfo.type === 2
+      ? sender
+        ? sender.full_name || sender.login
+        : noName
+      : dialogInfo.name;
+
+  const senderNameNoImage = (senderName.full_name || senderName.login)?.slice(
+    0,
+    2
+  );
+
   return (
     <div
       ref={ref}
@@ -36,35 +52,19 @@ const Message = (props) => {
     >
       {dialogInfo.type === 2 && (
         <div className="user__img-container">
-          {dialogInfo.type === 2 ? (
-            usersInGroups[message.sender_id] ? (
-              usersInGroups[message.sender_id].avatar ? (
-                <img src={`${usersInGroups[message.sender_id].avatar}`} />
-              ) : (
-                <div className="user-no-img">
-                  {usersInGroups[message.sender_id].full_name.slice(0, 2)}
-                </div>
-              )
+          {sender ? (
+            sender.avatar ? (
+              <img src={`${sender.avatar}`} />
             ) : (
-              <div className="user-no-img">{noName.slice(0, 2)}</div>
+              <div className="user-no-img">{senderNameNoImage}</div>
             )
           ) : (
-            ""
+            <div className="user-no-img">{noName.slice(0, 2)}</div>
           )}
         </div>
       )}
       <div className="user-message__info">
-        <span className="message-user__name">
-          {message.sender_id === parseInt(localStorage.userId)
-            ? "You"
-            : dialogInfo.type === 2
-            ? usersInGroups[message.sender_id]
-              ? usersInGroups[message.sender_id].full_name
-                ? usersInGroups[message.sender_id].full_name
-                : usersInGroups[message.sender_id].login
-              : noName
-            : dialogInfo.name}
-        </span>
+        <span className="message-user__name">{senderName}</span>
         <div>
           {message.message ? (
             message.message

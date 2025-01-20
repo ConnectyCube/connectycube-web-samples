@@ -1,17 +1,16 @@
 import React, { createRef, useEffect } from 'react';
 import './Chat.scss';
 import Message from './Message/Message';
-// import { sendMessage } from "../../../services/chat-service";
 
 const Chat = (props) => {
-  const { messages, chatHide, chat, dialog } = props;
+  const { messages, chatHide, chat, dialogId } = props;
 
   useEffect(() => {
-    //  chat.setParticipants(participants);
-    chat.getMessages(dialog);
-    // eslint-disable-next-line
+    chat.getMessages(dialogId);
   }, [messages]);
+
   const messageRef = createRef();
+  
   const messageArea = (e) => {
     e.currentTarget.style.height = '1px';
     let newHeight = 10 + e.currentTarget.scrollHeight;
@@ -41,7 +40,7 @@ const Chat = (props) => {
         /(\r\n|\n|\r)/gm,
         ''
       );
-      chat.sendMessage(messageRef.current.value, props.dialog);
+      chat.sendMessage(messageRef.current.value, dialogId);
       messageRef.current.style.height = '45px';
 
       messageRef.current.value = '';
@@ -61,7 +60,7 @@ const Chat = (props) => {
 
         messageRef.current.style.height = '45px';
 
-        chat.sendMessage(messageRef.current.value, props.dialog);
+        chat.sendMessage(messageRef.current.value, dialogId);
         messageRef.current.value = '';
       }
     }

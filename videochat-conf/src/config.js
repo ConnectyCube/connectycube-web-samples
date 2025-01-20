@@ -21,50 +21,21 @@ export const messages = {
 export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state';
 
 export const credentials = {
-  appId: 385,
-  authKey: "DFBMs5-dKBBCXcd",
-  authSecret: "SkCW-ThdnmRg9Za"
+  appId: REPLACE_APP_ID,
+  authKey: "REPLACE_APP_AUTH_KEY",
 };
 
 export const appConfig = {
   debug: { mode: 1 },
-  conference: { server: 'wss://janus.connectycube.com:8989' },
+  endpoints: {
+    api: "api.connectycube.com",
+    chat: "chat.connectycube.com",
+  },
+  conference: { server: "wss://janus.connectycube.com:8989" },
 };
-
-export const users = [
-  {
-    id: 72780,
-    name: 'Alice',
-    login: 'videouser1',
-    password: 'videouser1',
-    color: '#34ad86',
-  },
-  {
-    id: 72781,
-    name: 'Bob',
-    login: 'videouser2',
-    password: 'videouser2',
-    color: '#077988',
-  },
-  {
-    id: 590565,
-    name: 'Ciri',
-    login: 'videouser3',
-    password: 'videouser3',
-    color: '#13aaae',
-  },
-  {
-    id: 590583,
-    name: 'Dexter',
-    login: 'videouser4',
-    password: 'videouser4',
-    color: '#056a96',
-  },
-];
 
 const isCordovaEnv = !!window.cordova;
 
-export const GUEST_ROOM_ONLY_MODE = false;
 export const CALLING_ONLY_MODE = isCordovaEnv;
 
 export const NO_ANSWER_TIMER = 30000; // 30 sec

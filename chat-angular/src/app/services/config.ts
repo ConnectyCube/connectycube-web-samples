@@ -1,22 +1,17 @@
+import CC from "connectycube/dist/types/types";
 import {environment} from "../../environments/environment";
 
-export const CREDENTIALS: Readonly<any> = {
+export const CREDENTIALS: CC.Config.Credentials = {
   appId: Number(environment.APP_ID),
   authKey: environment.AUTH_KEY,
-  authSecret: environment.AUTH_SECRET,
 };
 
 export const appConfig: Readonly<any> = {
   debug: {mode: 1},
-  conference: {server: environment.CONFERENCE_SERVER_ENDPOINT},
   chat: {
     streamManagement: {
       enable: true
     }
-  },
-  endpoints: {
-    api: environment.API_ENDPOINT,
-    chat: environment.CHAT_ENDPOINT
   }
 }
 

@@ -11,7 +11,7 @@
     <link rel="manifest" href="/manifest.json" />
     <link
       rel="apple-touch-icon"
-      href="/images/icons-connectycube-touchicon-180.png" />
+      href="./images/icons-connectycube-touchicon-180.png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" />
@@ -48,7 +48,7 @@
         <div id="login-logo">
           <img
             id="login-image"
-            src="/images/icons-connectycube-512.png"
+            src="./images/icons-connectycube-512.png"
             alt="ConnectyCube" />
           <div id="login-caption">Conference calling</div>
           <div id="login-loader" class="hidden">
@@ -88,12 +88,16 @@
             </div>
           </div>
         </div>
-        <div id="login-buttons-container"></div>
+        <div id="login-buttons-container">
+          <button id='guest-room-join-btn' class='login-button'>Join room</button>
+        </div>
       </section>
 
       <!-- START VIDEOCHAT SCREEN -->
       <section id="call" class="hidden">
-        <div id="call-select-users"></div>
+        <div id="call-select-users">
+          
+        </div>
         <div id="call-buttons-container">
           <button id="call-start" class="call-button"></button>
         </div>
@@ -151,46 +155,6 @@
 
       <!-- SNACKBAR -->
       <div id="snackbar"></div>
-
-      <!-- HANDLEBARS TEMPLATES -->
-      <script type="text/x-handlebars-template" id="login-buttons-template">
-        {{#if drawUsers}}
-          {{#each users}}
-            <button
-              class='login-button {{this.name}}-bg-color'
-              data-id='{{this.id}}'
-            >Login as {{this.name}}</button>
-          {{/each}}
-        {{/if}}
-        <div>
-          {{#if drawJoinGuestRoomButton}}
-            <h2 class='guest-title'>Or create and join</h2>
-            <button
-              id='guest-room-join-btn'
-              class='login-button'
-            >{{guestButtonText}}</button>
-          {{/if}}
-        </div>
-      </script>
-
-      <script type="text/x-handlebars-template" id="select-users-template">
-        <h2 id='select-header'>Select users to start Videocall</h2>
-        {{#each usersForSelect}}
-          <label
-            for='select-{{this.id}}'
-            id='select-{{this.name}}'
-            class='{{this.name}}-bg-color select-user'
-          >
-            <span>{{this.name}}</span>
-            <input
-              type='checkbox'
-              id='select-{{this.id}}'
-              class='select-user-checkbox'
-              data-id='{{this.id}}'
-            />
-          </label>
-        {{/each}}
-      </script>
 
       <script type="text/x-handlebars-template" id="videochat-streams-template">
         <div class='videochat-stream-loader' data-id='{{id}}'>
@@ -273,15 +237,15 @@
       </script>
       <!-- SOUNDS -->
       <audio id="signal-end" preload="auto">
-        <source src="/audio/end_call.mp3" type="audio/mp3" />
+        <source src="./audio/end_call.mp3" type="audio/mp3" />
       </audio>
 
       <audio id="signal-out" loop preload="auto">
-        <source src="/audio/dialing.mp3" type="audio/mp3" />
+        <source src="./audio/dialing.mp3" type="audio/mp3" />
       </audio>
 
       <audio id="signal-in" loop preload="auto">
-        <source src="/audio/calling.mp3" type="audio/mp3" />
+        <source src="./audio/calling.mp3" type="audio/mp3" />
       </audio>
     </div>
     <div id="e2e-ice-state" hidden></div>
@@ -290,9 +254,6 @@
   <script
     type="text/javascript"
     src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script
-    type="text/javascript"
-    src="https://cdn.jsdelivr.net/npm/connectycube@3.26.0/dist/connectycube.min.js"></script>
   <script type="text/javascript" src="/main.js"></script>
   <script type="text/javascript" src="/events-service.js"></script>
 </html>

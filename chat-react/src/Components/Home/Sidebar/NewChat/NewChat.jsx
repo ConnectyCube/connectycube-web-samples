@@ -46,46 +46,43 @@ const NewChat = (props) => {
     return <UserInGroup user={user} />;
   });
 
-  const finding = (e) => {
+  const lookForUsers = async (e) => {
     e.preventDefault();
-    searchUsers(userRef.current.value)
-      .then((users) => {
-        let allUsers = [];
-        let userFiltered = users.filter(
-          (ele, ind) => ind === users.findIndex((elem) => elem.id === ele.id)
-        );
-        setFoundedUsers(() => {
-          let array = userFiltered.map((user) => {
-            allUsers.push(user.id);
-            if (user.id !== parseInt(localStorage.userId)) {
-              return (
-                <FoundUser
-                  key={user.id}
-                  startChat={startChat}
-                  close={close}
-                  getChats={getChats}
-                  userInfo={user}
-                  type={type}
-                  groupChatUsers={groupChatUsers}
-                  groupOccupants={groupOccupants.current}
-                />
-              );
-            }
-          });
-          return array;
+
+    if (userRef.current.value.length < 4) {
+      alert("Min search term is 4 chars");
+      return;
+    }
+
+    try {
+      const users = await searchUsers(userRef.current.value);
+
+      setFoundedUsers(() => {
+        return users.map((user) => {
+          return (
+            <FoundUser
+              key={user.id}
+              startChat={startChat}
+              close={close}
+              getChats={getChats}
+              userInfo={user}
+              type={type}
+              groupChatUsers={groupChatUsers}
+              groupOccupants={groupOccupants.current}
+            />
+          );
         });
-      })
-      .catch((error) => {
-        console.log(error);
-        alert("NOT FETCHED");
       });
+    } catch (error) {
+      alert(JSON.stringify(error));
+    }
   };
 
   return (
     <div className="new-chat__container">
       {!create && (
         <form
-          onSubmit={finding}
+          onSubmit={lookForUsers}
           className="new-chat__form"
           action=""
           method="POST"
@@ -96,7 +93,11 @@ const NewChat = (props) => {
           <h1>Start new chat</h1>
           <div className="find__user-container">
             <input ref={userRef} type="text" placeholder="Enter user name" />
-            <button type="button" className="find__user-btn" onClick={finding}>
+            <button
+              type="button"
+              className="find__user-btn"
+              onClick={lookForUsers}
+            >
               <FaSearch />
             </button>
           </div>

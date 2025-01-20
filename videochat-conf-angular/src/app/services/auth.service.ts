@@ -1,128 +1,50 @@
-import {Injectable} from '@angular/core';
-import {CommonUtilities} from "../utilities/common.utilities";
-import * as ConnectyCube from "connectycube";
-
-// declare let ConnectyCube: any;
+import { Injectable } from '@angular/core';
+import { CommonUtilities } from '../utilities/common.utilities';
+import ConnectyCube from 'connectycube';
+import { Config } from 'connectycube/dist/types/types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  constructor() {}
 
-  constructor() {
+  public init(CREDENTIALS: Config.Credentials, appConfig: Config.Options) {
+    return ConnectyCube.init(CREDENTIALS, appConfig);
   }
 
-  private login(userProfileLogin: object) {
-    return ConnectyCube.login(userProfileLogin);
+  private async connectToChat(userCredentials: any) {
+    await ConnectyCube.chat.connect(userCredentials);
+    console.log('Connected to Chat');
   }
 
-  public init(CREDENTIALS: object, appConfig: object) {
-    ConnectyCube.init(CREDENTIALS, appConfig);
-  }
+  public async auth(userName: string) {
+    const login =
+      localStorage.getItem('login') ||
+      CommonUtilities.randomLogin() + CommonUtilities.randomLogin();
 
-  private connectToChat(userCredentials: any) {
-    return ConnectyCube.chat.connect(userCredentials)
-      .then(() => {
-        console.log("Connect To Chat");
-      })
-      .catch((error: any) => {
-        console.error("Connect to chat Error!", error);
-      })
-  }
+    const password = CommonUtilities.hashCode(login);
 
-  public auth(userName: string) {
-    return new Promise<any>((resolve, reject) => {
+    const userParams = {
+      login,
+      password,
+      full_name: userName || localStorage.getItem('userName'),
+    };
 
-      ConnectyCube.createSession(undefined).then((session: any) => {
-        const login: string = CommonUtilities.randomLogin() + CommonUtilities.randomLogin();
-        const password: string = CommonUtilities.hashCode(login);
+    const session = await ConnectyCube.createSession(userParams);
 
-        const userProfile = {
-          login: login,
-          password: password,
-          full_name: userName,
-        };
-        const userLocalStorage = {
-          login: localStorage.getItem('login'),
-          password: localStorage.getItem('password'),
-          full_name: localStorage.getItem('userName'),
-        };
-        const userProfileLogin = {
-          login: userProfile.login,
-          password: userProfile.password
-        }
+    if (userName !== session?.user?.full_name) {
+      ConnectyCube.users.update({ full_name: userName });
+    }
 
-        if (localStorage.getItem('userName')) {
-          this.login(userLocalStorage)
-            .then((user: any) => {
-              if (userName !== localStorage.getItem('userName')) {
-                localStorage.setItem('userName', userName);
-                ConnectyCube.users
-                  .update({full_name: userName});
-              }
-              console.log("logging user", user);
-              this.connectToChat({userId: user.id, password: userLocalStorage.password})
-                .then(() => {
-                  resolve(user.id)
-                });
+    await this.connectToChat({
+      userId: session?.user?.id,
+      password: password,
+    });
 
-            })
-            .catch((error: any) => {
-              console.log('LoginError!', error);
-              reject();
-            })
-          return;
-        }
+    localStorage.setItem('login', login);
+    localStorage.setItem('userName', userName);
 
-        localStorage.setItem('login', login)
-        localStorage.setItem('password', password)
-        localStorage.setItem('userName', userName)
-
-        ConnectyCube.users.signup(userProfile)
-          .then(() => {
-            this.login(userProfileLogin)
-              .then((user: any) => {
-                console.log("logging user", user);
-                this.connectToChat({userId: user.id, password: password})
-                  .then(() => {
-                    resolve(user.id)
-                  });
-              })
-              .catch((error: any) => {
-                console.log('LoginError!', error);
-                reject();
-              })
-          })
-          .catch((error: any) => {
-            try {
-              const IsRegisteredUser: boolean = error.info.errors.base.includes("login must be unique");
-
-              if (IsRegisteredUser) {
-                this.login(userProfileLogin)
-                  .then((user: any) => {
-                    console.log("logging user", user);
-                    this.connectToChat({userId: user.id, password: password})
-                      .then(() => {
-                        resolve(user.id)
-                      });
-                  })
-                  .catch((error: any) => {
-                    console.log('LoginError!', error);
-                    reject();
-                  })
-              }
-              else {
-                console.log("signUpError", error);
-                reject();
-              }
-            }
-            catch {
-              console.log(error);
-              reject();
-            }
-          })
-
-      });
-    })
+    return { id: session?.user?.id, name: userName };
   }
 }

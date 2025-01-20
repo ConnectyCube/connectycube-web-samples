@@ -43,6 +43,7 @@
                                 class="participant-item" [matTooltip]="user.full_name" matTooltipClass="tooltip"
                                 (removeParticipantEvent)="removeParticipant($event.id)"
                                 [full_name]="user.full_name"
+                                [login]="user.login"
                                 [isMe]="user.me"
                                 [unselected]="user.unselect"
                                 [avatar]="user.avatar"

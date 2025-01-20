@@ -1,4 +1,5 @@
 window.ConnectyCubeActiveUserStatId = null
+
 class uiUsersEvents {
   _renderSignalStat(userId) {
     if (window.ConnectyCubeActiveUserStatId !== userId) {
