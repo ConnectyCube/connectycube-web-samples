@@ -92,7 +92,7 @@ const Main = () => {
     setShowProfile(!showProfile);
   };
 
-  const renderedMessages = useMemo(() => {
+  const messagesView = useMemo(() => {
     if (selectedDialog) {
       for (let i = 0; i < messages[selectedDialog._id].length; i++) {
         return messages[selectedDialog._id].map((msg, index) => {
@@ -128,7 +128,7 @@ const Main = () => {
           {selectedDialog && (
             <div id="messages" className="messages">
               {messages ? (
-                renderedMessages
+                messagesView
               ) : (
                 <span className="no-msg">NO MESSAGES YET</span>
               )}

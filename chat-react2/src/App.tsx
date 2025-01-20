@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { StrictMode } from "react";
 import { ChatProvider } from "@connectycube/use-chat";
 import { BrowserRouter } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router";
@@ -7,8 +7,8 @@ import SignUp from "./Components/SignUp/SignUp";
 import Home from "./Components/Home/Home";
 import ConnectyCube from "connectycube";
 import { appConfig, credentials } from "./config";
-import './App.css'
-import { tryRestoreSession } from './connectycube';
+import { tryRestoreSession } from "./connectycube";
+import "./App.css";
 
 // Init ConnectyCube SDK
 ConnectyCube.init(credentials, appConfig);
@@ -16,7 +16,7 @@ const sessionExists = tryRestoreSession();
 
 function App() {
   const initialPath = sessionExists ? "/home" : "/login";
-  
+
   return (
     <div className="wrapper">
       <StrictMode>
@@ -36,4 +36,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

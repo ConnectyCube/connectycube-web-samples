@@ -1,33 +1,29 @@
-import { useState } from "react";
 import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { userSignup } from "../../connectycube";
 import logo from "../../assets/logo.png";
 import "./SignUp.scss";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+type FormValues = {
+  fullName: string;
+  login: string;
+  password: string;
+};
 
 const SignUp = () => {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
 
-  const handleSignUp = async () => {
-    await userSignup(name, login, password);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    await userSignup(data.fullName, data.login, data.password);
 
     navigate("/home");
-  };
-
-  const onEnterPress = (event: {
-    keyCode: number;
-    shiftKey: boolean;
-    preventDefault: () => void;
-  }) => {
-    if (event.keyCode === 13 && event.shiftKey === false) {
-      event.preventDefault();
-
-      handleSignUp();
-    }
   };
 
   return (
@@ -35,28 +31,60 @@ const SignUp = () => {
       <div className="img__container">
         <img src={logo} alt="Logo" className="logo__img" />
       </div>
-      <form action="#" className="signup__form" onKeyDown={onEnterPress}>
+      <form onSubmit={handleSubmit(onSubmit)} className="signup__form">
         <input
           type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="Full name"
+          {...register("fullName", {
+            required: "Full name is required",
+            minLength: {
+              value: 1,
+              message: `Minimum length is ${1} character`,
+            },
+            maxLength: {
+              value: 200,
+              message: "Full name cannot exceed 200 characters",
+            },
+          })}
         />
         <input
           type="text"
           placeholder="Login"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
+          {...register("login", {
+            required: "Login is required",
+            minLength: {
+              value: 3,
+              message: `Minimum length is ${3} characters`,
+            },
+            maxLength: {
+              value: 70,
+              message: "Login cannot exceed 70 characters",
+            },
+          })}
         />
         <input
           type="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...register("password", {
+            required: "Password is required",
+            minLength: {
+              value: 6,
+              message: `Minimum length is ${6} characters`,
+            },
+            maxLength: {
+              value: 40,
+              message: "Login cannot exceed 40 characters",
+            },
+          })}
         />
-        <button type="button" onClick={handleSignUp}>
-          Register
-        </button>
+        {errors.fullName && (
+          <span className="error">{errors.fullName.message}</span>
+        )}
+        {errors.login && <span className="error">{errors.login.message}</span>}
+        {errors.password && (
+          <span className="error">{errors.password.message}</span>
+        )}
+        <button type="submit">Register</button>
       </form>
       <div className="login__block">
         <p>Already have an account?</p>
