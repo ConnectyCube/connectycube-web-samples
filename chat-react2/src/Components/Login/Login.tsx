@@ -33,7 +33,7 @@ const Login = () => {
 
       const chatCredentials = {
         userId: session.user_id,
-        password: data.password,
+        password: session.token,
       };
       await connect(chatCredentials);
 

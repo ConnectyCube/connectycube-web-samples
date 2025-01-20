@@ -7,15 +7,19 @@ import SignUp from "./Components/SignUp/SignUp";
 import Home from "./Components/Home/Home";
 import ConnectyCube from "connectycube";
 import { appConfig, credentials } from "./config";
-import { tryRestoreSession } from "./connectycube";
+import { tryRestoreSession, isSessionExists } from "./connectycube";
 import "./App.css";
 
 // Init ConnectyCube SDK
 ConnectyCube.init(credentials, appConfig);
-const sessionExists = tryRestoreSession();
+tryRestoreSession();
+
+function ProtectedRoute({ element }: { element: JSX.Element }) {
+  return isSessionExists() ? element : <Navigate to="/login" replace />;
+}
 
 function App() {
-  const initialPath = sessionExists ? "/home" : "/login";
+  const initialPath = isSessionExists() ? "/home" : "/login";
 
   return (
     <div className="wrapper">
@@ -26,8 +30,14 @@ function App() {
               <Route path="/" element={<Navigate to={initialPath} />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/home/:id" element={<Home />} />
+              <Route
+                path="/home"
+                element={<ProtectedRoute element={<Home />} />}
+              />
+              <Route
+                path="/home/:id"
+                element={<ProtectedRoute element={<Home />} />}
+              />
             </Routes>
           </BrowserRouter>
         </ChatProvider>

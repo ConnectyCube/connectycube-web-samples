@@ -1,5 +1,8 @@
 import ConnectyCube from "connectycube";
 
+export const isSessionExists = (): boolean => {
+  return !!localStorage.getItem("connectycubeToken");
+}
 export const tryRestoreSession = (): boolean => {
   const sessionToken = localStorage.getItem("connectycubeToken");
   // const userIdString = localStorage.getItem("connectycubeUserId");
