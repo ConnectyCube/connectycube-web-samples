@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { useChat } from "@connectycube/use-chat";
 import Participant from "./Participant/Participant";
-import groupChatImage from "../../../../../images/group-chat.jpg";
+import groupChatImage from "../../../../../assets/group-chat.jpg";
 import "./CreateGroupChat.scss";
 
 export interface CreateGroupChatProps {
@@ -70,4 +70,4 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
   );
 };
 
-export default CreateGroupChat;
+export default React.memo(CreateGroupChat);

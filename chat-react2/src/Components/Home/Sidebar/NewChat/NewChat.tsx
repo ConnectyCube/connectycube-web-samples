@@ -1,78 +1,74 @@
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { useRef } from "react";
 import { FaSearch } from "react-icons/fa";
-import FoundUser from "./FoundUser/FoundUser";
+import { useChat } from "@connectycube/use-chat";
+import SearchedUser from "./SearchedUser/SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
+import Participant from "./CreateGroupChat/Participant/Participant";
 import "./NewChat.scss";
+
+export type ChatType = "private" | "group";
 
 export interface NewChatProps {
   onClose: () => void;
+  chatType: ChatType;
+  addUsers?: boolean;
 }
 
-const NewChat: React.FC<NewChatProps> = ({ onClose }) => {
-  const userRef = React.createRef();
+const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
+  const { createChat, searchUsers, addUsersToGroupChat } = useChat();
 
-  const [create, setCreate] = useState(false);
-  let usersInGroup = [];
-  const [foundedUsers, setFoundedUsers] = useState([]);
-  let groupOccupants = useRef([]);
+  const [selectedUsers, setSelectedUsers] = useState<{
+    [key: number]: Users.User;
+  }>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [foundUsersList, setFoundUsersList] = useState<JSX.Element[]>([]);
 
-  const [occupants, setOccupants] = useState([]);
-  const groupChatUsers = (e, userInfo) => {
-    if (e) {
-      groupOccupants.current.push(userInfo);
-      setOccupants(groupOccupants.current.length);
-    } else {
-      groupOccupants.current = groupOccupants.current.filter((el) => {
-        return el.id !== userInfo.id;
-      });
-      setOccupants(groupOccupants.current.length);
-    }
-    console.log(groupOccupants.current);
-  };
+  const [isCreateGroupChat, setIsCreateGroupChat] = useState(false);
 
-  usersInGroup = groupOccupants.current.map((user) => {
-    return <UserInGroup user={user} />;
-  });
-
-  const lookForUsers = async (e) => {
+  const handleSearchUsers = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-    if (userRef.current.value.length < 4) {
+    if (searchTerm.length < 4) {
       alert("Min search term is 4 chars");
       return;
     }
 
-    try {
-      const users = await searchUsers(userRef.current.value);
+    const users = await searchUsers(searchTerm);
 
-      setFoundedUsers(() => {
-        return users.map((user) => {
-          return (
-            <FoundUser
-              key={user.id}
-              startChat={startChat}
-              close={close}
-              getChats={getChats}
-              userInfo={user}
-              type={type}
-              groupChatUsers={groupChatUsers}
-              groupOccupants={groupOccupants.current}
-            />
-          );
-        });
+    setFoundUsersList(() => {
+      return users.map((user) => {
+        return (
+          <SearchedUser
+            key={user.id}
+            id={user.id}
+            name={user.full_name || user.login}
+            onStartChat={(userId: number) => {
+              createChat(userId);
+              onClose();
+            }}
+            avatar={user.avatar}
+            chatType={chatType}
+            isSelected={!!selectedUsers[user.id]}
+            onSelectUser={(userId: number, isSelected: boolean) => {
+              if (isSelected) {
+                setSelectedUsers({ ...selectedUsers, [userId]: user });
+              } else {
+                delete selectedUsers[userId];
+                setSelectedUsers({ ...selectedUsers });
+              }
+            }}
+          />
+        );
       });
-    } catch (error) {
-      alert(JSON.stringify(error));
-    }
+    });
   };
 
   return (
     <div className="new-chat__container">
-      {!create && (
+      {!isCreateGroupChat && (
         <form
-          onSubmit={lookForUsers}
+          onSubmit={handleSearchUsers}
           className="new-chat__form"
           action=""
           method="POST"
@@ -82,40 +78,50 @@ const NewChat: React.FC<NewChatProps> = ({ onClose }) => {
           </div>
           <h1>Start new chat</h1>
           <div className="find__user-container">
-            <input ref={userRef} type="text" placeholder="Enter user name" />
+            <input
+              type="text"
+              placeholder="Enter user name"
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <button
               type="button"
               className="find__user-btn"
-              onClick={lookForUsers}
+              onClick={handleSearchUsers}
             >
               <FaSearch />
             </button>
           </div>
 
-          <div className="found__users">{foundedUsers}</div>
-          {type === 2 && occupants > 0 && (
-            <div className="added__users-container">{usersInGroup}</div>
+          <div className="found__users">{foundUsersList}</div>
+
+          {chatType === "group" && Object.values(selectedUsers).length > 0 && (
+            <div className="added__users-container">
+              {Object.values(selectedUsers).map((user) => {
+                return (
+                  <Participant
+                    avatar={user.avatar}
+                    name={user.full_name || user.login}
+                  />
+                );
+              })}
+            </div>
           )}
-          {type === 2 && occupants > 0 && (
+          {chatType === "group" && Object.values(selectedUsers).length > 0 && (
             <button
               className="create__group-btn"
               onClick={() => {
-                setCreate(true);
+                setIsCreateGroupChat(true);
               }}
               type="button"
             >
               Create group chat
             </button>
           )}
-          {addUsers && occupants > 0 && (
+          {addUsers && Object.values(selectedUsers).length > 0 && (
             <button
               onClick={() => {
-                let users = [];
-                groupOccupants.current.forEach((user) => {
-                  users.push(user.id);
-                });
-                context.addUsersToGroup(users);
-                close();
+                addUsersToGroupChat(Object.keys(selectedUsers).map(Number));
+                onClose();
               }}
               className="add-users__btn"
             >
@@ -125,11 +131,14 @@ const NewChat: React.FC<NewChatProps> = ({ onClose }) => {
         </form>
       )}
 
-      {create && (
-        <CreateGroupChat onClose={onClose} users={groupOccupants.current} />
+      {isCreateGroupChat && (
+        <CreateGroupChat
+          onClose={onClose}
+          users={Object.values(selectedUsers)}
+        />
       )}
     </div>
   );
 };
 
-export default NewChat;
+export default React.memo(NewChat);

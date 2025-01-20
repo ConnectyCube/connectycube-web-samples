@@ -3,7 +3,7 @@ import { BsPencil } from "react-icons/bs";
 import { useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import ChatsList from "./ChatsList/ChatsList";
-import NewChat from "./NewChat/NewChat";
+import NewChat, { ChatType } from "./NewChat/NewChat";
 import { destroyUserSession } from "../../../connectycube";
 import "./Sidebar.scss";
 
@@ -13,7 +13,7 @@ const Sidebar = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [newChatFormVisible, setNewChatFormVisible] = useState(false);
-  const [chatType, setChatType] = useState<number>();
+  const [chatType, setChatType] = useState<ChatType>("private");
 
   const createChatRef = useRef<HTMLDivElement | null>(null);
   const createModalRef = useRef<HTMLDivElement | null>(null);
@@ -28,13 +28,13 @@ const Sidebar = () => {
   const handleNewMessage = () => {
     createModalRef.current?.classList.toggle("hide");
     setNewChatFormVisible(true);
-    setChatType(1);
+    setChatType("private");
   };
 
   const handleCreateGroupChat = () => {
     createModalRef.current?.classList.toggle("hide");
     setNewChatFormVisible(true);
-    setChatType(2);
+    setChatType("group");
   };
 
   const closeNewChatForm = () => {
@@ -95,9 +95,8 @@ const Sidebar = () => {
 
       {newChatFormVisible && (
         <NewChat
-          getChats={getChats}
           onClose={closeNewChatForm}
-          type={chatType}
+          chatType={chatType}
           startChat={startChat}
           searchUsers={searchUsers}
         />
