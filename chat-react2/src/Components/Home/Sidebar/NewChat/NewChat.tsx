@@ -1,26 +1,16 @@
-import React, { useContext, useState } from "react";
-import "./NewChat.scss";
-/* eslint-disable */
-import ConnectyCube from "connectycube";
+import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { useRef } from "react";
 import { FaSearch } from "react-icons/fa";
 import FoundUser from "./FoundUser/FoundUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
-import { BsBoxArrowInUpLeft } from "react-icons/bs";
-import ChatContext from "../../../../services/chat-service";
-import UserInGroup from "./CreateGroupChat/UserInGroup/UserInGroup";
-const NewChat = (props) => {
-  const {
-    close,
-    getChats,
-    type,
-    startGroupChat,
-    startChat,
-    searchUsers,
-    addUsers,
-  } = props;
-  const context = useContext(ChatContext);
+import "./NewChat.scss";
+
+export interface NewChatProps {
+  onClose: () => void;
+}
+
+const NewChat: React.FC<NewChatProps> = ({ onClose }) => {
   const userRef = React.createRef();
 
   const [create, setCreate] = useState(false);
@@ -136,11 +126,7 @@ const NewChat = (props) => {
       )}
 
       {create && (
-        <CreateGroupChat
-          close={close}
-          startGroupChat={startGroupChat}
-          groupOccupants={groupOccupants.current}
-        />
+        <CreateGroupChat onClose={onClose} users={groupOccupants.current} />
       )}
     </div>
   );

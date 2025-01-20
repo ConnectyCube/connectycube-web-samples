@@ -1,26 +1,45 @@
-/* eslint-disable */
-
-import React from "react";
-import "./CreateGroupChat.scss";
+import React, { useMemo, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import UserInGroup from "./UserInGroup/UserInGroup";
+import { useChat } from "@connectycube/use-chat";
+import Participant from "./Participant/Participant";
 import groupChatImage from "../../../../../images/group-chat.jpg";
+import "./CreateGroupChat.scss";
 
-const CreateGroupChat = (props) => {
-  const { groupOccupants, startGroupChat, close } = props;
+export interface CreateGroupChatProps {
+  onClose: () => void;
+  users: Users.User[];
+}
 
-  const groupNameRef = React.createRef();
+const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
+  onClose,
+  users,
+}) => {
+  const { createGroupChat } = useChat();
 
-  const usersInGroup = groupOccupants.map((user) => {
-    return <UserInGroup user={user} />;
-  });
+  const [chatName, setChatName] = useState("");
+
+  const participants = useMemo(() => {
+    return users.map((user) => {
+      return (
+        <Participant name={user.login || user.full_name} avatar={user.avatar} />
+      );
+    });
+  }, [users]);
+
+  const handleCreateChat = () => {
+    onClose();
+
+    createGroupChat(
+      users.map((u) => u.id),
+      chatName
+    );
+  };
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        close();
-        startGroupChat(groupOccupants, groupNameRef.current.value);
+        handleCreateChat();
       }}
       className="new-chat__form create"
       action="#"
@@ -31,25 +50,22 @@ const CreateGroupChat = (props) => {
       </div>
 
       <input
-        ref={groupNameRef}
         className="chat__name"
         type="text"
         placeholder="Chat name"
+        onChange={(e) => setChatName(e.target.value)}
       />
       <button
         className="create__group-btn"
-        onClick={() => {
-          close();
-          startGroupChat(groupOccupants, groupNameRef.current.value);
-        }}
+        onClick={handleCreateChat}
         type="button"
       >
         Create group chat
       </button>
-      <div className="close__btn" onClick={close}>
+      <div className="close__btn" onClick={onClose}>
         <AiOutlineClose color="black" fontSize="1.5em" />
       </div>
-      <div className="users__in-group">{usersInGroup}</div>
+      <div className="users__in-group">{participants}</div>
     </form>
   );
 };

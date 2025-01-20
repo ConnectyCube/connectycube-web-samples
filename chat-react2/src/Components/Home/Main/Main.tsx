@@ -100,12 +100,15 @@ const Main = () => {
     if (selectedDialog) {
       for (let i = 0; i < messages[selectedDialog._id].length; i++) {
         return messages[selectedDialog._id].map((msg, index) => {
+          const sender = users[msg.sender_id];
           return (
             <Message
               key={index}
               message={msg}
-              sender={users[msg.sender_id]}
-              dialogInfo={selectedDialog}
+              senderName={sender.full_name || sender.login}
+              senderAvatar={sender.avatar}
+              isGroupChat={selectedDialog.type === 2}
+              dialogName={selectedDialog.name}
             />
           );
         });

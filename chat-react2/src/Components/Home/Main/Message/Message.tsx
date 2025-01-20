@@ -2,71 +2,64 @@ import React from "react";
 import { getTime } from "../../../../services/helpers";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
-import { useContext } from "react";
-import ChatContext from "../../../../services/chat-service";
+import { Messages } from "connectycube/dist/types/types";
+
 import "./Message.scss";
+import { useChat } from "@connectycube/use-chat";
 
-const Message = (props) => {
+export interface MessageProps {
+  message: Messages.Message;
+  isGroupChat: boolean;
+  dialogName: string;
+  senderName: string;
+  senderAvatar: string;
+}
+
+const Message: React.FC<MessageProps> = ({
+  message,
+  isGroupChat,
+  dialogName,
+  senderName,
+  senderAvatar,
+}) => {
+  const { currentUserId, readMessage } = useChat();
+
+  const chatName =
+    message.sender_id === currentUserId
+      ? "You"
+      : isGroupChat
+      ? senderName
+      : dialogName;
+
+  const senderNameNoAvatar = senderName.slice(0, 2);
+
+  const sentTime = getTime(message.date_sent);
+
   const [ref, inView] = useInView();
-  const { message, dialogInfo, sender } = props;
-  const time = getTime(message.date_sent);
-  const noName = "NoName";
-  const context = useContext(ChatContext);
   if (inView) {
-    const params = {
-      messageId: message._id,
-      userId: message.sender_id,
-      dialogId: message.chat_dialog_id,
-    };
-
-    if (
-      message.read === 0 &&
-      message.sender_id !== parseInt(localStorage.userId)
-    ) {
-      context.readMessage(params);
+    if (message.read === 0 && message.sender_id !== currentUserId) {
+      readMessage(message._id, message.sender_id, message.chat_dialog_id);
     }
   }
-
-  const senderName =
-    message.sender_id === parseInt(localStorage.userId)
-      ? "You"
-      : dialogInfo.type === 2
-      ? sender
-        ? sender.full_name || sender.login
-        : noName
-      : dialogInfo.name;
-
-  const senderNameNoImage = (senderName.full_name || senderName.login)?.slice(
-    0,
-    2
-  );
 
   return (
     <div
       ref={ref}
       className={`message ${
-        message.sender_id === parseInt(localStorage.userId) ? "my" : "opponent"
+        message.sender_id === currentUserId ? "my" : "opponent"
       } ${inView ? "view" : "no"}`}
     >
-      {dialogInfo.type === 2 && (
+      {isGroupChat && (
         <div className="user__img-container">
-          {sender ? (
-            sender.avatar ? (
-              <img src={`${sender.avatar}`} />
-            ) : (
-              <div className="user-no-img">{senderNameNoImage}</div>
-            )
-          ) : (
-            <div className="user-no-img">{noName.slice(0, 2)}</div>
-          )}
+          senderAvatar ? (
+          <img src={senderAvatar} />) : (
+          <div className="user-no-img">{senderNameNoAvatar}</div>)
         </div>
       )}
       <div className="user-message__info">
-        <span className="message-user__name">{senderName}</span>
+        <span className="message-user__name">{chatName}</span>
         <div>
-          {message.message ? (
-            message.message
-          ) : message.body ? (
+          {message.body ? (
             message.body
           ) : (
             <div
@@ -77,12 +70,12 @@ const Message = (props) => {
             >
               <img
                 classList={`message__img ${
-                  message.loading ? "loading" : "loaded"
+                  message.isLoading ? "loading" : "loaded"
                 }`}
                 className="message__photo"
                 src={message.fileUrl}
               />
-              {message.loading && (
+              {message.isLoading && (
                 <div class="lds-spinner">
                   <div></div>
                   <div></div>
@@ -102,8 +95,8 @@ const Message = (props) => {
           )}
         </div>
         <div className="message__time-container">
-          <span className="message__time">{time}</span>
-          {message.sender_id === parseInt(localStorage.userId) && (
+          <span className="message__time">{sentTime}</span>
+          {message.sender_id === currentUserId && (
             <span className="message__status">
               {message.read ? (
                 <IoCheckmarkDoneSharp size={14} color="#727272" />

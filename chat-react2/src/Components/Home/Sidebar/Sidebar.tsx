@@ -1,121 +1,66 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import Chats from "./Chats/Chats";
-import "./Sidebar.scss";
-import NewChat from "./NewChat/NewChat";
+import { useRef, useState } from "react";
 import { BsPencil } from "react-icons/bs";
-import Auth from "../../../services/auth-service";
 import { useNavigate } from "react-router";
-import ChatContext from "../../../services/chat-service";
+import { useChat } from "@connectycube/use-chat";
+import ChatsList from "./ChatsList/ChatsList";
+import NewChat from "./NewChat/NewChat";
+import { destroyUserSession } from "../../../connectycube";
+import "./Sidebar.scss";
 
 const Sidebar = () => {
-  const {
-    dialogs,
-    connectToChat,
-    disconnectFromChat,
-    connectStatus,
-    getChats,
-    setDialog,
-    chosenDialog,
-    startGroupChat,
-    startChat,
-    searchUsers,
-    lastActivity,
-  } = useContext(ChatContext);
-
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState();
-  const [newChatForm, setNewChatForm] = useState(false);
-  const createModalRef = React.createRef();
-  const [chatType, setChatType] = useState();
-  const createChatRef = React.createRef();
+  const { dialogs, isConnected, disconnect, selectedDialog } = useChat();
 
-  useEffect(() => {
-    if (localStorage.token) {
-      connectToChat({
-        userId: localStorage.userId,
-        password: localStorage.token,
-      });
-    }
-  }, []);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [newChatFormVisible, setNewChatFormVisible] = useState(false);
+  const [chatType, setChatType] = useState<number>();
 
-  const chats = useMemo(() => {
-    if (searchTerm) {
-      return dialogs?.map((dialog) => {
-        const name = dialog.name.toLowerCase();
-        const includesSearchTerm = name.includes(searchTerm.toLowerCase());
-        if (includesSearchTerm) {
-          return (
-            <Chats
-              userInfo={dialog}
-              setDialog={setDialog}
-              chosenDialog={chosenDialog}
-              dialogs={dialogs}
-              lastActivity={lastActivity}
-              key={dialog._id}
-            />
-          );
-        } else {
-          return null;
-        }
-      });
-    } else {
-      return dialogs?.map((dialog) => {
-        return (
-          <Chats
-            userInfo={dialog}
-            setDialog={setDialog}
-            chosenDialog={chosenDialog}
-            dialogs={dialogs}
-            lastActivity={lastActivity}
-            key={dialog._id}
-          />
-        );
-      });
-    }
-  }, [dialogs, searchTerm]);
+  const createChatRef = useRef<HTMLDivElement | null>(null);
+  const createModalRef = useRef<HTMLDivElement | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const contextMenuRef = React.createRef();
+  const handleLogout = async () => {
+    disconnect();
+    await destroyUserSession();
+    navigate("/login");
+  };
 
-  const newChatOpen = () => {
-    let modal = createModalRef.current;
-    modal.classList.toggle("hide");
-    setNewChatForm(true);
+  const handleNewMessage = () => {
+    createModalRef.current?.classList.toggle("hide");
+    setNewChatFormVisible(true);
     setChatType(1);
   };
 
-  const groupChat = () => {
-    let modal = createModalRef.current;
-    modal.classList.toggle("hide");
-    setNewChatForm(true);
+  const handleCreateGroupChat = () => {
+    createModalRef.current?.classList.toggle("hide");
+    setNewChatFormVisible(true);
     setChatType(2);
   };
 
-  const newChatClose = () => {
-    setNewChatForm(false);
+  const closeNewChatForm = () => {
+    setNewChatFormVisible(false);
   };
 
-  const creatingChatChose = (e) => {
-    let modal = createModalRef.current;
-    modal.classList.toggle("hide");
+  const creatingChatChose = () => {
+    createModalRef.current?.classList.toggle("hide");
   };
 
-  const closeModals = (e) => {
+  const closeModals = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
-    let modal = createModalRef.current;
-    modal.classList.add("hide");
+    createModalRef.current?.classList.add("hide");
   };
 
-  const toggleContextMenuHeader = (leave) => {
+  const toggleContextMenuHeader = (leave?: string) => {
     if (leave === "leave") {
-      contextMenuRef.current.classList.add("hide");
+      contextMenuRef.current?.classList.add("hide");
     } else {
-      contextMenuRef.current.classList.toggle("hide");
+      contextMenuRef.current?.classList.toggle("hide");
     }
   };
 
   return (
     <div
-      className={`sidebar__container ${chosenDialog ? "" : "show"}`}
+      className={`sidebar__container ${selectedDialog ? "" : "show"}`}
       onMouseLeave={closeModals}
     >
       <div
@@ -143,30 +88,16 @@ const Sidebar = () => {
           className="context__menu hide modal"
         >
           <ul>
-            <li
-              onClick={() => {
-                Auth.logout()
-                  .then(() => {
-                    navigate("/login");
-                    disconnectFromChat();
-                  })
-                  .catch((error) => {
-                    console.error(error);
-                  });
-              }}
-            >
-              Logout
-            </li>
+            <li onClick={handleLogout}>Logout</li>
           </ul>
         </div>
       </div>
 
-      {newChatForm && (
+      {newChatFormVisible && (
         <NewChat
           getChats={getChats}
-          close={newChatClose}
+          onClose={closeNewChatForm}
           type={chatType}
-          startGroupChat={startGroupChat}
           startChat={startChat}
           searchUsers={searchUsers}
         />
@@ -180,10 +111,12 @@ const Sidebar = () => {
         className="sidebar-search__chat"
         placeholder="Search..."
       ></input>
-      {dialogs && connectStatus && (
-        <div className="sidebar-chats__container">{chats}</div>
+      {dialogs && isConnected() && (
+        <div className="sidebar-chats__container">
+          <ChatsList searchTerm={searchTerm} />
+        </div>
       )}
-      {!connectStatus && <div className="loader">Loading...</div>}
+      {!isConnected() && <div className="loader">Loading...</div>}
       <div
         ref={createChatRef}
         onClick={creatingChatChose}
@@ -193,8 +126,8 @@ const Sidebar = () => {
       </div>
       <div ref={createModalRef} className="chat-create-menu hide">
         <ul>
-          <li onClick={groupChat}>New group</li>
-          <li onClick={newChatOpen}>New message</li>
+          <li onClick={handleCreateGroupChat}>New group</li>
+          <li onClick={handleNewMessage}>New message</li>
         </ul>
       </div>
     </div>
