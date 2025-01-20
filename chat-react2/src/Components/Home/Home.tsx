@@ -4,13 +4,17 @@ import Sidebar from "./Sidebar/Sidebar";
 import { useEffect } from "react";
 import { useChat } from "@connectycube/use-chat";
 import "./Home.scss";
+import { chatCredentials } from "../../connectycube";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { selectDialog } = useChat();
+  const { selectedDialog, connect } = useChat();
 
   useEffect(() => {
-    if (!selectDialog) {
+    // auto-connect
+    connect(chatCredentials());
+
+    if (!selectedDialog) {
       navigate("/home");
     }
   }, []);

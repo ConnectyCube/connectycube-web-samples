@@ -1,15 +1,16 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsPencil } from "react-icons/bs";
 import { useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import ChatsList from "./ChatsList/ChatsList";
 import NewChat, { ChatType } from "./NewChat/NewChat";
-import { destroyUserSession } from "../../../connectycube";
+import { currentUser, destroyUserSession } from "../../../connectycube";
 import "./Sidebar.scss";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { dialogs, isConnected, disconnect, selectedDialog } = useChat();
+  const { dialogs, isConnected, disconnect, selectedDialog, getDialogs } =
+    useChat();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [newChatFormVisible, setNewChatFormVisible] = useState(false);
@@ -18,6 +19,11 @@ const Sidebar = () => {
   const createChatRef = useRef<HTMLDivElement | null>(null);
   const createModalRef = useRef<HTMLDivElement | null>(null);
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
+
+  // retrieve chats
+  useEffect(() => {
+    getDialogs();
+  }, []);
 
   const handleLogout = async () => {
     disconnect();
@@ -50,8 +56,8 @@ const Sidebar = () => {
     createModalRef.current?.classList.add("hide");
   };
 
-  const toggleContextMenuHeader = (leave?: string) => {
-    if (leave === "leave") {
+  const toggleContextMenu = (hide?: boolean) => {
+    if (hide) {
       contextMenuRef.current?.classList.add("hide");
     } else {
       contextMenuRef.current?.classList.toggle("hide");
@@ -66,19 +72,19 @@ const Sidebar = () => {
       <div
         className="sidebar__header sidebar-header"
         onMouseLeave={() => {
-          toggleContextMenuHeader("leave");
+          toggleContextMenu(true); // hide context menu
         }}
       >
         <div
           className="sidebar-user__info"
           onClick={() => {
-            toggleContextMenuHeader();
+            toggleContextMenu(); // show context menu
           }}
         >
-          <span className="sidebar-user__name">{localStorage.login}</span>
+          <span className="sidebar-user__name">{currentUser()?.login}</span>
           <div className="sidebar-img__container">
             <div id="background" className="user__no-img main">
-              <span className="name">{localStorage.login?.slice(0, 2)}</span>
+              <span className="name">{currentUser()?.login.slice(0, 2)}</span>
             </div>
           </div>
         </div>
@@ -105,12 +111,12 @@ const Sidebar = () => {
         className="sidebar-search__chat"
         placeholder="Search..."
       ></input>
-      {dialogs && isConnected() && (
+      {dialogs && isConnected && (
         <div className="sidebar-chats__container">
           <ChatsList searchTerm={searchTerm} />
         </div>
       )}
-      {!isConnected() && <div className="loader">Loading...</div>}
+      {!isConnected && <div className="loader">Loading...</div>}
       <div
         ref={createChatRef}
         onClick={creatingChatChose}
