@@ -1,4 +1,10 @@
 import React from "react";
+import ConnectyCube from "connectycube";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shadcn-ui/avatar";
 import { ChatType } from "../NewChat";
 import "./SearchedUser.scss";
 
@@ -21,24 +27,23 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
   isSelected,
   onSelectUser,
 }) => {
+  const avatarUrl = avatar
+    ? ConnectyCube.storage.privateUrl(avatar)
+    : undefined;
+  const initials = name.slice(0, 2).toUpperCase();
+
   return (
     <div
       className={`found__user ${isSelected ? "checked" : "not-checked"}`}
       key={id}
     >
       <div className="user__main-info">
-        <div className="user__avatar">
-          <img
-            src={
-              avatar ||
-              "https://s.aficionados.com.br/imagens/frases-sasuke-uchiha-naruto_t.jpg"
-            }
-            alt="Avatatar"
-          />
-        </div>
+        <Avatar className="user__avatar">
+          <AvatarImage src={avatarUrl} />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
         <div className="user__name-info">
           <p className="user__full-name">{name}</p>
-          <span className="user__login">@{name}</span>
         </div>
       </div>
       {chatType === "private" ? (
@@ -60,7 +65,7 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
             onSelectUser(id, !isSelected);
           }}
         >
-          {isSelected ? "Delete" : "Add"}
+          {isSelected ? "Delete" : "Select"}
         </div>
       )}
     </div>

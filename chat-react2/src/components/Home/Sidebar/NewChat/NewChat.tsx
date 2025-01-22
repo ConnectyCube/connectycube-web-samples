@@ -43,8 +43,8 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
             key={user.id}
             id={user.id}
             name={user.full_name || user.login}
-            onStartChat={(userId: number) => {
-              createChat(userId);
+            onStartChat={async (userId: number) => {
+              await createChat(userId);
               onClose();
             }}
             avatar={user.avatar}
@@ -73,7 +73,7 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
           action=""
           method="POST"
         >
-          <div className="close__btn" onClick={close}>
+          <div className="close__btn" onClick={onClose}>
             <AiOutlineClose color="black" fontSize="1.5em" />
           </div>
           <h1>Start new chat</h1>
