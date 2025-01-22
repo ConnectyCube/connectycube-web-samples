@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/Components/shadcn-ui/dropdown-menu";
+} from "@/components/shadcn-ui/dropdown-menu";
 import NewChat, { ChatType } from "./NewChat/NewChat";
 import { currentUser, destroyUserSession } from "../../../connectycube";
 import "./Sidebar.scss";
