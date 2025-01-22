@@ -15,7 +15,7 @@ import ChatsList from "./ChatsList/ChatsList";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { dialogs, isConnected, disconnect, selectedDialog, getDialogs } =
+  const { isConnected, disconnect, selectedDialog, getDialogs } =
     useChat();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -77,12 +77,13 @@ const Sidebar = () => {
         className="sidebar-search__chat"
         placeholder="Search..."
       ></input>
-      {dialogs && isConnected && (
+      {isConnected ? (
         <div className="sidebar-chats__container">
           <ChatsList searchTerm={searchTerm} />
         </div>
+      ) : (
+        <div className="loader">Loading...</div>
       )}
-      {!isConnected && <div className="loader">Loading...</div>}
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger className="sidebar-add__newchat">
           <BsPencil size={34} color="white" />

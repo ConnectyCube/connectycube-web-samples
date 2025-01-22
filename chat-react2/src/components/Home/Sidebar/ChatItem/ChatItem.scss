@@ -34,12 +34,6 @@
   &.chosen {
     border-left: 4px solid #2c85be;
   }
-  & .user__info-chats {
-    & .user__img-container {
-      width: 60px;
-      height: 60px;
-    }
-  }
   & .user__info-main {
     display: flex;
     flex-direction: column;

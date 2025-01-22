@@ -16,7 +16,7 @@ const ChatsList: React.FC<ChatsListProps> = ({ searchTerm }) => {
           return d.name.toLowerCase().includes(searchTerm.toLowerCase());
         })
       : dialogs;
-  }, [searchTerm]);
+  }, [searchTerm, dialogs]);
 
   return dialogsToRender.map((dialog) => {
     return <ChatItem dialog={dialog} key={dialog._id} />;

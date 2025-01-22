@@ -1,26 +1,6 @@
-.user__img-container {
-  width: 60px;
-  height: 60px;
-}
 .user__img {
   object-fit: cover;
   width: 60px;
   height: 60px;
   border-radius: 50%;
-}
-.user__no-img {
-  display: flex;
-  text-transform: uppercase;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  justify-content: center;
-  background-color: #87ceeb;
-
-  align-items: center;
-
-  & .name {
-    font-weight: 700;
-    color: white;
-  }
 }

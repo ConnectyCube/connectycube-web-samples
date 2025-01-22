@@ -17,28 +17,26 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
 
   const { selectedDialog, selectDialog, currentUserId } = useChat();
 
-  const isSelected = dialog._id === selectedDialog._id;
+  const isSelected = dialog._id === selectedDialog?._id;
 
   // if open chat page url directly
   useEffect(() => {
     if (location.state === dialog._id && !selectedDialog) {
-      selectDialog(dialog);
+      selectDialog(dialog._id);
     }
   }, []);
 
-  const handleSelectChat = () => {
+  const handleSelectChat = async () => {
+    await selectDialog(dialog._id);
     navigate(`/home/${dialog._id}`);
-    selectDialog(dialog);
   };
 
   return (
     <div
-      className={"chat__block " + isSelected ? "chosen" : ""}
+      className={`chat__block ${isSelected ? "chosen" : ""}`}
       onClick={handleSelectChat}
     >
-      <div className="user__info-chats">
-        <ChatPhoto photo={dialog.photo} name={dialog.name} />
-      </div>
+      <ChatPhoto photo={dialog.photo} name={dialog.name} />
       <div className="user__info-main">
         <div className="group__name-container">
           {dialog.type === 2 && (

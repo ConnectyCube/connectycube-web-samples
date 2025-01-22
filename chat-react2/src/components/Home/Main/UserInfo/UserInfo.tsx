@@ -28,6 +28,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
   const opponentId = getDialogOpponentId();
 
   const typingLabel = useMemo(() => {
+    if (!typingStatus[selectedDialog?._id]) {
+      return null;
+    }
+
     const names = [];
     for (const [userIdString, isTyping] of Object.entries(
       typingStatus[selectedDialog._id]
