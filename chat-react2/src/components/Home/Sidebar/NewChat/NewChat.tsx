@@ -6,6 +6,7 @@ import SearchedUser from "./SearchedUser/SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 import Participant from "./CreateGroupChat/Participant/Participant";
 import "./NewChat.scss";
+import { useNavigate } from "react-router";
 
 export type ChatType = "private" | "group";
 
@@ -16,7 +17,10 @@ export interface NewChatProps {
 }
 
 const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
-  const { createChat, searchUsers, addUsersToGroupChat } = useChat();
+  const navigate = useNavigate();
+
+  const { createChat, searchUsers, addUsersToGroupChat, selectDialog } =
+    useChat();
 
   const [selectedUsers, setSelectedUsers] = useState<{
     [key: number]: Users.User;
@@ -44,7 +48,9 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
             id={user.id}
             name={user.full_name || user.login}
             onStartChat={async (userId: number) => {
-              await createChat(userId);
+              const dialog = await createChat(userId);
+              await selectDialog(dialog._id);
+              navigate(`/home/${dialog._id}`);
               onClose();
             }}
             avatar={user.avatar}
