@@ -76,7 +76,7 @@ const Message: React.FC<MessageProps> = ({
                 src={message.fileUrl}
               />
               {message.isLoading && (
-                <div class="lds-spinner">
+                <div className="lds-spinner">
                   <div></div>
                   <div></div>
                   <div></div>

@@ -1,11 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsPencil } from "react-icons/bs";
 import { useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
-import ChatsList from "./ChatsList/ChatsList";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/shadcn-ui/dropdown-menu";
 import NewChat, { ChatType } from "./NewChat/NewChat";
 import { currentUser, destroyUserSession } from "../../../connectycube";
 import "./Sidebar.scss";
+import ChatsList from "./ChatsList/ChatsList";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -15,10 +21,6 @@ const Sidebar = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [newChatFormVisible, setNewChatFormVisible] = useState(false);
   const [chatType, setChatType] = useState<ChatType>("private");
-
-  const createChatRef = useRef<HTMLDivElement | null>(null);
-  const createModalRef = useRef<HTMLDivElement | null>(null);
-  const contextMenuRef = useRef<HTMLDivElement | null>(null);
 
   // retrieve chats
   useEffect(() => {
@@ -32,13 +34,11 @@ const Sidebar = () => {
   };
 
   const handleNewMessage = () => {
-    createModalRef.current?.classList.toggle("hide");
     setNewChatFormVisible(true);
     setChatType("private");
   };
 
   const handleCreateGroupChat = () => {
-    createModalRef.current?.classList.toggle("hide");
     setNewChatFormVisible(true);
     setChatType("group");
   };
@@ -47,56 +47,22 @@ const Sidebar = () => {
     setNewChatFormVisible(false);
   };
 
-  const creatingChatChose = () => {
-    createModalRef.current?.classList.toggle("hide");
-  };
-
-  const closeModals = (e: { stopPropagation: () => void }) => {
-    e.stopPropagation();
-    createModalRef.current?.classList.add("hide");
-  };
-
-  const toggleContextMenu = (hide?: boolean) => {
-    if (hide) {
-      contextMenuRef.current?.classList.add("hide");
-    } else {
-      contextMenuRef.current?.classList.toggle("hide");
-    }
-  };
-
   return (
-    <div
-      className={`sidebar__container ${selectedDialog ? "" : "show"}`}
-      onMouseLeave={closeModals}
-    >
-      <div
-        className="sidebar__header sidebar-header"
-        onMouseLeave={() => {
-          toggleContextMenu(true); // hide context menu
-        }}
-      >
-        <div
-          className="sidebar-user__info"
-          onClick={() => {
-            toggleContextMenu(); // show context menu
-          }}
-        >
-          <span className="sidebar-user__name">{currentUser()?.login}</span>
-          <div className="sidebar-img__container">
-            <div id="background" className="user__no-img main">
-              <span className="name">{currentUser()?.login.slice(0, 2)}</span>
+    <div className={`sidebar__container ${selectedDialog ? "" : "show"}`}>
+      <div className="sidebar__header sidebar-header">
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger className="sidebar-user__info">
+            <span className="sidebar-user__name">{currentUser()?.login}</span>
+            <div className="sidebar-img__container">
+              <div id="background" className="user__no-img main">
+                <span className="name">{currentUser()?.login.slice(0, 2)}</span>
+              </div>
             </div>
-          </div>
-        </div>
-        <div
-          ref={contextMenuRef}
-          id="context__menu"
-          className="context__menu hide modal"
-        >
-          <ul>
-            <li onClick={handleLogout}>Logout</li>
-          </ul>
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {newChatFormVisible && (
@@ -117,19 +83,19 @@ const Sidebar = () => {
         </div>
       )}
       {!isConnected && <div className="loader">Loading...</div>}
-      <div
-        ref={createChatRef}
-        onClick={creatingChatChose}
-        className="sidebar-add__newchat"
-      >
-        <BsPencil size={24} color="white" />
-      </div>
-      <div ref={createModalRef} className="chat-create-menu hide">
-        <ul>
-          <li onClick={handleCreateGroupChat}>New group</li>
-          <li onClick={handleNewMessage}>New message</li>
-        </ul>
-      </div>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger className="sidebar-add__newchat">
+          <BsPencil size={34} color="white" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={handleCreateGroupChat}>
+            New group
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleNewMessage}>
+            New message
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

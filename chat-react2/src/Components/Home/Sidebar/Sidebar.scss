@@ -44,6 +44,7 @@
     }
     & ul {
       margin: 0 auto;
+      list-style-type: none;
 
       & li {
         cursor: pointer;
@@ -153,6 +154,7 @@
       }
       & ul {
         padding: 10px 20px;
+        list-style-type: none;  
       }
     }
   }
@@ -190,27 +192,16 @@
   }
   & .sidebar-add__newchat {
     position: absolute;
+    right: 5%;
+    bottom: 3%;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #2c85becc;
-    left: 75%;
-    top: 85%;
-
-    width: 50px;
-    height: 50px;
-    color: black;
     cursor: pointer;
-
-    margin-bottom: 10px;
-    text-transform: capitalize;
-
-    transition: 0.3s ease-in-out;
-    &.hide {
-      opacity: 0;
-      transform: translateY(100px);
-    }
   }
 
   & .sidebar-search__container {
