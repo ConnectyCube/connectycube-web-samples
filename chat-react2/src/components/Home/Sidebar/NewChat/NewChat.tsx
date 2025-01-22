@@ -101,28 +101,29 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
           <div className="found__users">{foundUsersList}</div>
 
           {chatType === "group" && Object.values(selectedUsers).length > 0 && (
-            <div className="added__users-container">
-              {Object.values(selectedUsers).map((user) => {
-                return (
-                  <Participant
-                    avatar={user.avatar}
-                    name={user.full_name || user.login}
-                  />
-                );
-              })}
-            </div>
+            <>
+              <div className="added__users-container">
+                {Object.values(selectedUsers).map((user) => {
+                  return (
+                    <Participant
+                      avatar={user.avatar}
+                      name={user.full_name || user.login}
+                    />
+                  );
+                })}
+              </div>
+              <button
+                className="create__group-btn"
+                onClick={() => {
+                  setIsCreateGroupChat(true);
+                }}
+                type="button"
+              >
+                Create group chat
+              </button>
+            </>
           )}
-          {chatType === "group" && Object.values(selectedUsers).length > 0 && (
-            <button
-              className="create__group-btn"
-              onClick={() => {
-                setIsCreateGroupChat(true);
-              }}
-              type="button"
-            >
-              Create group chat
-            </button>
-          )}
+
           {addUsers && Object.values(selectedUsers).length > 0 && (
             <button
               onClick={() => {
