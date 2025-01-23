@@ -4,6 +4,7 @@ import { useChat } from "@connectycube/use-chat";
 import Participant from "./Participant/Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
 import "./CreateGroupChat.scss";
+import { Users } from "node_modules/connectycube/dist/types/types";
 
 export interface CreateGroupChatProps {
   onClose: () => void;

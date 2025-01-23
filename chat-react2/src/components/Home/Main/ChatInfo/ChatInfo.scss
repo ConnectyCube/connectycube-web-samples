@@ -41,8 +41,11 @@
 		width: 100%;
 	}
 
-	transition: 0.2s;
-	right: 0;
+	& {
+    transition: 0.2s;
+    right: 0;
+  }
+	
 	& .profile__header {
 		border-bottom: 1px solid #e7e7e7;
 		display: flex;

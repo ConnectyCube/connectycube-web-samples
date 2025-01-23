@@ -1,4 +1,6 @@
-$offwhite: darken(white, 10%);
+@use "sass:color";
+
+$offwhite: color.adjust(white, $lightness: -10%);
 $darkblue: rgb(50, 50, 60);
 
 .login__container {
@@ -36,7 +38,7 @@ $darkblue: rgb(50, 50, 60);
       border-radius: 25px;
       border: 1px solid #282c34;
       padding: 12px 30px;
-      color: darken($darkblue, 10%);
+      color: color.adjust($darkblue, $lightness: -10%);
       border: none;
       background: transparent;
       border: 1px solid black;
@@ -48,7 +50,7 @@ $darkblue: rgb(50, 50, 60);
       margin-bottom: 20px;
       cursor: pointer;
       &:hover {
-        background-color: lighten($darkblue, 10%);
+        background-color: color.adjust($darkblue, $lightness: 10%);
         color: white;
         border: 1px solid whitesmoke;
       }

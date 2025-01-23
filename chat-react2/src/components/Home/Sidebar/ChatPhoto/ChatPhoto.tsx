@@ -8,7 +8,7 @@ import ConnectyCube from "connectycube";
 import "./ChatPhoto.scss";
 
 export interface ChatPhotoProps {
-  photo: string;
+  photo: string | null;
   name: string;
 }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { getTime } from "../../../../services/helpers";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
-import { Messages } from "connectycube/dist/types/types";
+import { Messages } from "node_modules/connectycube/dist/types/types";
 
 import "./Message.scss";
 import { useChat } from "@connectycube/use-chat";
@@ -38,7 +38,7 @@ const Message: React.FC<MessageProps> = ({
   const [ref, inView] = useInView();
   if (inView) {
     if (message.read === 0 && message.sender_id !== currentUserId) {
-      readMessage(message._id, message.sender_id, message.chat_dialog_id);
+      readMessage(message._id, message.sender_id, message.chat_dialog_id || "");
     }
   }
 
@@ -69,10 +69,9 @@ const Message: React.FC<MessageProps> = ({
               }}
             >
               <img
-                classList={`message__img ${
+                className={`message__img ${
                   message.isLoading ? "loading" : "loaded"
-                }`}
-                className="message__photo"
+                } message__photo`}
                 src={message.fileUrl}
               />
               {message.isLoading && (

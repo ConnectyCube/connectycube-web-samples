@@ -55,7 +55,7 @@ const Sidebar = () => {
             <span className="sidebar-user__name">{currentUser()?.login}</span>
             <div className="sidebar-img__container">
               <div id="background" className="user__no-img main">
-                <span className="name">{currentUser()?.login.slice(0, 2)}</span>
+                <span className="name">{currentUser()?.login?.slice(0, 2)}</span>
               </div>
             </div>
           </DropdownMenuTrigger>

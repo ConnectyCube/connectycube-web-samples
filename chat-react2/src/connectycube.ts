@@ -1,5 +1,5 @@
 import ConnectyCube from "connectycube";
-import { Chat, Users } from "connectycube/dist/types/types";
+import { Chat, Users } from "node_modules/connectycube/dist/types/types";
 
 export const isSessionExists = (): boolean => {
   return !!localStorage.getItem("connectycubeToken");
@@ -9,7 +9,9 @@ export const tryRestoreSession = (): boolean => {
   // const userIdString = localStorage.getItem("connectycubeUserId");
   // let currentUserId;
   if (sessionToken) {
-    ConnectyCube.setSession({ token: sessionToken } as any);
+    console.log(ConnectyCube.service.sdkInstance);
+    ConnectyCube.setSession({ token: sessionToken });
+    console.log(ConnectyCube.service.sdkInstance);
     // currentUserId = parseInt(userIdString!);
     return true;
   }

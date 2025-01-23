@@ -1,10 +1,10 @@
-import { StrictMode } from "react";
+import { StrictMode, ReactElement } from "react";
 import { ChatProvider } from "@connectycube/use-chat";
 import { BrowserRouter } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router";
-import Login from "./Components/Login/Login";
-import SignUp from "./Components/SignUp/SignUp";
-import Home from "./Components/Home/Home";
+import Login from "./components/Login/Login";
+import SignUp from "./components/SignUp/SignUp";
+import Home from "./components/Home/Home";
 import ConnectyCube from "connectycube";
 import { appConfig, credentials } from "./config";
 import { tryRestoreSession, isSessionExists } from "./connectycube";
@@ -14,7 +14,7 @@ import "./App.css";
 ConnectyCube.init(credentials, appConfig);
 tryRestoreSession();
 
-function ProtectedRoute({ element }: { element: JSX.Element }) {
+function ProtectedRoute({ element }: { element: ReactElement }) {
   return isSessionExists() ? element : <Navigate to="/login" replace />;
 }
 

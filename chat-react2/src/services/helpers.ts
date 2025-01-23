@@ -1,7 +1,11 @@
-export const getTime = (messageTime: number | string) => {
+export const getTime = (messageTime?: number | string | null) => {
+  if (!messageTime) {
+    return 'unknown';
+  }
+
   if (Number.isInteger(messageTime)) {
     const now = new Date(+messageTime * 1000);
-    let d = new Date(
+    const d = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
@@ -25,9 +29,9 @@ export const getTime = (messageTime: number | string) => {
     );
   } else {
     const now = messageTime;
-    var json = JSON.stringify(now);
-    var dateStr = JSON.parse(json);
-    var d = new Date(dateStr);
+    const json = JSON.stringify(now);
+    const dateStr = JSON.parse(json);
+    const d = new Date(dateStr);
 
     return (
       (d.getDate() < 10 ? "0" : "") +

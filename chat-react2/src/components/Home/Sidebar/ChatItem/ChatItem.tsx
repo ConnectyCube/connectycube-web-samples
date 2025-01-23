@@ -6,6 +6,7 @@ import { useChat } from "@connectycube/use-chat";
 import { getTime } from "../../../../services/helpers";
 import "./ChatItem.scss";
 import ChatPhoto from "../ChatPhoto/ChatPhoto";
+import { Dialogs } from "node_modules/connectycube/dist/types/types";
 
 export interface ChatItemProps {
   dialog: Dialogs.Dialog;

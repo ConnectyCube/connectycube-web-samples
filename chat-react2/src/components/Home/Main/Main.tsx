@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, ChangeEvent } from "react";
 import { animateScroll } from "react-scroll";
 import { useChat } from "@connectycube/use-chat";
 import { IoMdAttach } from "react-icons/io";
@@ -39,14 +39,16 @@ const Main = () => {
     }
   };
 
-  const onFileSelected = (event: {
-    currentTarget: { files: any[] };
-    target: { value: string };
-  }) => {
+  const onFileSelected = (event: ChangeEvent<HTMLInputElement>) => {
     isTyping.current = false;
 
-    const file = event.currentTarget.files[0];
+    const {files} = event.currentTarget;
+
+    if (!files) return;
+
+    const file = files[0];
     const type = file.type.split("/")[1];
+    
     if (
       type === "svg+xml" ||
       type === "image" ||
@@ -60,6 +62,7 @@ const Main = () => {
         "File format is not supported. Only images supported in this code sample"
       );
     }
+
     event.target.value = "";
   };
 

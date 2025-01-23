@@ -53,8 +53,7 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
             onStartChat(id);
           }}
           className="add__btn"
-          fontSize="2em"
-          color="white"
+          style={{ fontSize: "2em", color: "white" }}
         >
           Start chat
         </button>
