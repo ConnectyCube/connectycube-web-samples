@@ -62,24 +62,6 @@
     }
   }
   & .user__info-buttons {
-    display: flex;
-    align-items: center;
-    & > * {
-      cursor: pointer;
-      margin-right: 10px;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    & .button__call {
-      background-color: #027bff;
-    }
-
-    & .button__video-call {
-      background-color: #14a2b8;
-    }
-    & .button__more {
-      background-color: #f8f9fa;
-      border: 1px solid #d9d9d9;
-    }
+    margin-right: 10px;
   }
 }

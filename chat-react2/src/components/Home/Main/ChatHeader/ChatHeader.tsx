@@ -2,15 +2,20 @@ import React, { useMemo } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
-import { useState } from "react";
 import { useChat } from "@connectycube/use-chat";
-import "./UserInfo.scss";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/shadcn-ui/dropdown-menu";
+import "./ChatHeader.scss";
 
-export interface UserInfoProps {
+export interface ChatHeaderProps {
   toggleProfile: () => void;
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
   const navigate = useNavigate();
   const {
     selectedDialog,
@@ -20,9 +25,6 @@ const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
     typingStatus,
     users,
   } = useChat();
-
-  const [actionMenuOpen, setActionMenuOpen] = useState(false);
-
   const isGroupChat = selectedDialog.type === 2;
 
   const opponentId = getDialogOpponentId();
@@ -48,29 +50,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
       : "";
   }, [selectedDialog, typingStatus]);
 
-  const toggleMore = (close: boolean) => {
-    setActionMenuOpen(close ? false : !actionMenuOpen);
+  const exitChat = async () => {
+    await leaveGroupChat();
+    navigate("/home");
   };
 
   return (
-    <div
-      className="user__info"
-      onMouseLeave={() => {
-        toggleMore(true);
-      }}
-    >
-      {actionMenuOpen && (
-        <ul className="more__modal">
-          <li
-            onClick={() => {
-              leaveGroupChat();
-              navigate("/home");
-            }}
-          >
-            Exit chat
-          </li>
-        </ul>
-      )}
+    <div className="user__info">
       <div className="user__info-main">
         <IoIosArrowBack
           size={32}
@@ -116,7 +102,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
                   {lastActivity[opponentId as number]}
                 </span>
               ) : (
-                "ATAL TYPE 1"
+                "someone typing"
               )
             ) : !isGroupChat ? (
               <span className="last__activity">
@@ -129,18 +115,16 @@ const UserInfo: React.FC<UserInfoProps> = ({ toggleProfile }) => {
           </div>
         </div>
       </div>
-      <div className="user__info-buttons">
-        <div
-          onClick={() => {
-            toggleMore(false);
-          }}
-          className="button__more"
-        >
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger className="user__info-buttons">
           <FiMoreHorizontal fontSize={25} />
-        </div>
-      </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={exitChat}>Exit chat</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
 
-export default UserInfo;
+export default React.memo(ChatHeader);
