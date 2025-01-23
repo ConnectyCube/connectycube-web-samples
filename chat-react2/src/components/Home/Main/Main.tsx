@@ -4,7 +4,7 @@ import { useChat } from "@connectycube/use-chat";
 import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import Message from "./Message/Message";
-import UserInfo from "./UserInfo/UserInfo";
+import ChatHeader from "./ChatHeader/ChatHeader";
 import ChatInfo from "./ChatInfo/ChatInfo";
 import "./Main.scss";
 
@@ -96,7 +96,7 @@ const Main = () => {
   };
 
   const messagesView = useMemo(() => {
-    if (selectedDialog) {
+    if (selectedDialog && messages[selectedDialog._id]) {
       for (let i = 0; i < messages[selectedDialog._id].length; i++) {
         return messages[selectedDialog._id].map((msg, index) => {
           const sender = users[msg.sender_id];
@@ -120,7 +120,7 @@ const Main = () => {
       <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} />
       <div className={`main__content ${showProfile ? "small" : ""}`}>
         <div className="main__header">
-          {selectedDialog && <UserInfo toggleProfile={toggleProfile} />}
+          {selectedDialog && <ChatHeader toggleProfile={toggleProfile} />}
           {!selectedDialog && <div className="header-none">Chats</div>}
         </div>
         <div

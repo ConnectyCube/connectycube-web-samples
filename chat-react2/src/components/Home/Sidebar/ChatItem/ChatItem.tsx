@@ -23,12 +23,12 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
   // if open chat page url directly
   useEffect(() => {
     if (location.state === dialog._id && !selectedDialog) {
-      selectDialog(dialog._id);
+      selectDialog(dialog);
     }
   }, []);
 
   const handleSelectChat = async () => {
-    await selectDialog(dialog._id);
+    await selectDialog(dialog);
     navigate(`/home/${dialog._id}`);
   };
 

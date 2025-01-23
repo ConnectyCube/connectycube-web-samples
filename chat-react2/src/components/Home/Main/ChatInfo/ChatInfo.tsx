@@ -2,6 +2,12 @@ import React, { useMemo, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiUserPlus } from "react-icons/fi";
 import { useChat } from "@connectycube/use-chat";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shadcn-ui/avatar";
+import ConnectyCube from "connectycube";
 import GroupMember from "./GroupMember/GroupMember";
 import NewChat from "../../Sidebar/NewChat/NewChat";
 import "./ChatInfo.scss";
@@ -19,6 +25,11 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
 
   const opponentId = selectedDialog ? getDialogOpponentId() : null;
   const isGroupChat = selectedDialog?.type === 2;
+
+  const photoUrl = selectedDialog.photo
+    ? ConnectyCube.storage.privateUrl(selectedDialog.photo)
+    : undefined;
+  const initials = selectedDialog.name.slice(0, 2).toUpperCase();
 
   const close = () => {
     setAddUsers(false);
@@ -56,51 +67,53 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
         <span>Profile</span>
       </div>
       <div className="profile__main-info">
-        {selectedDialog && (
-          <div className="profile__img-container">
-            {selectedDialog.photo ? (
-              <img
-                className="user__avatar-img"
-                src={selectedDialog.photo}
-                alt="User Photo"
-              />
-            ) : (
-              <div id="background" className="user__no-img profile">
-                <span className="name">{selectedDialog.name.slice(0, 2)}</span>
-              </div>
-            )}
-            <div className="profile__user-info">
-              <p>{selectedDialog.name ? selectedDialog.name : "Unknown"}</p>
-              {!isGroupChat && opponentId && (
-                <p className="last__activity">
-                  {lastActivity[opponentId as number]}
-                </p>
-              )}
-
-              {isGroupChat && (
-                <p className="members__count">
-                  {selectedDialog.occupants_ids.length} members
-                </p>
-              )}
+        <div className="profile__img-container">
+          {selectedDialog.photo ? (
+            <img
+              className="user__avatar-img"
+              src={selectedDialog.photo}
+              alt="User Photo"
+            />
+          ) : (
+            <div id="background" className="user__no-img profile">
+              <span className="name">{selectedDialog.name.slice(0, 2)}</span>
             </div>
-            {isGroupChat && (
-              <div className="profile__group-members">
-                <div className="group__members-header">
-                  <span className="group-members__title"> Members</span>
+          )}
+          <Avatar className="user__avatar-img">
+            <AvatarImage src={photoUrl} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <div className="profile__user-info">
+            <p>{selectedDialog.name ? selectedDialog.name : "Unknown"}</p>
+            {!isGroupChat && opponentId && (
+              <p className="last__activity">
+                {lastActivity[opponentId as number]}
+              </p>
+            )}
 
-                  <FiUserPlus
-                    onClick={() => {
-                      setAddUsers(true);
-                    }}
-                    className="group__members-add"
-                    size={32}
-                  />
-                </div>
-                <div className="members__container">{usersView}</div>
-              </div>
+            {isGroupChat && (
+              <p className="members__count">
+                {selectedDialog.occupants_ids.length} members
+              </p>
             )}
           </div>
-        )}
+          {isGroupChat && (
+            <div className="profile__group-members">
+              <div className="group__members-header">
+                <span className="group-members__title"> Members</span>
+
+                <FiUserPlus
+                  onClick={() => {
+                    setAddUsers(true);
+                  }}
+                  className="group__members-add"
+                  size={32}
+                />
+              </div>
+              <div className="members__container">{usersView}</div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -20,8 +20,13 @@ export interface NewChatProps {
 const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
   const navigate = useNavigate();
 
-  const { createChat, searchUsers, addUsersToGroupChat, selectDialog } =
-    useChat();
+  const {
+    createChat,
+    createGroupChat,
+    searchUsers,
+    addUsersToGroupChat,
+    selectDialog,
+  } = useChat();
 
   const [selectedUsers, setSelectedUsers] = useState<{
     [key: number]: Users.User;
@@ -98,12 +103,14 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
 
           <div className="found__users">{foundUsersList}</div>
 
+          {/* if group chat creation */}
           {chatType === "group" && Object.values(selectedUsers).length > 0 && (
             <>
               <div className="added__users-container">
                 {Object.values(selectedUsers).map((user) => {
                   return (
                     <Participant
+                      key={user.id}
                       avatar={user.avatar || ""}
                       name={user.full_name || user.login || ""}
                     />
@@ -122,6 +129,7 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
             </>
           )}
 
+          {/* if add people to group chat */}
           {addUsers && Object.values(selectedUsers).length > 0 && (
             <button
               onClick={() => {
@@ -140,6 +148,16 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
         <CreateGroupChat
           onClose={onClose}
           users={Object.values(selectedUsers)}
+          onCreateChat={async (chatName) => {
+            const dialog = await createGroupChat(
+              Object.values(selectedUsers).map((u) => u.id),
+              chatName
+            );
+
+            await selectDialog(dialog);
+            navigate(`/home/${dialog._id}`);
+            onClose();
+          }}
         />
       )}
     </div>
