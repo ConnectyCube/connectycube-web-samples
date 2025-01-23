@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { useChat } from "@connectycube/use-chat";
+import { useForm, SubmitHandler } from "react-hook-form";
 import Participant from "./Participant/Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
 import "./CreateGroupChat.scss";
@@ -8,64 +8,61 @@ import "./CreateGroupChat.scss";
 export interface CreateGroupChatProps {
   onClose: () => void;
   users: Users.User[];
+  onCreateChat: (name: string) => void;
 }
+
+type FormValues = {
+  name: string;
+};
 
 const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
   onClose,
   users,
+  onCreateChat,
 }) => {
-  const { createGroupChat } = useChat();
-
-  const [chatName, setChatName] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
 
   const participants = useMemo(() => {
     return users.map((user) => {
       return (
-        <Participant name={user.login || user.full_name} avatar={user.avatar} />
+        <Participant
+          key={user.id}
+          name={user.login || user.full_name}
+          avatar={user.avatar}
+        />
       );
     });
   }, [users]);
 
-  const handleCreateChat = () => {
-    onClose();
-
-    createGroupChat(
-      users.map((u) => u.id),
-      chatName
-    );
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    onCreateChat(data.name);
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleCreateChat();
-      }}
-      className="new-chat__form create"
-      action="#"
-      method="POST"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="new-chat__form create">
+      <div className="close__btn" onClick={onClose}>
+        <AiOutlineClose color="black" fontSize="1.5em" />
+      </div>
       <div className="chat__img">
         <img src={groupChatImage} alt="" />
       </div>
-
       <input
         className="chat__name"
         type="text"
         placeholder="Chat name"
-        onChange={(e) => setChatName(e.target.value)}
+        {...register("name", {
+          required: "Chat name is required",
+        })}
       />
-      <button
-        className="create__group-btn"
-        onClick={handleCreateChat}
-        type="button"
-      >
+      {errors.name && <span className="error">{errors.name.message}</span>}
+      <div className="users__in-group">{participants}</div>
+      <button className="create__group-btn" type="submit">
         Create group chat
       </button>
-      <div className="close__btn" onClick={onClose}>
-        <AiOutlineClose color="black" fontSize="1.5em" />
-      </div>
-      <div className="users__in-group">{participants}</div>
     </form>
   );
 };

@@ -8,7 +8,7 @@ export interface ChatsListProps {
 }
 
 const ChatsList: React.FC<ChatsListProps> = ({ searchTerm }) => {
-  const { dialogs } = useChat();
+  const { dialogs, selectedDialog } = useChat();
 
   const dialogsToRender = useMemo(() => {
     return searchTerm
@@ -16,7 +16,7 @@ const ChatsList: React.FC<ChatsListProps> = ({ searchTerm }) => {
           return d.name.toLowerCase().includes(searchTerm.toLowerCase());
         })
       : dialogs;
-  }, [searchTerm, dialogs]);
+  }, [searchTerm, dialogs, selectedDialog]);
 
   return dialogsToRender.map((dialog) => {
     return <ChatItem dialog={dialog} key={dialog._id} />;

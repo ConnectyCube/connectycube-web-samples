@@ -9,10 +9,15 @@
       padding-right: 20px;
     }
   }
+  & .error {
+    color: red;
+  }
   &.create {
     padding-top: 30px;
   }
   & .chat__img {
+    margin: 0 auto;
+
     & img {
       width: 220px;
       height: 150px;
@@ -30,3 +35,4 @@
     padding-left: 20px;
   }
 }
+

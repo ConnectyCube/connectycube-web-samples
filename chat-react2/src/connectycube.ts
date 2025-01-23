@@ -9,7 +9,9 @@ export const tryRestoreSession = (): boolean => {
   // const userIdString = localStorage.getItem("connectycubeUserId");
   // let currentUserId;
   if (sessionToken) {
-    ConnectyCube.setSession({ token: sessionToken } as any);
+    // ConnectyCube.setSession({ token: sessionToken }); 
+    ConnectyCube.service.sdkInstance.session = { token: sessionToken };
+    
     // currentUserId = parseInt(userIdString!);
     return true;
   }
