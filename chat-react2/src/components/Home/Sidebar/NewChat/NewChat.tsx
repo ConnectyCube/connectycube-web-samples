@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
 import { useChat } from "@connectycube/use-chat";
@@ -26,7 +26,7 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
     [key: number]: Users.User;
   }>({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [foundUsersList, setFoundUsersList] = useState<JSX.Element[]>([]);
+  const [searchedUsers, setSearchedUsers] = useState<Users.User[]>([]);
 
   const [isCreateGroupChat, setIsCreateGroupChat] = useState(false);
 
@@ -40,35 +40,37 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
 
     const users = await searchUsers(searchTerm);
 
-    setFoundUsersList(() => {
-      return users.map((user) => {
-        return (
-          <SearchedUser
-            key={user.id}
-            id={user.id}
-            name={user.full_name || user.login}
-            onStartChat={async (userId: number) => {
-              const dialog = await createChat(userId);
-              await selectDialog(dialog._id);
-              navigate(`/home/${dialog._id}`);
-              onClose();
-            }}
-            avatar={user.avatar}
-            chatType={chatType}
-            isSelected={!!selectedUsers[user.id]}
-            onSelectUser={(userId: number, isSelected: boolean) => {
-              if (isSelected) {
-                setSelectedUsers({ ...selectedUsers, [userId]: user });
-              } else {
-                delete selectedUsers[userId];
-                setSelectedUsers({ ...selectedUsers });
-              }
-            }}
-          />
-        );
-      });
-    });
+    setSearchedUsers(users);
   };
+
+  const searchedUsersView: JSX.Element[] = useMemo(() => {
+    return searchedUsers.map((user) => {
+      return (
+        <SearchedUser
+          key={user.id}
+          id={user.id}
+          name={user.full_name || user.login}
+          onStartChat={async (userId: number) => {
+            const dialog = await createChat(userId);
+            await selectDialog(dialog._id);
+            navigate(`/home/${dialog._id}`);
+            onClose();
+          }}
+          avatar={user.avatar}
+          chatType={chatType}
+          isSelected={!!selectedUsers[user.id]}
+          onSelectUser={(userId: number, isSelected: boolean) => {
+            if (isSelected) {
+              setSelectedUsers({ ...selectedUsers, [userId]: user });
+            } else {
+              delete selectedUsers[userId];
+              setSelectedUsers({ ...selectedUsers });
+            }
+          }}
+        />
+      );
+    });
+  }, [searchedUsers, selectedUsers]);
 
   return (
     <div className="new-chat__container">
@@ -98,7 +100,7 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
             </button>
           </div>
 
-          <div className="found__users">{foundUsersList}</div>
+          <div className="found__users">{searchedUsersView}</div>
 
           {chatType === "group" && Object.values(selectedUsers).length > 0 && (
             <>
@@ -106,6 +108,7 @@ const NewChat: React.FC<NewChatProps> = ({ onClose, chatType, addUsers }) => {
                 {Object.values(selectedUsers).map((user) => {
                   return (
                     <Participant
+                      key={user.id}
                       avatar={user.avatar}
                       name={user.full_name || user.login}
                     />
