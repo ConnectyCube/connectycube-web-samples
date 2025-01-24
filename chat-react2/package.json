@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -31,8 +31,9 @@
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "@tailwindcss/vite": "^4.0.0",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
+    "@types/node": "^22.10.10",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@types/react-scroll": "^1.8.10",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
