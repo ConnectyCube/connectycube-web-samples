@@ -8,7 +8,7 @@ import ConnectyCube from "connectycube";
 import "./Participant.scss";
 
 export interface ParticipantProps {
-  avatar: string;
+  avatar: string | null;
   name: string;
 }
 

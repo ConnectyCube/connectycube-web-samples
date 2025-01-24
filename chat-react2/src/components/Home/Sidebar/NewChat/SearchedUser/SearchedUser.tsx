@@ -5,13 +5,14 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/shadcn-ui/avatar";
+import { Button } from "@/components/shadcn-ui/button";
 import { ChatType } from "../NewChat";
 import "./SearchedUser.scss";
 
 export interface SearchedUserProps {
   id: number;
   name: string;
-  avatar: string;
+  avatar: string | null;
   chatType: ChatType;
   onStartChat: (userId: number) => void;
   isSelected: boolean;
@@ -47,17 +48,15 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
         </div>
       </div>
       {chatType === "private" ? (
-        <button
+        <Button
           type="button"
+          className="px-3 mt-4"
           onClick={() => {
             onStartChat(id);
           }}
-          className="add__btn"
-          fontSize="2em"
-          color="white"
         >
           Start chat
-        </button>
+        </Button>
       ) : (
         <div
           className={`add-status ${isSelected ? "delete" : "add"}`}

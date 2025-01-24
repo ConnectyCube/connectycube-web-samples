@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
-import { AiOutlineClose } from "react-icons/ai";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { Users } from "node_modules/connectycube/dist/types/types";
+import { Button } from "@/components/shadcn-ui/button";
 import Participant from "./Participant/Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
 import "./CreateGroupChat.scss";
 
 export interface CreateGroupChatProps {
-  onClose: () => void;
   users: Users.User[];
   onCreateChat: (name: string) => void;
 }
@@ -16,7 +16,6 @@ type FormValues = {
 };
 
 const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
-  onClose,
   users,
   onCreateChat,
 }) => {
@@ -44,9 +43,6 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="new-chat__form create">
-      <div className="close__btn" onClick={onClose}>
-        <AiOutlineClose color="black" fontSize="1.5em" />
-      </div>
       <div className="chat__img">
         <img src={groupChatImage} alt="" />
       </div>
@@ -60,9 +56,11 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
       />
       {errors.name && <span className="error">{errors.name.message}</span>}
       <div className="users__in-group">{participants}</div>
-      <button className="create__group-btn" type="submit">
-        Create group chat
-      </button>
+      <div className="text-center">
+        <Button type="submit" className="px-3 mt-4">
+          Create group chat
+        </Button>
+      </div>
     </form>
   );
 };

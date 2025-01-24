@@ -3,14 +3,6 @@
 	left: 50%;
 	top: 50%;
 }
-.added__users-container {
-	display: flex;
-	flex-wrap: wrap;
-	padding: 15px;
-	& > *:not(:last-child) {
-		padding-right: 20px;
-	}
-}
 .profile__info {
 	position: absolute;
 	border-left: 1px solid #e7e7e7;
@@ -24,9 +16,11 @@
 	height: 100%;
 	& .new-chat__container {
 		& .new-chat__form {
+      position: absolute;
 			width: 100%;
 			top: 50%;
 			left: 0;
+      right: 0;
 			z-index: 22;
 		}
 	}

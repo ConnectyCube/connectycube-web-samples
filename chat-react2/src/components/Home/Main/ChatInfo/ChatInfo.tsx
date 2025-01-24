@@ -6,6 +6,18 @@ import ConnectyCube from "connectycube";
 import GroupMember from "./GroupMember/GroupMember";
 import NewChat from "../../Sidebar/NewChat/NewChat";
 import "./ChatInfo.scss";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/shadcn-ui/dialog";
+import { Input } from "@/components/shadcn-ui/input";
+import { Label } from "@/components/shadcn-ui/label";
+import { Button } from "@/components/shadcn-ui/button";
 
 export interface ChatInfoProps {
   showProfile: boolean;
@@ -16,8 +28,6 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
   const { selectedDialog, users, getDialogOpponentId, lastActivity } =
     useChat();
 
-  const [addUsers, setAddUsers] = useState(false);
-
   const opponentId = selectedDialog ? getDialogOpponentId() : null;
   const isGroupChat = selectedDialog?.type === 2;
 
@@ -25,10 +35,6 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
     ? ConnectyCube.storage.privateUrl(selectedDialog.photo)
     : undefined;
   const initials = selectedDialog?.name.slice(0, 2).toUpperCase();
-
-  const close = () => {
-    setAddUsers(false);
-  };
 
   const usersView = useMemo(
     () =>
@@ -49,9 +55,6 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
   return (
     <>
       <div className={`profile__info ${showProfile ? "show" : ""}`}>
-        {addUsers && (
-          <NewChat addUsers={true} onClose={close} chatType="private" />
-        )}
         <div className="profile__header">
           <IoIosArrowBack
             onClick={() => {
@@ -97,14 +100,28 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
               <div className="profile__group-members">
                 <div className="group__members-header">
                   <span className="group-members__title"> Members</span>
-
-                  <FiUserPlus
-                    onClick={() => {
-                      setAddUsers(true);
-                    }}
-                    className="group__members-add"
-                    size={28}
-                  />
+                  <Dialog modal={false}>
+                    <DialogTrigger asChild>
+                      <FiUserPlus className="group__members-add" size={28} />
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                        <DialogDescription>
+                          This action cannot be undone. Are you sure you want to
+                          permanently delete this file from our servers?
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <Button type="submit">Confirm</Button>
+                      </DialogFooter>
+                      {/* <NewChat
+                        addUsersMode={true}
+                        onClose={close}
+                        chatType="group"
+                      /> */}
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <div className="members__container">{usersView}</div>
               </div>

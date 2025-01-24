@@ -21,21 +21,6 @@
       color: #ffffff;
     }
   }
-  & .add__btn {
-    cursor: pointer;
-    border: none;
-    color: white;
-    background-color: #7687ff;
-    height: 100%;
-    padding: 10px 5px;
-    font-weight: 600;
-    letter-spacing: 0.05cm;
-    transition: 0.3s ease-in-out;
-
-    &:hover {
-      color: black;
-    }
-  }
   & .user__main-info {
     display: flex;
     flex: 0 0 70%;
