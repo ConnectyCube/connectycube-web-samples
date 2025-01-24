@@ -32,6 +32,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
     searchUsers,
     addUsersToGroupChat,
     selectDialog,
+    selectedDialog,
   } = useChat();
 
   const [selectedUsers, setSelectedUsers] = useState<{
@@ -52,7 +53,13 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
 
     const users = await searchUsers(searchTerm);
 
-    setSearchedUsers(users);
+    setSearchedUsers(
+      addUsersMode
+        ? users.filter(
+            (user) => !selectedDialog.occupants_ids.includes(user.id)
+          )
+        : users
+    );
   };
 
   const searchedUsersView: JSX.Element[] = useMemo(() => {
@@ -136,11 +143,18 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
                     <Button
                       type="button"
                       className="px-3 mt-4 items-center"
-                      onClick={() => {
-                        setIsCreateGroupChatForm(true);
+                      onClick={async () => {
+                        if (addUsersMode) {
+                          await addUsersToGroupChat(
+                            Object.values(selectedUsers).map((u) => u.id)
+                          );
+                          onFinish();
+                        } else {
+                          setIsCreateGroupChatForm(true);
+                        }
                       }}
                     >
-                      Create group chat
+                      {addUsersMode ? "Add members" : "Create group chat"}
                     </Button>
                   </div>
                 </>

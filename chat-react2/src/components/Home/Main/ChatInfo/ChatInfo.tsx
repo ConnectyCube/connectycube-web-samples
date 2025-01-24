@@ -4,20 +4,13 @@ import { FiUserPlus } from "react-icons/fi";
 import { useChat } from "@connectycube/use-chat";
 import ConnectyCube from "connectycube";
 import GroupMember from "./GroupMember/GroupMember";
-import NewChat from "../../Sidebar/NewChat/NewChat";
 import "./ChatInfo.scss";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/shadcn-ui/dialog";
-import { Input } from "@/components/shadcn-ui/input";
-import { Label } from "@/components/shadcn-ui/label";
-import { Button } from "@/components/shadcn-ui/button";
+import NewChatDialog from "../../Sidebar/NewChat/NewChatDialog";
 
 export interface ChatInfoProps {
   showProfile: boolean;
@@ -27,6 +20,8 @@ export interface ChatInfoProps {
 const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
   const { selectedDialog, users, getDialogOpponentId, lastActivity } =
     useChat();
+
+  const [addMembersDialogOpen, addMemberDialogOpen] = useState<boolean>(false);
 
   const opponentId = selectedDialog ? getDialogOpponentId() : null;
   const isGroupChat = selectedDialog?.type === 2;
@@ -100,26 +95,22 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
               <div className="profile__group-members">
                 <div className="group__members-header">
                   <span className="group-members__title"> Members</span>
-                  <Dialog modal={false}>
+                  <Dialog
+                    modal={false}
+                    open={addMembersDialogOpen}
+                    onOpenChange={addMemberDialogOpen}
+                  >
                     <DialogTrigger asChild>
                       <FiUserPlus className="group__members-add" size={28} />
                     </DialogTrigger>
                     <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Are you absolutely sure?</DialogTitle>
-                        <DialogDescription>
-                          This action cannot be undone. Are you sure you want to
-                          permanently delete this file from our servers?
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <Button type="submit">Confirm</Button>
-                      </DialogFooter>
-                      {/* <NewChat
+                      <NewChatDialog
+                        chatType={"group"}
                         addUsersMode={true}
-                        onClose={close}
-                        chatType="group"
-                      /> */}
+                        onFinish={() => {
+                          addMemberDialogOpen(false);
+                        }}
+                      />
                     </DialogContent>
                   </Dialog>
                 </div>
