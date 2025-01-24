@@ -117,7 +117,7 @@ const Main = () => {
 
   return (
     <div className={`main__container ${selectedDialog ? "show" : ""}`}>
-      <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} />
+      {/* <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} /> */}
       <div className={`main__content ${showProfile ? "small" : ""}`}>
         <div className="main__header">
           {selectedDialog && <ChatHeader toggleProfile={toggleProfile} />}

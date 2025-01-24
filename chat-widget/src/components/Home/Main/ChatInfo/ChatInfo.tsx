@@ -18,8 +18,9 @@ export interface ChatInfoProps {
 }
 
 const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
-  const { selectedDialog, users, getDialogOpponentId, lastActivity } =
+  const { selectedDialog = {}, users, getDialogOpponentId, lastActivity } =
     useChat();
+    console.log({ selectedDialog, users, getDialogOpponentId, lastActivity});
 
   const [addUsers, setAddUsers] = useState(false);
 

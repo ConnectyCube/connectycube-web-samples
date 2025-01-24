@@ -1,4 +1,5 @@
 import ConnectyCube from "connectycube";
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Chat, Users } from "node_modules/connectycube/dist/types/types";
 
 export const isSessionExists = (): boolean => {
@@ -13,9 +14,15 @@ export const tryRestoreSession = (): boolean => {
     
     // currentUserId = parseInt(userIdString!);
     return true;
-  }
+  } 
 
   return false;
+};
+
+export const generateFingerprint = async (): Promise<string> => {
+  const fp = await FingerprintJS.load();
+  const result = await fp.get();
+  return result.visitorId;
 };
 
 export const createUserSession = async (login: string, password: string) => {
@@ -25,6 +32,12 @@ export const createUserSession = async (login: string, password: string) => {
   localStorage.setItem("connectycubeUser", JSON.stringify(session.user));
   return session;
 };
+
+export const createFingerprintSession = async () => {
+  const fp = await generateFingerprint();
+  const session = await createUserSession(fp.slice(2, -2), fp.slice(1, -1));
+  return session;
+}
 
 export const destroyUserSession = async () => {
   try {
