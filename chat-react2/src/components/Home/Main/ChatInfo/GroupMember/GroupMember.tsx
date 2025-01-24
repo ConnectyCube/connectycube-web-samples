@@ -2,14 +2,15 @@ import React from "react";
 import { MdPersonRemoveAlt1 } from "react-icons/md";
 import "./GroupMember.scss";
 import { useChat } from "@connectycube/use-chat";
+import { ConfirmationAlert } from "@/components/Shared/ConfirmationAlert";
 
 export interface GroupMemberProps {
-  id: number;
+  userId: number;
   name: string;
   avatar?: string;
 }
 
-const GroupMember: React.FC<GroupMemberProps> = ({ id, name, avatar }) => {
+const GroupMember: React.FC<GroupMemberProps> = ({ userId, name, avatar }) => {
   const {
     lastActivity,
     selectedDialog,
@@ -18,14 +19,16 @@ const GroupMember: React.FC<GroupMemberProps> = ({ id, name, avatar }) => {
   } = useChat();
 
   const handleRemoveUser = () => {
-    removeUsersFromGroupChat([id]);
+    removeUsersFromGroupChat([userId]);
   };
 
   const initials = name.slice(0, 2);
-  const isChatOwner = selectedDialog.user_id === currentUserId;
-  const canRemoveUser = isChatOwner && id !== currentUserId;
 
-  const lastActivityInfo = id !== currentUserId ? lastActivity[id] : "";
+  const isChatOwner = selectedDialog.user_id === currentUserId;
+  const isAdmin = selectedDialog.user_id === userId;
+  const canRemoveUser = isChatOwner && currentUserId !== userId;
+
+  const lastActivityInfo = userId !== currentUserId ? lastActivity[userId] : "";
 
   return (
     <div className="member">
@@ -45,15 +48,20 @@ const GroupMember: React.FC<GroupMemberProps> = ({ id, name, avatar }) => {
         </div>
 
         {canRemoveUser && (
-          <div className="remove__user-container" onClick={handleRemoveUser}>
-            <MdPersonRemoveAlt1
-              className="remove__user"
-              color={"#747474"}
-              size={28}
-            />
-          </div>
+          <ConfirmationAlert
+            triggerChild={
+              <MdPersonRemoveAlt1
+                className="remove__user"
+                color={"#747474"}
+                size={24}
+              />
+            }
+            title="Remove members"
+            body="Are you sure you want to remove members?"
+            onConfirm={handleRemoveUser}
+          />
         )}
-        {isChatOwner && <span>admin</span>}
+        {isAdmin && <span>admin</span>}
       </div>
     </div>
   );
