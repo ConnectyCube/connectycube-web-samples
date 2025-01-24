@@ -160,6 +160,13 @@ const Main = () => {
               className="message__area"
               placeholder="Enter message"
             ></textarea>
+            <button
+              onClick={handleSendMessage}
+              type="button"
+              className="send-btn"
+            >
+              Send
+            </button>
             <label htmlFor="file-upload" className="custom-file-upload">
               <IoMdAttach size={28} />
             </label>
@@ -170,14 +177,6 @@ const Main = () => {
               type="file"
               accept="image/*"
             />
-
-            <button
-              onClick={handleSendMessage}
-              type="button"
-              className="send-btn"
-            >
-              Send
-            </button>
           </form>
         )}
       </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { getTime } from "../../../../services/helpers";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
-import { Messages } from "connectycube/dist/types/types";
+import { Messages } from "node_modules/connectycube/dist/types/types";
 
 import "./Message.scss";
 import { useChat } from "@connectycube/use-chat";
