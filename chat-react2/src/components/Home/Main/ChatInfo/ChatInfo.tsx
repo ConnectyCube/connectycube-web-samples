@@ -3,7 +3,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { FiUserPlus } from "react-icons/fi";
 import { useChat } from "@connectycube/use-chat";
 import ConnectyCube from "connectycube";
-import GroupMember from "./GroupMember/GroupMember";
+import GroupMember from "./GroupMember";
 import "./ChatInfo.scss";
 import {
   Dialog,

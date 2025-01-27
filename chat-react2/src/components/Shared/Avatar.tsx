@@ -7,7 +7,7 @@ import {
 import ConnectyCube from "connectycube";
 
 export interface AvatarProps {
-  imageUID: string;
+  imageUID?: string;
   name: string;
   className?: string | undefined;
 }

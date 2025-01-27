@@ -9,6 +9,7 @@ import { Users } from "node_modules/connectycube/dist/types/types";
 import SearchedUser from "./SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 import { useNavigate } from "react-router";
+import Participant from "./CreateGroupChat/Participant";
 
 export type ChatType = "private" | "group";
 

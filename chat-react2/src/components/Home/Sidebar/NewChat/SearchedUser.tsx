@@ -1,17 +1,12 @@
 import React from "react";
-import ConnectyCube from "connectycube";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/shadcn-ui/avatar";
 import { Button } from "@/components/shadcn-ui/button";
 import { ChatType } from "../NewChat";
+import Avatar from "@/Components/Shared/Avatar";
 
 export interface SearchedUserProps {
   id: number;
   name: string;
-  avatar: string | null;
+  avatar?: string;
   chatType: ChatType;
   onStartChat: (userId: number) => void;
   isSelected: boolean;
@@ -27,18 +22,10 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
   isSelected,
   onSelectUser,
 }) => {
-  const avatarUrl = avatar
-    ? ConnectyCube.storage.privateUrl(avatar)
-    : undefined;
-  const initials = name.slice(0, 2).toUpperCase();
-
   return (
     <div className={`flex items-center justify-between relative pb-2`} key={id}>
-      <div className="flex items-center flex-[0_0_70%]">
-        <Avatar className="w-12 h-12 mr-4">
-          <AvatarImage src={avatarUrl} />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
+      <div className="flex items-center flex-[0_0_70%] gap-2">
+        <Avatar imageUID={avatar} name={name} className="w-[50px] h-[50px]" />
         <div className="text-left">
           <p className="text-black">{name}</p>
         </div>

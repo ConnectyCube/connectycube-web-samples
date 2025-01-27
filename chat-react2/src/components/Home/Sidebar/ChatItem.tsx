@@ -47,11 +47,10 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       } transition duration-100`}
       onClick={handleSelectChat}
     >
-      {/* Avatar */}
       <Avatar
         imageUID={dialog.photo}
         name={dialog.name}
-        className="w-[60px] h-[60px] rounded-full object-cover"
+        className="w-[60px] h-[60px]"
       />
 
       <div className="flex flex-col flex-1 text-black pl-3 space-y-1">
