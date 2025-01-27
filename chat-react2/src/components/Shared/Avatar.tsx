@@ -1,27 +1,28 @@
 import React from "react";
 import {
-  Avatar,
+  Avatar as AvatarComponent,
   AvatarFallback,
   AvatarImage,
 } from "@/components/shadcn-ui/avatar";
 import ConnectyCube from "connectycube";
-import "./ChatPhoto.scss";
 
-export interface ChatPhotoProps {
-  photo: string;
+export interface AvatarProps {
+  imageUID: string;
   name: string;
 }
 
-const ChatPhoto: React.FC<ChatPhotoProps> = ({ photo, name }) => {
-  const photoUrl = photo ? ConnectyCube.storage.privateUrl(photo) : undefined;
+const Avatar: React.FC<AvatarProps> = ({ imageUID, name }) => {
+  const photoUrl = imageUID
+    ? ConnectyCube.storage.privateUrl(imageUID)
+    : undefined;
   const initials = name.slice(0, 2).toUpperCase();
 
   return (
-    <Avatar className="user__img">
+    <AvatarComponent>
       <AvatarImage src={photoUrl} />
       <AvatarFallback>{initials}</AvatarFallback>
-    </Avatar>
+    </AvatarComponent>
   );
 };
 
-export default React.memo(ChatPhoto);
+export default React.memo(Avatar);

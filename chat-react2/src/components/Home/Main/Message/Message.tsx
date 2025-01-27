@@ -3,9 +3,9 @@ import { getTime } from "../../../../services/helpers";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
 import { Messages } from "node_modules/connectycube/dist/types/types";
-
-import "./Message.scss";
 import { useChat } from "@connectycube/use-chat";
+import Avatar from "../../../Shared/Avatar";
+import "./Message.scss";
 
 export interface MessageProps {
   message: Messages.Message;
@@ -31,9 +31,7 @@ const Message: React.FC<MessageProps> = ({
       ? senderName
       : dialogName;
 
-  const senderNameNoAvatar = senderName.slice(0, 2);
-
-  const sentTime = getTime(message.date_sent);
+  const sentTime = getTime(message.date_sent as number);
 
   const [ref, inView] = useInView();
   if (inView) {
@@ -49,18 +47,12 @@ const Message: React.FC<MessageProps> = ({
         message.sender_id === currentUserId ? "my" : "opponent"
       } ${inView ? "view" : "no"}`}
     >
-      {isGroupChat && (
-        <div className="user__img-container">
-          senderAvatar ? (
-          <img src={senderAvatar} />) : (
-          <div className="user-no-img">{senderNameNoAvatar}</div>)
-        </div>
-      )}
+      {isGroupChat && <Avatar name={senderName} imageUID={senderAvatar} />}
       <div className="user-message__info">
         <span className="message-user__name">{chatName}</span>
         <div>
-          {message.body ? (
-            message.body
+          {message.message ? (
+            message.message
           ) : (
             <div
               className="message__photo-container"

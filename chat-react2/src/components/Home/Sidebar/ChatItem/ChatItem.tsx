@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import { getTime } from "../../../../services/helpers";
 import "./ChatItem.scss";
-import ChatPhoto from "../ChatPhoto/ChatPhoto";
+import Avatar from "../../../Shared/Avatar";
 
 export interface ChatItemProps {
   dialog: Dialogs.Dialog;
@@ -36,7 +36,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       className={`chat__block ${isSelected ? "chosen" : ""}`}
       onClick={handleSelectChat}
     >
-      <ChatPhoto photo={dialog.photo} name={dialog.name} />
+      <Avatar imageUID={dialog.photo} name={dialog.name} />
       <div className="user__info-main">
         <div className="group__name-container">
           {dialog.type === 2 && (
