@@ -108,6 +108,7 @@
       color: #929293;
       position: absolute;
       bottom: -1px;
+      gap: 5px;
       right: 10px;
       justify-content: flex-end;
     }
@@ -116,28 +117,6 @@
       &:not(:last-child) {
         padding-bottom: 5px;
       }
-    }
-  }
-  & .user__img-container {
-    max-width: 50px;
-    min-height: 50px;
-    min-width: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #8b8bd9;
-    border-radius: 50%;
-    & .user-no-img {
-      border-radius: 50%;
-      text-align: center;
-      text-transform: uppercase;
-      color: white;
-    }
-    & img {
-      object-fit: cover;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
     }
   }
   & .message__avatar {

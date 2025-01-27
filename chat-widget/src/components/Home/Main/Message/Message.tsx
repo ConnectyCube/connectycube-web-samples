@@ -1,11 +1,10 @@
-import React from "react";
-import { getTime } from "../../../../services/helpers";
+import React, { useMemo } from "react";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
 import { Messages } from "node_modules/connectycube/dist/types/types";
-
-import "./Message.scss";
 import { useChat } from "@connectycube/use-chat";
+import Avatar from "../../../Shared/Avatar";
+import "./Message.scss";
 
 export interface MessageProps {
   message: Messages.Message;
@@ -22,18 +21,19 @@ const Message: React.FC<MessageProps> = ({
   senderName,
   senderAvatar,
 }) => {
-  const { currentUserId, readMessage } = useChat();
+  const { currentUserId, readMessage, messageSentTimeString } = useChat();
 
-  const chatName =
-    message.sender_id === currentUserId
-      ? "You"
-      : isGroupChat
-      ? senderName
-      : dialogName;
+  const isCurrentUserSender = message.sender_id === currentUserId;
 
-  const senderNameNoAvatar = senderName.slice(0, 2);
+  const senderNameString = isCurrentUserSender
+    ? "You"
+    : isGroupChat
+    ? senderName
+    : dialogName;
 
-  const sentTime = getTime(message.date_sent);
+  const sentTime = useMemo(() => {
+    return messageSentTimeString(message);
+  }, [message.date_sent]);
 
   const [ref, inView] = useInView();
   if (inView) {
@@ -45,22 +45,24 @@ const Message: React.FC<MessageProps> = ({
   return (
     <div
       ref={ref}
-      className={`message ${
-        message.sender_id === currentUserId ? "my" : "opponent"
-      } ${inView ? "view" : "no"}`}
+      className={`message ${isCurrentUserSender ? "my" : "opponent"} ${
+        inView ? "view" : "no"
+      }`}
     >
-      {isGroupChat && (
-        <div className="user__img-container">
-          senderAvatar ? (
-          <img src={senderAvatar} />) : (
-          <div className="user-no-img">{senderNameNoAvatar}</div>)
-        </div>
+      {/* avatar */}
+      {isGroupChat && !isCurrentUserSender && (
+        <Avatar name={senderName} imageUID={senderAvatar} />
       )}
+
       <div className="user-message__info">
-        <span className="message-user__name">{chatName}</span>
+        {/* sender name in group chat */}
+        {isGroupChat && !isCurrentUserSender && (
+          <span className="message-user__name">{senderNameString}</span>
+        )}
+        {/* message body */}
         <div>
-          {message.body ? (
-            message.body
+          {message.message ? (
+            message.message
           ) : (
             <div
               className="message__photo-container"
@@ -94,8 +96,11 @@ const Message: React.FC<MessageProps> = ({
           )}
         </div>
         <div className="message__time-container">
+          {/* date sent */}
           <span className="message__time">{sentTime}</span>
-          {message.sender_id === currentUserId && (
+
+          {/* sent/read status */}
+          {isCurrentUserSender && (
             <span className="message__status">
               {message.read ? (
                 <IoCheckmarkDoneSharp size={14} color="#727272" />

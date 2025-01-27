@@ -9,7 +9,7 @@ import "./Participant.scss";
 
 export interface ParticipantProps {
   avatar: string | null;
-  name: string | null;
+  name: string;
 }
 
 const Participant: React.FC<ParticipantProps> = ({ avatar = '', name }) => {

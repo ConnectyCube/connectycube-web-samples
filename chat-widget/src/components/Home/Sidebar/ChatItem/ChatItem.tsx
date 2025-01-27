@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useEffect } from "react";
 import { TiGroup } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
-import { getTime } from "../../../../services/helpers";
 import "./ChatItem.scss";
-import ChatPhoto from "../ChatPhoto/ChatPhoto";
+import Avatar from "../../../Shared/Avatar";
 import { Dialogs } from "node_modules/connectycube/dist/types/types";
 
 export interface ChatItemProps {
@@ -16,9 +15,18 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { selectedDialog, selectDialog, currentUserId } = useChat();
+  const {
+    selectedDialog,
+    selectDialog,
+    currentUserId,
+    lastMessageSentTimeString,
+  } = useChat();
 
   const isSelected = dialog._id === selectedDialog?._id;
+
+  const lastMessageTime = useMemo(() => {
+    return lastMessageSentTimeString(dialog);
+  }, [dialog.last_message_date_sent, dialog.created_at]);
 
   // if open chat page url directly
   useEffect(() => {
@@ -37,7 +45,9 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       className={`chat__block ${isSelected ? "chosen" : ""}`}
       onClick={handleSelectChat}
     >
-      <ChatPhoto photo={dialog.photo} name={dialog.name} />
+      {/* avatar */}
+      <Avatar imageUID={dialog.photo} name={dialog.name} />
+      
       <div className="user__info-main">
         <div className="group__name-container">
           {dialog.type === 2 && (
@@ -53,14 +63,12 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
               : dialog.name + " : " + dialog.last_message
             : "No messages yet"}
         </small>
-        <small>
-          {dialog.last_message
-            ? getTime(dialog.last_message_date_sent)
-            : getTime(dialog.created_at)}
-        </small>
+        <small>{lastMessageTime}</small>
       </div>
+
+      {/* unread counter */}
       {dialog.unread_messages_count > 0 && (
-        <span className="not__read">{dialog.unread_messages_count}</span>
+        <span className="unread-counter">{dialog.unread_messages_count}</span>
       )}
     </div>
   );

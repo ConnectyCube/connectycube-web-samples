@@ -13,17 +13,6 @@
       flex-direction: column;
       align-items: flex-start;
     }
-    & .remove__user-container {
-      background: white;
-      padding: 5px 10px;
-      border-radius: 25%;
-      border: 1px solid #dbdfdf;
-      transition: 0.2s;
-      cursor: pointer;
-      &:hover {
-        background: #ededed;
-      }
-    }
   }
   & .member__photo-container {
     margin-right: 10px;
@@ -36,8 +25,6 @@
       height: 100%;
       object-fit: cover;
       border-radius: 50%;
-    }
-    & .user__no-img {
     }
   }
 }

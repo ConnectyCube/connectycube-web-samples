@@ -8,19 +8,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import NewChat, { ChatType } from "./NewChat/NewChat";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+} from "@/components/shadcn-ui/dialog";
+import NewChatDialog, { ChatType } from "./NewChat/NewChatDialog";
 import { currentUser, destroyUserSession } from "../../../connectycube";
 import "./Sidebar.scss";
 import ChatsList from "./ChatsList/ChatsList";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { isConnected, disconnect, selectedDialog, getDialogs } =
-    useChat();
+  const { isConnected, disconnect, selectedDialog, getDialogs } = useChat();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [newChatFormVisible, setNewChatFormVisible] = useState(false);
   const [chatType, setChatType] = useState<ChatType>("private");
+  const [newChatDialogOpen, setNewChatDialogOpen] = useState<boolean>(false);
 
   // retrieve chats
   useEffect(() => {
@@ -34,17 +38,11 @@ const Sidebar = () => {
   };
 
   const handleNewMessage = () => {
-    setNewChatFormVisible(true);
     setChatType("private");
   };
 
   const handleCreateGroupChat = () => {
-    setNewChatFormVisible(true);
     setChatType("group");
-  };
-
-  const closeNewChatForm = () => {
-    setNewChatFormVisible(false);
   };
 
   return (
@@ -65,10 +63,6 @@ const Sidebar = () => {
         </DropdownMenu>
       </div>
 
-      {newChatFormVisible && (
-        <NewChat onClose={closeNewChatForm} chatType={chatType} />
-      )}
-
       <input
         type="text"
         onChange={(e) => {
@@ -84,19 +78,37 @@ const Sidebar = () => {
       ) : (
         <div className="loader">Loading...</div>
       )}
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger className="sidebar-add__newchat">
-          <BsPencil size={34} color="white" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={handleCreateGroupChat}>
-            New group
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleNewMessage}>
-            New message
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Dialog
+        modal={false}
+        open={newChatDialogOpen}
+        onOpenChange={setNewChatDialogOpen}
+      >
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger className="sidebar-add__newchat">
+            <BsPencil size={34} color="white" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DialogTrigger asChild>
+              <DropdownMenuItem onClick={handleCreateGroupChat}>
+                New group
+              </DropdownMenuItem>
+            </DialogTrigger>
+            <DialogTrigger asChild>
+              <DropdownMenuItem onClick={handleNewMessage}>
+                New message
+              </DropdownMenuItem>
+            </DialogTrigger>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DialogContent>
+          <NewChatDialog
+            chatType={chatType}
+            onFinish={() => {
+              setNewChatDialogOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
