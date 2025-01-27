@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { BsPencil } from "react-icons/bs";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import {
@@ -9,22 +8,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-} from "@/components/shadcn-ui/dialog";
-import NewChatDialog, { ChatType } from "./NewChat/NewChatDialog";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/shadcn-ui/tabs";
 import { currentUser, destroyUserSession } from "../../../connectycube";
 import "./Sidebar.scss";
-import ChatsList from "./ChatsList/ChatsList";
+import ChatsTab from "./Tabs/ChatsTab";
+import UsersTab from "./Tabs/UsersTab";
+import { cn } from "@/lib/utils";
 
-const Sidebar = () => {
+export interface SideBarProps {
+  showUsersTab?: boolean;
+}
+
+const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
   const navigate = useNavigate();
-  const { isConnected, disconnect, selectedDialog, getDialogs } = useChat();
-
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [chatType, setChatType] = useState<ChatType>("private");
-  const [newChatDialogOpen, setNewChatDialogOpen] = useState<boolean>(false);
+  const { disconnect, selectedDialog, getDialogs } = useChat();
 
   // retrieve chats
   useEffect(() => {
@@ -37,16 +38,9 @@ const Sidebar = () => {
     navigate("/login");
   };
 
-  const handleNewMessage = () => {
-    setChatType("private");
-  };
-
-  const handleCreateGroupChat = () => {
-    setChatType("group");
-  };
-
   return (
     <div className={`sidebar__container ${selectedDialog ? "" : "show"}`}>
+      {/* header */}
       <div className="sidebar__header sidebar-header">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger className="sidebar-user__info">
@@ -62,55 +56,39 @@ const Sidebar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <input
-        type="text"
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-        }}
-        className="sidebar-search__chat"
-        placeholder="Search..."
-      ></input>
-      {isConnected ? (
-        <div className="sidebar-chats__container">
-          <ChatsList searchTerm={searchTerm} />
-        </div>
-      ) : (
-        <div className="loader">Loading...</div>
-      )}
-      <Dialog
-        modal={false}
-        open={newChatDialogOpen}
-        onOpenChange={setNewChatDialogOpen}
-      >
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="sidebar-add__newchat">
-            <BsPencil size={34} color="white" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DialogTrigger asChild>
-              <DropdownMenuItem onClick={handleCreateGroupChat}>
-                New group
-              </DropdownMenuItem>
-            </DialogTrigger>
-            <DialogTrigger asChild>
-              <DropdownMenuItem onClick={handleNewMessage}>
-                New message
-              </DropdownMenuItem>
-            </DialogTrigger>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DialogContent>
-          <NewChatDialog
-            chatType={chatType}
-            onFinish={() => {
-              setNewChatDialogOpen(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* tabs */}
+      <Tabs defaultValue="chats" className="flex flex-col">
+        <TabsContent
+          value="chats"
+          className={cn(showUsersTab ? "h-[calc(100%-60px)]" : "h-full")}
+        >
+          <ChatsTab />
+        </TabsContent>
+        {showUsersTab && (
+          <TabsContent value="users" className="h-[calc(100%-60px)]">
+            <UsersTab />
+          </TabsContent>
+        )}
+        <TabsList
+          className={cn(
+            "w-full absolute bottom-0",
+            showUsersTab ? "h-[40px]" : "h-[0px]"
+          )}
+        >
+          {showUsersTab && (
+            <>
+              <TabsTrigger value="chats" className="w-[50%] h-[40px]">
+                Chats
+              </TabsTrigger>
+              <TabsTrigger value="users" className="w-[50%] h-[40px]">
+                Users
+              </TabsTrigger>
+            </>
+          )}
+        </TabsList>
+      </Tabs>
     </div>
   );
 };
 
-export default Sidebar;
+export default SideBar;

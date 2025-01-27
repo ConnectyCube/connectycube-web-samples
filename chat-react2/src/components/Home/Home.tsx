@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import Main from "./Main/Main";
-import Sidebar from "./Sidebar/Sidebar";
+import SideBar from "./Sidebar/SideBar";
 import { useEffect } from "react";
 import { useChat } from "@connectycube/use-chat";
 import "./Home.scss";
@@ -21,7 +21,7 @@ const Home = () => {
 
   return (
     <div className="home__container">
-      <Sidebar />
+      <SideBar showUsersTab={false} />
       <Main />
     </div>
   );
