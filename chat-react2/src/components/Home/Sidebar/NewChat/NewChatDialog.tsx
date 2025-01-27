@@ -8,7 +8,6 @@ import { Button } from "@/components/shadcn-ui/button";
 import { Users } from "node_modules/connectycube/dist/types/types";
 import SearchedUser from "./SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
-import Participant from "./CreateGroupChat/Participant";
 import { useNavigate } from "react-router";
 
 export type ChatType = "private" | "group";
