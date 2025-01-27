@@ -3,7 +3,6 @@ import Main from "./Main/Main";
 import SideBar from "./Sidebar/SideBar";
 import { useEffect } from "react";
 import { useChat } from "@connectycube/use-chat";
-import "./Home.scss";
 import { chatCredentials } from "../../connectycube";
 
 const Home = () => {
@@ -20,7 +19,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home__container">
+    <div className="w-full h-full flex">
       <SideBar showUsersTab={false} />
       <Main />
     </div>
