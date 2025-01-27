@@ -2,10 +2,9 @@ import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
-import { userSignup } from "../../connectycube";
-import logo from "../../assets/logo.png";
-import Loader from "../Shared/Loader";
-import "./SignUp.scss";
+import { userSignup } from "./../connectycube";
+import logo from "./../assets/logo.png";
+import Loader from "./Shared/Loader";
 
 type FormValues = {
   fullName: string;
@@ -38,11 +37,14 @@ const SignUp = () => {
   };
 
   return (
-    <div className="signup__container">
-      <div className="img__container">
-        <img src={logo} alt="Logo" className="logo__img" />
+    <div className="bg-gray-100 border border-black rounded-2xl flex flex-col items-center p-10">
+      <div className="max-w-[200px] mb-6">
+        <img src={logo} alt="Logo" className="w-full" />
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="signup__form">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col w-full max-w-sm"
+      >
         <input
           type="text"
           placeholder="Full name"
@@ -57,6 +59,7 @@ const SignUp = () => {
               message: "Full name cannot exceed 200 characters",
             },
           })}
+          className="p-3 border border-gray-300 rounded-full bg-gray-200 text-black text-lg outline-none mb-2"
         />
         <input
           type="text"
@@ -72,6 +75,7 @@ const SignUp = () => {
               message: "Login cannot exceed 70 characters",
             },
           })}
+          className="p-3 border border-gray-300 rounded-full bg-gray-200 text-black text-lg outline-none mb-2"
         />
         <input
           type="password"
@@ -84,23 +88,37 @@ const SignUp = () => {
             },
             maxLength: {
               value: 40,
-              message: "Login cannot exceed 40 characters",
+              message: "Password cannot exceed 40 characters",
             },
           })}
+          className="p-3 border border-gray-300 rounded-full bg-gray-200 text-black text-lg outline-none mb-2"
         />
         {errors.fullName && (
-          <span className="error">{errors.fullName.message}</span>
+          <span className="text-red-500 text-sm">
+            {errors.fullName.message}
+          </span>
         )}
-        {errors.login && <span className="error">{errors.login.message}</span>}
+        {errors.login && (
+          <span className="text-red-500 text-sm">{errors.login.message}</span>
+        )}
         {errors.password && (
-          <span className="error">{errors.password.message}</span>
+          <span className="text-red-500 text-sm">
+            {errors.password.message}
+          </span>
         )}
-        <button type="submit">Register</button>
+        <button
+          type="submit"
+          className="rounded-full border border-black p-3 text-blue-900 bg-transparent shadow-none font-semibold transition duration-200 hover:bg-blue-800 hover:text-white hover:border-gray-100 mt-4 mb-5"
+        >
+          Register
+        </button>
       </form>
-      <div className="login__block">
+      <div className="text-center">
         {isLoading && <Loader />}
-        <p>Already have an account?</p>
-        <NavLink to="/login">Sign in</NavLink>
+        <p className="text-sm mb-1">Already have an account?</p>
+        <NavLink to="/login" className="text-blue-500 hover:underline">
+          Sign in
+        </NavLink>
       </div>
     </div>
   );

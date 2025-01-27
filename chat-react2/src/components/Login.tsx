@@ -2,10 +2,9 @@ import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useChat } from "@connectycube/use-chat";
-import Loader from "../Shared/Loader";
-import { createUserSession } from "../../connectycube";
-import logo from "../../assets/logo.png";
-import "./Login.scss";
+import Loader from "./Shared/Loader";
+import { createUserSession } from "./../connectycube";
+import logo from "./../assets/logo.png";
 import { useState } from "react";
 
 type FormValues = {
@@ -47,17 +46,21 @@ const Login = () => {
   };
 
   return (
-    <div className="login__container">
-      <div className="img__container">
-        <img src={logo} alt="Logo" className="logo__img" />
+    <div className="bg-gray-100 border border-black rounded-2xl flex flex-col items-center p-10">
+      <div className="max-w-[200px] mb-6">
+        <img src={logo} alt="Logo" className="w-full" />
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="login__form">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col w-full max-w-sm"
+      >
         <input
           type="text"
           placeholder="Login"
           {...register("login", {
             required: "Login is required",
           })}
+          className="p-3 border border-gray-300 rounded-full bg-gray-200 text-black text-lg outline-none mb-2"
         />
         <input
           type="password"
@@ -65,17 +68,29 @@ const Login = () => {
           {...register("password", {
             required: "Password is required",
           })}
+          className="p-3 border border-gray-300 rounded-full bg-gray-200 text-black text-lg outline-none mb-2"
         />
-        {errors.login && <span className="error">{errors.login.message}</span>}
-        {errors.password && (
-          <span className="error">{errors.password.message}</span>
+        {errors.login && (
+          <span className="text-red-500 text-sm">{errors.login.message}</span>
         )}
-        <button type="submit">Login</button>
+        {errors.password && (
+          <span className="text-red-500 text-sm">
+            {errors.password.message}
+          </span>
+        )}
+        <button
+          type="submit"
+          className="rounded-full border border-black p-3 text-blue-900 bg-transparent shadow-none font-semibold transition duration-200 hover:bg-blue-800 hover:text-white hover:border-gray-100 mt-4 mb-5"
+        >
+          Login
+        </button>
       </form>
-      <div className="signup__block">
+      <div className="text-center">
         {isLoading && <Loader />}
-        <p>Don't have an account?</p>
-        <NavLink to="/signup">Sign up</NavLink>
+        <p className="text-sm mb-1">Don't have an account?</p>
+        <NavLink to="/signup" className="text-blue-500 hover:underline">
+          Sign up
+        </NavLink>
       </div>
     </div>
   );
