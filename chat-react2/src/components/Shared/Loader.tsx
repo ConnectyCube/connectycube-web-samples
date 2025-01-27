@@ -1,8 +1,7 @@
 import { FaSpinner } from "react-icons/fa";
-import "./Loader.scss";
 
 const Loader = () => {
-  return <FaSpinner className="rotating-spinner" />;
+  return <FaSpinner className="animate-spin text-2xl text-black mx-auto" />;
 };
 
 export default Loader;
