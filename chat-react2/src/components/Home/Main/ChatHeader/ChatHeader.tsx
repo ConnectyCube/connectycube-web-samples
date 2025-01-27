@@ -24,6 +24,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
     getDialogOpponentId,
     typingStatus,
     users,
+    selectDialog
   } = useChat();
   const isGroupChat = selectedDialog.type === 2;
 
@@ -61,6 +62,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
         <IoIosArrowBack
           size={32}
           onClick={() => {
+            selectDialog(null);
             navigate("/home");
           }}
           className="user__info-back"
