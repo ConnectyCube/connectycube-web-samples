@@ -7,7 +7,6 @@ import {
 } from "@/components/shadcn-ui/avatar";
 import { Button } from "@/components/shadcn-ui/button";
 import { ChatType } from "../NewChat";
-import "./SearchedUser.scss";
 
 export interface SearchedUserProps {
   id: number;
@@ -34,17 +33,14 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
   const initials = name.slice(0, 2).toUpperCase();
 
   return (
-    <div
-      className={`found__user ${isSelected ? "checked" : "not-checked"}`}
-      key={id}
-    >
-      <div className="user__main-info">
-        <Avatar className="user__avatar">
+    <div className={`flex items-center justify-between relative pb-2`} key={id}>
+      <div className="flex items-center flex-[0_0_70%]">
+        <Avatar className="w-12 h-12 mr-4">
           <AvatarImage src={avatarUrl} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
-        <div className="user__name-info">
-          <p className="user__full-name">{name}</p>
+        <div className="text-left">
+          <p className="text-black">{name}</p>
         </div>
       </div>
       {chatType === "private" ? (
@@ -59,7 +55,7 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
         </Button>
       ) : (
         <div
-          className={`add-status ${isSelected ? "delete" : "add"}`}
+          className={`border px-4 py-2 rounded-lg transition duration-200 cursor-pointer bg-transparent text-blue-600 border-blue-400 hover:bg-blue-400 hover:text-white`}
           onClick={() => {
             onSelectUser(id, !isSelected);
           }}
