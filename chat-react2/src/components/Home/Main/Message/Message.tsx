@@ -5,6 +5,7 @@ import { Messages } from "node_modules/connectycube/dist/types/types";
 import { useChat } from "@connectycube/use-chat";
 import Avatar from "../../../Shared/Avatar";
 import "./Message.scss";
+import Loader from "@/Components/Shared/Loader";
 
 export interface MessageProps {
   message: Messages.Message;
@@ -24,6 +25,9 @@ const Message: React.FC<MessageProps> = ({
   const { currentUserId, readMessage, messageSentTimeString } = useChat();
 
   const isCurrentUserSender = message.sender_id === currentUserId;
+
+  const isAttachment = message.attachmentsUrls?.length > 0;
+  const fileUrl = message.attachmentsUrls?.[0];
 
   const senderNameString = isCurrentUserSender
     ? "You"
@@ -59,39 +63,23 @@ const Message: React.FC<MessageProps> = ({
         {isGroupChat && !isCurrentUserSender && (
           <span className="message-user__name">{senderNameString}</span>
         )}
-        {/* message body */}
+
         <div>
-          {message.message ? (
-            message.message
-          ) : (
+          {/* message body */}
+          {!isAttachment ? message.message : null}
+
+          {/* attachments */}
+          {isAttachment && (
             <div
               className="message__photo-container"
               onClick={(e) => {
                 e.currentTarget.classList.toggle("full");
               }}
             >
-              <img
-                classList={`message__img ${
-                  message.isLoading ? "loading" : "loaded"
-                }`}
-                className="message__photo"
-                src={message.fileUrl}
-              />
-              {message.isLoading && (
-                <div className="lds-spinner">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
+              {message.isLoading ? (
+                <Loader />
+              ) : (
+                <img className="message__photo" src={fileUrl} />
               )}
             </div>
           )}
