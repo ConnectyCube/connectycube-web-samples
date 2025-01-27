@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Users } from "node_modules/connectycube/dist/types/types";
 import { Button } from "@/components/shadcn-ui/button";
-import Participant from "./Participant/Participant";
+import Participant from "./Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
 import "./CreateGroupChat.scss";
 

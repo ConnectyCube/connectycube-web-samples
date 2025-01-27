@@ -5,7 +5,6 @@ import {
   AvatarImage,
 } from "@/components/shadcn-ui/avatar";
 import ConnectyCube from "connectycube";
-import "./Participant.scss";
 
 export interface ParticipantProps {
   avatar: string | null;
@@ -19,13 +18,13 @@ const Participant: React.FC<ParticipantProps> = ({ avatar, name }) => {
   const initials = name.slice(0, 2).toUpperCase();
 
   return (
-    <div className="user__in-group group-list" key={name}>
-      <Avatar className="group-list__avatar">
+    <div key={name}>
+      <Avatar className="w-[60px] h-[60px] rounded-full object-cover">
         <AvatarImage src={avatarUrl} />
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
 
-      <p className="group-list__username">{name}</p>
+      <p className="text-center">{name}</p>
     </div>
   );
 };
