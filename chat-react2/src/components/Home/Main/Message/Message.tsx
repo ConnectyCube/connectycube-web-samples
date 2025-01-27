@@ -23,12 +23,13 @@ const Message: React.FC<MessageProps> = ({
 }) => {
   const { currentUserId, readMessage, messageSentTimeString } = useChat();
 
-  const chatName =
-    message.sender_id === currentUserId
-      ? "You"
-      : isGroupChat
-      ? senderName
-      : dialogName;
+  const isCurrentUserSender = message.sender_id === currentUserId;
+
+  const senderNameString = isCurrentUserSender
+    ? "You"
+    : isGroupChat
+    ? senderName
+    : dialogName;
 
   const sentTime = useMemo(() => {
     return messageSentTimeString(message);
@@ -44,13 +45,21 @@ const Message: React.FC<MessageProps> = ({
   return (
     <div
       ref={ref}
-      className={`message ${
-        message.sender_id === currentUserId ? "my" : "opponent"
-      } ${inView ? "view" : "no"}`}
+      className={`message ${isCurrentUserSender ? "my" : "opponent"} ${
+        inView ? "view" : "no"
+      }`}
     >
-      {isGroupChat && <Avatar name={senderName} imageUID={senderAvatar} />}
+      {/* avatar */}
+      {isGroupChat && !isCurrentUserSender && (
+        <Avatar name={senderName} imageUID={senderAvatar} />
+      )}
+
       <div className="user-message__info">
-        <span className="message-user__name">{chatName}</span>
+        {/* sender name in group chat */}
+        {isGroupChat && !isCurrentUserSender && (
+          <span className="message-user__name">{senderNameString}</span>
+        )}
+        {/* message body */}
         <div>
           {message.message ? (
             message.message
@@ -88,8 +97,11 @@ const Message: React.FC<MessageProps> = ({
           )}
         </div>
         <div className="message__time-container">
+          {/* date sent */}
           <span className="message__time">{sentTime}</span>
-          {message.sender_id === currentUserId && (
+
+          {/* sent/read status */}
+          {isCurrentUserSender && (
             <span className="message__status">
               {message.read ? (
                 <IoCheckmarkDoneSharp size={14} color="#727272" />

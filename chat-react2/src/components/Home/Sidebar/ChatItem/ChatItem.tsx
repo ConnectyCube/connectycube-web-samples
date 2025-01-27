@@ -44,7 +44,9 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       className={`chat__block ${isSelected ? "chosen" : ""}`}
       onClick={handleSelectChat}
     >
+      {/* avatar */}
       <Avatar imageUID={dialog.photo} name={dialog.name} />
+      
       <div className="user__info-main">
         <div className="group__name-container">
           {dialog.type === 2 && (
