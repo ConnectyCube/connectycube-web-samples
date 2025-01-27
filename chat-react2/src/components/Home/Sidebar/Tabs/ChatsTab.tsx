@@ -12,7 +12,7 @@ import {
 } from "@/components/shadcn-ui/dropdown-menu";
 import { BsPencil } from "react-icons/bs";
 import NewChatDialog, { ChatType } from "../NewChat/NewChatDialog";
-import ChatsList from "../ChatsList/ChatsList";
+import ChatsList from "../ChatsList";
 import { useState } from "react";
 
 export interface ChatsTabProps {}
