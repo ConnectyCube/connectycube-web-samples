@@ -76,9 +76,11 @@
   & .last__mesage-time {
   }
 
-  & .not__read {
+  & .unread-counter {
     background: #6aacef;
-    padding: 5px 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 5px;
     border-radius: 20px;
     color: white;
   }

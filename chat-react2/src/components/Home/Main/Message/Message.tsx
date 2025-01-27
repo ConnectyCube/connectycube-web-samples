@@ -1,5 +1,4 @@
-import React from "react";
-import { getTime } from "../../../../services/helpers";
+import React, { useMemo } from "react";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
 import { Messages } from "node_modules/connectycube/dist/types/types";
@@ -22,7 +21,7 @@ const Message: React.FC<MessageProps> = ({
   senderName,
   senderAvatar,
 }) => {
-  const { currentUserId, readMessage } = useChat();
+  const { currentUserId, readMessage, messageSentTimeString } = useChat();
 
   const chatName =
     message.sender_id === currentUserId
@@ -31,7 +30,9 @@ const Message: React.FC<MessageProps> = ({
       ? senderName
       : dialogName;
 
-  const sentTime = getTime(message.date_sent as number);
+  const sentTime = useMemo(() => {
+    return messageSentTimeString(message);
+  }, [message.date_sent]);
 
   const [ref, inView] = useInView();
   if (inView) {
