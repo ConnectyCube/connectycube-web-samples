@@ -18,6 +18,7 @@ import "./Sidebar.scss";
 import ChatsTab from "./Tabs/ChatsTab";
 import UsersTab from "./Tabs/UsersTab";
 import { cn } from "@/lib/utils";
+import Avatar from "@/Components/Shared/Avatar";
 
 export interface SideBarProps {
   showUsersTab?: boolean;
@@ -43,13 +44,13 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
       {/* header */}
       <div className="sidebar__header sidebar-header">
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="sidebar-user__info">
-            <span className="sidebar-user__name">{currentUser()?.login}</span>
-            <div className="sidebar-img__container">
-              <div id="background" className="user__no-img main">
-                <span className="name">{currentUser()?.login.slice(0, 2)}</span>
-              </div>
-            </div>
+          <DropdownMenuTrigger className="sidebar-user__info bg-white">
+            <p className="text-center ml-[10px]">{currentUser()?.login}</p>
+            <Avatar
+              imageUID={currentUser()?.avatar}
+              name={currentUser()?.login}
+              className="w-[60px] h-[60px]"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
