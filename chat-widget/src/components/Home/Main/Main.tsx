@@ -5,7 +5,7 @@ import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import Message from "./Message/Message";
 import ChatHeader from "./ChatHeader/ChatHeader";
-import ChatInfo from "./ChatInfo/ChatInfo";
+// import ChatInfo from "./ChatInfo/ChatInfo";
 import "./Main.scss";
 
 const Main = () => {

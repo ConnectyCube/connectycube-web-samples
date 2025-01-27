@@ -5,12 +5,12 @@ import ConnectyCube from "connectycube";
 import { ChatProvider } from "@connectycube/use-chat";
 import { Button } from "@/components/shadcn-ui/button"
 import Home from "./components/Home/Home";
-import { tryRestoreSession, isSessionExists } from "./connectycube";
+import { tryRestoreSession } from "./connectycube";
 import { Config } from "node_modules/connectycube/dist/types/types";
 
-import "./App.css";
+import "./ConnectyCubeChatWidget.css";
 
-type AppProps = {
+type ConnectyCubeChatWidgetProps = {
   appId: Config.Credentials["appId"];
   authKey: Config.Credentials["authKey"];
   config?: Config.Options;
@@ -20,7 +20,7 @@ type AppProps = {
   portalClassName?: string;
 };
 
-const App: React.FC<AppProps> = ({ 
+const ConnectyCubeChatWidget: React.FC<ConnectyCubeChatWidgetProps> = ({ 
   appId,
   authKey,
   config,
@@ -62,4 +62,4 @@ const App: React.FC<AppProps> = ({
   );
 }
 
-export default App;
+export default ConnectyCubeChatWidget;
