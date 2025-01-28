@@ -39,15 +39,15 @@ const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
         onChange={(e) => {
           setSearchTerm(e.target.value);
         }}
-        className="sidebar-search__chat"
+        className="w-[90%] border border-gray-300 p-2 rounded-full bg-transparent placeholder-gray-500"
         placeholder="Search..."
-      ></input>
+      />
       {isConnected ? (
-        <div className="sidebar-chats__container">
+        <div className="relative pt-5 overflow-y-scroll h-[87%] overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
           <ChatsList searchTerm={searchTerm} />
         </div>
       ) : (
-        <div className="loader">Loading...</div>
+        <div className="text-center">Loading...</div>
       )}
       <Dialog
         modal={false}
@@ -55,7 +55,7 @@ const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
         onOpenChange={setNewChatDialogOpen}
       >
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="sidebar-add__newchat">
+          <DropdownMenuTrigger className="absolute bottom-[8%] right-[5%] w-[60px] h-[60px] bg-blue-500/80 rounded-full flex items-center justify-center cursor-pointer">
             <BsPencil size={34} color="white" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
