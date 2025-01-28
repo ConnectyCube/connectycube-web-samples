@@ -7,7 +7,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@connectycube/types": ["./node_modules/connectycube/dist/types/types"]
     }
   }
 }

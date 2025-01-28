@@ -42,7 +42,7 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
     <div
       className={cn(
         "flex flex-col bg-white border-r border-gray-300 relative transition-transform w-full",
-        "md:max-w-[35%] lg:max-w-[30%] xl:max-w-[25%]",
+        "md:max-w-[40%]",
         selectedDialog ? "hidden sm:block" : ""
       )}
     >

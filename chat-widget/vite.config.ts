@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 import { resolve } from "path";
-import dts from "vite-plugin-dts";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
+import { defineConfig } from 'vite'
 import autoprefixer from 'autoprefixer';
+import react from '@vitejs/plugin-react'
+import dts from "vite-plugin-dts";
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const globals = {
   "react": "React",
@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => {
     css: {
       postcss: {
         plugins: [
-          autoprefixer({}) // add options if needed
+          autoprefixer({})
         ],
       }
     }

@@ -84,7 +84,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <textarea
         onKeyDown={startTyping}
         ref={messageInputRef}
-        className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg resize-none placeholder-gray-500 text-base"
+        className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg resize-none placeholder-gray-500 text-base bg-transparent"
         placeholder="Enter message"
       ></textarea>
       <button
