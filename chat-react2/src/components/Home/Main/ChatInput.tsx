@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import "./ChatInput.scss";
 import { IoMdAttach } from "react-icons/io";
 import { useChat } from "@connectycube/use-chat";
 
@@ -79,7 +78,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <form
-      className="message__field"
+      className="flex relative gap-3 w-[90%] mx-auto pt-2 pb-2 border-t border-gray-300"
       action="#"
       method="GET"
       onKeyDown={onEnterPress}
@@ -87,13 +86,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <textarea
         onKeyDown={startTyping}
         ref={messageInputRef}
-        className="message__area"
+        className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg resize-none placeholder-gray-500 text-base"
         placeholder="Enter message"
       ></textarea>
-      <button onClick={handleSendMessage} type="button" className="send-btn">
+      <button
+        onClick={handleSendMessage}
+        type="button"
+        className="px-4 py-2 bg-blue-500 text-white font-semibold rounded"
+      >
         Send
       </button>
-      <label htmlFor="file-upload" className="custom-file-upload">
+      <label htmlFor="file-upload" className="inline-block pt-2 cursor-pointer">
         <IoMdAttach size={28} />
       </label>
       <input
@@ -102,6 +105,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         id="file-upload"
         type="file"
         accept="image/*"
+        className="hidden"
       />
     </form>
   );
