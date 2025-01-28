@@ -58,7 +58,7 @@ const Main = () => {
   return (
     <div
       className={`flex h-full w-full bg-white flex-row-reverse overflow-hidden relative ${
-        selectedDialog ? "show" : ""
+        selectedDialog ? "" : "hidden sm:block"
       }`}
     >
       <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} />
