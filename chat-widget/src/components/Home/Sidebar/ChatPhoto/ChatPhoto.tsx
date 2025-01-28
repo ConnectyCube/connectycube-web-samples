@@ -6,13 +6,8 @@ import {
 } from "@/components/shadcn-ui/avatar";
 import ConnectyCube from "connectycube";
 
-<<<<<<<< HEAD:chat-widget/src/components/Home/Sidebar/ChatPhoto/ChatPhoto.tsx
-export interface ChatPhotoProps {
-  photo: string | null;
-========
 export interface AvatarProps {
   imageUID: string;
->>>>>>>> f00c09dda95de904f6c4b485e8873a33c091f010:chat-widget/src/components/Shared/Avatar.tsx
   name: string;
 }
 

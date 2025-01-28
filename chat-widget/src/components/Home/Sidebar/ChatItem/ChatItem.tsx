@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import "./ChatItem.scss";
 import Avatar from "../../../Shared/Avatar";
-import { Dialogs } from "node_modules/connectycube/dist/types/types";
+import { Dialogs } from "@connectycube/types";
 
 export interface ChatItemProps {
   dialog: Dialogs.Dialog;
@@ -46,7 +46,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       onClick={handleSelectChat}
     >
       {/* avatar */}
-      <Avatar imageUID={dialog.photo} name={dialog.name} />
+      <Avatar imageUID={dialog.photo || ''} name={dialog.name} />
       
       <div className="user__info-main">
         <div className="group__name-container">

@@ -1,6 +1,6 @@
 import ConnectyCube from "connectycube";
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
-import { Chat, Users } from "node_modules/connectycube/dist/types/types";
+import { Chat, Users } from "@connectycube/types";
 
 export const isSessionExists = (): boolean => {
   return !!localStorage.getItem("connectycubeToken");

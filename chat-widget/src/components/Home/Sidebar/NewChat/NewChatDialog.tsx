@@ -5,11 +5,11 @@ import { DialogHeader, DialogTitle } from "@/components/shadcn-ui/dialog";
 import { Input } from "@/components/shadcn-ui/input";
 import { Label } from "@/components/shadcn-ui/label";
 import { Button } from "@/components/shadcn-ui/button";
-import { Users } from "node_modules/connectycube/dist/types/types";
 import SearchedUser from "./SearchedUser/SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 import Participant from "./CreateGroupChat/Participant/Participant";
 import { useNavigate } from "react-router";
+import { Users } from '@connectycube/types';
 
 export type ChatType = "private" | "group";
 

@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Users } from "node_modules/connectycube/dist/types/types";
+import { Users } from "@connectycube/types";
 import { Button } from "@/components/shadcn-ui/button";
 import Participant from "./Participant/Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
 import "./CreateGroupChat.scss";
-import { Users } from "node_modules/connectycube/dist/types/types";
 
 export interface CreateGroupChatProps {
   users: Users.User[];
@@ -31,7 +30,7 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
       return (
         <Participant
           key={user.id}
-          name={user.login || user.full_name}
+          name={user.login || user.full_name || "unknown"}
           avatar={user.avatar}
         />
       );

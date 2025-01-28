@@ -6,7 +6,7 @@ import {
   AvatarImage,
 } from "@/components/shadcn-ui/avatar";
 import { Button } from "@/components/shadcn-ui/button";
-import { ChatType } from "../NewChat";
+import { ChatType } from "../NewChatDialog";
 import "./SearchedUser.scss";
 
 export interface SearchedUserProps {

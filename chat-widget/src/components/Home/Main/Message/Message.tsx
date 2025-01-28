@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
-import { Messages } from "node_modules/connectycube/dist/types/types";
+import { Messages } from "@connectycube/types";
 import { useChat } from "@connectycube/use-chat";
 import Avatar from "../../../Shared/Avatar";
 import "./Message.scss";

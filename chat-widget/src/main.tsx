@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import ConnectyCubeChatWidget from './ConnectyCubeChatWidget.tsx'
+import App from './App.tsx'
 
 const appConfig = {
   debug: {
@@ -16,6 +16,6 @@ const appConfig = {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ConnectyCubeChatWidget appId="7980" authKey="CmOpsbPmTjJbYjh" config={appConfig} />
+    <App appId="7980" authKey="CmOpsbPmTjJbYjh" config={appConfig} />
   </StrictMode>,
 )

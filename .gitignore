@@ -33,3 +33,7 @@ build
 
 #env
 .env
+
+#test
+test-widget
+test-widget-pure

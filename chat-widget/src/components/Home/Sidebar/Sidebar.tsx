@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BsPencil } from "react-icons/bs";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import {
   DropdownMenu,
@@ -19,7 +19,7 @@ import "./Sidebar.scss";
 import ChatsList from "./ChatsList/ChatsList";
 
 const Sidebar = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { isConnected, disconnect, selectedDialog, getDialogs } = useChat();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -34,7 +34,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     disconnect();
     await destroyUserSession();
-    navigate("/login");
+    // navigate("/login");
   };
 
   const handleNewMessage = () => {
