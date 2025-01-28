@@ -8,7 +8,6 @@ import Home from "./Components/Home/Home";
 import ConnectyCube from "connectycube";
 import { appConfig, credentials } from "./config";
 import { tryRestoreSession, isSessionExists } from "./connectycube";
-import "./App.css";
 
 // Init ConnectyCube SDK
 ConnectyCube.init(credentials, appConfig);
@@ -22,7 +21,7 @@ function App() {
   const initialPath = isSessionExists() ? "/home" : "/login";
 
   return (
-    <div className="wrapper">
+    <div className="w-full h-full overflow-hidden absolute">
       <StrictMode>
         <ChatProvider>
           <BrowserRouter>
