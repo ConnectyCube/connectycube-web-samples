@@ -1,18 +1,12 @@
 import React from "react";
-import ConnectyCube from "connectycube";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/shadcn-ui/avatar";
 import { Button } from "@/components/shadcn-ui/button";
-import { ChatType } from "../NewChatDialog";
-import "./SearchedUser.scss";
+import { ChatType } from "./NewChatDialog";
+import Avatar from "@/components/Shared/Avatar";
 
 export interface SearchedUserProps {
   id: number;
   name: string;
-  avatar: string | null;
+  avatar?: string;
   chatType: ChatType;
   onStartChat: (userId: number) => void;
   isSelected: boolean;
@@ -28,23 +22,12 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
   isSelected,
   onSelectUser,
 }) => {
-  const avatarUrl = avatar
-    ? ConnectyCube.storage.privateUrl(avatar)
-    : undefined;
-  const initials = name.slice(0, 2).toUpperCase();
-
   return (
-    <div
-      className={`found__user ${isSelected ? "checked" : "not-checked"}`}
-      key={id}
-    >
-      <div className="user__main-info">
-        <Avatar className="user__avatar">
-          <AvatarImage src={avatarUrl} />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-        <div className="user__name-info">
-          <p className="user__full-name">{name}</p>
+    <div className={`flex items-center justify-between relative pb-2`} key={id}>
+      <div className="flex items-center flex-[0_0_70%] gap-2">
+        <Avatar imageUID={avatar} name={name} className="w-[50px] h-[50px]" />
+        <div className="text-left">
+          <p className="text-black">{name}</p>
         </div>
       </div>
       {chatType === "private" ? (
@@ -59,7 +42,7 @@ const SearchedUser: React.FC<SearchedUserProps> = ({
         </Button>
       ) : (
         <div
-          className={`add-status ${isSelected ? "delete" : "add"}`}
+          className={`border px-4 py-2 rounded-lg transition duration-200 cursor-pointer bg-transparent text-blue-600 border-blue-400 hover:bg-blue-400 hover:text-white`}
           onClick={() => {
             onSelectUser(id, !isSelected);
           }}

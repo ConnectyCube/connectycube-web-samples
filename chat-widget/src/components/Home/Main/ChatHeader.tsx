@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import "./ChatHeader.scss";
+import Avatar from "@/components/Shared/Avatar";
 
 export interface ChatHeaderProps {
   toggleProfile: () => void;
@@ -24,6 +24,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
     getDialogOpponentId,
     typingStatus,
     users,
+    selectDialog,
   } = useChat();
   const isGroupChat = selectedDialog.type === 2;
 
@@ -56,67 +57,61 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
   };
 
   return (
-    <div className="user__info">
-      <div className="user__info-main">
+    <div className="flex justify-between relative items-center absolute top-1/2 -translate-y-1/2">
+      <div className="flex items-center relative">
+        {/* Back Button */}
         <IoIosArrowBack
           size={32}
           onClick={() => {
+            selectDialog(null);
             navigate("/home");
           }}
-          className="user__info-back"
+          className="pr-2 cursor-pointer block md:hidden"
         />
 
+        {/* User Avatar */}
         <div
-          className="user__avatar-dialog"
-          onClick={() => {
-            toggleProfile();
-          }}
+          className="flex items-center justify-center mr-3 w-15 h-15 rounded-full bg-blue-300 cursor-pointer"
+          onClick={toggleProfile}
         >
-          {selectedDialog.photo ? (
-            <img
-              className="user__avatar-img"
-              src={selectedDialog.photo}
-              alt="User Photo"
-            />
-          ) : (
-            <div id="background" className="user__no-img">
-              <span className="name">{selectedDialog.name.slice(0, 2)}</span>
-            </div>
-          )}
+          <Avatar
+            imageUID={selectedDialog.photo}
+            name={selectedDialog.name}
+            className="w-[60px] h-[60px]"
+          />
         </div>
-        <div className="user-name-container">
+
+        {/* User Info */}
+        <div className="flex flex-col items-start">
           <span
-            onClick={() => {
-              toggleProfile();
-            }}
+            className="text-black font-medium cursor-pointer"
+            onClick={toggleProfile}
           >
             {selectedDialog.name}
           </span>
-
-          <div className="typing-status">
+          <div className="text-sm italic pt-1">
             {typingStatus && !isGroupChat ? (
               typingStatus.isTyping ? (
                 "typing..."
-              ) : !isGroupChat ? (
-                <span className="last__activity">
+              ) : (
+                <span className="text-gray-500 truncate">
                   {lastActivity[opponentId as number]}
                 </span>
-              ) : (
-                "someone typing"
               )
-            ) : !isGroupChat ? (
-              <span className="last__activity">
+            ) : isGroupChat ? (
+              <span>{typingLabel}</span>
+            ) : (
+              <span className="text-gray-500 truncate">
                 {lastActivity[opponentId as number]}
               </span>
-            ) : (
-              ""
             )}
-            {isGroupChat ? <span>{typingLabel}</span> : ""}
           </div>
         </div>
       </div>
+
+      {/* More Options Dropdown */}
       <DropdownMenu modal={false}>
-        <DropdownMenuTrigger className="user__info-buttons">
+        <DropdownMenuTrigger className="mr-2 cursor-pointer">
           <FiMoreHorizontal fontSize={25} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">

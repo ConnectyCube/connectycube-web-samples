@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import tailwindcss from "@tailwindcss/vite";
+// import tailwindcss from "@tailwindcss/vite";
 import react from '@vitejs/plugin-react'
 import { resolve } from "path";
 import dts from "vite-plugin-dts";
@@ -15,11 +15,11 @@ const globals = {
 export default defineConfig(({ mode }) => {
   const dev = mode === 'development';
   const plugins = dev ? [
-    tailwindcss(),
+    // tailwindcss(),
     react(),
     nodePolyfills()
   ] : [
-    tailwindcss(),
+    // tailwindcss(),
     react(),
     dts({
       rollupTypes: true,

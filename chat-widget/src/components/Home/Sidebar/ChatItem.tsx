@@ -3,8 +3,7 @@ import { useEffect } from "react";
 import { TiGroup } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
-import "./ChatItem.scss";
-import Avatar from "../../../Shared/Avatar";
+import Avatar from "@/components/Shared/Avatar";
 import { Dialogs } from "@connectycube/types";
 
 export interface ChatItemProps {
@@ -42,33 +41,46 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
 
   return (
     <div
-      className={`chat__block ${isSelected ? "chosen" : ""}`}
+      className={`flex items-center px-5 py-2 cursor-pointer ${
+        isSelected
+          ? "bg-gray-100 border-l-4 border-blue-500"
+          : "hover:bg-gray-100"
+      } transition duration-100`}
       onClick={handleSelectChat}
     >
-      {/* avatar */}
-      <Avatar imageUID={dialog.photo || ''} name={dialog.name} />
-      
-      <div className="user__info-main">
-        <div className="group__name-container">
+      <Avatar
+        imageUID={dialog.photo || ""}
+        name={dialog.name}
+        className="w-[60px] h-[60px]"
+      />
+
+      <div className="flex flex-col flex-1 text-black pl-3 space-y-1 overflow-hidden">
+        {/* Group or Username */}
+        <div className="flex">
           {dialog.type === 2 && (
-            <TiGroup className="group__img" size={26} color="grey" />
+            <TiGroup className="pr-2" size={26} color="grey" />
           )}
-          <p className="chat__username">{dialog.name}</p>
+          <p className="font-medium">{dialog.name}</p>
         </div>
 
-        <small className="last__message">
+        {/* Last message */}
+        <p className="block text-sm text-gray-500 truncate text-left">
           {dialog.last_message
             ? dialog.last_message_user_id === currentUserId
               ? "me: " + dialog.last_message
               : dialog.name + " : " + dialog.last_message
             : "No messages yet"}
-        </small>
-        <small>{lastMessageTime}</small>
+        </p>
+
+        {/* Last message time */}
+        <p className="text-xs text-gray-400 text-left">{lastMessageTime}</p>
       </div>
 
-      {/* unread counter */}
+      {/* Unread messages counter */}
       {dialog.unread_messages_count > 0 && (
-        <span className="unread-counter">{dialog.unread_messages_count}</span>
+        <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm ml-2">
+          {dialog.unread_messages_count}
+        </span>
       )}
     </div>
   );

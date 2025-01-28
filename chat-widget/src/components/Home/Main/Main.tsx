@@ -1,12 +1,11 @@
-import { useEffect, useState, useRef, useMemo, ChangeEvent } from "react";
+import { useState, useRef, useMemo } from "react";
 import { animateScroll } from "react-scroll";
 import { useChat } from "@connectycube/use-chat";
-import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
-import Message from "./Message/Message";
-import ChatHeader from "./ChatHeader/ChatHeader";
-// import ChatInfo from "./ChatInfo/ChatInfo";
-import "./Main.scss";
+import Message from "./Message";
+import ChatHeader from "./ChatHeader";
+import ChatInfo from "./ChatInfo";
+import ChatInput from "./ChatInput";
 
 const Main = () => {
   const {
@@ -19,76 +18,12 @@ const Main = () => {
   } = useChat();
 
   const [showProfile, setShowProfile] = useState(false);
-  const messageInputRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLInputElement>(null);
-  const isTyping = useRef(false);
-
-  useEffect(() => {
-    isTyping.current = false;
-  }, [selectedDialog]);
-
-  const handleSendMessage = () => {
-    isTyping.current = false;
-
-    const messageText = messageInputRef.current?.value.trim() || "";
-    if (messageText.length > 0) {
-      sendMessage(messageText); // send message to selected dialog
-      messageInputRef.current!.value = "";
-      scrollToBottom();
-    }
-  };
-
-  const onFileSelected = (event: ChangeEvent<HTMLInputElement>) => {
-    isTyping.current = false;
-
-    const {files} = event.currentTarget;
-
-    if (!files) return;
-
-    const file = files[0];
-    const type = file.type.split("/")[1];
-    
-    if (
-      type === "svg+xml" ||
-      type === "image" ||
-      type === "webp" ||
-      type === "png" ||
-      type === "jpeg"
-    ) {
-      sendMessageWithAttachment(file);
-    } else {
-      alert(
-        "File format is not supported. Only images supported in this code sample"
-      );
-    }
-
-    event.target.value = "";
-  };
-
-  const onEnterPress = (event: {
-    keyCode: number;
-    shiftKey: boolean;
-    preventDefault: () => void;
-  }) => {
-    if (event.keyCode === 13 && event.shiftKey === false) {
-      event.preventDefault();
-
-      handleSendMessage();
-    }
-  };
 
   const scrollToBottom = () => {
     animateScroll.scrollToBottom({
       containerId: messagesContainerRef.current?.id,
     });
-  };
-
-  const startTyping = () => {
-    if (!isTyping.current) {
-      isTyping.current = true;
-      sendTypingStatus(); // send typing to selected chat
-    }
   };
 
   const toggleProfile = () => {
@@ -115,72 +50,75 @@ const Main = () => {
     }
   }, [messages, users]);
 
+  const handleSendMessage = (text: string) => {
+    sendMessage(text);
+    scrollToBottom();
+  };
+
   return (
-    <div className={`main__container ${selectedDialog ? "show" : ""}`}>
-      {/* <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} /> */}
-      <div className={`main__content ${showProfile ? "small" : ""}`}>
-        <div className="main__header">
-          {selectedDialog && <ChatHeader toggleProfile={toggleProfile} />}
-          {!selectedDialog && <div className="header-none">Chats</div>}
+    <div
+      className={`flex h-full w-full bg-white flex-row-reverse overflow-hidden relative ${
+        selectedDialog ? "" : "hidden sm:block"
+      }`}
+    >
+      <ChatInfo toggleProfile={toggleProfile} showProfile={showProfile} />
+      <div
+        className={
+          "flex flex-col justify-between h-full w-full overflow-hidden bg-white transition-all duration-200"
+        }
+      >
+        {/* Header */}
+        <div className="flex-shrink-0 bg-white border-b border-gray-300 mx-4 py-2">
+          {selectedDialog ? (
+            <ChatHeader toggleProfile={toggleProfile} />
+          ) : (
+            <div className="flex items-center justify-center text-center text-[30px] font-semibold h-[60px] w-full">
+              Chats
+            </div>
+          )}
         </div>
+
+        {/* Messages Container */}
         <div
           id="messages__container"
-          className="messages__container"
+          className="flex flex-col-reverse h-full w-full overflow-y-auto overflow-x-hidden bg-white pb-1 relative"
           ref={messagesContainerRef}
         >
-          {selectedDialog && (
-            <div id="messages" className="messages">
+          {selectedDialog ? (
+            <div id="messages" className="flex flex-col px-4 w-[90%] mx-auto">
               {messages ? (
                 messagesView
               ) : (
-                <span className="no-msg">NO MESSAGES YET</span>
+                <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  NO MESSAGES YET
+                </span>
               )}
               {selectedDialog.unread_messages_count > 0 && (
                 <div
                   onClick={scrollToBottom}
-                  className="unread__messages-scroll"
+                  className="fixed flex items-center justify-center top-[83%] left-[96%] border rounded-full w-9 h-9 cursor-pointer"
                 >
                   <IoIosArrowDown size={26} />
-                  <div className="unread__messages-counter">
+                  <div className="absolute flex items-center justify-center top-[-76%] bg-blue-400 text-white rounded-full w-6 h-6">
                     <span>{selectedDialog.unread_messages_count}</span>
                   </div>
                 </div>
               )}
             </div>
+          ) : (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[20px]">
+              Choose a chat
+            </div>
           )}
-          {!selectedDialog && <div className="choose__chat">Choose a chat</div>}
         </div>
+
+        {/* Chat Input */}
         {selectedDialog && (
-          <form
-            className="message__field"
-            action="#"
-            method="GET"
-            onKeyDown={onEnterPress}
-          >
-            <textarea
-              onKeyDown={startTyping}
-              ref={messageInputRef}
-              className="message__area"
-              placeholder="Enter message"
-            ></textarea>
-            <button
-              onClick={handleSendMessage}
-              type="button"
-              className="send-btn"
-            >
-              Send
-            </button>
-            <label htmlFor="file-upload" className="custom-file-upload">
-              <IoMdAttach size={28} />
-            </label>
-            <input
-              onChange={onFileSelected}
-              ref={fileInputRef}
-              id="file-upload"
-              type="file"
-              accept="image/*"
-            />
-          </form>
+          <ChatInput
+            sendMessage={handleSendMessage}
+            sendMessageWithAttachment={sendMessageWithAttachment}
+            sendTypingStatus={sendTypingStatus}
+          />
         )}
       </div>
     </div>

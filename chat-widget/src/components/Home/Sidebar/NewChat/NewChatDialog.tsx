@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { FaSearch } from "react-icons/fa";
 import { useChat } from "@connectycube/use-chat";
 import { DialogHeader, DialogTitle } from "@/components/shadcn-ui/dialog";
 import { Input } from "@/components/shadcn-ui/input";
 import { Label } from "@/components/shadcn-ui/label";
 import { Button } from "@/components/shadcn-ui/button";
-import SearchedUser from "./SearchedUser/SearchedUser";
+import { Users } from "@connectycube/types";
+import SearchedUser from "./SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
-import Participant from "./CreateGroupChat/Participant/Participant";
-import { useNavigate } from "react-router";
-import { Users } from '@connectycube/types';
+import Participant from "./CreateGroupChat/Participant";
 
 export type ChatType = "private" | "group";
 
@@ -75,7 +75,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
             navigate(`/home/${dialog._id}`);
             onFinish();
           }}
-          avatar={user.avatar}
+          avatar={user.avatar || ""}
           chatType={chatType}
           isSelected={!!selectedUsers[user.id]}
           onSelectUser={(userId: number, isSelected: boolean) => {
@@ -133,7 +133,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
                       return (
                         <Participant
                           key={user.id}
-                          avatar={user.avatar}
+                          avatar={user.avatar || ""}
                           name={user.full_name || user.login || ""}
                         />
                       );

@@ -2,9 +2,8 @@ import React, { useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Users } from "@connectycube/types";
 import { Button } from "@/components/shadcn-ui/button";
-import Participant from "./Participant/Participant";
+import Participant from "./Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
-import "./CreateGroupChat.scss";
 
 export interface CreateGroupChatProps {
   users: Users.User[];
@@ -30,8 +29,8 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
       return (
         <Participant
           key={user.id}
-          name={user.login || user.full_name || "unknown"}
-          avatar={user.avatar}
+          name={user.login || user.full_name || ""}
+          avatar={user.avatar || ""}
         />
       );
     });
@@ -42,22 +41,30 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="new-chat__form create">
-      <div className="chat__img">
-        <img src={groupChatImage} alt="" />
+    <form onSubmit={handleSubmit(onSubmit)} className="pt-8">
+      <div className="flex justify-center mb-6">
+        <img
+          src={groupChatImage}
+          alt=""
+          className="w-[220px] h-[150px] object-contain"
+        />
       </div>
       <input
-        className="chat__name"
+        className="w-full h-[50px] rounded-full border border-gray-300 mt-5 px-5"
         type="text"
         placeholder="Chat name"
         {...register("name", {
           required: "Chat name is required",
         })}
       />
-      {errors.name && <span className="error">{errors.name.message}</span>}
-      <div className="users__in-group">{participants}</div>
-      <div className="text-center">
-        <Button type="submit" className="px-3 mt-4">
+      {errors.name && (
+        <span className="text-red-500 text-sm">{errors.name.message}</span>
+      )}
+      <div className="flex flex-wrap w-[90%] mx-auto pt-5 space-x-5">
+        {participants}
+      </div>
+      <div className="text-center mt-4">
+        <Button type="submit" className="px-3">
           Create group chat
         </Button>
       </div>

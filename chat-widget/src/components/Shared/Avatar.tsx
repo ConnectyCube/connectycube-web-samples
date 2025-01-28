@@ -7,18 +7,19 @@ import {
 import ConnectyCube from "connectycube";
 
 export interface AvatarProps {
-  imageUID: string;
+  imageUID?: string;
   name: string;
+  className?: string | undefined;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ imageUID, name }) => {
+const Avatar: React.FC<AvatarProps> = ({ imageUID, name, className }) => {
   const photoUrl = imageUID
     ? ConnectyCube.storage.privateUrl(imageUID)
     : undefined;
   const initials = name.slice(0, 2).toUpperCase();
 
   return (
-    <AvatarComponent>
+    <AvatarComponent className={className}>
       <AvatarImage src={photoUrl} />
       <AvatarFallback>{initials}</AvatarFallback>
     </AvatarComponent>

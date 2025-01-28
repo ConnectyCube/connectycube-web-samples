@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { useChat } from "@connectycube/use-chat";
-import ChatItem from "../ChatItem/ChatItem";
-import "./ChatsList.scss";
+import ChatItem from "./ChatItem";
 
 export interface ChatsListProps {
   searchTerm?: string;

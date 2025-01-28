@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { BsPencil } from "react-icons/bs";
-// import { useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
 import {
   DropdownMenu,
@@ -9,22 +8,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-} from "@/components/shadcn-ui/dialog";
-import NewChatDialog, { ChatType } from "./NewChat/NewChatDialog";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/shadcn-ui/tabs";
 import { currentUser, destroyUserSession } from "../../../connectycube";
-import "./Sidebar.scss";
-import ChatsList from "./ChatsList/ChatsList";
+import ChatsTab from "./Tabs/ChatsTab";
+import UsersTab from "./Tabs/UsersTab";
+import Avatar from "@/components/Shared/Avatar";
+import { cn } from "@/lib/utils";
 
-const Sidebar = () => {
-  // const navigate = useNavigate();
-  const { isConnected, disconnect, selectedDialog, getDialogs } = useChat();
+export interface SideBarProps {
+  showUsersTab?: boolean;
+}
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [chatType, setChatType] = useState<ChatType>("private");
-  const [newChatDialogOpen, setNewChatDialogOpen] = useState<boolean>(false);
+const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
+  const navigate = useNavigate();
+  const { disconnect, selectedDialog, getDialogs } = useChat();
 
   // retrieve chats
   useEffect(() => {
@@ -34,28 +35,27 @@ const Sidebar = () => {
   const handleLogout = async () => {
     disconnect();
     await destroyUserSession();
-    // navigate("/login");
-  };
-
-  const handleNewMessage = () => {
-    setChatType("private");
-  };
-
-  const handleCreateGroupChat = () => {
-    setChatType("group");
+    navigate("/login");
   };
 
   return (
-    <div className={`sidebar__container ${selectedDialog ? "" : "show"}`}>
-      <div className="sidebar__header sidebar-header">
+    <div
+      className={cn(
+        "flex flex-col bg-white border-r border-gray-300 relative transition-transform w-full",
+        "md:max-w-[35%] lg:max-w-[30%] xl:max-w-[25%]",
+        selectedDialog ? "hidden sm:block" : ""
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-5 border-b border-gray-300">
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="sidebar-user__info">
-            <span className="sidebar-user__name">{currentUser()?.login}</span>
-            <div className="sidebar-img__container">
-              <div id="background" className="user__no-img main">
-                <span className="name">{currentUser()?.login?.slice(0, 2)}</span>
-              </div>
-            </div>
+          <DropdownMenuTrigger className="flex items-center flex-row-reverse cursor-pointer bg-white">
+            <p className="text-center ml-2">{currentUser()?.login}</p>
+            <Avatar
+              imageUID={currentUser()?.avatar || ""}
+              name={currentUser()?.login || ""}
+              className="w-[60px] h-[60px]"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
@@ -63,54 +63,38 @@ const Sidebar = () => {
         </DropdownMenu>
       </div>
 
-      <input
-        type="text"
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-        }}
-        className="sidebar-search__chat"
-        placeholder="Search..."
-      ></input>
-      {isConnected ? (
-        <div className="sidebar-chats__container">
-          <ChatsList searchTerm={searchTerm} />
-        </div>
-      ) : (
-        <div className="loader">Loading...</div>
-      )}
-      <Dialog
-        modal={false}
-        open={newChatDialogOpen}
-        onOpenChange={setNewChatDialogOpen}
-      >
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="sidebar-add__newchat">
-            <BsPencil size={34} color="white" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DialogTrigger asChild>
-              <DropdownMenuItem onClick={handleCreateGroupChat}>
-                New group
-              </DropdownMenuItem>
-            </DialogTrigger>
-            <DialogTrigger asChild>
-              <DropdownMenuItem onClick={handleNewMessage}>
-                New message
-              </DropdownMenuItem>
-            </DialogTrigger>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DialogContent>
-          <NewChatDialog
-            chatType={chatType}
-            onFinish={() => {
-              setNewChatDialogOpen(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* Tabs */}
+      <Tabs defaultValue="chats" className="flex flex-col">
+        <TabsContent
+          value="chats"
+          className={`${showUsersTab ? "h-[calc(100%-60px)]" : "h-full"}`}
+        >
+          <ChatsTab />
+        </TabsContent>
+        {showUsersTab && (
+          <TabsContent value="users" className="h-[calc(100%-60px)]">
+            <UsersTab />
+          </TabsContent>
+        )}
+        <TabsList
+          className={`w-full absolute bottom-0 ${
+            showUsersTab ? "h-[40px]" : "h-[0px]"
+          }`}
+        >
+          {showUsersTab && (
+            <>
+              <TabsTrigger value="chats" className="w-[50%] h-[40px]">
+                Chats
+              </TabsTrigger>
+              <TabsTrigger value="users" className="w-[50%] h-[40px]">
+                Users
+              </TabsTrigger>
+            </>
+          )}
+        </TabsList>
+      </Tabs>
     </div>
   );
 };
 
-export default Sidebar;
+export default SideBar;

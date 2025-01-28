@@ -3,8 +3,8 @@ import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
 import { Messages } from "@connectycube/types";
 import { useChat } from "@connectycube/use-chat";
-import Avatar from "../../../Shared/Avatar";
-import "./Message.scss";
+import Avatar from "../../Shared/Avatar";
+import Loader from "../../Shared/Loader";
 
 export interface MessageProps {
   message: Messages.Message;
@@ -24,6 +24,9 @@ const Message: React.FC<MessageProps> = ({
   const { currentUserId, readMessage, messageSentTimeString } = useChat();
 
   const isCurrentUserSender = message.sender_id === currentUserId;
+
+  const isAttachment = message.attachmentsUrls?.length > 0;
+  const fileUrl = message.attachmentsUrls?.[0];
 
   const senderNameString = isCurrentUserSender
     ? "You"
@@ -45,63 +48,62 @@ const Message: React.FC<MessageProps> = ({
   return (
     <div
       ref={ref}
-      className={`message ${isCurrentUserSender ? "my" : "opponent"} ${
-        inView ? "view" : "no"
-      }`}
+      className={`flex relative max-w-[90%] text-left whitespace-pre-wrap mb-2 ${
+        isCurrentUserSender ? "self-end flex-row-reverse" : "self-start"
+      } ${inView ? "view" : "no"}`}
     >
       {/* avatar */}
       {isGroupChat && !isCurrentUserSender && (
-        <Avatar name={senderName} imageUID={senderAvatar} />
+        <Avatar
+          name={senderName}
+          imageUID={senderAvatar}
+          className="w-12 h-12"
+        />
       )}
 
-      <div className="user-message__info">
+      <div
+        className={`flex flex-col min-w-[150px] bg-gray-200 rounded-xl p-3 ml-3 ${
+          isCurrentUserSender ? "mr-3" : ""
+        }`}
+      >
         {/* sender name in group chat */}
         {isGroupChat && !isCurrentUserSender && (
-          <span className="message-user__name">{senderNameString}</span>
+          <span className="font-semibold">{senderNameString}</span>
         )}
-        {/* message body */}
+
         <div>
-          {message.message ? (
-            message.message
-          ) : (
+          {/* message body */}
+          {!isAttachment ? (
+            <p className="mb-2 break-all">{message.message}</p>
+          ) : null}
+
+          {/* attachments */}
+          {isAttachment && (
             <div
-              className="message__photo-container"
+              className="relative max-h-[200px] transition duration-200 cursor-pointer"
               onClick={(e) => {
-                e.currentTarget.classList.toggle("full");
+                e.currentTarget.classList.toggle("fixed");
               }}
             >
-              <img
-                className={`message__img ${
-                  message.isLoading ? "loading" : "loaded"
-                } message__photo`}
-                src={message.fileUrl}
-              />
-              {message.isLoading && (
-                <div className="lds-spinner">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
+              {message.isLoading ? (
+                <Loader className="mb-2" />
+              ) : (
+                <img
+                  src={fileUrl}
+                  className="mb-2 max-h-[200px] object-cover transition duration-200"
+                />
               )}
             </div>
           )}
         </div>
-        <div className="message__time-container">
+
+        <div className="flex items-center gap-1 text-gray-500 italic text-xs absolute bottom-[3px] right-[15px]">
           {/* date sent */}
-          <span className="message__time">{sentTime}</span>
+          <span>{sentTime}</span>
 
           {/* sent/read status */}
           {isCurrentUserSender && (
-            <span className="message__status">
+            <span>
               {message.read ? (
                 <IoCheckmarkDoneSharp size={14} color="#727272" />
               ) : (

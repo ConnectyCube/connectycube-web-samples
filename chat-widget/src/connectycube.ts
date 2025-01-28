@@ -14,7 +14,7 @@ export const tryRestoreSession = (): boolean => {
     
     // currentUserId = parseInt(userIdString!);
     return true;
-  } 
+  }
 
   return false;
 };
