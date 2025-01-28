@@ -1,21 +1,3 @@
-.sidebar-header__button {
-  position: relative;
-  width: 30px;
-  cursor: pointer;
-}
-
-.sidebar-header__button:before,
-.sidebar-header__button:after,
-.sidebar-header__button div {
-  background: #000;
-  content: "";
-  display: block;
-  height: 3px;
-  border-radius: 3px;
-  margin: 7px 0;
-  transition: 0.5s;
-}
-
 .sidebar__container {
   flex: 0 0 20%;
   max-width: 20%;

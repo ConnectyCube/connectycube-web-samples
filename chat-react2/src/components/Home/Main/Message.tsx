@@ -3,7 +3,7 @@ import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
 import { Messages } from "node_modules/connectycube/dist/types/types";
 import { useChat } from "@connectycube/use-chat";
-import Avatar from "../../../Shared/Avatar";
+import Avatar from "../../Shared/Avatar";
 import Loader from "@/Components/Shared/Loader";
 
 export interface MessageProps {
