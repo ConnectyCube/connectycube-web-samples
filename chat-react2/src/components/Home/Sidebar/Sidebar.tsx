@@ -64,7 +64,7 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="chats" className="flex flex-col">
+      <Tabs defaultValue="chats" className="flex flex-col overflow-y-scroll">
         <TabsContent
           value="chats"
           className={`${showUsersTab ? "h-[calc(100%-60px)]" : "h-full"}`}
