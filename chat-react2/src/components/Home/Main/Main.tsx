@@ -1,12 +1,12 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { animateScroll } from "react-scroll";
 import { useChat } from "@connectycube/use-chat";
-import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import Message from "./Message";
 import ChatHeader from "./ChatHeader";
 import ChatInfo from "./ChatInfo";
 import "./Main.scss";
+import ChatInput from "./ChatInput";
 
 const Main = () => {
   const {
@@ -19,73 +19,12 @@ const Main = () => {
   } = useChat();
 
   const [showProfile, setShowProfile] = useState(false);
-  const messageInputRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLInputElement>(null);
-  const isTyping = useRef(false);
-
-  useEffect(() => {
-    isTyping.current = false;
-  }, [selectedDialog]);
-
-  const handleSendMessage = () => {
-    isTyping.current = false;
-
-    const messageText = messageInputRef.current?.value.trim() || "";
-    if (messageText.length > 0) {
-      sendMessage(messageText); // send message to selected dialog
-      messageInputRef.current!.value = "";
-      scrollToBottom();
-    }
-  };
-
-  const onFileSelected = (event: {
-    currentTarget: { files: any[] };
-    target: { value: string };
-  }) => {
-    isTyping.current = false;
-
-    const file = event.currentTarget.files[0];
-    const type = file.type.split("/")[1];
-    if (
-      type === "svg+xml" ||
-      type === "image" ||
-      type === "webp" ||
-      type === "png" ||
-      type === "jpeg"
-    ) {
-      sendMessageWithAttachment(file);
-    } else {
-      alert(
-        "File format is not supported. Only images supported in this code sample"
-      );
-    }
-    event.target.value = "";
-  };
-
-  const onEnterPress = (event: {
-    keyCode: number;
-    shiftKey: boolean;
-    preventDefault: () => void;
-  }) => {
-    if (event.keyCode === 13 && event.shiftKey === false) {
-      event.preventDefault();
-
-      handleSendMessage();
-    }
-  };
 
   const scrollToBottom = () => {
     animateScroll.scrollToBottom({
       containerId: messagesContainerRef.current?.id,
     });
-  };
-
-  const startTyping = () => {
-    if (!isTyping.current) {
-      isTyping.current = true;
-      sendTypingStatus(); // send typing to selected chat
-    }
   };
 
   const toggleProfile = () => {
@@ -111,6 +50,11 @@ const Main = () => {
       }
     }
   }, [messages, users]);
+
+  const handleSendMessage = (text: string) => {
+    sendMessage(text);
+    scrollToBottom();
+  };
 
   return (
     <div className={`main__container ${selectedDialog ? "show" : ""}`}>
@@ -148,36 +92,11 @@ const Main = () => {
           {!selectedDialog && <div className="choose__chat">Choose a chat</div>}
         </div>
         {selectedDialog && (
-          <form
-            className="message__field"
-            action="#"
-            method="GET"
-            onKeyDown={onEnterPress}
-          >
-            <textarea
-              onKeyDown={startTyping}
-              ref={messageInputRef}
-              className="message__area"
-              placeholder="Enter message"
-            ></textarea>
-            <button
-              onClick={handleSendMessage}
-              type="button"
-              className="send-btn"
-            >
-              Send
-            </button>
-            <label htmlFor="file-upload" className="custom-file-upload">
-              <IoMdAttach size={28} />
-            </label>
-            <input
-              onChange={onFileSelected}
-              ref={fileInputRef}
-              id="file-upload"
-              type="file"
-              accept="image/*"
-            />
-          </form>
+          <ChatInput
+            sendMessage={handleSendMessage}
+            sendMessageWithAttachment={sendMessageWithAttachment}
+            sendTypingStatus={sendTypingStatus}
+          />
         )}
       </div>
     </div>
