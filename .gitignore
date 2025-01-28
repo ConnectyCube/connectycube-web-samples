@@ -21,6 +21,7 @@ npm-debug.log.*
 
 # packages from "npm pack"
 *.tgz
+!*/libs/*.tgz
 
 build
 

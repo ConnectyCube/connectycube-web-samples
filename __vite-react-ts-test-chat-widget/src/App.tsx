@@ -33,7 +33,7 @@ function App() {
       <ConnectyCubeChatWidget
         appId="7980"
         authKey="CmOpsbPmTjJbYjh"
-        config={{  chat: {  streamManagement: {  enable: true } } }}
+        config={{ debug: { mode: 1 } }}
       />
     </>
   )

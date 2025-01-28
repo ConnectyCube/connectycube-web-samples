@@ -26,6 +26,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+
+    /* Declaration files */
+    "declaration": true,
+    "declarationDir": "./dist/types"
   },
   "include": ["src"]
 }

@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-// import tailwindcss from "@tailwindcss/vite";
 import react from '@vitejs/plugin-react'
 import { resolve } from "path";
 import dts from "vite-plugin-dts";
@@ -8,6 +7,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 const globals = {
   "react": "React",
   "react-dom": "ReactDOM",
+  "connectycube": "ConnectyCube",
   'vite-plugin-node-polyfills/shims/process': "process",
   'vite-plugin-node-polyfills/shims/buffer': "Buffer"
 }
@@ -15,11 +15,9 @@ const globals = {
 export default defineConfig(({ mode }) => {
   const dev = mode === 'development';
   const plugins = dev ? [
-    // tailwindcss(),
     react(),
     nodePolyfills()
   ] : [
-    // tailwindcss(),
     react(),
     dts({
       rollupTypes: true,
@@ -37,16 +35,14 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       lib: {
-        entry: resolve(__dirname, dev ? 'src/main.tsx' : 'src/index.ts'),
+        entry: resolve(__dirname, `./src/${dev ? 'main' : 'index'}.tsx`),
         name: 'ConnectyCubeChatWidget',
         fileName: (format) => `index.${format}.js`,
       },
       rollupOptions: {
-        external: dev ? Object.keys(globals) : [],
-        output: {
-          globals: dev ? globals : undefined
-        }
+        external: Object.keys(globals),
+        output: { globals }
       },
-    }
+    },
   };
 });
