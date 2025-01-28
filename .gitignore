@@ -21,6 +21,7 @@ npm-debug.log.*
 
 # packages from "npm pack"
 *.tgz
+!*/lib/*.tgz
 
 build
 
@@ -32,3 +33,7 @@ build
 
 #env
 .env
+
+#test
+test-widget
+test-widget-pure

@@ -1,0 +1,67 @@
+.last__activity {
+  unicode-bidi: plaintext;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  color: rgb(128, 133, 136);
+  white-space: nowrap;
+}
+.typing-status {
+  font-size: 13px;
+  padding-top: 5px;
+  font-style: italic;
+}
+.user__info {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  & .more__modal {
+    position: absolute;
+    right: 10%;
+    bottom: 25%;
+    padding: 10px 15px;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+
+    border: 0.5px solid #d9d4d4;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+      rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  }
+  & .user__info-main {
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    & .user__info-back {
+      display: none;
+      @media screen and (max-width:767px) {
+        display: block;
+        padding-right: 10px;
+      }
+    }
+
+    & .user-name-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    & .user__avatar-dialog {
+      margin-right: 10px;
+      & .user__avatar-img {
+        object-fit: cover;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+    }
+  }
+  & .user__info-buttons {
+    margin-right: 10px;
+  }
+}

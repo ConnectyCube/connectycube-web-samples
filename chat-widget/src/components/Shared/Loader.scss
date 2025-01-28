@@ -1,0 +1,17 @@
+.rotating-spinner {
+  animation: spin 1s linear infinite;
+  font-size: 2rem;
+  /* Adjust size as needed */
+  color: #000;
+  /* Adjust color as needed */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
