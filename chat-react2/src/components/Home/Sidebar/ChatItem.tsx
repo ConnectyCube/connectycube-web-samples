@@ -53,7 +53,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
         className="w-[60px] h-[60px]"
       />
 
-      <div className="flex flex-col flex-1 text-black pl-3 space-y-1">
+      <div className="flex flex-col flex-1 text-black pl-3 space-y-1 overflow-hidden">
         {/* Group or Username */}
         <div className="flex">
           {dialog.type === 2 && (

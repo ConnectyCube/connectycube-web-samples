@@ -14,11 +14,10 @@ import {
   TabsTrigger,
 } from "@/components/shadcn-ui/tabs";
 import { currentUser, destroyUserSession } from "../../../connectycube";
-import "./Sidebar.scss";
 import ChatsTab from "./Tabs/ChatsTab";
 import UsersTab from "./Tabs/UsersTab";
-import { cn } from "@/lib/utils";
 import Avatar from "@/Components/Shared/Avatar";
+import { cn } from "@/lib/utils";
 
 export interface SideBarProps {
   showUsersTab?: boolean;
@@ -40,12 +39,18 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
   };
 
   return (
-    <div className={`sidebar__container ${selectedDialog ? "" : "show"}`}>
-      {/* header */}
-      <div className="sidebar__header sidebar-header">
+    <div
+      className={cn(
+        "flex flex-col bg-white border-r border-gray-300 relative transition-transform w-full",
+        "md:flex-[0_0_35%] md:max-w-[35%] lg:flex-[0_0_30%] lg:max-w-[30%] xl:flex-[0_0_25%] xl:max-w-[25%]",
+        selectedDialog ? "hidden sm:block" : ""
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-5 border-b border-gray-300">
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="sidebar-user__info bg-white">
-            <p className="text-center ml-[10px]">{currentUser()?.login}</p>
+          <DropdownMenuTrigger className="flex items-center flex-row-reverse cursor-pointer bg-white">
+            <p className="text-center ml-2">{currentUser()?.login}</p>
             <Avatar
               imageUID={currentUser()?.avatar}
               name={currentUser()?.login}
@@ -57,11 +62,12 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {/* tabs */}
+
+      {/* Tabs */}
       <Tabs defaultValue="chats" className="flex flex-col">
         <TabsContent
           value="chats"
-          className={cn(showUsersTab ? "h-[calc(100%-60px)]" : "h-full")}
+          className={`${showUsersTab ? "h-[calc(100%-60px)]" : "h-full"}`}
         >
           <ChatsTab />
         </TabsContent>
@@ -71,10 +77,9 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
           </TabsContent>
         )}
         <TabsList
-          className={cn(
-            "w-full absolute bottom-0",
+          className={`w-full absolute bottom-0 ${
             showUsersTab ? "h-[40px]" : "h-[0px]"
-          )}
+          }`}
         >
           {showUsersTab && (
             <>

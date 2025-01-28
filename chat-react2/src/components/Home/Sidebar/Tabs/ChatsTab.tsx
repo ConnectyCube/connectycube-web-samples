@@ -33,17 +33,17 @@ const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
   };
 
   return (
-    <>
+    <div className="flex flex-col">
       <input
         type="text"
         onChange={(e) => {
           setSearchTerm(e.target.value);
         }}
-        className="w-[90%] border border-gray-300 p-2 rounded-full bg-transparent placeholder-gray-500"
+        className="mx-5 border border-gray-300 p-2 rounded-full bg-transparent placeholder-gray-500"
         placeholder="Search..."
       />
       {isConnected ? (
-        <div className="relative pt-5 overflow-y-scroll h-[87%] overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
+        <div className="pt-5 overflow-y-scroll h-[87%] overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
           <ChatsList searchTerm={searchTerm} />
         </div>
       ) : (
@@ -80,7 +80,7 @@ const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
           />
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };
 
