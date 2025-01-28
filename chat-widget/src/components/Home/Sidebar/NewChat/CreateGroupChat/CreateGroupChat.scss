@@ -1,0 +1,37 @@
+.new-chat__form {
+  & .users__in-group {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 20px;
+    flex-wrap: wrap;
+    & > * {
+      padding-right: 20px;
+    }
+  }
+  & .error {
+    color: red;
+  }
+  &.create {
+    padding-top: 30px;
+  }
+  & .chat__img {
+    & img {
+      margin: 0 auto;
+      width: 220px;
+      height: 150px;
+      object-fit: contain;
+    }
+  }
+  & .chat__name {
+    margin: 0 auto;
+    width: 100%;
+    height: 15px;
+    height: 50px;
+    border-radius: 30px;
+    border: 1px solid #dbdbdb;
+    margin-top: 20px;
+    padding-left: 20px;
+  }
+}
+
