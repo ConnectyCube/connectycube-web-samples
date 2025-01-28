@@ -4,7 +4,6 @@ import { useInView } from "react-intersection-observer";
 import { Messages } from "node_modules/connectycube/dist/types/types";
 import { useChat } from "@connectycube/use-chat";
 import Avatar from "../../../Shared/Avatar";
-import "./Message.scss";
 import Loader from "@/Components/Shared/Loader";
 
 export interface MessageProps {
@@ -49,48 +48,62 @@ const Message: React.FC<MessageProps> = ({
   return (
     <div
       ref={ref}
-      className={`message ${isCurrentUserSender ? "my" : "opponent"} ${
-        inView ? "view" : "no"
-      }`}
+      className={`flex relative max-w-[90%] text-left whitespace-pre-wrap mb-2 ${
+        isCurrentUserSender ? "self-end flex-row-reverse" : "self-start"
+      } ${inView ? "view" : "no"}`}
     >
       {/* avatar */}
       {isGroupChat && !isCurrentUserSender && (
-        <Avatar name={senderName} imageUID={senderAvatar} />
+        <Avatar
+          name={senderName}
+          imageUID={senderAvatar}
+          className="w-12 h-12"
+        />
       )}
 
-      <div className="user-message__info">
+      <div
+        className={`flex flex-col min-w-[150px] bg-gray-200 rounded-xl p-3 ml-3 ${
+          isCurrentUserSender ? "mr-3" : ""
+        }`}
+      >
         {/* sender name in group chat */}
         {isGroupChat && !isCurrentUserSender && (
-          <span className="message-user__name">{senderNameString}</span>
+          <span className="font-semibold">{senderNameString}</span>
         )}
 
         <div>
           {/* message body */}
-          {!isAttachment ? message.message : null}
+          {!isAttachment ? (
+            <p className="mb-2 break-all">{message.message}</p>
+          ) : null}
 
           {/* attachments */}
           {isAttachment && (
             <div
-              className="message__photo-container"
+              className="relative max-h-[200px] transition duration-200 cursor-pointer"
               onClick={(e) => {
-                e.currentTarget.classList.toggle("full");
+                e.currentTarget.classList.toggle("fixed");
               }}
             >
               {message.isLoading ? (
-                <Loader />
+                <Loader className="mb-2" />
               ) : (
-                <img className="message__photo" src={fileUrl} />
+                <img
+                  src={fileUrl}
+                  className="mb-2 max-h-[200px] object-cover transition duration-200"
+                />
               )}
             </div>
           )}
         </div>
-        <div className="message__time-container">
+
+        <div className="flex items-center gap-1 text-gray-500 italic text-xs absolute bottom-[3px] right-[15px]">
           {/* date sent */}
-          <span className="message__time">{sentTime}</span>
+          <span>{sentTime}</span>
 
           {/* sent/read status */}
           {isCurrentUserSender && (
-            <span className="message__status">
+            <span>
               {message.read ? (
                 <IoCheckmarkDoneSharp size={14} color="#727272" />
               ) : (

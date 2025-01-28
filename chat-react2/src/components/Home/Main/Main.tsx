@@ -3,7 +3,7 @@ import { animateScroll } from "react-scroll";
 import { useChat } from "@connectycube/use-chat";
 import { IoMdAttach } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
-import Message from "./Message/Message";
+import Message from "./Message";
 import ChatHeader from "./ChatHeader";
 import ChatInfo from "./ChatInfo";
 import "./Main.scss";
