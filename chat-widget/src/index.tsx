@@ -1,3 +1,3 @@
-import './index.css'
+import './styles.css';
 
-export { default } from './App'
+export { default } from './App';

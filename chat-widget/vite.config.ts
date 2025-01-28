@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import { resolve } from "path";
 import dts from "vite-plugin-dts";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import autoprefixer from 'autoprefixer';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 const globals = {
   "react": "React",
@@ -19,6 +21,7 @@ export default defineConfig(({ mode }) => {
     nodePolyfills()
   ] : [
     react(),
+    cssInjectedByJsPlugin(),
     dts({
       rollupTypes: true,
       tsconfigPath: './tsconfig.app.json'
@@ -44,5 +47,12 @@ export default defineConfig(({ mode }) => {
         output: { globals }
       },
     },
+    css: {
+      postcss: {
+        plugins: [
+          autoprefixer({}) // add options if needed
+        ],
+      }
+    }
   };
 });

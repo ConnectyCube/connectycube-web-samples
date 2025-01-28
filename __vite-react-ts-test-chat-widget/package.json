@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@connectycube/chat-widget": "file:../chat-widget/connectycube-chat-widget-0.1.0-9.tgz",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
