@@ -21,7 +21,7 @@ function App() {
   const initialPath = isSessionExists() ? "/home" : "/login";
 
   return (
-    <div className="w-full h-full overflow-hidden absolute">
+    <div className="flex flex-col items-center justify-center w-full h-full text-center bg-gray-800 text-black overflow-hidden absolute">
       <StrictMode>
         <ChatProvider>
           <BrowserRouter>
