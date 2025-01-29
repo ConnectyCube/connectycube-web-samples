@@ -1,8 +1,8 @@
 import React from "react";
 import { MdPersonRemoveAlt1 } from "react-icons/md";
 import { useChat } from "@connectycube/use-chat";
-import { ConfirmationAlert } from "@/components/Shared/ConfirmationAlert";
-import Avatar from "@/components/Shared/Avatar";
+import { ConfirmationAlert } from "../../shared/confirmation-alert";
+import Avatar from "../../shared/avatar";
 
 export interface GroupMemberProps {
   userId: number;

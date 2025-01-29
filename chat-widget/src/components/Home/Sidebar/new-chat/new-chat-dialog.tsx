@@ -2,14 +2,14 @@ import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { FaSearch } from "react-icons/fa";
 import { useChat } from "@connectycube/use-chat";
+import { Users } from "@connectycube/types";
 import { DialogHeader, DialogTitle } from "@/components/shadcn-ui/dialog";
 import { Input } from "@/components/shadcn-ui/input";
 import { Label } from "@/components/shadcn-ui/label";
 import { Button } from "@/components/shadcn-ui/button";
-import { Users } from "@connectycube/types";
-import SearchedUser from "./SearchedUser";
-import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
-import Participant from "./CreateGroupChat/Participant";
+import SearchedUser from "./searched-user";
+import CreateGroupChat from "./create-group-chat/create-group-chat";
+import Participant from "./create-group-chat/participant";
 
 export type ChatType = "private" | "group";
 

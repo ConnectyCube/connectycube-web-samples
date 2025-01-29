@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { TiGroup } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router";
 import { useChat } from "@connectycube/use-chat";
-import Avatar from "@/components/Shared/Avatar";
 import { Dialogs } from "@connectycube/types";
+import Avatar from "../../shared/avatar";
 
 export interface ChatItemProps {
   dialog: Dialogs.Dialog;

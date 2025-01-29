@@ -1,4 +1,4 @@
-import Avatar from "@/components/Shared/Avatar";
+import Avatar from "../../../../shared/avatar";
 import React from "react";
 
 export interface ParticipantProps {

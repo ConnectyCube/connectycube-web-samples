@@ -14,9 +14,9 @@ import {
   TabsTrigger,
 } from "@/components/shadcn-ui/tabs";
 import { currentUser, destroyUserSession } from "../../../connectycube";
-import ChatsTab from "./Tabs/ChatsTab";
-import UsersTab from "./Tabs/UsersTab";
-import Avatar from "@/components/Shared/Avatar";
+import ChatsTab from "./tabs/chats-tab";
+import UsersTab from "./tabs/users-tab";
+import Avatar from "../../shared/avatar";
 import { cn } from "@/lib/utils";
 
 export interface SideBarProps {
@@ -64,7 +64,7 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="chats" className="flex flex-col">
+      <Tabs defaultValue="chats" className="flex flex-col overflow-y-scroll">
         <TabsContent
           value="chats"
           className={`${showUsersTab ? "h-[calc(100%-60px)]" : "h-full"}`}

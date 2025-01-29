@@ -2,10 +2,10 @@ import { useState, useRef, useMemo } from "react";
 import { animateScroll } from "react-scroll";
 import { useChat } from "@connectycube/use-chat";
 import { IoIosArrowDown } from "react-icons/io";
-import Message from "./Message";
-import ChatHeader from "./ChatHeader";
-import ChatInfo from "./ChatInfo";
-import ChatInput from "./ChatInput";
+import Message from "./message";
+import ChatHeader from "./chat-header";
+import ChatInfo from "./chat-info";
+import ChatInput from "./chat-input";
 
 const Main = () => {
   const {

@@ -30,7 +30,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@connectycube/use-chat": "file:./connectycube-use-chat-0.1.0.tgz",
+    "@connectycube/use-chat": "^0.10.0",
     "@fingerprintjs/fingerprintjs": "^4.5.1",
     "@radix-ui/react-alert-dialog": "^1.1.5",
     "@radix-ui/react-avatar": "^1.1.2",

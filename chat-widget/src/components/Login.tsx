@@ -2,8 +2,8 @@ import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useChat } from "@connectycube/use-chat";
-import Loader from "./Shared/Loader";
-import { createUserSession } from "./../connectycube";
+import Loader from "./shared/loader";
+import { createUserSession } from "../connectycube";
 import logo from "./../assets/logo.png";
 import { useState } from "react";
 

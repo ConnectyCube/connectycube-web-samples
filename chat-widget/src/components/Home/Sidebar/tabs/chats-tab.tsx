@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useChat } from "@connectycube/use-chat";
+import { BsPencil } from "react-icons/bs";
 import {
   Dialog,
   DialogTrigger,
@@ -10,14 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import { BsPencil } from "react-icons/bs";
-import NewChatDialog, { ChatType } from "../NewChat/NewChatDialog";
-import ChatsList from "../ChatsList";
-import { useState } from "react";
+import NewChatDialog, { ChatType } from "../new-chat/new-chat-dialog";
+import ChatsList from "../chats-list";
 
-export interface ChatsTabProps {}
-
-const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
+const ChatsTab: React.FC = () => {
   const { isConnected } = useChat();
 
   const [searchTerm, setSearchTerm] = useState<string>("");

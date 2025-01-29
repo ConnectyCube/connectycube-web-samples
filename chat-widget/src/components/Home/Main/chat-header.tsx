@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import Avatar from "@/components/Shared/Avatar";
+import Avatar from "../../shared/avatar";
 
 export interface ChatHeaderProps {
   toggleProfile: () => void;

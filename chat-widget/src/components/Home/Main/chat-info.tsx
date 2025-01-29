@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiUserPlus } from "react-icons/fi";
-import { useChat } from "@connectycube/use-chat";
 import ConnectyCube from "connectycube";
-import GroupMember from "./GroupMember";
+import { useChat } from "@connectycube/use-chat";
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from "@/components/shadcn-ui/dialog";
-import NewChatDialog from "../Sidebar/NewChat/NewChatDialog";
+import GroupMember from "./group-member";
+import NewChatDialog from "../sidebar/new-chat/new-chat-dialog";
 
 export interface ChatInfoProps {
   showProfile: boolean;
@@ -34,6 +34,11 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
     () =>
       selectedDialog?.occupants_ids.map((oId: number) => {
         const user = users[oId];
+
+        if (!user) {
+          return null;
+        }
+
         return (
           <GroupMember
             userId={user.id}

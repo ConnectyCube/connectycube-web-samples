@@ -2,9 +2,9 @@ import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
-import { userSignup } from "./../connectycube";
+import { userSignup } from "../connectycube";
 import logo from "./../assets/logo.png";
-import Loader from "./Shared/Loader";
+import Loader from "./shared/loader";
 
 type FormValues = {
   fullName: string;
@@ -28,6 +28,7 @@ const SignUp = () => {
     try {
       await userSignup(data.fullName, data.login, data.password);
       navigate("/home");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.error("SignUp error", e);
       alert(e.info.errors.base);

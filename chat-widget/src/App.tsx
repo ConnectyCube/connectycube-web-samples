@@ -6,9 +6,9 @@ import { ChatProvider } from "@connectycube/use-chat";
 import { BrowserRouter } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router";
 import { Button } from "@/components/shadcn-ui/button";
-import Login from "@/components/Login";
-import SignUp from "@/components/SignUp";
-import Home from "@/components/Home/Home";
+import Login from "@/components/login";
+import SignUp from "@/components/sign-up";
+import Home from "@/components/home/home";
 import { tryRestoreSession, isSessionExists } from "./connectycube";
 import { Config } from "@connectycube/types";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/shadcn-ui/button";
-import { ChatType } from "./NewChatDialog";
-import Avatar from "@/components/Shared/Avatar";
+import { ChatType } from "./new-chat-dialog";
+import Avatar from "@/components/shared/avatar";
 
 export interface SearchedUserProps {
   id: number;
