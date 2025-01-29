@@ -35,6 +35,9 @@ const Main = () => {
       for (let i = 0; i < messages[selectedDialog._id].length; i++) {
         return messages[selectedDialog._id].map((msg, index) => {
           const sender = users[msg.sender_id];
+          if (!sender) {
+            return null;
+          }
           return (
             <Message
               key={index}
