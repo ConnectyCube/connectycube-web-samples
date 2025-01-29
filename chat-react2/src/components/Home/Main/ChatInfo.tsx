@@ -34,6 +34,9 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
     () =>
       selectedDialog?.occupants_ids.map((oId: number) => {
         const user = users[oId];
+        if (!user) {
+          return null;
+        }
         return (
           <GroupMember
             userId={user.id}
