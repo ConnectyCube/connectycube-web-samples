@@ -23,7 +23,6 @@ export default defineConfig(({ mode }) => {
     react(),
     cssInjectedByJsPlugin(),
     dts({
-      rollupTypes: true,
       tsconfigPath: './tsconfig.app.json'
     })
   ];
@@ -33,7 +32,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": resolve(__dirname, "./src"),
-        "@connectycube/types": resolve(__dirname, "../node_modules/connectycube/dist/types/types"),
+        "@connectycube/types": resolve(__dirname, "./node_modules/connectycube/dist/types/types"),
       },
     },
     build: {

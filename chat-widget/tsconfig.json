@@ -8,7 +8,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@connectycube/types": ["./node_modules/connectycube/dist/types/types"]
+      "@connectycube/types": ["node_modules/connectycube/dist/types/types"]
     }
   }
 }

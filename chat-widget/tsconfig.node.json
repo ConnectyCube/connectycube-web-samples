@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@connectycube/types": ["./node_modules/connectycube/dist/types/types"]
+      "@connectycube/types": ["node_modules/connectycube/dist/types/types"]
     },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
