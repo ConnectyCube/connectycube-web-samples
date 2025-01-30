@@ -35,6 +35,7 @@ const Main = () => {
       for (let i = 0; i < messages[selectedDialog._id].length; i++) {
         return messages[selectedDialog._id].map((msg, index) => {
           const sender = users[msg.sender_id];
+          if (!sender) return null;
           return (
             <Message
               key={index}
@@ -81,7 +82,7 @@ const Main = () => {
         {/* Messages Container */}
         <div
           id="messages__container"
-          className="flex flex-col-reverse h-full w-full overflow-y-auto overflow-x-hidden bg-white pb-1 relative"
+          className="flex flex-col-reverse h-full w-full overflow-y-auto overflow-x-hidden bg-white py-2 relative"
           ref={messagesContainerRef}
         >
           {selectedDialog ? (

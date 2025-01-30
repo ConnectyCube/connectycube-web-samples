@@ -51,7 +51,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       <Avatar
         imageUID={dialog.photo || ""}
         name={dialog.name}
-        className="w-[60px] h-[60px]"
+        className="w-[50px] h-[50px]"
       />
 
       <div className="flex flex-col flex-1 text-black pl-3 space-y-1 overflow-hidden">

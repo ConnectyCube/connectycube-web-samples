@@ -1,22 +1,22 @@
 import ConnectyCube from "connectycube";
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
-import { Chat, Users } from "@connectycube/types";
+import { Chat, Users, Auth } from "@connectycube/types";
+
+export const SESSION_KEY = "@connectycube:session";
 
 export const isSessionExists = (): boolean => {
-  return !!localStorage.getItem("connectycubeToken");
+  return !isSessionExpired();
 };
+
 export const tryRestoreSession = (): boolean => {
-  const sessionToken = localStorage.getItem("connectycubeToken");
-  // const userIdString = localStorage.getItem("connectycubeUserId");
-  // let currentUserId;
-  if (sessionToken) {
-    ConnectyCube.setSession({ token: sessionToken }); 
-    
-    // currentUserId = parseInt(userIdString!);
-    return true;
+  const canRestore = isSessionExists();
+
+  if (canRestore) {
+    const session = getSessionFromLocalStorage();
+    ConnectyCube.setSession(session); 
   }
 
-  return false;
+  return canRestore;
 };
 
 export const generateFingerprint = async (): Promise<string> => {
@@ -27,15 +27,25 @@ export const generateFingerprint = async (): Promise<string> => {
 
 export const createUserSession = async (login: string, password: string) => {
   const session = await ConnectyCube.createSession({ login, password });
-  localStorage.setItem("connectycubeToken", session.token);
-  localStorage.setItem("connectycubeUserId", session.user_id + "");
-  localStorage.setItem("connectycubeUser", JSON.stringify(session.user));
+  setSessionToLocalStorage(session);
   return session;
 };
 
-export const createFingerprintSession = async () => {
+export const createFingerprintSession = async (userFullName?: string, userId?: string): Promise<Auth.Session | null> => {
   const fp = await generateFingerprint();
-  const session = await createUserSession(fp.slice(2, -2), fp.slice(1, -1));
+  const lgn = userFullName ?? `User_${fp.slice(0, 6)}${fp.slice(-6)}`;
+  const pwd = userId ?? fp;
+
+  let session: Auth.Session | null = null;
+
+  try {
+    session = await createUserSession(lgn, pwd);
+  } catch (error: any) {
+    if (error.code === 404) {
+      session = await userSignup(lgn, pwd);
+    }
+  }
+
   return session;
 }
 
@@ -49,30 +59,58 @@ export const destroyUserSession = async () => {
 };
 
 export const userSignup = async (
-  fullName: string,
   login: string,
   password: string
 ) => {
-  await ConnectyCube.users.signup({ login, full_name: fullName, password });
+  await ConnectyCube.users.signup({ login, full_name: login, password });
   return createUserSession(login, password);
 };
 
 export const chatCredentials = (): Chat.ConnectionParams | null => {
-  const sessionToken = localStorage.getItem("connectycubeToken");
-  const userIdString = localStorage.getItem("connectycubeUserId");
+  const token = getSessionToken();
+  const userId = getSessionUserId();
 
-  if (sessionToken) {
-    return { userId: parseInt(userIdString as string), password: sessionToken };
+  if (userId && token) {
+    return { userId, password: token };
   }
 
   return null;
 };
 
-export const currentUser = (): Users.User | null => {
-  const userString = localStorage.getItem("connectycubeUser");
-  if (userString) {
-    return JSON.parse(userString);
-  }
-
-  return null;
+export const setSessionToLocalStorage = (session: Auth.Session): void => {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 };
+
+export const getSessionFromLocalStorage = (): Auth.Session | null => {
+  const jsonSession = localStorage.getItem(SESSION_KEY);
+  return jsonSession ? JSON.parse(jsonSession) as Auth.Session : null;
+};
+
+export const getCurrentUser = (): Users.User | null | undefined => {
+  const session = getSessionFromLocalStorage();
+  return session ? session.user : null;
+};
+
+export const getSessionToken = (): string | null => {
+  const session = getSessionFromLocalStorage();
+  return session ? session.token : null;
+};
+
+export const getSessionUserId = (): number | null => {
+  const session = getSessionFromLocalStorage();
+  return session ? session.user_id : null;
+};
+
+export const isSessionExpired = (): boolean => {
+  const session = getSessionFromLocalStorage();
+  const updatedAt = session?.updated_at ?? new Date(0).toISOString();
+  const updatedTime = new Date(updatedAt).getTime();
+  const currentTime = Date.now();
+  const elapsedTime = currentTime - updatedTime;
+  const lifetime = (120 * 60 * 1000) - 1000; // 120 minutes
+
+  return elapsedTime > lifetime;
+}
+
+
+

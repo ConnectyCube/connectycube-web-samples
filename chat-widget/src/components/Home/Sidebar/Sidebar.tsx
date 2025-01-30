@@ -13,7 +13,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/shadcn-ui/tabs";
-import { currentUser, destroyUserSession } from "../../../connectycube";
+import { getCurrentUser, destroyUserSession } from "../../../connectycube";
 import ChatsTab from "./tabs/chats-tab";
 import UsersTab from "./tabs/users-tab";
 import Avatar from "../../shared/avatar";
@@ -47,14 +47,14 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-gray-300">
+      <div className="flex items-center justify-between px-2 py-2 border-b border-gray-300">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger className="flex items-center flex-row-reverse cursor-pointer bg-white">
-            <p className="text-center ml-2">{currentUser()?.login}</p>
+            <p className="text-center ml-2">{getCurrentUser()?.login}</p>
             <Avatar
-              imageUID={currentUser()?.avatar || ""}
-              name={currentUser()?.login || ""}
-              className="w-[60px] h-[60px]"
+              imageUID={getCurrentUser()?.avatar || ""}
+              name={getCurrentUser()?.login || ""}
+              className="w-[50px] h-[50px]"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent>

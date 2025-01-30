@@ -9,21 +9,22 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
-    <div id="connectycube-chat-widget"></div>
   </body>
   <!-- @connectycube/chat-widget - start -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://cdn.jsdelivr.net/npm/connectycube@4.0.2/dist/connectycube.min.js"></script>
+  <script src="https://unpkg.com/connectycube@4/dist/connectycube.min.js"></script>
   <script src="./node_modules/@connectycube/chat-widget/dist/index.umd.js"></script>
   <script>
-    const container = document.getElementById('connectycube-chat-widget');
+    const chatWidgetContainer = document.createElement('div');
     const props = {
       appId: 7980,
       authKey: "CmOpsbPmTjJbYjh",
       config: { debug: { mode: 1 } }
     };
-    ReactDOM.createRoot(container).render(React.createElement(ConnectyCubeChatWidget, props));
+    chatWidgetContainer.id = 'ConnectyCube_chat-widget';
+    document.body.appendChild(chatWidgetContainer);
+    ReactDOM.createRoot(chatWidgetContainer).render(React.createElement(ConnectyCubeChatWidget, props));
   </script>
   <!-- @connectycube/chat-widget - end -->
 </html>

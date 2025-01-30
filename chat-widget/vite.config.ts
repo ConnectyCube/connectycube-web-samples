@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import { defineConfig } from 'vite'
+import { defineConfig, UserConfig } from 'vite'
 import autoprefixer from 'autoprefixer';
 import react from '@vitejs/plugin-react'
 import dts from "vite-plugin-dts";
@@ -12,19 +12,12 @@ const globals = {
 }
 
 export default defineConfig(({ mode }) => {
-  const dev = mode === 'development';
-  const plugins = [react()];
+  const bundle = mode === 'production';
 
-  if (!dev) {
-    plugins.push([
-      cssInjectedByJsPlugin(),
-      dts({ tsconfigPath: './tsconfig.app.json' })
-    ]);
-  }
-
-  
-  return {
-    plugins,
+  const userConfig: UserConfig = {
+    plugins: [
+      react()
+    ],
     resolve: {
       alias: {
         "@": resolve(__dirname, "./src"),
@@ -33,7 +26,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       lib: {
-        entry: resolve(__dirname, `./src/${dev ? 'main' : 'index'}.tsx`),
+        entry: resolve(__dirname, `./src/${bundle ? 'index' : 'main'}.tsx`),
         name: 'ConnectyCubeChatWidget',
         fileName: (format) => `index.${format}.js`,
       },
@@ -42,15 +35,26 @@ export default defineConfig(({ mode }) => {
         output: { globals }
       },
     },
-    css: {
+  };
+
+
+  if (bundle) {
+    userConfig.plugins = [
+      react(),
+      cssInjectedByJsPlugin(),
+      dts({ tsconfigPath: './tsconfig.app.json' })
+    ];
+    userConfig.css = {
       postcss: {
         plugins: [
           autoprefixer({})
         ],
       }
-    },
-    define: {
+    }
+    userConfig.define = {
       'process.env': process.env
     }
-  };
+  }
+
+  return userConfig;
 });

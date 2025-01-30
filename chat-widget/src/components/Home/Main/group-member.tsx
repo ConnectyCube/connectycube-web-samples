@@ -30,7 +30,7 @@ const GroupMember: React.FC<GroupMemberProps> = ({ userId, name, avatar }) => {
 
   return (
     <div className="flex items-center p-2 gap-2">
-      <Avatar imageUID={avatar} name={name} className="w-[60px] h-[60px]" />
+      <Avatar imageUID={avatar} name={name} className="w-[50px] h-[50px]" />
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-col items-start">
           <p className="text-black font-medium">{name}</p>

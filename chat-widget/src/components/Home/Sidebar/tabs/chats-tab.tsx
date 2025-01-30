@@ -37,7 +37,7 @@ const ChatsTab: React.FC = () => {
         onChange={(e) => {
           setSearchTerm(e.target.value);
         }}
-        className="mx-5 border border-gray-300 p-2 rounded-full bg-transparent placeholder-gray-500"
+        className="mx-2 border border-gray-300 p-2 rounded-full bg-transparent placeholder-gray-500"
         placeholder="Search..."
       />
       {isConnected ? (
@@ -53,8 +53,8 @@ const ChatsTab: React.FC = () => {
         onOpenChange={setNewChatDialogOpen}
       >
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="absolute bottom-[8%] right-[5%] w-[60px] h-[60px] bg-blue-500/80 rounded-full flex items-center justify-center cursor-pointer">
-            <BsPencil size={34} color="white" />
+          <DropdownMenuTrigger className="absolute p-4 bottom-2 right-2 w-[50px] h-[50px] bg-blue-500/80 rounded-full flex items-center justify-center cursor-pointer">
+            <BsPencil size={32} color="white" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DialogTrigger asChild>

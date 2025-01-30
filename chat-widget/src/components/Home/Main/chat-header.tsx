@@ -77,7 +77,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
           <Avatar
             imageUID={selectedDialog.photo}
             name={selectedDialog.name}
-            className="w-[60px] h-[60px]"
+            className="w-[50px] h-[50px]"
           />
         </div>
 

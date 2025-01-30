@@ -20,14 +20,15 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "start": "npm-run-all --parallel dev css:watch",
-    "css:watch": "npx tailwindcss -i ./src/index.css -o ./src/styles.css --watch",
-    "css:minify": "npx tailwindcss -i ./src/index.css -o ./src/styles.css --minify",
-    "bundle": "npm run css:minify && npm run build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "vite:dev": "vite",
+    "vite:build": "tsc -b && vite build",
+    "vite:preview": "vite preview",
+    "tailwindcss:watch": "npx tailwindcss -i ./src/index.css -o ./src/styles.css --watch",
+    "tailwindcss:minify": "npx tailwindcss -i ./src/index.css -o ./src/styles.css --minify",
+    "dev": "npm-run-all --parallel vite:dev tailwindcss:watch",
+    "build": "npm run tailwindcss:minify & npm run vite:build",
+    "preview": "npm run tailwindcss:minify & npm run vite:preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@connectycube/use-chat": "^0.10.0",
