@@ -4,7 +4,7 @@ import { Navigate, Route, Routes } from "react-router";
 import Login from "./Components/Login/Login";
 import SignUp from "./Components/SignUp/SignUp";
 import Home from "./Components/Home/Home";
-import { ChatProvider } from "./services/chat-service";
+import { ChatProvider } from "@connectycube/use-chat";
 import "./App.css";
 
 function App() {
