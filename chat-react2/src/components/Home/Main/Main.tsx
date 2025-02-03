@@ -14,7 +14,7 @@ const Main = () => {
     messages,
     users,
     sendTypingStatus,
-    sendMessageWithAttachment,
+    sendMessageWithAttachment
   } = useChat();
 
   const [showProfile, setShowProfile] = useState(false);
@@ -32,26 +32,24 @@ const Main = () => {
 
   const messagesView = useMemo(() => {
     if (selectedDialog && messages[selectedDialog._id]) {
-      for (let i = 0; i < messages[selectedDialog._id].length; i++) {
-        return messages[selectedDialog._id].map((msg, index) => {
-          const sender = users[msg.sender_id];
-          if (!sender) {
-            return null;
-          }
-          return (
-            <Message
-              key={index}
-              message={msg}
-              senderName={sender.full_name || sender.login}
-              senderAvatar={sender.avatar}
-              isGroupChat={selectedDialog.type === 2}
-              dialogName={selectedDialog.name}
-            />
-          );
-        });
-      }
+      return messages[selectedDialog._id].map((msg, index) => {
+        const sender = users[msg.sender_id];
+        if (!sender) {
+          return null;
+        }
+        return (
+          <Message
+            key={index}
+            message={msg}
+            senderName={sender.full_name || sender.login}
+            senderAvatar={sender.avatar}
+            isGroupChat={selectedDialog.type === 2}
+            dialogName={selectedDialog.name}
+          />
+        );
+      });
     }
-  }, [messages, users]);
+  }, [messages, users, selectedDialog]);
 
   const handleSendMessage = (text: string) => {
     sendMessage(text);
