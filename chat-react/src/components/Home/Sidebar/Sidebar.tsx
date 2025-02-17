@@ -53,7 +53,7 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
             <p className="text-center ml-2">{getCurrentUser()?.login}</p>
             <Avatar
               imageUID={getCurrentUser()?.avatar || undefined}
-              name={getCurrentUser()!.login || ""}
+              name={getCurrentUser()?.login || undefined}
               className="w-[60px] h-[60px]"
             />
           </DropdownMenuTrigger>
