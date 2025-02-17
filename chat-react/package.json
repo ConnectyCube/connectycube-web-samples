@@ -1,51 +1,60 @@
 {
-  "name": "connectycube-chat-react",
-  "version": "1.0.0",
+  "name": "chat-react2",
   "private": true,
+  "version": "0.10.0",
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "serve": "npx serve -s build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "connectycube": "^4.0.0",
+    "@connectycube/use-chat": "^0.13.0",
+    "@radix-ui/react-alert-dialog": "^1.1.5",
+    "@radix-ui/react-avatar": "^1.1.2",
+    "@radix-ui/react-dialog": "^1.1.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.4",
+    "@radix-ui/react-label": "^2.1.1",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-tabs": "^1.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "connectycube": "4.1.0",
+    "lucide-react": "^0.473.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-icons": "^5.3.0",
-    "react-intersection-observer": "^9.13.1",
-    "react-router": "^6.27.0",
-    "react-router-dom": "^6.27.0",
-    "react-scripts": "^4.0.3",
-    "react-scroll": "^1.9.0"
+    "react-hook-form": "^7.54.2",
+    "react-icons": "^5.4.0",
+    "react-intersection-observer": "^9.15.0",
+    "react-router": "^7.1.2",
+    "react-router-dom": "^7.1.2",
+    "react-scroll": "^1.9.0",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.25.8",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jsx-a11y": "^6.10.0",
-    "eslint-plugin-react": "^7.37.1",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "sass": "^1.80.1"
+    "@eslint/js": "^9.17.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.18.2",
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "peerDependencies": {
+    "vite": "^6.0.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "overrides": {
+    "vite-plugin-node-polyfills": {
+      "vite": "^6.0.0"
+    }
   }
 }
