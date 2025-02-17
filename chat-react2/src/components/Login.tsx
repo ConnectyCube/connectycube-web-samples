@@ -1,11 +1,10 @@
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useChat } from "@connectycube/use-chat";
 import Loader from "./Shared/Loader";
-import { createUserSession } from "./../connectycube";
+import { createUserSession, tryRestoreSession } from "./../connectycube";
 import logo from "./../assets/logo.png";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type FormValues = {
   login: string;
@@ -13,10 +12,24 @@ type FormValues = {
 };
 
 const Login = () => {
-  const { connect } = useChat();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
+  const isInited = useRef<boolean>(false);
+
+  useEffect(() => {
+    // use ref check to make it properly work with StrictMode
+    if (!isInited.current) {
+      isInited.current = true;
+
+      tryRestoreSession().then((session) => {
+        console.log("[Login] can auto restore? ", !!session);
+        if (session) {
+          navigate("/home");
+        }
+      });
+    }
+  }, []);
 
   const {
     register,
@@ -28,14 +41,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const session = await createUserSession(data.login, data.password);
-
-      const chatCredentials = {
-        userId: session.user_id,
-        password: session.token,
-      };
-      await connect(chatCredentials);
-
+      await createUserSession(data.login, data.password);
       navigate("/home");
     } catch (e) {
       console.error("Login error", e);

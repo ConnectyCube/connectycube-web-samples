@@ -1,35 +1,55 @@
 import ConnectyCube from "connectycube";
-import { Chat, Users } from "connectycube/dist/types/types";
+import { Auth, Chat, Users } from "node_modules/connectycube/dist/types/types";
+
+export const SESSION_KEY = `@connectycube:session`;
+export const PWD_KEY = `@connectycube:pwd`;
 
 export const isSessionExists = (): boolean => {
-  return !!localStorage.getItem("connectycubeToken");
+  return !!getSessionFromLocalStorage();
 };
-export const tryRestoreSession = (): boolean => {
-  const sessionToken = localStorage.getItem("connectycubeToken");
-  // const userIdString = localStorage.getItem("connectycubeUserId");
-  // let currentUserId;
-  if (sessionToken) {
-    ConnectyCube.setSession({ token: sessionToken }); 
-    
-    // currentUserId = parseInt(userIdString!);
-    return true;
-  }
 
-  return false;
+export const isSessionExpired = (): boolean => {
+  const session = getSessionFromLocalStorage();
+  const updatedAt = session?.updated_at ?? new Date(0).toISOString();
+  const updatedTime = new Date(updatedAt).getTime();
+  const currentTime = Date.now();
+  const elapsedTime = currentTime - updatedTime;
+  const lifetime = 120 * 60 * 1000 - 1000; // 120 minutes
+  return elapsedTime > lifetime;
+};
+
+export const tryReuseSession = async (): Promise<boolean> => {
+  const isReusable = !isSessionExpired();
+  if (isReusable) {
+    const session = getSessionFromLocalStorage();
+    ConnectyCube.setSession(session);
+  }
+  return isReusable;
+};
+
+export const tryRestoreSession = async (): Promise<Auth.Session | null> => {
+  const session = getSessionFromLocalStorage();
+  if (session) {
+    return await createUserSession(
+      session?.user?.login!,
+      getPwdFromLocalStorage()!
+    );
+  }
+  return null;
 };
 
 export const createUserSession = async (login: string, password: string) => {
   const session = await ConnectyCube.createSession({ login, password });
-  localStorage.setItem("connectycubeToken", session.token);
-  localStorage.setItem("connectycubeUserId", session.user_id + "");
-  localStorage.setItem("connectycubeUser", JSON.stringify(session.user));
+  setSessionToLocalStorage(session);
+  setPwdToLocalStorage(password);
   return session;
 };
 
 export const destroyUserSession = async () => {
   try {
+    clearSessionInLocalStorage();
+    clearPwdInLocalStorage();
     await ConnectyCube.destroySession();
-    localStorage.clear();
   } catch (error) {
     console.error(error);
   }
@@ -45,21 +65,50 @@ export const userSignup = async (
 };
 
 export const chatCredentials = (): Chat.ConnectionParams | null => {
-  const sessionToken = localStorage.getItem("connectycubeToken");
-  const userIdString = localStorage.getItem("connectycubeUserId");
-
-  if (sessionToken) {
-    return { userId: parseInt(userIdString as string), password: sessionToken };
+  const token = getSessionToken();
+  const userId = getSessionUserId();
+  if (userId && token) {
+    return { userId, password: token };
   }
-
   return null;
 };
 
-export const currentUser = (): Users.User | null => {
-  const userString = localStorage.getItem("connectycubeUser");
-  if (userString) {
-    return JSON.parse(userString);
-  }
+export const getCurrentUser = (): Users.User | null | undefined => {
+  const session = getSessionFromLocalStorage();
+  return session ? session.user : null;
+};
 
-  return null;
+export const setSessionToLocalStorage = (session: Auth.Session): void => {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+};
+
+export const getSessionFromLocalStorage = (): Auth.Session | null => {
+  const jsonSession = localStorage.getItem(SESSION_KEY);
+  return jsonSession ? (JSON.parse(jsonSession) as Auth.Session) : null;
+};
+
+export const clearSessionInLocalStorage = (): void => {
+  localStorage.removeItem(SESSION_KEY);
+};
+
+export const getSessionToken = (): string | null => {
+  const session = getSessionFromLocalStorage();
+  return session ? session.token : null;
+};
+
+export const getSessionUserId = (): number | null => {
+  const session = getSessionFromLocalStorage();
+  return session ? session.user_id : null;
+};
+
+export const setPwdToLocalStorage = (pwd: string): void => {
+  localStorage.setItem(PWD_KEY, pwd);
+};
+
+export const getPwdFromLocalStorage = (): string | null => {
+  return localStorage.getItem(PWD_KEY);
+};
+
+export const clearPwdInLocalStorage = (): void => {
+  localStorage.removeItem(PWD_KEY);
 };

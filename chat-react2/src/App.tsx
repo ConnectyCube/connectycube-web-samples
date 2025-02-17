@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, useLayoutEffect, useRef } from "react";
 import { ChatProvider } from "@connectycube/use-chat";
 import { BrowserRouter } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router";
@@ -7,18 +7,24 @@ import SignUp from "./Components/SignUp";
 import Home from "./Components/Home/Home";
 import ConnectyCube from "connectycube";
 import { appConfig, credentials } from "./config";
-import { tryRestoreSession, isSessionExists } from "./connectycube";
-
-// Init ConnectyCube SDK
-ConnectyCube.init(credentials, appConfig);
-tryRestoreSession();
+import { isSessionExpired, tryReuseSession } from "./connectycube";
 
 function ProtectedRoute({ element }: { element: JSX.Element }) {
-  return isSessionExists() ? element : <Navigate to="/login" replace />;
+  return isSessionExpired() ? <Navigate to="/login" replace /> : element;
 }
 
 function App() {
-  const initialPath = isSessionExists() ? "/home" : "/login";
+  const initialPath = isSessionExpired() ? "/login" : "/home";
+  const isInited = useRef<boolean>(false);
+
+  useLayoutEffect(() => {
+    // use ref check to make it properly work with StrictMode
+    if (!isInited.current) {
+      ConnectyCube.init(credentials, appConfig);
+      tryReuseSession();
+      isInited.current = true;
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full text-center bg-gray-800 text-black overflow-hidden absolute">
@@ -44,5 +50,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

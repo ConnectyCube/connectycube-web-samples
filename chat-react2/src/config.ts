@@ -1,4 +1,4 @@
-import { Config } from "connectycube/dist/types/types";
+import { Config } from "node_modules/connectycube/dist/types/types";
 
 export const credentials = {
   appId: 7980,
