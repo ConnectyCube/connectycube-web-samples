@@ -10,8 +10,8 @@ The following code samples are available:
 
 - [Chat code sample (Angular)](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/chat-angular)
 
-- [P2P Calling code sample (vanilla JS)](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat) - [LIVE demo](https://connectycube.github.io/connectycube-web-samples/videochat/dist)
-
+- [P2P Calling code sample (vanilla JS)](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat)
+  
 - [Conference Calling (React) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf-react)
 
 - [Conference Calling (Angular) code sample](https://github.com/ConnectyCube/connectycube-web-samples/tree/master/videochat-conf-angular)
