@@ -11,11 +11,12 @@ Project contains the following features implemented:
 - Snack bars to notify users about changes
 - Compatibility with the [React Native Video Chat code sample](https://github.com/ConnectyCube/connectycube-reactnative-samples/tree/master/RNVideoChat)
 
-## Documentation
+## Get started
 
-ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
-
-ConnectyCube P2P Calling API documentation - [https://developers.connectycube.com/js/videocalling](https://developers.connectycube.com/js/videocalling)
+```
+npm i
+npm run start
+```
 
 ## Screenshots
 
@@ -30,6 +31,12 @@ ConnectyCube P2P Calling API documentation - [https://developers.connectycube.co
 <p align="center">
 <img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720" alt="Video Chat code sample demo image active call screen">
 </p>
+
+## Documentation
+
+ConnectyCube JS SDK getting started - [https://developers.connectycube.com/js](https://developers.connectycube.com/js)
+
+ConnectyCube P2P Calling API documentation - [https://developers.connectycube.com/js/videocalling](https://developers.connectycube.com/js/videocalling)
 
 ## Build your own VideoChat app
 
