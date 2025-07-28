@@ -104,14 +104,14 @@
       <!-- HANDLEBARS TEMPLATES -->
       <script type="text/x-handlebars-template" id="login-buttons-template">
         {{#each users}}
-          <button class="login-button {{this.name}}-bg-color" data-id="{{this.id}}">Login as {{this.name}}</button>
+          <button class="login-button user-bg-color" data-id="{{this.id}}">Login as {{this.name}}</button>
         {{/each}}
       </script>
 
       <script type="text/x-handlebars-template" id="select-users-template">
         <h2 id="select-header">Select users to start Videocall</h3>
         {{#each usersForSelect}}
-          <label for="select-{{this.id}}" id="select-{{this.name}}" class="{{this.name}}-bg-color select-user">
+          <label for="select-{{this.id}}" id="select-{{this.name}}" class="user-bg-color select-user">
             <span>{{this.name}}</span>
             <input type="checkbox" id="select-{{this.id}}" class="select-user-checkbox" data-id="{{this.id}}" />
           </label>
