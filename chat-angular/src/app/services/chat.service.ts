@@ -451,16 +451,18 @@ export class ChatService {
         });
     };
     ConnectyCube.chat.onLastUserActivityListener = (
-      userId: number,
-      seconds: number
+      userId: number | null,
+      seconds: number | null
     ) => {
       console.log('[onLastUserActivityListener]', userId, seconds);
-      this.store$.dispatch(
-        updateParticipantLastActivity({
-          participantId: userId,
-          lastActivity: seconds,
-        })
-      );
+      if (userId && seconds) {
+        this.store$.dispatch(
+          updateParticipantLastActivity({
+            participantId: userId,
+            lastActivity: seconds,
+          })
+        );
+    }
     };
   }
 

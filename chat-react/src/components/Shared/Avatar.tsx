@@ -13,9 +13,7 @@ export interface AvatarProps {
 }
 
 const Avatar: React.FC<AvatarProps> = ({ imageUID, name, className }) => {
-  const photoUrl = imageUID
-    ? ConnectyCube.storage.privateUrl(imageUID)
-    : undefined;
+  const photoUrl = imageUID ? imageUID.startsWith("http") ? imageUID : ConnectyCube.storage.privateUrl(imageUID) : undefined
   const initials = name ? name.slice(0, 2).toUpperCase() : "NA";
 
   return (

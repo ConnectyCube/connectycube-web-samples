@@ -4,7 +4,7 @@ import { useChat } from "@connectycube/use-chat";
 
 export interface ChatInputProps {
   sendMessage: (message: string) => void;
-  sendMessageWithAttachment: (file: File) => void;
+  sendMessageWithAttachment: (file: File[]) => void;
   sendTypingStatus: () => void;
 }
 
@@ -48,7 +48,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       type === "png" ||
       type === "jpeg"
     ) {
-      sendMessageWithAttachment(file);
+      sendMessageWithAttachment([file]);
     } else {
       alert(
         "File format is not supported. Only images supported in this code sample"
@@ -86,7 +86,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <textarea
         onKeyDown={startTyping}
         ref={messageInputRef}
-        className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg resize-none placeholder-gray-500 text-base"
+        className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg resize-none placeholder-gray-500 text-base bg-white"
         placeholder="Enter message"
       ></textarea>
       <button
