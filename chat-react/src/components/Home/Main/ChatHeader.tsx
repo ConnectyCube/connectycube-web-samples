@@ -111,7 +111,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
 
       {/* More Options Dropdown */}
       <DropdownMenu modal={false}>
-        <DropdownMenuTrigger className="mr-2 cursor-pointer">
+        <DropdownMenuTrigger className="mr-2 cursor-pointer bg-white">
           <FiMoreHorizontal fontSize={25} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">

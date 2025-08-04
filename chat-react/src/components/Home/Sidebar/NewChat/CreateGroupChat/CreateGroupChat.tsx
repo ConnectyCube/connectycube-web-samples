@@ -50,7 +50,7 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
         />
       </div>
       <input
-        className="w-full h-[50px] rounded-full border border-gray-300 mt-5 px-5"
+        className="w-full h-[50px] rounded-full border border-gray-300 mt-5 px-5 bg-white"
         type="text"
         placeholder="Chat name"
         {...register("name", {

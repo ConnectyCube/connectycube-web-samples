@@ -106,6 +106,9 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
                 </Label>
                 <Input
                   id="link"
+                  type="text"
+                  autoComplete="off"
+                  autoCorrect="off"
                   placeholder="Enter user name"
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -133,7 +136,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
                       return (
                         <Participant
                           key={user.id}
-                          avatar={user.avatar}
+                          avatar={user.avatar || ""}
                           name={user.full_name || user.login || ""}
                         />
                       );
