@@ -47,7 +47,7 @@ class UIService {
     );
     document.getElementById("videochat-switch-camera").addEventListener(
       "click",
-      this.buttonOnClickListener(() => {})
+      this.buttonOnClickListener(() => { })
     );
     document.getElementById("videochat-sharing-screen").addEventListener(
       "click",
@@ -90,7 +90,7 @@ class UIService {
 
   getRandomName = () => {
     const dogNames = require("dog-names");
-    return dogNames.allRandom();
+    return dogNames.randomDogName();
   };
 }
 

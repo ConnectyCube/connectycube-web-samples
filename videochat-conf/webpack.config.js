@@ -2,7 +2,7 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = (env) => ({
+module.exports = (env = {}) => ({
   mode: env.production ? 'production' : 'development',
   entry: env.production
     ? './src/index.js'
@@ -18,21 +18,25 @@ module.exports = (env) => ({
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new CopyWebpackPlugin([
-      { from: 'index.html', to: 'index.html' },
-      { from: 'src/events-service.js', to: 'events-service.js' },
-      { from: 'manifest.json', to: 'manifest.json' },
-      { from: 'styles', to: 'styles' },
-      { from: 'images', to: 'images' },
-      { from: 'audio', to: 'audio' },
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'index.html', to: 'index.html' },
+        { from: 'src/events-service.js', to: 'events-service.js' },
+        { from: 'manifest.json', to: 'manifest.json' },
+        { from: 'styles', to: 'styles' },
+        { from: 'images', to: 'images' },
+        { from: 'audio', to: 'audio' },
+      ],
+    }),
   ],
   watch: env.development,
   devtool: env.production ? false : 'source-map',
   devServer: {
     open: true,
-    writeToDisk: true,
-    contentBase: [path.join(__dirname, './'), path.join(__dirname, './dist')],
+    static: {
+      directory: path.join(__dirname, './'),
+      watch: true,
+    },
     historyApiFallback: true,
     host: '127.0.0.1',
     port: 8000,
