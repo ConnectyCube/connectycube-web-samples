@@ -14,8 +14,8 @@ export const messages = {
 };
 
 export const credentials = {
-  appId: REPLACE_APP_ID,
-  authKey: "REPLACE_APP_AUTH_KEY",
+  appId: 9248,
+  authKey: "44103263-B090-4449-A22E-8C83DE5CBAC8",
 };
 
 export const appConfig = {
@@ -30,31 +30,31 @@ export const appConfig = {
 
 export const users = [
   {
-    id: REPLACE_USER_1_ID,
-    name: "REPLACE_USER_1_FULL_NAME",
-    login: "REPLACE_USER_1_LOGIN",
-    password: "REPLACE_USER_1_PASSWORD",
-    color: "#34ad86"
+    id: 13661184,
+    name: "emily.johnson123",
+    login: "emily.johnson123",
+    password: "emily.johnson123",
+    color: "#34ad86",
   },
   {
-    id: REPLACE_USER_2_ID,
-    name: "REPLACE_USER_2_FULL_NAME",
-    login: "REPLACE_USER_2_LOGIN",
-    password: "REPLACE_USER_2_PASSWORD",
-    color: "#077988"
+    id: 13661183,
+    name: "michael.riv89",
+    login: "michael.riv89",
+    password: "michael.riv89",
+    color: "#077988",
   },
   {
-    id: REPLACE_USER_3_ID,
-    name: "REPLACE_USER_3_FULL_NAME",
+    id: 1,
+    name: "asd asd ad ",
     login: "REPLACE_USER_3_LOGIN",
     password: "REPLACE_USER_3_PASSWORD",
-    color: "#13aaae"
+    color: "#13aaae",
   },
   {
-    id: REPLACE_USER_4_ID,
-    name: "REPLACE_USER_4_FULL_NAME",
+    id: 2,
+    name: "asd asd asd a d",
     login: "REPLACE_USER_4_LOGIN",
     password: "REPLACE_USER_4_PASSWORD",
-    color: "#056a96"
-  }
+    color: "#056a96",
+  },
 ];
