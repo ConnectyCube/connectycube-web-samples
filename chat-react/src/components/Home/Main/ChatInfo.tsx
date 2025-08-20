@@ -25,9 +25,7 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
   const opponentId = selectedDialog ? getDialogOpponentId() : null;
   const isGroupChat = selectedDialog?.type === 2;
 
-  const photoUrl = selectedDialog?.photo
-    ? ConnectyCube.storage.privateUrl(selectedDialog.photo)
-    : undefined;
+  const photoUrl = selectedDialog?.photo ? selectedDialog.photo?.startsWith("http") ? selectedDialog.photo : ConnectyCube.storage?.privateUrl(selectedDialog?.photo) : undefined;
   const initials = selectedDialog?.name.slice(0, 2).toUpperCase();
 
   const usersView = useMemo(
@@ -106,7 +104,6 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
           <div className="flex items-center justify-between p-4">
             <span className="font-medium">Members</span>
             <Dialog
-              modal={false}
               open={addMembersDialogOpen}
               onOpenChange={addMemberDialogOpen}
             >

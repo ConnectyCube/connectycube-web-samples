@@ -24,9 +24,8 @@ const Message: React.FC<MessageProps> = ({
   const { currentUserId, readMessage, messageSentTimeString } = useChat();
 
   const isCurrentUserSender = message.sender_id === currentUserId;
-
-  const isAttachment = message.attachmentsUrls?.length > 0;
-  const fileUrl = message.attachmentsUrls?.[0];
+  const isAttachment = message.attachments && message.attachments.length > 0;
+  const fileUrl = message.attachments?.[0]?.url;
 
   const senderNameString = isCurrentUserSender
     ? "You"
