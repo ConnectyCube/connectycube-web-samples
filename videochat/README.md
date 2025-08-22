@@ -86,21 +86,9 @@ To make the sample works for your own app, please do the following:
     ];
     ```
 
-3.  (Optional) If you are at [Enterprise](https://connectycube.com/pricing/) plan - provide your API server and Chat server endpoints at `videochat/src/config.js` file to point the sample against your own server:
-
-    ```javascript
-    {
-       endpoints: {
-           api: "",
-           chat: ""
-       },
-       ...
-    };
-    ```
-
-4.  Install node modules - `npm install`
-5.  Run `npm run build` and open `dist/index.html`
-6.  Or run `npm start` to start application in developing mode on `https://localhost:3000`
+3.  Install node modules - `npm install`
+4.  Run `npm run build` and open `dist/index.html`
+5.  Or run `npm start` to start application in developing mode on `https://localhost:3000`
 
 ## Can't build yourself?
 

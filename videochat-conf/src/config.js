@@ -27,10 +27,6 @@ export const credentials = {
 
 export const appConfig = {
   debug: { mode: 1 },
-  endpoints: {
-    api: "api.connectycube.com",
-    chat: "chat.connectycube.com",
-  },
   conference: { server: "wss://janus.connectycube.com:8989" },
 };
 
