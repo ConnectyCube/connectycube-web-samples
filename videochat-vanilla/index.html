@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" x-data="app()" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ConnectyCube Video Chat (Alpine)</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-32x32.png"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-16x16.png"
+    />
+
+    <link rel="stylesheet" href="./styles/index.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
+    />
+
+    <script src="./src/main.js" defer></script>
+  </head>
+
+  <body>
+    <div id="main">
+      <!-- LOGIN SCREEN -->
+      <section id="login" x-show="screen==='login'">
+        <div id="login-logo">
+          <img id="login-image" src="/logo.png" alt="ConnectyCube Logo" />
+          <div id="login-caption">Video Chat</div>
+
+          <div id="login-loader" x-show="loading">
+            <div id="login-loader-text">Connecting...</div>
+            <div id="login-loader-spinner">
+              <!-- spinner -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                style="margin:auto;display:block"
+                width="20px"
+                height="20px"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="xMidYMid"
+              >
+                <circle
+                  r="36"
+                  cx="50"
+                  cy="50"
+                  fill="none"
+                  stroke="#1198d4"
+                  stroke-width="10"
+                  stroke-dasharray="169.6 58.5"
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    repeatCount="indefinite"
+                    dur="1s"
+                    values="0 50 50;360 50 50"
+                  ></animateTransform>
+                </circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div id="login-buttons-container">
+          <template x-for="u in users" :key="u.id">
+            <button
+              class="login-button user-bg-color"
+              @click="login(u)"
+              x-text="`Login as ${u.name}`"
+            ></button>
+          </template>
+        </div>
+      </section>
+
+      <!-- START VIDEOCHAT SCREEN -->
+      <section id="call" x-show="screen==='call'">
+        <div id="call-select-users">
+          <h2 id="select-header">Select users to start Videocall</h2>
+          <template x-for="u in usersForSelect" :key="u.id">
+            <label :for="`select-${u.id}`" class="user-bg-color select-user">
+              <span x-text="u.name"></span>
+              <input
+                type="checkbox"
+                class="select-user-checkbox"
+                :id="`select-${u.id}`"
+                :value="u.id"
+                x-model="selectedUsers"
+              />
+            </label>
+          </template>
+        </div>
+
+        <div id="call-buttons-container">
+          <button id="call-start-audio" class="call-button" @click="startCall('audio')"></button>
+          <button id="call-start-video" class="call-button" @click="startCall('video')"></button>
+        </div>
+
+        <div id="call-incoming" x-show="incoming">
+          <div class="call-modal-header">
+            Incoming call from <strong x-text="incomingUser?.name"></strong>
+          </div>
+          <div class="call-modal-footer">
+            <button @click="rejectCall" class="call-modal-button">Reject</button>
+            <button @click="acceptCall" class="call-modal-button">Accept</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACTIVE VIDEOCHAT SCREEN -->
+      <section id="videochat" x-show="screen==='videochat'">
+        <div id="videochat-streams">
+          <template x-for="u in activeOpponents" :key="u.id">
+            <div :id="`videochat-stream-container-${u.id}`" class="videochat-stream-container">
+              <div :id="`videochat-stream-loader-${u.id}`" class="videochat-stream-loader">
+                <div class="videochat-stream-loader-text" x-text="u.name"></div>
+                <div class="videochat-stream-loader-spinner">[...]</div>
+              </div>
+              <video playsinline class="videochat-stream" :id="`remoteStream-${u.id}`"></video>
+            </div>
+          </template>
+
+          <div id="videochat-local-stream-container" class="videochat-stream-container">
+            <video playsinline id="localStream" class="videochat-stream"></video>
+          </div>
+        </div>
+
+        <div id="videochat-buttons-container">
+          <button id="videochat-mute-unmute" class="videochat-button" :disabled="!inCall" @click="toggleMute"></button>
+          <button id="videochat-stop-call" class="videochat-button" @click="stopCall"></button>
+          <button id="videochat-switch-camera" class="videochat-button" :disabled="!inCall"></button>
+          <button id="videochat-sharing-screen" class="videochat-button" @click="shareScreen">
+            <i class="fas fa-tv"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- SNACKBAR -->
+      <div id="snackbar" x-show="snackbar" x-text="snackbar"></div>
+
+      <!-- SOUNDS -->
+      <audio id="signal-end" preload="auto"><source src="audio/end_call.mp3" type="audio/mp3" /></audio>
+      <audio id="signal-out" loop preload="auto"><source src="audio/dialing.mp3" type="audio/mp3" /></audio>
+      <audio id="signal-in" loop preload="auto"><source src="audio/calling.mp3" type="audio/mp3" /></audio>
+    </div>
+
+    <script>
+      function app() {
+        return {
+          screen: 'login',
+          loading: false,
+          users: [
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' }
+          ],
+          usersForSelect: [
+            { id: 3, name: 'Charlie' },
+            { id: 4, name: 'Diana' }
+          ],
+          selectedUsers: [],
+          incoming: false,
+          incomingUser: null,
+          activeOpponents: [],
+          inCall: false,
+          snackbar: '',
+
+          login(u) {
+            this.loading = true
+            setTimeout(() => {
+              this.loading = false
+              this.screen = 'call'
+              this.snackbar = `Logged in as ${u.name}`
+            }, 1000)
+          },
+
+          startCall(type) {
+            this.inCall = true
+            this.activeOpponents = this.usersForSelect.filter(u =>
+              this.selectedUsers.includes(u.id.toString())
+            )
+            this.screen = 'videochat'
+          },
+
+          acceptCall() {
+            this.incoming = false
+            this.inCall = true
+            this.screen = 'videochat'
+          },
+
+          rejectCall() {
+            this.incoming = false
+          },
+
+          stopCall() {
+            this.inCall = false
+            this.screen = 'call'
+          },
+
+          toggleMute() {
+            alert('Mute/unmute')
+          },
+
+          shareScreen() {
+            alert('Sharing screen...')
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
