@@ -170,15 +170,13 @@ class CallService {
       streamBlock.innerHTML = videochatStreamsTemplate(opponent);
       streamBlock.classList.add("videochat-stream-container");
       streamBlock.dataset.id = `${opponent.id}`;
-      streamBlock.style.gridArea = `stream${
-        index + currentActiveCallUsersCount
-      }`;
+      streamBlock.style.gridArea = `stream${index + currentActiveCallUsersCount
+        }`;
       documentFragment.appendChild(streamBlock);
     });
 
-    $videochatStreams.classList.value = `grid-${
-      opponents.length + currentActiveCallUsersCount
-    }`;
+    $videochatStreams.classList.value = `grid-${opponents.length + currentActiveCallUsersCount
+      }`;
 
     $videochatStreams.appendChild(documentFragment);
 
@@ -331,9 +329,8 @@ class CallService {
     if (!this.avatarIndex[user_id]) {
       this.avatarIndex[user_id] = Math.floor(Math.random() * 10);
     }
-    $avatar.style.background = `#ffffff url("../images/animals/${
-      defaultAvatarsList[this.avatarIndex[user_id]]
-    }") no-repeat center`;
+    $avatar.style.background = `#ffffff url("../images/animals/${defaultAvatarsList[this.avatarIndex[user_id]]
+      }") no-repeat center`;
     $avatar.style.backgroundSize = "contain";
   };
 
@@ -387,10 +384,9 @@ class CallService {
     console.warn("[onAcceptCallListener]", userId, displayName);
     const userName = this.isGuestMode
       ? displayName
-      : this._getUserById(userId, "name");
-    const infoText = `${userName} has ${
-      this.isGuestMode ? "joined" : "accepted"
-    } the call`;
+      : this.users.get(userId, "name");
+    const infoText = `${userName} has ${this.isGuestMode ? "joined" : "accepted"
+      } the call`;
     this.showSnackbar(infoText);
     this.startMonitoringUserStats(userId);
     if (this.isGuestMode) {
@@ -414,7 +410,7 @@ class CallService {
   }
 
   onRejectCallListener = (session, userId, extension = {}) => {
-    const userName = this._getUserById(userId, "name");
+    const userName = this.users.get(userId, "name");
     const infoText = extension.busy
       ? `${userName} is busy`
       : `${userName} rejected the call request`;
@@ -428,10 +424,9 @@ class CallService {
     const isStoppedByInitiator = this.initiatorID === userId;
     const userName = this.initGuestRoom
       ? userId
-      : this._getUserById(userId, "name");
-    const infoText = `${userName} has ${
-      isStoppedByInitiator ? "stopped" : "left"
-    } the call`;
+      : this.users.get(userId, "name");
+    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
+      } the call`;
 
     this.showSnackbar(infoText);
 
@@ -451,7 +446,7 @@ class CallService {
       return false;
     }
 
-    const userName = this._getUserById(userId, "name");
+    const userName = this.users.get(userId, "name");
     const infoText = `${userName} did not answer`;
 
     this.showSnackbar(infoText);
@@ -506,7 +501,7 @@ class CallService {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map((id) => ({
       id,
-      name: this._getUserById(id, "name"),
+      name: this.users.get(id, "name"),
     }));
     this.addStreamElement(opponents);
     this.hideIncomingCallModal();
@@ -529,7 +524,7 @@ class CallService {
     document.querySelectorAll(".select-user-checkbox").forEach(($checkbox) => {
       if ($checkbox.checked) {
         const id = +$checkbox.dataset.id;
-        const name = this._getUserById(id, "name");
+        const name = this.users.get(id, "name");
 
         opponents.push({ id, name });
         opponentsIds.push(id);
@@ -929,16 +924,10 @@ class CallService {
       this.$modal.classList.remove("show");
       this.$calling.pause();
     } else {
-      $initiator.innerHTML = this._getUserById(this.initiatorID, "name");
+      $initiator.innerHTML = this.users.get(this.initiatorID, "name");
       this.$modal.classList.add("show");
       this.$calling.play();
     }
-  };
-
-  _getUserById = (userId, key) => {
-    const user = users.find((user) => user.id == userId);
-
-    return typeof key === "string" ? user[key] : user;
   };
 
   getStreamIdByUserId(userId) {

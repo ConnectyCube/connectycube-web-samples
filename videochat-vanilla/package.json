@@ -1,7 +1,7 @@
 {
   "name": "videochat-vanilla",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^7.1.2"
+    "vite": "^7.1.3"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
     "alpinejs": "^3.14.9",
+    "connectycube": "file:./connectycube-4.7.2.tgz",
+    "lucide": "^0.542.0",
     "tailwindcss": "^4.1.12"
   }
 }

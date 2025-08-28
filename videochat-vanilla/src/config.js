@@ -9,19 +9,19 @@ export const messages = {
   title_login: "Choose a user to login with:",
   title_callee: "Choose users to call:",
   calling: "Calling...",
-  webrtc_not_avaible: "WebRTC is not available in your browser",
+  webrtc_not_available: "WebRTC is not available in your browser",
   no_internet: "Please check your Internet connection and try again"
 };
 
 export const credentials = {
-  appId: REPLACE_APP_ID,
-  authKey: "REPLACE_APP_AUTH_KEY",
+  appId: "385",
+  authKey: "F111EE6B-5B16-4BE4-9107-BEA18F3D03BC",
 };
 
 export const appConfig = {
   debug: { mode: 1 },
   videochat: {
-    //   answerTimeInterval: 30,
+    answerTimeInterval: 15,
     //   dialingTimeInterval: 5,
     disconnectTimeInterval: 300,
     //   statsReportTimeInterval: 5
@@ -30,31 +30,27 @@ export const appConfig = {
 
 export const users = [
   {
-    id: REPLACE_USER_1_ID,
-    name: "REPLACE_USER_1_FULL_NAME",
-    login: "REPLACE_USER_1_LOGIN",
-    password: "REPLACE_USER_1_PASSWORD",
-    color: "#34ad86"
+    id: 13731688,
+    name: "Aaron",
+    login: "Aaron",
+    password: "video_chat_user_1",
   },
   {
-    id: REPLACE_USER_2_ID,
-    name: "REPLACE_USER_2_FULL_NAME",
-    login: "REPLACE_USER_2_LOGIN",
-    password: "REPLACE_USER_2_PASSWORD",
-    color: "#077988"
+    id: 13731691,
+    name: "Bella",
+    login: "Bella",
+    password: "video_chat_user_2",
   },
   {
-    id: REPLACE_USER_3_ID,
-    name: "REPLACE_USER_3_FULL_NAME",
-    login: "REPLACE_USER_3_LOGIN",
-    password: "REPLACE_USER_3_PASSWORD",
-    color: "#13aaae"
+    id: 13731692,
+    name: "Chloe",
+    login: "Chloe",
+    password: "video_chat_user_3",
   },
   {
-    id: REPLACE_USER_4_ID,
-    name: "REPLACE_USER_4_FULL_NAME",
-    login: "REPLACE_USER_4_LOGIN",
-    password: "REPLACE_USER_4_PASSWORD",
-    color: "#056a96"
+    id: 13731694,
+    name: "David",
+    login: "David",
+    password: "video_chat_user_4",
   }
 ];

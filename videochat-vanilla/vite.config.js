@@ -3,6 +3,13 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
+    tailwindcss({
+      content: {
+        files: [
+          './index.html',
+          './src/**/*.{js,html}',
+        ],
+      },
+    }),
   ],
 });

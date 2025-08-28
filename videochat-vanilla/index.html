@@ -1,220 +1,144 @@
 <!DOCTYPE html>
-<html lang="en" x-data="app()" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>ConnectyCube Video Chat (Alpine)</title>
+    <title>ConnectyCube Video Chat VanillaJS code sample</title>
 
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-32x32.png"
-    />
+    <link rel="icon" type="image/png" sizes="32x32" href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-32x32.png" />
+    <link rel="icon"  type="image/png" sizes="16x16"  href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-16x16.png" />
 
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="https://connectycube.com/wp-content/themes/connectycube2019/favicon/favicon-16x16.png"
-    />
-
-    <link rel="stylesheet" href="./styles/index.css" />
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
-    />
-
-    <script src="./src/main.js" defer></script>
+    <script type="module" src="/src/index.js"></script>
   </head>
 
-  <body>
-    <div id="main">
-      <!-- LOGIN SCREEN -->
-      <section id="login" x-show="screen==='login'">
-        <div id="login-logo">
-          <img id="login-image" src="/logo.png" alt="ConnectyCube Logo" />
-          <div id="login-caption">Video Chat</div>
-
-          <div id="login-loader" x-show="loading">
-            <div id="login-loader-text">Connecting...</div>
-            <div id="login-loader-spinner">
-              <!-- spinner -->
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                style="margin:auto;display:block"
-                width="20px"
-                height="20px"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="xMidYMid"
-              >
-                <circle
-                  r="36"
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  stroke="#1198d4"
-                  stroke-width="10"
-                  stroke-dasharray="169.6 58.5"
-                >
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    repeatCount="indefinite"
-                    dur="1s"
-                    values="0 50 50;360 50 50"
-                  ></animateTransform>
-                </circle>
-              </svg>
-            </div>
+  <body x-data="app">
+    <!-- LOGIN SCREEN -->
+    <section id="login" x-show="$store.ui.screen==='login'" class="mx-auto">
+      <div class="flex flex-col items-center justify-center">
+        <img src="/logo.png" alt="ConnectyCube Logo" class="h-60 w-auto" />
+        <h1 class="font-bold font-mono text-2xl">Video Chat (VanillaJS)</h1>
+        <div class="h-20 flex items-center">
+          <div x-show="$store.ui.isLoggingIn" class="flex flex-row items-center gap-1 font-mono">
+            <span>Connecting...</span>
+            <img src="/spinner.svg" alt="Connecting..." class="size-5" />
           </div>
         </div>
+      </div>
 
-        <div id="login-buttons-container">
-          <template x-for="u in users" :key="u.id">
-            <button
-              class="login-button user-bg-color"
-              @click="login(u)"
-              x-text="`Login as ${u.name}`"
-            ></button>
-          </template>
+      <div class="flex flex-col gap-2 p-8">
+        <template x-for="user in $store.users.users" :key="user.id">
+          <button
+            type="button"
+            class="text-white font-medium rounded-full text-xl px-8 py-4 text-center me-2 cursor-pointer bg-gradient-to-r hover:bg-gradient-to-br focus:ring-4 focus:outline-none"
+            :class="user.buttonStyle"
+            @click="login(user)"
+            x-text="`Login as ${user.name}`"
+          ></button>
+        </template>
+      </div>
+    </section>
+
+    <!-- SELECT USERS SCREEN -->
+    <section id="select" x-show="$store.ui.screen==='select'" class="mx-auto flex flex-col items-center justify-center gap-16">
+      <h2 class="font-bold font-mono text-xl">Logged in as: <span x-text="$store.users.current.name" class="font-bold underline"></span></h2>
+      <h2 class="font-bold font-mono text-xl">Select users to start a call:</h2>
+
+      <div class="flex flex-col gap-2">
+        <template x-for="userToSelect in $store.users.toSelect" :key="userToSelect.id">
+          <label :for="`checkbox-${userToSelect.id}`" class="px-8 py-4 rounded-full cursor-pointer text-xl font-bold text-white bg-blue-800 hover:bg-blue-600 transform duration-300 flex flex-row items-center justify-around gap-10">
+            <span x-text="userToSelect.name"></span>
+            <input
+              type="checkbox"
+              class=""
+              :id="`checkbox-${userToSelect.id}`"
+              :value="userToSelect.id"
+              x-model="$store.users.selected"
+            />
+          </label>
+        </template>
+      </div>
+
+      <div class="flex flex-row items-center justify-center gap-12">
+        <button type="button" class="p-2 rounded-full text-white bg-green-800 hover:bg-green-600 transform duration-300 cursor-pointer" @click="startAudioCall">
+          <i data-lucide="phone" class="size-8 m-1"></i>
+        </button>
+        <button type="button" class="p-2 rounded-full text-white bg-green-800 hover:bg-green-600 transform duration-300 cursor-pointer" @click="startVideoCall">
+          <i data-lucide="video" class="size-8 m-1"></i>
+        </button>
+        <button type="button" class="p-2 rounded-full text-white bg-red-800 hover:bg-red-600 transform duration-300 cursor-pointer" @click="logout">
+          <i data-lucide="log-out" class="size-8 m-1"></i>
+        </button>
+      </div>
+
+      <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center p-8 rounded-lg gap-8 bg-blue-950 border border-blue-800"
+        x-show="$store.ui.isIncomingCall"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-80"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-80">
+        <span class="text-xl text-white font-mono">
+          <span x-text="$store.ui.incomingCallText" class="font-medium"></span>
+          <span x-text="$store.ui.incomingCallUserName" class="font-bold"></span>
+        </span>
+        <div class="flex flex-row items-center justify-center gap-8">
+          <button type="button" @click="acceptCall" class="text-lg font-bold font-mono px-4 py-2 rounded-full text-white bg-green-600 hover:bg-green-500 transform duration-300 cursor-pointer border border-green-400">Accept</button>
+          <button type="button" @click="rejectCall" class="text-lg font-bold font-mono px-4 py-2 rounded-full text-white bg-red-600 hover:bg-red-500 transform duration-300 cursor-pointer border border-red-400">Reject</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- START VIDEOCHAT SCREEN -->
-      <section id="call" x-show="screen==='call'">
-        <div id="call-select-users">
-          <h2 id="select-header">Select users to start Videocall</h2>
-          <template x-for="u in usersForSelect" :key="u.id">
-            <label :for="`select-${u.id}`" class="user-bg-color select-user">
-              <span x-text="u.name"></span>
-              <input
-                type="checkbox"
-                class="select-user-checkbox"
-                :id="`select-${u.id}`"
-                :value="u.id"
-                x-model="selectedUsers"
-              />
-            </label>
-          </template>
-        </div>
-
-        <div id="call-buttons-container">
-          <button id="call-start-audio" class="call-button" @click="startCall('audio')"></button>
-          <button id="call-start-video" class="call-button" @click="startCall('video')"></button>
-        </div>
-
-        <div id="call-incoming" x-show="incoming">
-          <div class="call-modal-header">
-            Incoming call from <strong x-text="incomingUser?.name"></strong>
-          </div>
-          <div class="call-modal-footer">
-            <button @click="rejectCall" class="call-modal-button">Reject</button>
-            <button @click="acceptCall" class="call-modal-button">Accept</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ACTIVE VIDEOCHAT SCREEN -->
-      <section id="videochat" x-show="screen==='videochat'">
-        <div id="videochat-streams">
-          <template x-for="u in activeOpponents" :key="u.id">
-            <div :id="`videochat-stream-container-${u.id}`" class="videochat-stream-container">
-              <div :id="`videochat-stream-loader-${u.id}`" class="videochat-stream-loader">
-                <div class="videochat-stream-loader-text" x-text="u.name"></div>
-                <div class="videochat-stream-loader-spinner">[...]</div>
+      <!-- CALL SCREEN -->
+      <section id="videochat" x-show="$store.ui.screen==='videochat'" class="size-full flex flex-col items-center bg-gray-950">
+        <div class="h-[calc(100%-5rem)] w-auto max-w-[1440px] mx-auto grid gap-1" :class="$store.users.opponentsSize === 0 ? 'grid-cols-1 grid-rows-1' : $store.users.opponentsSize === 1 ? 'grid-cols-1 grid-rows-2' : 'grid-cols-2 grid-rows-2'">
+          <template x-for="opponent in $store.users.opponentsArray" :key="opponent.id">
+            <div class="size-full relative bg-gray-900">
+              <video playsinline :id="`remoteStream-${opponent.id}`" class="size-full object-contain"></video>
+              <div class="absolute top-0 left-0 px-2 py-0.5 w-full flex flex-row items-center justify-center gap-2 text-sm bg-gray-600/50">
+                <span x-text="opponent.name" class="font-mono font-semibold text-white"></span>
+                <img x-show="!opponent.stream" src="/spinner.svg" alt="Waiting..." class="size-4" />
               </div>
-              <video playsinline class="videochat-stream" :id="`remoteStream-${u.id}`"></video>
             </div>
           </template>
 
-          <div id="videochat-local-stream-container" class="videochat-stream-container">
-            <video playsinline id="localStream" class="videochat-stream"></video>
+          <div class="size-full relative bg-gray-900" :class="$store.users.opponentsSize === 2 ? 'col-span-2' : ''">
+            <video playsinline id="localStream" class="size-full object-contain"></video>
+            <div class="absolute top-0 left-0 px-2 py-0.5 w-full flex flex-row items-center justify-center text-sm bg-gray-600/50">
+              <span class="font-mono font-semibold text-md text-white">Me</span>
+            </div>
           </div>
         </div>
 
-        <div id="videochat-buttons-container">
-          <button id="videochat-mute-unmute" class="videochat-button" :disabled="!inCall" @click="toggleMute"></button>
-          <button id="videochat-stop-call" class="videochat-button" @click="stopCall"></button>
-          <button id="videochat-switch-camera" class="videochat-button" :disabled="!inCall"></button>
-          <button id="videochat-sharing-screen" class="videochat-button" @click="shareScreen">
-            <i class="fas fa-tv"></i>
+        <div class="flex flex-row items-center justify-center gap-4 py-4 z-10">
+          <button class="p-2 rounded-full text-white bg-yellow-600 hover:bg-yellow-500 transform duration-300 cursor-pointer" @click="toggleAudioMute">
+            <i x-show="!$store.ui.isAudioMuted" data-lucide="mic" class="size-6 m-0.5"></i>
+            <i x-show="$store.ui.isAudioMuted" data-lucide="mic-off" class="size-6 m-0.5"></i>
+          </button>
+          <button class="p-2 rounded-full text-white bg-blue-600 hover:bg-blue-500 transform duration-300 cursor-pointer" @click="toggleVideoMute">
+            <i x-show="!$store.ui.isVideoMuted" data-lucide="video" class="size-6 m-0.5"></i>
+            <i x-show="$store.ui.isVideoMuted" data-lucide="video-off" class="size-6 m-0.5"></i>
+          </button>
+          <button class="p-2 rounded-full text-white bg-red-600 hover:bg-red-500 transform duration-300 cursor-pointer" @click="stopCall">
+            <i data-lucide="phone" class="size-6 m-0.5 rotate-135"></i>
+          </button>
+          <button class="p-2 rounded-full text-white bg-orange-600 hover:bg-orange-500 transform duration-300 cursor-pointer disabled:cursor-not-allowed" @click="switchCamera" :disabled="$store.ui.isSwitchCameraDisabled">
+            <i data-lucide="switch-camera" class="size-6 m-0.5"></i>
+          </button>
+          <button class="p-2 rounded-full text-white bg-purple-600 hover:bg-purple-500 transform duration-300 cursor-pointer disabled:cursor-not-allowed" @click="screenShare" :disabled="$store.ui.isScreenShareDisabled">
+            <i x-show="!$store.ui.isScreenShare"  data-lucide="screen-share" class="size-6 m-0.5"></i>
+            <i x-show="$store.ui.isScreenShare"  data-lucide="screen-share-off" class="size-6 m-0.5"></i>
           </button>
         </div>
       </section>
-
-      <!-- SNACKBAR -->
-      <div id="snackbar" x-show="snackbar" x-text="snackbar"></div>
+      
+      <!-- TOAST -->
+      <div x-show="$store.toast.visible" x-text="$store.toast.message" class="fixed left-1/2 top-10 -translate-x-1/2 min-w-72 p-4 z-1 bg-gray-800 text-white text-center rounded-lg"></div>
 
       <!-- SOUNDS -->
-      <audio id="signal-end" preload="auto"><source src="audio/end_call.mp3" type="audio/mp3" /></audio>
-      <audio id="signal-out" loop preload="auto"><source src="audio/dialing.mp3" type="audio/mp3" /></audio>
-      <audio id="signal-in" loop preload="auto"><source src="audio/calling.mp3" type="audio/mp3" /></audio>
-    </div>
-
-    <script>
-      function app() {
-        return {
-          screen: 'login',
-          loading: false,
-          users: [
-            { id: 1, name: 'Alice' },
-            { id: 2, name: 'Bob' }
-          ],
-          usersForSelect: [
-            { id: 3, name: 'Charlie' },
-            { id: 4, name: 'Diana' }
-          ],
-          selectedUsers: [],
-          incoming: false,
-          incomingUser: null,
-          activeOpponents: [],
-          inCall: false,
-          snackbar: '',
-
-          login(u) {
-            this.loading = true
-            setTimeout(() => {
-              this.loading = false
-              this.screen = 'call'
-              this.snackbar = `Logged in as ${u.name}`
-            }, 1000)
-          },
-
-          startCall(type) {
-            this.inCall = true
-            this.activeOpponents = this.usersForSelect.filter(u =>
-              this.selectedUsers.includes(u.id.toString())
-            )
-            this.screen = 'videochat'
-          },
-
-          acceptCall() {
-            this.incoming = false
-            this.inCall = true
-            this.screen = 'videochat'
-          },
-
-          rejectCall() {
-            this.incoming = false
-          },
-
-          stopCall() {
-            this.inCall = false
-            this.screen = 'call'
-          },
-
-          toggleMute() {
-            alert('Mute/unmute')
-          },
-
-          shareScreen() {
-            alert('Sharing screen...')
-          }
-        }
-      }
-    </script>
+      <audio x-ref="signalEnd" preload="auto"><source src="/audio/end_call.mp3" type="audio/mp3" /></audio>
+      <audio x-ref="signalOut" loop preload="auto"><source src="/audio/dialing.mp3" type="audio/mp3" /></audio>
+      <audio x-ref="signalIn" loop preload="auto"><source src="/audio/calling.mp3" type="audio/mp3" /></audio>
   </body>
 </html>
