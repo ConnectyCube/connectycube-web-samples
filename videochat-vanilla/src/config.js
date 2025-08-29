@@ -21,10 +21,10 @@ export const credentials = {
 export const appConfig = {
   debug: { mode: 1 },
   videochat: {
-    answerTimeInterval: 15,
-    //   dialingTimeInterval: 5,
+    // answerTimeInterval: 45,
+    // dialingTimeInterval: 5,
     disconnectTimeInterval: 300,
-    //   statsReportTimeInterval: 5
+    // statsReportTimeInterval: 5
   },
 };
 
