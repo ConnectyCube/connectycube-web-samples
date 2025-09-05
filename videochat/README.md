@@ -22,15 +22,15 @@ npm run dev
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/images/code_samples/javascript/js-videochat-vanilla-login-screen.png" width="720" alt="Video Chat VanillaJS code sample (login screen)">
+<img src="./screenshots/vanilla-js-videochat-login-screen.png" width="720" alt="Video Chat VanillaJS code sample (login screen)">
 </p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/images/code_samples/javascript/js-videochat-vanilla-select-users-screen.png" width="720" alt="Video Chat VanillaJS code sample (users screen)">
+<img src="./screenshots/vanilla-js-videochat-select-users-screen.png" width="720" alt="Video Chat VanillaJS code sample (users screen)">
 </p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/images/code_samples/javascript/js-videochat-vanilla-video-call-screen.png" width="720" alt="Video Chat VanillaJS code sample (call screen)">
+<img src="./screenshots/vanilla-js-videochat-video-call-screen.png" width="720" alt="Video Chat VanillaJS code sample (call screen)">
 </p>
 
 ## Documentation
