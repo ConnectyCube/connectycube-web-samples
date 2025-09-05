@@ -15,7 +15,9 @@ export default class Calls {
   iceRestartTimeout = null;
   needIceRestartForUsersIds = [];
 
-  constructor() {
+  constructor({ playSound, pauseSound }) {
+    this.playSound = playSound;
+    this.pauseSound = pauseSound;
     this.toast = Alpine.store('toast');
     this.users = Alpine.store('users');
     this.ui = Alpine.store('ui');
@@ -112,7 +114,7 @@ export default class Calls {
 
       return false;
     } else {
-      this.ui.isOutgoingCall = false;
+      this.pauseSound('signalOut');
       this.toast.show(`${this.users.getUser(userId, "name")} has accepted the call`);
     }
   };
@@ -133,7 +135,7 @@ export default class Calls {
         : `${userName} rejected the call request`;
 
       this.users.removeOpponent(userId);
-      this.ui.isOutgoingCall = false;
+      this.pauseSound('signalOut');
       this.toast.show(infoText);
       this.stopCall(userId);
     }
@@ -149,7 +151,7 @@ export default class Calls {
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"} the call`;
 
     this.users.removeOpponent(userId);
-    this.ui.isOutgoingCall = false;
+    this.pauseSound('signalOut');
     this.toast.show(infoText);
 
     if (isStoppedByInitiator) {
@@ -169,7 +171,7 @@ export default class Calls {
     const infoText = `${userName} did not answer`;
 
     this.users.removeOpponent(userId);
-    this.ui.isOutgoingCall = false;
+    this.pauseSound('signalOut');
     this.toast.show(infoText);
     this.stopCall(userId);
   };
@@ -191,8 +193,8 @@ export default class Calls {
   async acceptCall() {
     const extension = {};
 
-    this.defaultSettings();
     this.hideIncomingCallModal();
+    this.defaultSettings();
 
     const mediaOptions = { ...this.mediaParams };
 
@@ -242,7 +244,6 @@ export default class Calls {
 
     if (this.users.opponentsSize > 0) {
       this.ui.screen = "videochat";
-      this.ui.isOutgoingCall = true;
 
       this.callSession = ConnectyCube.videochat.createNewSession(
         this.users.opponentsIds,
@@ -266,13 +267,14 @@ export default class Calls {
       }
 
       this.callSession.call({});
+      this.playSound('signalOut');
       this.setActiveDeviceId(stream);
       this._prepareVideoElement("localStream");
       this.onDevicesChangeListener();
 
       // send push notification when calling
 
-      const currentUserId = this.callSession.initiatorID;
+      const currentUserId = this.callSession.currentUserID;
       const currentUserName = this.users.getUser(currentUserId, "name");
       const params = {
         message: `Incoming call from ${currentUserName}`,
@@ -322,6 +324,8 @@ export default class Calls {
       }
     } else if (this.callSession) {
       this.callSession.stop({});
+      this.pauseSound('signalOut');
+      this.playSound('signalEnd');
       ConnectyCube.videochat.clearSession(this.callSession.ID);
       this.callSession = null;
       this.videoDevicesIds = [];
@@ -337,7 +341,6 @@ export default class Calls {
       }
 
       this.ui.screen = "select";
-      this.ui.isOutgoingCall = false;
       this.users.selected = [];
       this.users.clearOpponents();
     }
@@ -540,12 +543,14 @@ export default class Calls {
     this.ui.isIncomingCall = true;
     this.ui.incomingCallText = `Incoming ${this.isVideoType ? "video " : this.isAudioType ? "audio " : ""}call from `;
     this.ui.incomingCallUserName = this.users.getUser(userId, 'name');
+    this.playSound('signalIn');
   };
 
   hideIncomingCallModal = () => {
     this.ui.isIncomingCall = false;
     this.ui.incomingCallText = "";
     this.ui.incomingCallUserName = "";
+    this.pauseSound('signalIn');
   };
 
   get isVideoType() {

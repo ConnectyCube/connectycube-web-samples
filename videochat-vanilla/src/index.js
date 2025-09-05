@@ -1,7 +1,6 @@
-import '../index.css';
 import Alpine from 'alpinejs';
 import { toast, ui, users } from './store';
-import App from './App';
+import App from './app';
 import { createIcons, LogOut, Mic, MicOff, Phone, PhoneOff, ScreenShare, ScreenShareOff, SwitchCamera, Video, VideoOff } from 'lucide';
 
 Alpine.store("toast", toast);

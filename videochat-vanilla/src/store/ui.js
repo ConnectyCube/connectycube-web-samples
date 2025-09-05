@@ -1,7 +1,6 @@
 export default {
   screen: "login",
   isLoggingIn: false,
-  isOutgoingCall: false,
   isIncomingCall: false,
   incomingCallText: "",
   incomingCallUserName: "",

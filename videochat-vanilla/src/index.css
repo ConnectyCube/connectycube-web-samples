@@ -32,6 +32,10 @@ body {
   height: 100vh;
 }
 
+[x-cloak] {
+  display: none !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

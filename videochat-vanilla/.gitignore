@@ -23,4 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-!connectycube-4.7.2.tgz
+src/private-config.js

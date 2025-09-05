@@ -1,22 +1,36 @@
-import Auth from "./Auth";
-import Calls from "./Calls";
+import Auth from "./auth";
+import Calls from "./calls";
 
 export default class App {
   constructor() {
+    this.playSound = (sound) => {
+      const $audioRef = this.$refs[sound];
+
+      if ($audioRef) {
+        $audioRef.currentTime = 0;
+        $audioRef.play().catch(() => { });
+      }
+    };
+
+    this.pauseSound = (sound) => {
+      const $audioRef = this.$refs[sound];
+
+      if ($audioRef) {
+        $audioRef.currentTime = 0;
+        $audioRef.pause();
+      }
+    };
+
     this.auth = new Auth();
-    this.calls = new Calls();
+    this.calls = new Calls({ playSound: this.playSound, pauseSound: this.pauseSound });
   }
 
   init() {
     this.$watch("$store.ui.isIncomingCall", (isIncomingCall) => {
       if (isIncomingCall) {
-        this.playDialingSound();
-      }
-    });
-
-    this.$watch("$store.ui.isOutgoingCall", (isOutgoingCall) => {
-      if (!isOutgoingCall) {
-        this.stopCallingSound();
+        this.playSound('signalIn');
+      } else {
+        this.pauseSound('signalIn');
       }
     });
   }
@@ -32,30 +46,18 @@ export default class App {
 
 
   async startAudioCall() {
-    if (this.$store.users.selected.length < 1) {
-      return;
-    }
-
     await this.calls.startAudioCall();
-    this.playCallingSound();
   }
 
   async startVideoCall() {
-    if (this.$store.users.selected.length < 1) {
-      return;
-    }
-
     await this.calls.startVideoCall();
-    this.playCallingSound();
   }
 
   acceptCall() {
-    this.stopDialingSound();
     this.calls.acceptCall();
   }
 
   rejectCall() {
-    this.stopDialingSound();
     this.calls.rejectCall();
   }
 
@@ -69,7 +71,6 @@ export default class App {
 
   stopCall() {
     this.calls.stopCall();
-    this.playEndCallSound();
   }
 
   switchCamera() {
@@ -78,41 +79,5 @@ export default class App {
 
   screenShare() {
     this.calls.screenShare();
-  }
-
-  playEndCallSound() {
-    if (this.$refs.signalEnd) {
-      this.$refs.signalEnd.currentTime = 0;
-      this.$refs.signalEnd.play();
-    }
-  }
-
-  playCallingSound() {
-    if (this.$refs.signalOut) {
-      this.$refs.signalOut.currentTime = 0;
-      this.$refs.signalOut.play();
-    }
-  }
-
-  playDialingSound() {
-    if (this.$refs.signalIn) {
-      this.$refs.signalIn.currentTime = 0;
-      this.$refs.signalIn.play();
-    }
-  }
-
-  stopCallingSound() {
-    if (this.$refs.signalOut) {
-      this.$refs.signalOut.currentTime = 0;
-      this.$refs.signalOut.pause();
-    }
-  }
-
-
-  stopDialingSound() {
-    if (this.$refs.signalIn) {
-      this.$refs.signalIn.currentTime = 0;
-      this.$refs.signalIn.pause();
-    }
   }
 };

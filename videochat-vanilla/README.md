@@ -14,23 +14,23 @@ Project contains the following features implemented:
 
 ## Get started
 
-```
-npm i
+``` bash
+npm install
 npm run dev
 ```
 
 ## Screenshots
 
 <p align="center">
-<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_login.png" width="720" alt="Video Chat code sample demo image login screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js-videochat-vanilla-login-screen.png" width="720" alt="Video Chat VanillaJS code sample (login screen)">
 </p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_select_users.png" width="720" alt="Video Chat code sample demo image select users screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js-videochat-vanilla-select-users-screen.png" width="720" alt="Video Chat VanillaJS code sample (users screen)">
 </p>
 
 <p align="center">
-<img src="https://developers.connectycube.com/images/code_samples/javascript/js_codesample_videochat_active_call.png" width="720" alt="Video Chat code sample demo image active call screen">
+<img src="https://developers.connectycube.com/images/code_samples/javascript/js-videochat-vanilla-video-call-screen.png" width="720" alt="Video Chat VanillaJS code sample (call screen)">
 </p>
 
 ## Documentation
@@ -43,7 +43,7 @@ ConnectyCube P2P Calling API documentation - [https://developers.connectycube.co
 
 To make the sample works for your own app, please do the following:
 
-1.  Register new account and application at `https://admin.connectycube.com` and then put Application credentials from 'Overview' page into `videochat-vanilla/src/config.js` file:
+1. Register new account and application at `https://admin.connectycube.com` and then put Application credentials from 'Overview' page into `videochat-vanilla/src/config.js` file:
 
     ```javascript
     export const credentials = {
@@ -52,7 +52,7 @@ To make the sample works for your own app, please do the following:
     };
     ```
 
-2.  At `https://admin.connectycube.com`, create from 2 to 4 users in 'Users' module and put them into `videochat/src/config.js` file:
+2. At `https://admin.connectycube.com`, create from 2 to 4 users in 'Users' module and put them into `videochat/src/config.js` file:
 
     ```javascript
     export const users = [
@@ -80,13 +80,13 @@ To make the sample works for your own app, please do the following:
         name: "User4",
         login: "videouser4",
         password: "videouser4",
+      }
     ];
     ```
 
-3.  Install node modules - `npm install`
-4.  Run `npm run dev` to start application in developing mode
-5.  Or `npm run preview` to preview application
-6.  Or `npm run build` to prepare dist folder for release
+3. Install node modules - `npm install`
+4. Run `npm run dev` to start application in developing mode
+5. Or `npm run build` to prepare dist folder for release
 
 ## Can't build yourself?
 
