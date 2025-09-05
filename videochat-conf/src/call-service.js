@@ -384,7 +384,7 @@ class CallService {
     console.warn("[onAcceptCallListener]", userId, displayName);
     const userName = this.isGuestMode
       ? displayName
-      : this.users.get(userId, "name");
+      : this._getUserById(userId, "name");
     const infoText = `${userName} has ${this.isGuestMode ? "joined" : "accepted"
       } the call`;
     this.showSnackbar(infoText);
@@ -410,7 +410,7 @@ class CallService {
   }
 
   onRejectCallListener = (session, userId, extension = {}) => {
-    const userName = this.users.get(userId, "name");
+    const userName = this._getUserById(userId, "name");
     const infoText = extension.busy
       ? `${userName} is busy`
       : `${userName} rejected the call request`;
@@ -424,7 +424,7 @@ class CallService {
     const isStoppedByInitiator = this.initiatorID === userId;
     const userName = this.initGuestRoom
       ? userId
-      : this.users.get(userId, "name");
+      : this._getUserById(userId, "name");
     const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
       } the call`;
 
@@ -446,7 +446,7 @@ class CallService {
       return false;
     }
 
-    const userName = this.users.get(userId, "name");
+    const userName = this._getUserById(userId, "name");
     const infoText = `${userName} did not answer`;
 
     this.showSnackbar(infoText);
@@ -501,7 +501,7 @@ class CallService {
     const opponentsIds = [this.initiatorID, ...this.participantIds];
     const opponents = opponentsIds.map((id) => ({
       id,
-      name: this.users.get(id, "name"),
+      name: this._getUserById(id, "name"),
     }));
     this.addStreamElement(opponents);
     this.hideIncomingCallModal();
@@ -524,7 +524,7 @@ class CallService {
     document.querySelectorAll(".select-user-checkbox").forEach(($checkbox) => {
       if ($checkbox.checked) {
         const id = +$checkbox.dataset.id;
-        const name = this.users.get(id, "name");
+        const name = this._getUserById(id, "name");
 
         opponents.push({ id, name });
         opponentsIds.push(id);
@@ -924,10 +924,16 @@ class CallService {
       this.$modal.classList.remove("show");
       this.$calling.pause();
     } else {
-      $initiator.innerHTML = this.users.get(this.initiatorID, "name");
+      $initiator.innerHTML = this._getUserById(this.initiatorID, "name");
       this.$modal.classList.add("show");
       this.$calling.play();
     }
+  };
+
+  _getUserById = (userId, key) => {
+    const user = users.find((user) => user.id == userId);
+
+    return typeof key === "string" ? user[key] : user;
   };
 
   getStreamIdByUserId(userId) {
