@@ -55,7 +55,7 @@ export const ChatProvider = ({ children }) => {
     setMessages(msgs);
   };
 
-  const chatCallbaks = () => {
+  const chatCallbaсks = () => {
     ConnectyCube.chat.onMessageListener = (userId, message) => {
       if (!isiOS()) {
         if (userId !== chatParticipantsRef.current[0].userId) {
@@ -135,7 +135,7 @@ export const ChatProvider = ({ children }) => {
         getMessages,
         joinChat,
         setParticipants,
-        chatCallbaks,
+        chatCallbaсks,
       }}
     >
       {children}

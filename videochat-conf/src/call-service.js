@@ -170,15 +170,13 @@ class CallService {
       streamBlock.innerHTML = videochatStreamsTemplate(opponent);
       streamBlock.classList.add("videochat-stream-container");
       streamBlock.dataset.id = `${opponent.id}`;
-      streamBlock.style.gridArea = `stream${
-        index + currentActiveCallUsersCount
-      }`;
+      streamBlock.style.gridArea = `stream${index + currentActiveCallUsersCount
+        }`;
       documentFragment.appendChild(streamBlock);
     });
 
-    $videochatStreams.classList.value = `grid-${
-      opponents.length + currentActiveCallUsersCount
-    }`;
+    $videochatStreams.classList.value = `grid-${opponents.length + currentActiveCallUsersCount
+      }`;
 
     $videochatStreams.appendChild(documentFragment);
 
@@ -331,9 +329,8 @@ class CallService {
     if (!this.avatarIndex[user_id]) {
       this.avatarIndex[user_id] = Math.floor(Math.random() * 10);
     }
-    $avatar.style.background = `#ffffff url("../images/animals/${
-      defaultAvatarsList[this.avatarIndex[user_id]]
-    }") no-repeat center`;
+    $avatar.style.background = `#ffffff url("../images/animals/${defaultAvatarsList[this.avatarIndex[user_id]]
+      }") no-repeat center`;
     $avatar.style.backgroundSize = "contain";
   };
 
@@ -388,9 +385,8 @@ class CallService {
     const userName = this.isGuestMode
       ? displayName
       : this._getUserById(userId, "name");
-    const infoText = `${userName} has ${
-      this.isGuestMode ? "joined" : "accepted"
-    } the call`;
+    const infoText = `${userName} has ${this.isGuestMode ? "joined" : "accepted"
+      } the call`;
     this.showSnackbar(infoText);
     this.startMonitoringUserStats(userId);
     if (this.isGuestMode) {
@@ -429,9 +425,8 @@ class CallService {
     const userName = this.initGuestRoom
       ? userId
       : this._getUserById(userId, "name");
-    const infoText = `${userName} has ${
-      isStoppedByInitiator ? "stopped" : "left"
-    } the call`;
+    const infoText = `${userName} has ${isStoppedByInitiator ? "stopped" : "left"
+      } the call`;
 
     this.showSnackbar(infoText);
 

@@ -18,7 +18,7 @@ import { BsFillChatDotsFill } from "react-icons/bs";
 const Conference = (props) => {
   const chat = useContext(ChatContext);
   let href = useHistory();
-  chat.chatCallbaks();
+  chat.chatCallbaсks();
   const [chatShow, setChatShow] = useState(false);
   const [preJoinScreen, setPreJoinScreen] = useState(true);
   const [audioOff, setAudioOff] = useState("");
