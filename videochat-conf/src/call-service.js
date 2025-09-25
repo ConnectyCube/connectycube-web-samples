@@ -912,7 +912,7 @@ class CallService {
   }
 
   createMeeting() {
-    const params = { name: `${Math.random()}`, janus_config: 'dev' }
+    const params = { name: `${Math.random()}`, public: true }
     return ConnectyCube.meeting.create(params)
   }
 
