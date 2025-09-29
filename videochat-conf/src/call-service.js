@@ -594,7 +594,6 @@ class CallService {
       functionBefore: (instance) => {
         let htmlBlock = "";
         this.listenersCameraList;
-        console.warn(0, this._session.mediaParams?.video?.deviceId);
         this.videoDevices
           .sort((a, b) => parseInt(a.name.match(/\d+/)?.[0] ?? '0', 10) - parseInt(b.name.match(/\d+/)?.[0] ?? '0', 10))
           .forEach((elem) => {
