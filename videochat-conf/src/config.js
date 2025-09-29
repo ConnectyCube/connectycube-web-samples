@@ -9,13 +9,13 @@ export const messages = {
   title_login: 'Choose a user to login with:',
   title_callee: 'Choose users to call:',
   calling: 'Calling...',
-  webrtc_not_avaible: 'WebRTC is not available in your browser',
+  webrtc_not_available: 'WebRTC is not available in your browser',
   no_internet: 'Please check your Internet connection and try again',
   select_more_users: 'Select at less one user to start Videocall',
   share_call_link:
     'Share the above url with the users you want to have a call with',
   prompt_user_name: 'Input user name',
-  confirm_cancel: 'Do you shure to leave the call ?',
+  confirm_cancel: 'Do you sure to leave the call ?',
 };
 
 export const E2E_STATE_ELEMENT_ID = 'e2e-ice-state';
