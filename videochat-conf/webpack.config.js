@@ -38,8 +38,6 @@ module.exports = (env = {}) => ({
       watch: true,
     },
     historyApiFallback: true,
-    server: 'https',
-    host: '192.168.0.147',
     port: 8000,
     hot: true,
   },
