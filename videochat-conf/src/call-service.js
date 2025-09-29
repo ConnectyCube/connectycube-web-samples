@@ -645,7 +645,6 @@ class CallService {
   switchCamera = (event) => {
     event.stopPropagation();
 
-    console.warn(1, this._session.mediaParams?.video?.deviceId);
     this._session
       .switchMediaTracks({ video: event.currentTarget.value })
       .then((newLocalStream) => {
@@ -657,14 +656,9 @@ class CallService {
             { muted: true }
           );
         }
-        console.warn(2, this._session.mediaParams?.video?.deviceId);
       });
 
     $(".tooltip-container-list-camera").tooltipster("close");
-
-    setTimeout(() => {
-      console.warn(3, this._session.mediaParams?.video?.deviceId);
-    }, 2000);
   };
 
   toggleStreamMirror(user_id) {
