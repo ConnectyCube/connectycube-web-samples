@@ -582,7 +582,7 @@ export class CallService {
       throw 'No meeting to record';
     }
 
-    await ConnectyCube.meeting.update(this.meetId, { record: true } as Meetings.UpdateParams);
+    await ConnectyCube.meeting.update(this.meetId, { record: true } as Meetings.MeetingParams);
 
     this.store.dispatch(addRecordingStatus({ isRecording: true }));
     this.store
@@ -602,7 +602,7 @@ export class CallService {
       throw 'No meeting to record';
     }
 
-    await ConnectyCube.meeting.update(this.meetId, { record: false } as Meetings.UpdateParams);
+    await ConnectyCube.meeting.update(this.meetId, { record: false } as Meetings.MeetingParams);
 
     this.store.dispatch(addRecordingStatus({ isRecording: false }));
     this.store

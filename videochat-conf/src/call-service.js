@@ -594,18 +594,19 @@ class CallService {
       functionBefore: (instance) => {
         let htmlBlock = "";
         this.listenersCameraList;
-
-        this.videoDevices.forEach((elem) => {
-          if (this._session.activeVideoDeviceId !== elem.id) {
-            htmlBlock =
-              htmlBlock +
-              `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}">${elem.name}</button>`;
-          } else {
-            htmlBlock =
-              htmlBlock +
-              `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}" disabled>${elem.name}</button>`;
-          }
-        });
+        this.videoDevices
+          .sort((a, b) => parseInt(a.name.match(/\d+/)?.[0] ?? '0', 10) - parseInt(b.name.match(/\d+/)?.[0] ?? '0', 10))
+          .forEach((elem) => {
+            if (this._session.mediaParams?.video?.deviceId !== elem.id) {
+              htmlBlock =
+                htmlBlock +
+                `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}">${elem.name}</button>`;
+            } else {
+              htmlBlock =
+                htmlBlock +
+                `<button id="${elem.id}" class="switch-camera-item" value="${elem.id}" disabled>${elem.name}</button>`;
+            }
+          });
 
         instance.content(
           `<div class="switch-camera-block">
@@ -645,7 +646,7 @@ class CallService {
     event.stopPropagation();
 
     this._session
-      .switchMediaTracks({ video: event.toElement.value })
+      .switchMediaTracks({ video: event.currentTarget.value })
       .then((newLocalStream) => {
         this.toggleStreamMirror(this.currentUserID);
         if (isMobile) {
