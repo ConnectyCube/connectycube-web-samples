@@ -29,10 +29,8 @@ module.exports = (env = {}) => ({
       ],
     }),
   ],
-  watch: env.development,
   devtool: env.production ? false : 'source-map',
   devServer: {
-    open: true,
     static: {
       directory: path.join(__dirname, './'),
       watch: true,
@@ -40,6 +38,10 @@ module.exports = (env = {}) => ({
     historyApiFallback: true,
     port: 8000,
     hot: true,
+  },
+  performance: {
+    hints: false,
+    assetFilter: (filename) => !/\.mp3$/i.test(filename),
   },
   module: {
     rules: [
