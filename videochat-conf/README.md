@@ -47,7 +47,7 @@ To make the sample works for your own app, please do the following:
 
 3.  Install node modules - `npm install`
 4.  Run `npm run build` and open `dist/index.html`
-5.  Or run `npm start` to start application in developing mode on `https://localhost:3000`
+5.  Or run `npm start` to start application in developing mode on `http://localhost:8000`
 
 ## Can't build yourself?
 
