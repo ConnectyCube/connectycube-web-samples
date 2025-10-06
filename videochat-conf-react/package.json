@@ -3,19 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@mui/material": "^5.18.0",
+    "@mui/material": "^7.3.4",
     "connectycube": "^4.7.3",
     "crypto-js": "^4.2.0",
-    "env-cmd": "^10.1.0",
+    "env-cmd": "^11.0.0",
     "random-username-generator": "^1.0.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-icons": "^5.5.0",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
-    "sass": "^1.89.2",
+    "sass": "^1.93.2",
     "sass-loader": "^16.0.5",
-    "use-sound": "^5.0.0"
+    "use-sound": "^5.0.0",
+    "webrtc-adapter": "^9.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,13 +43,15 @@
     ]
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.28.0",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^19.0.4",
+    "@babel/eslint-parser": "^7.28.4",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "eslint": "^8.57.1",
+    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "^6.1.0",
     "react-scripts": "^5.0.1"
   }
 }

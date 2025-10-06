@@ -9,8 +9,8 @@ class AuthService {
 
   init = () => {
     const credentials = {
-      appId: 'REPLACE_APP_ID',
-      authKey: 'REPLACE_APP_AUTH_KEY',
+      appId: 8688,
+      authKey: '36E6E853-89DA-4001-B050-51A582CBD981',
       chat: {
         streamManagement: {
           enable: true,
