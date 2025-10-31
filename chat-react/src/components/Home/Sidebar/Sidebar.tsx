@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube } from "@connectycube/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,10 +13,10 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/shadcn-ui/tabs";
-import { getCurrentUser, destroyUserSession } from "../../../connectycube";
+import { getCurrentUser, destroyUserSession } from "@/connectycube";
 import ChatsTab from "./Tabs/ChatsTab";
 import UsersTab from "./Tabs/UsersTab";
-import Avatar from "@/Components/Shared/Avatar";
+import Avatar from "@/components/shared/Avatar";
 import { cn } from "@/lib/utils";
 
 export interface SideBarProps {
@@ -25,11 +25,11 @@ export interface SideBarProps {
 
 const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
   const navigate = useNavigate();
-  const { disconnect, selectedDialog, getDialogs } = useChat();
+  const { disconnect, selectedDialog, fetchDialogs } = useConnectyCube();
 
   // retrieve chats
   useEffect(() => {
-    getDialogs();
+    fetchDialogs();
   }, []);
 
   const handleLogout = async () => {
@@ -64,7 +64,7 @@ const SideBar: React.FC<SideBarProps> = ({ showUsersTab }) => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="chats" className="flex flex-col overflow-y-scroll">
+      <Tabs defaultValue="chats" className="flex flex-col overflow-auto">
         <TabsContent
           value="chats"
           className={`${showUsersTab ? "h-[calc(100%-60px)]" : "h-full"}`}

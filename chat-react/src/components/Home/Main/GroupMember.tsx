@@ -1,8 +1,8 @@
 import React from "react";
 import { MdPersonRemoveAlt1 } from "react-icons/md";
-import { useChat } from "@connectycube/use-chat";
-import { ConfirmationAlert } from "@/components/Shared/ConfirmationAlert";
-import Avatar from "@/Components/Shared/Avatar";
+import { useConnectyCube } from "@connectycube/react";
+import { ConfirmationAlert } from "@/components/shared/ConfirmationAlert";
+import Avatar from "@/components/shared/Avatar";
 
 export interface GroupMemberProps {
   userId: number;
@@ -16,14 +16,14 @@ const GroupMember: React.FC<GroupMemberProps> = ({ userId, name, avatar }) => {
     selectedDialog,
     currentUserId,
     removeUsersFromGroupChat,
-  } = useChat();
+  } = useConnectyCube();
 
   const handleRemoveUser = () => {
     removeUsersFromGroupChat([userId]);
   };
 
-  const isChatOwner = selectedDialog.user_id === currentUserId;
-  const isAdmin = selectedDialog.user_id === userId;
+  const isChatOwner = selectedDialog?.user_id === currentUserId;
+  const isAdmin = selectedDialog?.user_id === userId;
   const canRemoveUser = isChatOwner && currentUserId !== userId;
 
   const lastActivityInfo = userId !== currentUserId ? lastActivity[userId] : "";

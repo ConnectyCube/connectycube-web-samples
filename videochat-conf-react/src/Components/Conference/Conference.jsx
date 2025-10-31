@@ -5,7 +5,7 @@ import AuthService from "../../services/auth-service";
 import react from "react";
 import Devices from "./Devices/Devices";
 import JoinScreen from "../JoinScreen/JoinScreen";
-import { isiOS, detectBrowser } from "../../services/heplers";
+import { isiOS, detectBrowser } from "../../services/helpers";
 
 import { useHistory } from "react-router";
 import Chat from "./Chat/Chat";

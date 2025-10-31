@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import UserStats from "./UserStats/UserStats";
 import { useState } from "react";
 import { BiMicrophoneOff } from "react-icons/bi";
-import { detectBrowser } from "../../../services/heplers";
+import { detectBrowser } from "../../../services/helpers";
 const UserStream = (props) => {
   const {
     stream,
