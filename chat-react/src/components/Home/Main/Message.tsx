@@ -1,17 +1,16 @@
 import React, { useMemo } from "react";
 import { IoCheckmarkSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useInView } from "react-intersection-observer";
-import { Messages } from "node_modules/connectycube/dist/types/types";
-import { useChat } from "@connectycube/use-chat";
-import Avatar from "../../Shared/Avatar";
-import Loader from "@/Components/Shared/Loader";
+import { useConnectyCube, type Messages } from "@connectycube/react";
+import Avatar from "../../shared/Avatar";
+import Loader from "@/components/shared/Loader";
 
 export interface MessageProps {
   message: Messages.Message;
   isGroupChat: boolean;
   dialogName: string;
-  senderName: string;
-  senderAvatar: string;
+  senderName?: string;
+  senderAvatar?: string;
 }
 
 const Message: React.FC<MessageProps> = ({
@@ -21,7 +20,7 @@ const Message: React.FC<MessageProps> = ({
   senderName,
   senderAvatar,
 }) => {
-  const { currentUserId, readMessage, messageSentTimeString } = useChat();
+  const { currentUserId, readMessage, messageSentTimeString } = useConnectyCube();
 
   const isCurrentUserSender = message.sender_id === currentUserId;
   const isAttachment = message.attachments && message.attachments.length > 0;
@@ -39,7 +38,7 @@ const Message: React.FC<MessageProps> = ({
 
   const [ref, inView] = useInView();
   if (inView) {
-    if (message.read === 0 && message.sender_id !== currentUserId) {
+    if (message.read === 0 && message.sender_id !== currentUserId && message.chat_dialog_id) {
       readMessage(message._id, message.sender_id, message.chat_dialog_id);
     }
   }

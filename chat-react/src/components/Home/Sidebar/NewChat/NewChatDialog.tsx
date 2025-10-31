@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube, type Users } from "@connectycube/react";
 import { DialogHeader, DialogTitle } from "@/components/shadcn-ui/dialog";
 import { Input } from "@/components/shadcn-ui/input";
 import { Label } from "@/components/shadcn-ui/label";
 import { Button } from "@/components/shadcn-ui/button";
-import { Users } from "node_modules/connectycube/dist/types/types";
 import SearchedUser from "./SearchedUser";
 import CreateGroupChat from "./CreateGroupChat/CreateGroupChat";
 import { useNavigate } from "react-router";
@@ -33,7 +32,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
     addUsersToGroupChat,
     selectDialog,
     selectedDialog,
-  } = useChat();
+  } = useConnectyCube();
 
   const [selectedUsers, setSelectedUsers] = useState<{
     [key: number]: Users.User;
@@ -56,13 +55,13 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
     setSearchedUsers(
       addUsersMode
         ? users.filter(
-            (user) => !selectedDialog.occupants_ids.includes(user.id)
+            (user) => !selectedDialog?.occupants_ids.includes(user.id)
           )
         : users
     );
   };
 
-  const searchedUsersView: JSX.Element[] = useMemo(() => {
+  const searchedUsersView: React.JSX.Element[] = useMemo(() => {
     return searchedUsers.map((user) => {
       return (
         <SearchedUser
@@ -75,7 +74,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
             navigate(`/home/${dialog._id}`);
             onFinish();
           }}
-          avatar={user.avatar}
+          avatar={user.avatar || undefined}
           chatType={chatType}
           isSelected={!!selectedUsers[user.id]}
           onSelectUser={(userId: number, isSelected: boolean) => {

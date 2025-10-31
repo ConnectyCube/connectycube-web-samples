@@ -1,7 +1,7 @@
-import CC from "connectycube/dist/types/types";
+import {Config} from "connectycube";
 import {environment} from "../../environments/environment";
 
-export const CREDENTIALS: CC.Config.Credentials = {
+export const CREDENTIALS: Config.Credentials = {
   appId: Number(environment.APP_ID),
   authKey: environment.AUTH_KEY,
 };

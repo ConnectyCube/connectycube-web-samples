@@ -1,6 +1,6 @@
+import type { Users } from "@connectycube/react";
 import React, { useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Users } from "node_modules/connectycube/dist/types/types";
 import { Button } from "@/components/shadcn-ui/button";
 import Participant from "./Participant";
 import groupChatImage from "../../../../../assets/group-chat.jpg";
@@ -29,8 +29,8 @@ const CreateGroupChat: React.FC<CreateGroupChatProps> = ({
       return (
         <Participant
           key={user.id}
-          name={user.login || user.full_name}
-          avatar={user.avatar}
+          name={user.login || user.full_name || undefined}
+          avatar={user.avatar || undefined}
         />
       );
     });

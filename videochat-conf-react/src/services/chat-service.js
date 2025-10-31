@@ -1,6 +1,6 @@
-import ConnectyCube from "connectycube";
+import { ConnectyCube } from "@connectycube/react";
 import { createContext, useRef, useState } from "react";
-import { isiOS } from "./heplers";
+import { isiOS } from "./helpers";
 
 import sound from "../sounds/notification_sound.mp3";
 

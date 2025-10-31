@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import { useEffect } from "react";
 import { TiGroup } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router";
-import { useChat } from "@connectycube/use-chat";
-import Avatar from "../../Shared/Avatar";
+import { useConnectyCube, type Dialogs } from "@connectycube/react";
+import Avatar from "../../shared/Avatar";
 
 export interface ChatItemProps {
   dialog: Dialogs.Dialog;
@@ -18,7 +18,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
     selectDialog,
     currentUserId,
     lastMessageSentTimeString,
-  } = useChat();
+  } = useConnectyCube();
 
   const isSelected = dialog._id === selectedDialog?._id;
 
@@ -48,7 +48,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ dialog }) => {
       onClick={handleSelectChat}
     >
       <Avatar
-        imageUID={dialog.photo}
+        imageUID={dialog.photo || undefined}
         name={dialog.name}
         className="w-[60px] h-[60px]"
       />

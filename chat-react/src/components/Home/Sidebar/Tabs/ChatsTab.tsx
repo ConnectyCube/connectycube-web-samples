@@ -1,4 +1,5 @@
-import { useChat } from "@connectycube/use-chat";
+import { useState } from "react";
+import { useConnectyCube } from "@connectycube/react";
 import {
   Dialog,
   DialogTrigger,
@@ -13,12 +14,9 @@ import {
 import { BsPencil } from "react-icons/bs";
 import NewChatDialog, { ChatType } from "../NewChat/NewChatDialog";
 import ChatsList from "../ChatsList";
-import { useState } from "react";
 
-export interface ChatsTabProps {}
-
-const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
-  const { isConnected } = useChat();
+const ChatsTab: React.FC = () => {
+  const { isConnected } = useConnectyCube();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [chatType, setChatType] = useState<ChatType>("private");
@@ -43,7 +41,7 @@ const ChatsTab: React.FC<ChatsTabProps> = ({}) => {
         placeholder="Search..."
       />
       {isConnected ? (
-        <div className="pt-5 overflow-y-scroll h-[87%] overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
+        <div className="pt-5 overflow-auto h-[87%] overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
           <ChatsList searchTerm={searchTerm} />
         </div>
       ) : (

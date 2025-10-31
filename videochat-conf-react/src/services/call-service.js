@@ -1,5 +1,5 @@
-import { isiOS, isMobile, detectBrowser } from "./heplers";
-import ConnectyCube from "connectycube";
+import { isiOS, isMobile, detectBrowser } from "./helpers";
+import { ConnectyCube } from "@connectycube/react";
 import { createContext, useEffect, useRef } from "react";
 import { useState } from "react";
 const CallContext = createContext();
@@ -81,7 +81,7 @@ export const CallProvider = ({ children }) => {
               p.bitrate = bitrate;
             }
             p.micLevel = micLevel.toFixed(2) + "%";
-          } catch {}
+          } catch { }
         } else {
           p.bitrate = null;
         }
@@ -226,11 +226,11 @@ export const CallProvider = ({ children }) => {
       session,
       userId,
       iceState
-    ) => {};
+    ) => { };
     ConnectyCube.videochatconference.onSessionConnectionStateChangedListener = (
       session,
       iceState
-    ) => {};
+    ) => { };
 
     navigator.mediaDevices.addEventListener("devicechange", function (event) {
       setDevices({ video: true, audio: true });
@@ -423,7 +423,7 @@ export const CallProvider = ({ children }) => {
       ConnectyCube.destroySession();
       _session.current
         .leave()
-        .then(() => {})
+        .then(() => { })
         .catch((error) => {
           console.log("You already left the room");
         });
@@ -644,7 +644,7 @@ export const CallProvider = ({ children }) => {
       });
       return _session.current
         .getUserMedia({ video: true, audio: true }, true)
-        .then((stream) => {});
+        .then((stream) => { });
     } else if (!prevIsVideoRef.current) {
       participantRef.current.forEach((p) => {
         const userId = p.userId;
@@ -660,7 +660,7 @@ export const CallProvider = ({ children }) => {
       });
       return _session.current
         .getUserMedia({ video: false, audio: true }, true)
-        .then((stream) => {});
+        .then((stream) => { });
     }
   };
 
@@ -717,7 +717,7 @@ export const CallProvider = ({ children }) => {
       meetingIsRecording.current = true;
       ConnectyCube.meeting
         .update(meetingId.current, { record: true })
-        .then((meeting) => {})
+        .then((meeting) => { })
         .catch((error) => {
           console.log(error);
         });
@@ -725,7 +725,7 @@ export const CallProvider = ({ children }) => {
       meetingIsRecording.current = false;
       ConnectyCube.meeting
         .update(meetingId.current, { record: false })
-        .then((meeting) => {})
+        .then((meeting) => { })
         .catch((error) => {
           console.log(error);
         });

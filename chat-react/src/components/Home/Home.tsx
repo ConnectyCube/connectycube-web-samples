@@ -1,17 +1,21 @@
 import { useNavigate } from "react-router";
-import Main from "./Main/Main";
-import SideBar from "./Sidebar/SideBar";
+import Main from "./main/Main";
+import SideBar from "./sidebar/Sidebar";
 import { useEffect } from "react";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube} from "@connectycube/react";
 import { chatCredentials } from "../../connectycube";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { selectedDialog, connect } = useChat();
+  const { selectedDialog, connect } = useConnectyCube();
 
   useEffect(() => {
     // auto-connect
-    connect(chatCredentials());
+    const params = chatCredentials()
+
+    if (params) {
+      connect(params);
+    }
 
     if (!selectedDialog) {
       navigate("/home");

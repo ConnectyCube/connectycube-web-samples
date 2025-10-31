@@ -1,6 +1,6 @@
 import React from "react";
 import "./UserStats.scss";
-import { isiOS, detectBrowser } from "../../../../services/heplers";
+import { isiOS, detectBrowser } from "../../../../services/helpers";
 
 const UserStats = (props) => {
   const { userId, micLevel, bitrate, connectionStatus } = props;

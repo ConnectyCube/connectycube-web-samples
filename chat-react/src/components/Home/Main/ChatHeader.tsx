@@ -2,14 +2,14 @@ import React, { useMemo } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube } from "@connectycube/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import Avatar from "@/Components/Shared/Avatar";
+import Avatar from "@/components/shared/Avatar";
 
 export interface ChatHeaderProps {
   toggleProfile: () => void;
@@ -24,20 +24,20 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
     getDialogOpponentId,
     typingStatus,
     users,
-    selectDialog,
-  } = useChat();
-  const isGroupChat = selectedDialog.type === 2;
+    unselectDialog
+  } = useConnectyCube();
+  const isGroupChat = selectedDialog?.type === 2;
 
   const opponentId = getDialogOpponentId();
 
   const typingLabel = useMemo(() => {
-    if (!typingStatus[selectedDialog?._id]) {
+    if (!typingStatus[selectedDialog?._id || ""]) {
       return null;
     }
 
     const names = [];
     for (const [userIdString, isTyping] of Object.entries(
-      typingStatus[selectedDialog._id]
+      typingStatus[selectedDialog?._id || ""]
     )) {
       if (isTyping) {
         const userId = +userIdString;
@@ -63,7 +63,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
         <IoIosArrowBack
           size={32}
           onClick={() => {
-            selectDialog(null);
+            unselectDialog();
             navigate("/home");
           }}
           className="pr-2 cursor-pointer block md:hidden"
@@ -75,8 +75,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
           onClick={toggleProfile}
         >
           <Avatar
-            imageUID={selectedDialog.photo}
-            name={selectedDialog.name}
+            imageUID={selectedDialog?.photo || undefined}
+            name={selectedDialog?.name}
             className="w-[60px] h-[60px]"
           />
         </div>
@@ -87,7 +87,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ toggleProfile }) => {
             className="text-black font-medium cursor-pointer"
             onClick={toggleProfile}
           >
-            {selectedDialog.name}
+            {selectedDialog?.name}
           </span>
           <div className="text-sm italic pt-1">
             {typingStatus && !isGroupChat ? (
