@@ -1,9 +1,10 @@
 import CryptoJS from "crypto-js";
-import ConnectyCube from "connectycube";
+import { ConnectyCube } from "@connectycube/react";
 import RUG from "random-username-generator";
 
 class AuthService {
   constructor() {
+    console.warn(ConnectyCube);
     this.init();
   }
 
