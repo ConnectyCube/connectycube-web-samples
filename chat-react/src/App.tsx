@@ -1,11 +1,10 @@
 import { type JSX, StrictMode, useLayoutEffect, useRef } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router";
-import { ConnectyCube } from "@connectycube/react";
+
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import Home from "./components/home/Home";
-import { appConfig, credentials } from "./config";
 import { isSessionExpired, tryReuseSession } from "./connectycube";
 
 function ProtectedRoute({ element }: { element: JSX.Element }) {
@@ -19,7 +18,6 @@ export default function App() {
   useLayoutEffect(() => {
     // use ref check to make it properly work with StrictMode
     if (!isInited.current) {
-      ConnectyCube.init(credentials, appConfig);
       tryReuseSession();
       isInited.current = true;
     }

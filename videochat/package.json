@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "alpinejs": "^3.15.1",
-    "connectycube": "4.7.17",
+    "connectycube": "^5.0.2",
     "lucide": "^0.552.0"
   },
   "devDependencies": {

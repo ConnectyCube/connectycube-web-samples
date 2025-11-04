@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@connectycube/react": "4.7.17",
+    "@connectycube/react": "^5.0.2",
     "@mui/material": "^5.18.0",
     "crypto-js": "^4.2.0",
     "env-cmd": "^10.1.0",

@@ -1,10 +1,9 @@
 import CryptoJS from "crypto-js";
-import { ConnectyCube } from "@connectycube/react";
+import { ConnectyCube, initConnectyCube } from "@connectycube/react";
 import RUG from "random-username-generator";
 
 class AuthService {
   constructor() {
-    console.warn(ConnectyCube);
     this.init();
   }
 
@@ -25,7 +24,7 @@ class AuthService {
       },
     };
 
-    ConnectyCube.init(credentials, appConfig);
+    initConnectyCube(credentials, appConfig);
   };
 
   async login(userName) {
