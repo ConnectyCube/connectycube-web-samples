@@ -1,7 +1,7 @@
 import React from "react";
 import "./Message.scss";
-import "../../../../services/heplers";
-import { getTime } from "../../../../services/heplers";
+import "../../../../services/helpers";
+import { getTime } from "../../../../services/helpers";
 const Message = (props) => {
   const { message } = props;
   let timeOfMessage = null;

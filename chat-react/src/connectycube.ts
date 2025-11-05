@@ -1,5 +1,5 @@
-import ConnectyCube from "connectycube";
-import { Auth, Chat, Users } from "node_modules/connectycube/dist/types/types";
+import type { Auth, Chat, Users } from "@connectycube/react";
+import { ConnectyCube } from "@connectycube/react";
 
 export const SESSION_KEY = `@connectycube:session`;
 export const PWD_KEY = `@connectycube:pwd`;
@@ -22,6 +22,11 @@ export const tryReuseSession = async (): Promise<boolean> => {
   const isReusable = !isSessionExpired();
   if (isReusable) {
     const session = getSessionFromLocalStorage();
+
+    if (!session) {
+      return false;
+    }
+
     ConnectyCube.setSession(session);
   }
   return isReusable;
@@ -29,12 +34,13 @@ export const tryReuseSession = async (): Promise<boolean> => {
 
 export const tryRestoreSession = async (): Promise<Auth.Session | null> => {
   const session = getSessionFromLocalStorage();
-  if (session) {
-    return await createUserSession(
-      session?.user?.login!,
-      getPwdFromLocalStorage()!
-    );
+  const login = session?.user?.login
+  const password = getPwdFromLocalStorage();
+
+  if (login && password) {
+    return await createUserSession(login, password);
   }
+  
   return null;
 };
 

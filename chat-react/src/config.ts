@@ -1,8 +1,8 @@
-import { Config } from "node_modules/connectycube/dist/types/types";
+import type { Config } from "@connectycube/react";
 
 export const credentials = {
   appId: 'REPLACE_APP_ID',
-  authKey: 'REPLACE_APP_AUTH_KEY',
+  authKey: "REPLACE_APP_AUTH_KEY",
 };
 
 export const appConfig: Config.Options = {

@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { userSignup } from "./../connectycube";
 import logo from "./../assets/logo.png";
-import Loader from "./Shared/Loader";
+import Loader from "./shared/Loader";
 
 type FormValues = {
   fullName: string;

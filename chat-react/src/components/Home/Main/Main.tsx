@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { animateScroll } from "react-scroll";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube } from "@connectycube/react";
 import { IoIosArrowDown } from "react-icons/io";
 import Message from "./Message";
 import ChatHeader from "./ChatHeader";
@@ -14,8 +14,8 @@ const Main = () => {
     messages,
     users,
     sendTypingStatus,
-    sendMessageWithAttachment
-  } = useChat();
+    sendAttachment
+  } = useConnectyCube();
 
   const [showProfile, setShowProfile] = useState(false);
   const messagesContainerRef = useRef<HTMLInputElement>(null);
@@ -41,8 +41,8 @@ const Main = () => {
           <Message
             key={index}
             message={msg}
-            senderName={sender.full_name || sender.login}
-            senderAvatar={sender.avatar}
+            senderName={sender.full_name || sender.login || undefined}
+            senderAvatar={sender.avatar || undefined}
             isGroupChat={selectedDialog.type === 2}
             dialogName={selectedDialog.name}
           />
@@ -117,7 +117,7 @@ const Main = () => {
         {selectedDialog && (
           <ChatInput
             sendMessage={handleSendMessage}
-            sendMessageWithAttachment={sendMessageWithAttachment}
+            sendMessageWithAttachment={sendAttachment}
             sendTypingStatus={sendTypingStatus}
           />
         )}

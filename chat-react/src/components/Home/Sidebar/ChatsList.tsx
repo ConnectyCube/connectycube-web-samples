@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube } from "@connectycube/react";
 import ChatItem from "./ChatItem";
 
 export interface ChatsListProps {
@@ -7,7 +7,7 @@ export interface ChatsListProps {
 }
 
 const ChatsList: React.FC<ChatsListProps> = ({ searchTerm }) => {
-  const { dialogs, selectedDialog } = useChat();
+  const { dialogs, selectedDialog } = useConnectyCube();
 
   const dialogsToRender = useMemo(() => {
     return searchTerm

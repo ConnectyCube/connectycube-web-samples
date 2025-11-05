@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { useForm, SubmitHandler } from "react-hook-form";
-import Loader from "./Shared/Loader";
+import Loader from "./shared/Loader";
 import { createUserSession, tryRestoreSession } from "./../connectycube";
 import logo from "./../assets/logo.png";
 import { useEffect, useRef, useState } from "react";

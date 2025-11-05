@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@connectycube/react": "^5.0.2",
     "@mui/material": "^5.18.0",
-    "connectycube": "^4.7.3",
     "crypto-js": "^4.2.0",
     "env-cmd": "^10.1.0",
     "random-username-generator": "^1.0.4",

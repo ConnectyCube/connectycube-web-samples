@@ -4,7 +4,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/shadcn-ui/avatar";
-import ConnectyCube from "connectycube";
+import {ConnectyCube} from "@connectycube/react";
 
 export interface AvatarProps {
   imageUID?: string;
@@ -17,7 +17,7 @@ const Avatar: React.FC<AvatarProps> = ({ imageUID, name, className }) => {
   const initials = name ? name.slice(0, 2).toUpperCase() : "NA";
 
   return (
-    <AvatarComponent className={className}>
+    <AvatarComponent className={`bg-blue-200 ${className}`}>
       <AvatarImage src={photoUrl} />
       <AvatarFallback>{initials}</AvatarFallback>
     </AvatarComponent>

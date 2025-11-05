@@ -7,8 +7,7 @@ import { addMeParticipant } from '../reducers/participants/participants.actions'
 import { logout } from '../reducers/app.action';
 import { ChatService } from './chat.service';
 import { chatConnected } from '../reducers/interface/interface.actions';
-import ConnectyCube from 'connectycube';
-import { Config, Users } from 'connectycube/dist/types/types';
+import ConnectyCube, { Config, Users } from 'connectycube';
 
 type User = {
   login: string;

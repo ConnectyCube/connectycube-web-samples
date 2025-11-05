@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { ChangeEvent, useEffect, useRef } from "react";
 import { IoMdAttach } from "react-icons/io";
-import { useChat } from "@connectycube/use-chat";
+import { useConnectyCube } from "@connectycube/react";
 
 export interface ChatInputProps {
   sendMessage: (message: string) => void;
@@ -13,7 +13,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   sendMessageWithAttachment,
   sendTypingStatus,
 }) => {
-  const { selectedDialog } = useChat();
+  const { selectedDialog } = useConnectyCube();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
@@ -33,14 +33,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  const onFileSelected = (event: {
-    currentTarget: { files: any[] };
-    target: { value: string };
-  }) => {
+  const onFileSelected = (event: ChangeEvent<HTMLInputElement>) => {
     isTyping.current = false;
 
-    const file = event.currentTarget.files[0];
+    const [file] = event.currentTarget.files || [];
+
+    if (!file) {
+      return;
+    }
+
     const type = file.type.split("/")[1];
+
     if (
       type === "svg+xml" ||
       type === "image" ||

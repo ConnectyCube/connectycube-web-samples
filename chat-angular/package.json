@@ -10,16 +10,6 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
-  "browser": {
-    "http": false,
-    "https": false,
-    "net": false,
-    "path": false,
-    "stream": false,
-    "tls": false,
-    "zlib": false,
-    "util": false
-  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.3",
@@ -38,7 +28,7 @@
     "@ngrx/router-store": "^18.0.2",
     "@ngrx/store": "^18.0.2",
     "@ngrx/store-devtools": "^18.0.2",
-    "connectycube": "^4.7.1",
+    "connectycube": "^5.0.2",
     "dotenv": "^16.4.5",
     "ngx-device-detector": "^8.0.0",
     "rxjs": "6.6.7",

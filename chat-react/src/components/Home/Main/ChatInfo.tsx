@@ -1,15 +1,14 @@
 import React, { useMemo, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiUserPlus } from "react-icons/fi";
-import { useChat } from "@connectycube/use-chat";
-import ConnectyCube from "connectycube";
+import { ConnectyCube, useConnectyCube } from "@connectycube/react";
 import GroupMember from "./GroupMember";
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from "@/components/shadcn-ui/dialog";
-import NewChatDialog from "../Sidebar/NewChat/NewChatDialog";
+import NewChatDialog from "../sidebar/NewChat/NewChatDialog";
 
 export interface ChatInfoProps {
   showProfile: boolean;
@@ -18,7 +17,7 @@ export interface ChatInfoProps {
 
 const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
   const { selectedDialog, users, getDialogOpponentId, lastActivity } =
-    useChat();
+    useConnectyCube();
 
   const [addMembersDialogOpen, addMemberDialogOpen] = useState<boolean>(false);
 
@@ -38,8 +37,8 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
         return (
           <GroupMember
             userId={user.id}
-            name={user.full_name || user.login}
-            avatar={user.avatar}
+            name={user.full_name || user.login || "unknown"}
+            avatar={user.avatar || ""}
             key={oId}
           />
         );
@@ -119,7 +118,7 @@ const ChatInfo: React.FC<ChatInfoProps> = ({ showProfile, toggleProfile }) => {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="h-full overflow-y-scroll">{usersView}</div>
+          <div className="h-full overflow-auto">{usersView}</div>
         </div>
       )}
     </div>

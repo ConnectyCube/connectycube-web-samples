@@ -1,5 +1,5 @@
 import CryptoJS from "crypto-js";
-import ConnectyCube from "connectycube";
+import { ConnectyCube, initConnectyCube } from "@connectycube/react";
 import RUG from "random-username-generator";
 
 class AuthService {
@@ -24,7 +24,7 @@ class AuthService {
       },
     };
 
-    ConnectyCube.init(credentials, appConfig);
+    initConnectyCube(credentials, appConfig);
   };
 
   async login(userName) {
